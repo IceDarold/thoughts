@@ -1,0 +1,889 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 3.1. Загрузка данных в Hugging Face Datasets</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8014-9881-f3f51d69995e" class="page sans"><header><h1 class="page-title">Урок 3.1. Загрузка данных в Hugging Face Datasets</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80f1-a221-ce108acd3d33" class="">Окей, давай сделаем из 3.1 прям нормальный самостоятельный урок, который можно дать студентам как есть 💪</p><hr id="2ab568fa-e39f-802a-99e4-d2fa92af83d0"/><h2 id="2ab568fa-e39f-8091-a32e-e57f734fc705" class="">0. Что мы хотим в итоге</h2><p id="2ab568fa-e39f-8044-bf4f-ebaf22637ba9" class=""><strong>Кейс:</strong></p><p id="2ab568fa-e39f-80af-bdb4-c80c4f7a7b70" class="">У нас есть файл <code>tickets.csv</code> с тикетами в поддержку. В нём:</p><ul id="2ab568fa-e39f-80c2-ba72-c943b4c2e8fa" class="bulleted-list"><li style="list-style-type:disc">колонка <code>text</code> — текст обращения,</li></ul><ul id="2ab568fa-e39f-8040-813a-fb03a834148d" class="bulleted-list"><li style="list-style-type:disc">колонка <code>label</code> — класс тикета:<p id="2ab568fa-e39f-80fa-be56-fe98e0a12997" class=""><code>&quot;bug&quot;</code>, <code>&quot;feature&quot;</code>, <code>&quot;billing&quot;</code>, <code>&quot;other&quot;</code>.</p></li></ul><p id="2ab568fa-e39f-8074-aea2-ed8c64071649" class="">Пример строк:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f6-bc5d-c8f7f03f64b6" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">text,label
+&quot;The app crashes when I upload a photo&quot;,bug
+&quot;Can you add dark mode?&quot;,feature
+&quot;I was charged twice this month&quot;,billing
+&quot;Great app, thanks!&quot;,other
+...
+</code></pre><p id="2ab568fa-e39f-8082-a839-ee2695abebec" class=""><strong>Задача урока:</strong> научиться:</p><ol type="1" id="2ab568fa-e39f-8084-8951-ccf2fafc3c32" class="numbered-list" start="1"><li>Загружать этот CSV в <code>datasets</code>, а не только в <code>pandas</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80dc-8503-c7a1cf207762" class="numbered-list" start="2"><li>Смотреть примеры, размер, колонки.</li></ol><ol type="1" id="2ab568fa-e39f-8024-beb3-f6f958981e8c" class="numbered-list" start="3"><li>Делить данные на train/validation так, чтобы:<ul id="2ab568fa-e39f-805f-b525-f3227d51ff1b" class="bulleted-list"><li style="list-style-type:disc">всё было воспроизводимо (через <code>seed</code>),</li></ul><ul id="2ab568fa-e39f-80ed-9f01-e058e481ef32" class="bulleted-list"><li style="list-style-type:disc">потом это удобно использовалось в токенизации и обучении.</li></ul></li></ol><p id="2ab568fa-e39f-809c-894f-c1731ec32744" class="">В конце урока у тебя будет объект <code>DatasetDict</code> вида:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8023-a1ca-d9cd31771883" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">DatasetDict({
+  train: Dataset({
+      features: [&#x27;text&#x27;, &#x27;label&#x27;],
+      num_rows: N_train,
+  })
+  validation: Dataset({
+      features: [&#x27;text&#x27;, &#x27;label&#x27;],
+      num_rows: N_val,
+  })
+})
+</code></pre><hr id="2ab568fa-e39f-8063-a476-ed988e1a171d"/><h2 id="2ab568fa-e39f-80b6-8133-de2e96e6b3c2" class="">1. Зачем вообще <code>datasets</code>, если есть pandas?</h2><h3 id="2ab568fa-e39f-802e-af73-e5dcc809f6c9" class="">1.1. pandas против datasets</h3><p id="2ab568fa-e39f-804e-99ca-c3b82a7ff7a2" class="">pandas — отличный инструмент, но:</p><ul id="2ab568fa-e39f-8012-8136-e59519bba500" class="bulleted-list"><li style="list-style-type:disc">он держит всё в памяти как один жирный DataFrame;</li></ul><ul id="2ab568fa-e39f-805d-92b1-f5cf4024f3a7" class="bulleted-list"><li style="list-style-type:disc">сам по себе не “понимает”:<ul id="2ab568fa-e39f-80be-8fec-f5d41aa0510d" class="bulleted-list"><li style="list-style-type:circle">токенизацию,</li></ul><ul id="2ab568fa-e39f-8017-8779-f9a50d245f4f" class="bulleted-list"><li style="list-style-type:circle">батчевые модификации типа <code>.map</code>,</li></ul><ul id="2ab568fa-e39f-806b-8349-d52fe4abb9f4" class="bulleted-list"><li style="list-style-type:circle">интеграцию с <code>Trainer</code>.</li></ul></li></ul><p id="2ab568fa-e39f-80c9-ad70-c033f4f708d1" class="">Hugging Face <code>datasets</code> — библиотека <strong>специально под ML/NLP</strong>.</p><p id="2ab568fa-e39f-80de-a28e-daaed562f9a9" class="">Что она умеет:</p><ul id="2ab568fa-e39f-8008-8ced-df0b8d89b967" class="bulleted-list"><li style="list-style-type:disc">хранить датасеты в лёгком формате (Arrow), в том числе <strong>частично на диск</strong>;</li></ul><ul id="2ab568fa-e39f-80c8-8409-d2c83764968d" class="bulleted-list"><li style="list-style-type:disc">удобно и быстро делать:<ul id="2ab568fa-e39f-8003-8f94-fbd5d6839636" class="bulleted-list"><li style="list-style-type:circle"><code>train_test_split</code>,</li></ul><ul id="2ab568fa-e39f-80e4-aeec-c271af18f7ab" class="bulleted-list"><li style="list-style-type:circle"><code>shuffle</code>,</li></ul><ul id="2ab568fa-e39f-8062-90a0-ceedab00adc3" class="bulleted-list"><li style="list-style-type:circle"><code>map</code> для препроцессинга (токенизация и т.п.) батчами;</li></ul></li></ul><ul id="2ab568fa-e39f-80f0-8682-e16210eb5d83" class="bulleted-list"><li style="list-style-type:disc">по умолчанию хорошо дружит с:<ul id="2ab568fa-e39f-8065-8cc4-d91982e9abd2" class="bulleted-list"><li style="list-style-type:circle"><code>transformers</code>,</li></ul><ul id="2ab568fa-e39f-801d-9a61-e8deb63589a5" class="bulleted-list"><li style="list-style-type:circle"><code>Trainer</code>,</li></ul><ul id="2ab568fa-e39f-80df-9ad5-e4bbb0b3598f" class="bulleted-list"><li style="list-style-type:circle">PyTorch/TensorFlow/JAX.</li></ul></li></ul><h3 id="2ab568fa-e39f-8069-a005-d430b1d3a674" class="">1.2. Базовые сущности</h3><ul id="2ab568fa-e39f-802c-a511-ed6628e7990b" class="bulleted-list"><li style="list-style-type:disc"><code>Dataset</code> — аналог таблицы (как одна таблица pandas),<p id="2ab568fa-e39f-8049-af87-f63b74a6c7a5" class="">у него есть:</p><ul id="2ab568fa-e39f-801c-9cbb-dfd9f8320fa6" class="bulleted-list"><li style="list-style-type:circle"><code>features</code> — список колонок и их типов,</li></ul><ul id="2ab568fa-e39f-8031-a686-f2e5fa649d8e" class="bulleted-list"><li style="list-style-type:circle"><code>num_rows</code> — количество строк,</li></ul><ul id="2ab568fa-e39f-802b-936b-e3539653407d" class="bulleted-list"><li style="list-style-type:circle">доступ к строкам по индексу: <code>ds[0]</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-8018-a853-e6027ba33580" class="bulleted-list"><li style="list-style-type:disc"><code>DatasetDict</code> — словарь вида:<ul id="2ab568fa-e39f-806f-95db-c4fbea48d58a" class="bulleted-list"><li style="list-style-type:circle">ключ: <code>&quot;train&quot;</code>, <code>&quot;validation&quot;</code>, <code>&quot;test&quot;</code>,</li></ul><ul id="2ab568fa-e39f-804f-98bc-e73fe708eaaf" class="bulleted-list"><li style="list-style-type:circle">значение: <code>Dataset</code>.</li></ul></li></ul><hr id="2ab568fa-e39f-802d-8837-fd47fbe9b400"/><h2 id="2ab568fa-e39f-802f-ad3b-c2324925e890" class="">2. Готовим CSV (если нужно)</h2><p id="2ab568fa-e39f-80ee-96ed-c4ef5beaf6e3" class="">Если CSV уже есть — этот пункт можно пропустить. Но полезно показать минимальный вариант.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8051-a225-eed6d28e6b93" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import pandas as pd
+
+data = {
+    &quot;text&quot;: [
+        &quot;The app crashes when I upload a photo&quot;,
+        &quot;Can you add dark mode?&quot;,
+        &quot;I was charged twice this month&quot;,
+        &quot;Great app, thanks!&quot;,
+    ],
+    &quot;label&quot;: [
+        &quot;bug&quot;,
+        &quot;feature&quot;,
+        &quot;billing&quot;,
+        &quot;other&quot;,
+    ]
+}
+
+df = pd.DataFrame(data)
+df.to_csv(&quot;tickets.csv&quot;, index=False)
+print(df.head())
+</code></pre><p id="2ab568fa-e39f-8047-b8c8-cb3c0b7c0909" class="">Комментарии:</p><ul id="2ab568fa-e39f-80bb-ad3e-edab8a79698c" class="bulleted-list"><li style="list-style-type:disc"><code>index=False</code> — чтобы не сохранился лишний столбец индекса.</li></ul><ul id="2ab568fa-e39f-80e5-9dee-e449dab86b13" class="bulleted-list"><li style="list-style-type:disc">В реальной жизни вы берёте свои данные и приводите в формат с колонками <code>text</code> и <code>label</code>.</li></ul><hr id="2ab568fa-e39f-806b-9faa-c82480de7992"/><h2 id="2ab568fa-e39f-8003-9fea-f036b6059338" class="">3. Загружаем CSV с помощью <code>load_dataset</code></h2><h3 id="2ab568fa-e39f-80b2-8dd2-f46e37f0fea5" class="">3.1. Установка библиотеки <code>datasets</code></h3><p id="2ab568fa-e39f-803c-b658-d3f2f4314ba4" class="">Если ещё не ставили:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8072-8545-ef840c21e44e" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install datasets
+</code></pre><h3 id="2ab568fa-e39f-800f-8971-d4a39c09f41e" class="">3.2. Простая загрузка одного CSV</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8079-b37a-d77a487b1486" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset
+
+data = load_dataset(
+    &quot;csv&quot;,
+    data_files=&quot;tickets.csv&quot;,
+)
+
+print(data)
+</code></pre><p id="2ab568fa-e39f-8095-bf5d-f8af8a4aefdf" class="">Ожидаемый вывод (пример):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803d-8c03-cb321f93a700" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">DatasetDict({
+    train: Dataset({
+        features: [&#x27;text&#x27;, &#x27;label&#x27;],
+        num_rows: 1000
+    })
+})
+</code></pre><p id="2ab568fa-e39f-8068-a4fa-e51b2800cc46" class="">Что произошло:</p><ul id="2ab568fa-e39f-80f9-8ca9-eaff2782575a" class="bulleted-list"><li style="list-style-type:disc"><code>load_dataset(&quot;csv&quot;, data_files=&quot;tickets.csv&quot;)</code>:<ul id="2ab568fa-e39f-8069-8113-e53b0c343444" class="bulleted-list"><li style="list-style-type:circle">прочитал CSV,</li></ul><ul id="2ab568fa-e39f-804d-ad03-e8b753a038c9" class="bulleted-list"><li style="list-style-type:circle">положил его в объект <code>DatasetDict</code> с <strong>одним</strong> сплитом <code>&quot;train&quot;</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-8065-9f61-cca2e971f5ad" class="bulleted-list"><li style="list-style-type:disc">Пока никаких train/validation/test — только “сырой” train.</li></ul><h3 id="2ab568fa-e39f-80c7-8a78-c711e72f78c8" class="">3.3. Извлекаем сам Dataset</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d7-845e-f51068a93f7d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">train_ds = data[&quot;train&quot;]
+print(train_ds)
+</code></pre><p id="2ab568fa-e39f-80c1-bf76-e19a20826c3f" class="">Вывод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8009-85ab-d466601612a7" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Dataset({
+    features: [&#x27;text&#x27;, &#x27;label&#x27;],
+    num_rows: 1000
+})
+</code></pre><h3 id="2ab568fa-e39f-8036-a47e-efa0983564db" class="">3.4. Смотрим отдельные примеры</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8000-8363-c5b39fffaee1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(train_ds[0])
+</code></pre><p id="2ab568fa-e39f-8087-9ae8-fb74ab685cca" class="">Например:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802c-b8ab-c583dcc1f7ff" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{&#x27;text&#x27;: &#x27;The app crashes when I upload a photo&#x27;, &#x27;label&#x27;: &#x27;bug&#x27;}
+</code></pre><p id="2ab568fa-e39f-803d-aa27-e806d0b8d703" class="">Достать несколько примеров (списком индексов):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8075-ad72-fb20c335402a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(train_ds[:3])
+</code></pre><p id="2ab568fa-e39f-801d-b4f3-c1d1d899a773" class="">Это вернёт словарь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8002-a240-fae5f2d23e57" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+  &#x27;text&#x27;: [..., ..., ...],
+  &#x27;label&#x27;: [..., ..., ...],
+}
+</code></pre><hr id="2ab568fa-e39f-80ce-8bc1-d670aa32fb9c"/><h2 id="2ab568fa-e39f-80e9-8a24-cca5310c9271" class="">4. Мини-диагностика датасета</h2><h3 id="2ab568fa-e39f-80f7-8dd8-e786ee0cf3d3" class="">4.1. Размер и колонки</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-9896-c0dee88563af" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(&quot;Num rows:&quot;, len(train_ds))
+print(&quot;Features:&quot;, train_ds.features)
+</code></pre><hr id="2ab568fa-e39f-8068-80b9-debc5c25107e"/><h3 id="2ab568fa-e39f-800b-8be8-fc41a75c1845" class="">4.2. Распределение классов</h3><p id="2ab568fa-e39f-805d-8b4a-fe7b2504e379" class="">Полезно сразу понять, балансные ли классы.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80de-9959-d8a0fa11599e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import Counter
+
+labels = train_ds[&quot;label&quot;]  # список всех меток
+counter = Counter(labels)
+print(counter)
+</code></pre><p id="2ab568fa-e39f-806f-9ace-cefd376d78bd" class="">Вывод может быть:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e8-89f2-fb79acacc750" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">Counter({&#x27;bug&#x27;: 500, &#x27;feature&#x27;: 300, &#x27;billing&#x27;: 150, &#x27;other&#x27;: 50})
+</code></pre><p id="2ab568fa-e39f-80ec-b82e-c090d90551d6" class="">Сразу видно, например, что <code>&quot;other&quot;</code> мало.</p><hr id="2ab568fa-e39f-8007-8db4-f8599d0e9c95"/><h2 id="2ab568fa-e39f-808c-9fd8-e92a87bd7903" class="">5. Делаем train/validation split</h2><p id="2ab568fa-e39f-8027-b34d-ce12b03cd614" class="">Сейчас у нас один сплит <code>&quot;train&quot;</code>. Нам нужно:</p><ul id="2ab568fa-e39f-805a-b514-d7dec96d4daa" class="bulleted-list"><li style="list-style-type:disc">разделить на:<ul id="2ab568fa-e39f-806c-bfdf-da2ea1a08aa9" class="bulleted-list"><li style="list-style-type:circle"><code>&quot;train&quot;</code> — для обучения,</li></ul><ul id="2ab568fa-e39f-801e-b178-dcb53ba879cb" class="bulleted-list"><li style="list-style-type:circle"><code>&quot;validation&quot;</code> — для валидации;</li></ul></li></ul><ul id="2ab568fa-e39f-80b8-a1d7-fa9c161c20bf" class="bulleted-list"><li style="list-style-type:disc">сделать это с фиксированным <code>seed</code>, чтобы разбиение было воспроизводимым.</li></ul><h3 id="2ab568fa-e39f-8004-ae59-c203717fc320" class="">5.1. train_test_split</h3><p id="2ab568fa-e39f-80ac-96e7-e148bfb15097" class="">У <code>Dataset</code> есть метод <code>.train_test_split</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8060-8af2-c77d9412d185" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">split = train_ds.train_test_split(
+    test_size=0.1,  # 10% в валидацию
+    seed=42,        # фиксируем случайность
+)
+
+print(split)
+</code></pre><p id="2ab568fa-e39f-8035-b804-cc56a2d5c351" class="">Вывод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805d-97b4-de41a20fdc4a" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">DatasetDict({
+    train: Dataset({
+        features: [&#x27;text&#x27;, &#x27;label&#x27;],
+        num_rows: 900
+    })
+    test: Dataset({
+        features: [&#x27;text&#x27;, &#x27;label&#x27;],
+        num_rows: 100
+    })
+})
+</code></pre><ul id="2ab568fa-e39f-80e6-8554-cfcd07ac3eda" class="bulleted-list"><li style="list-style-type:disc"><code>test_size=0.1</code> → 10% данных уходит в <code>&quot;test&quot;</code> (который мы будем использовать как <code>&quot;validation&quot;</code>).</li></ul><ul id="2ab568fa-e39f-8008-988d-e5420e868ec3" class="bulleted-list"><li style="list-style-type:disc"><code>seed=42</code> → при повторном запуске разбиение будет таким же.</li></ul><h3 id="2ab568fa-e39f-80c2-ad9c-ca00a4aeae0c" class="">5.2. Переименуем в train/validation</h3><p id="2ab568fa-e39f-8052-89b5-c2c3f0ed7875" class="">Чтобы было красивее и привычнее:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b7-97d1-fa5dbc946bbd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import DatasetDict
+
+dataset = DatasetDict(
+    {
+        &quot;train&quot;: split[&quot;train&quot;],
+        &quot;validation&quot;: split[&quot;test&quot;],
+    }
+)
+
+print(dataset)
+</code></pre><p id="2ab568fa-e39f-8081-b1be-f1c9ec9d3cd4" class="">Пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a7-bdbe-f77225611f4d" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">DatasetDict({
+    train: Dataset({
+        features: [&#x27;text&#x27;, &#x27;label&#x27;],
+        num_rows: 900
+    })
+    validation: Dataset({
+        features: [&#x27;text&#x27;, &#x27;label&#x27;],
+        num_rows: 100
+    })
+})
+</code></pre><h3 id="2ab568fa-e39f-809a-aec9-cf3d7427af59" class="">5.3. Проверим размер каждого сплита</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80fc-b41e-e5ef69a206be" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(&quot;Train size:&quot;, len(dataset[&quot;train&quot;]))
+print(&quot;Validation size:&quot;, len(dataset[&quot;validation&quot;]))
+</code></pre><hr id="2ab568fa-e39f-8031-8c90-c08a9a3012f1"/><h2 id="2ab568fa-e39f-80bd-9a3f-e0125592d238" class="">6. Проверяем распределение классов в train и validation</h2><p id="2ab568fa-e39f-80e7-a898-c474a25cbd65" class="">Важно убедиться, что разбиение не “сломало” классы (например, в валидации остался 1 <code>billing</code> и 99 <code>bug</code>).</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80da-b8af-cddcd3514911" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import Counter
+
+train_labels = dataset[&quot;train&quot;][&quot;label&quot;]
+val_labels = dataset[&quot;validation&quot;][&quot;label&quot;]
+
+print(&quot;Train label distribution:&quot;, Counter(train_labels))
+print(&quot;Validation label distribution:&quot;, Counter(val_labels))
+</code></pre><p id="2ab568fa-e39f-8071-87ef-ccee545ee67b" class="">Если классы редкие, иногда лучше использовать стратифицированное разбиение, но на этом уроке достаточно просто посмотреть и убедиться, что всё не совсем катастрофа.</p><hr id="2ab568fa-e39f-80fe-8e41-d60b2f6c6f88"/><h2 id="2ab568fa-e39f-807f-8d69-fb2764cfffb1" class="">7. Небольшие удобные трюки с Dataset</h2><p id="2ab568fa-e39f-80b4-9847-c5da508023cc" class="">Это можно показать как “мини-бонусы”.</p><h3 id="2ab568fa-e39f-8045-8f12-c91578a40758" class="">7.1. shuffle</h3><p id="2ab568fa-e39f-80ba-81a6-dd45335f0f90" class="">Перемешать данные (внутри сплита):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802a-b2fe-ff0fd88c5122" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">shuffled_train = dataset[&quot;train&quot;].shuffle(seed=42)
+print(shuffled_train[0])
+</code></pre><p id="2ab568fa-e39f-80af-800e-c19ce846542b" class="">Это полезно перед обучением, но в модуле 4 мы всё равно будем использовать <code>shuffle=True</code> в DataLoader/Trainer.</p><h3 id="2ab568fa-e39f-80ad-8aef-c29a34ca325e" class="">7.2. filter (фильтрация по условию)</h3><p id="2ab568fa-e39f-804f-9ca8-c6a5f7c478ec" class="">Например, оставить только тикеты класса <code>&quot;bug&quot;</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8022-a4cd-f135b1435924" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">bugs_only = dataset[&quot;train&quot;].filter(lambda x: x[&quot;label&quot;] == &quot;bug&quot;)
+print(len(bugs_only))
+print(bugs_only[0])
+</code></pre><p id="2ab568fa-e39f-80f4-82e5-eb74449efdc3" class="">Это пригодится, если захочется делать балансировку или анализ конкретного класса.</p><hr id="2ab568fa-e39f-803b-a2a9-df616fb84526"/><h2 id="2ab568fa-e39f-80fb-a603-f2de859b52d9" class="">8. Итоговый код урока 3.1 (собранный вместе)</h2><p id="2ab568fa-e39f-8039-8b73-d22e85fc6663" class="">Ниже — аккуратный скрипт, который можно положить в <code>lesson_3_1_load_data.py</code> и дать студентам.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803f-a99a-eb7d00c8afa6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import Counter
+
+from datasets import load_dataset, DatasetDict
+
+
+def main():
+    # 1. Загружаем CSV в DatasetDict
+    data = load_dataset(
+        &quot;csv&quot;,
+        data_files=&quot;tickets.csv&quot;,
+    )
+    train_ds = data[&quot;train&quot;]
+
+    print(&quot;=== Raw dataset ===&quot;)
+    print(train_ds)
+    print(&quot;Example[0]:&quot;, train_ds[0])
+
+    # 2. Размер и колонки
+    print(&quot;\n=== Basic info ===&quot;)
+    print(&quot;Num rows:&quot;, len(train_ds))
+    print(&quot;Features:&quot;, train_ds.features)
+
+    # 3. Распределение классов
+    print(&quot;\n=== Label distribution (full) ===&quot;)
+    full_labels = train_ds[&quot;label&quot;]
+    print(Counter(full_labels))
+
+    # 4. train/validation split
+    split = train_ds.train_test_split(
+        test_size=0.1,
+        seed=42,
+    )
+
+    dataset = DatasetDict(
+        {
+            &quot;train&quot;: split[&quot;train&quot;],
+            &quot;validation&quot;: split[&quot;test&quot;],
+        }
+    )
+
+    print(&quot;\n=== Split dataset ===&quot;)
+    print(dataset)
+    print(&quot;Train size:&quot;, len(dataset[&quot;train&quot;]))
+    print(&quot;Validation size:&quot;, len(dataset[&quot;validation&quot;]))
+
+    # 5. Распределение классов по сплитам
+    print(&quot;\n=== Label distribution (train) ===&quot;)
+    train_labels = dataset[&quot;train&quot;][&quot;label&quot;]
+    print(Counter(train_labels))
+
+    print(&quot;\n=== Label distribution (validation) ===&quot;)
+    val_labels = dataset[&quot;validation&quot;][&quot;label&quot;]
+    print(Counter(val_labels))
+
+    # 6. Пример после сплита
+    print(&quot;\nExample train[0]:&quot;, dataset[&quot;train&quot;][0])
+    print(&quot;Example val[0]:&quot;, dataset[&quot;validation&quot;][0])
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-80fa-89da-c90d2c10fd44" class=""><strong>Что здесь важно:</strong></p><ul id="2ab568fa-e39f-8007-a79c-f8792db7b011" class="bulleted-list"><li style="list-style-type:disc">Ты <strong>один раз</strong> говоришь, где лежит CSV.</li></ul><ul id="2ab568fa-e39f-8038-a441-fb79f21b8e0d" class="bulleted-list"><li style="list-style-type:disc">Дальше работаешь уже с <code>DatasetDict</code>, а не с сырым CSV.</li></ul><ul id="2ab568fa-e39f-80c4-8d0c-c5f6363f7af2" class="bulleted-list"><li style="list-style-type:disc">В следующий урок (3.2) мы поверх <code>dataset</code> будем делать:<ul id="2ab568fa-e39f-8060-bbdd-cdd9f2c24f17" class="bulleted-list"><li style="list-style-type:circle">токенизацию через <code>map</code>,</li></ul><ul id="2ab568fa-e39f-8003-ac7e-edc1ee2764d7" class="bulleted-list"><li style="list-style-type:circle">конверсию <code>label</code> в id.</li></ul></li></ul><hr id="2ab568fa-e39f-804e-91d8-ee08814a9fc9"/><h2 id="2ab568fa-e39f-800a-b293-e4495e5c7cf3" class="">9. Домашка к уроку 3.1</h2><p id="2ab568fa-e39f-80c5-95c4-c40f75c04955" class="">Можно дать студентам прямо так.</p><p id="2ab568fa-e39f-8009-a5fb-d722085282c7" class=""><strong>Задание:</strong></p><ol type="1" id="2ab568fa-e39f-8090-b9c6-e0ebc554e462" class="numbered-list" start="1"><li>Создай свой <code>tickets.csv</code> (минимум 30 строк) формата:<ul id="2ab568fa-e39f-806b-8ac9-dafe0b562bea" class="bulleted-list"><li style="list-style-type:disc">колонка <code>text</code> — текст тикета/отзыва,</li></ul><ul id="2ab568fa-e39f-8053-bbea-c6b5fbfb5b17" class="bulleted-list"><li style="list-style-type:disc">колонка <code>label</code> — класс из фиксированного набора (минимум 3 разных класса).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80a9-95f1-eacb0a298429" class="numbered-list" start="2"><li>Напиши скрипт, который:<ul id="2ab568fa-e39f-802a-b567-eeeae15de88b" class="bulleted-list"><li style="list-style-type:disc">загружает CSV через <code>load_dataset(&quot;csv&quot;, data_files=...)</code>;</li></ul><ul id="2ab568fa-e39f-803f-b4b6-f59619134e4b" class="bulleted-list"><li style="list-style-type:disc">делит на train/validation (например, 80/20) с фиксированным <code>seed</code>;</li></ul><ul id="2ab568fa-e39f-80a7-803c-e3318d4e8b31" class="bulleted-list"><li style="list-style-type:disc">выводит на экран:<ul id="2ab568fa-e39f-8089-8fe9-e6c601b8aba4" class="bulleted-list"><li style="list-style-type:circle">размер train и validation,</li></ul><ul id="2ab568fa-e39f-80ea-811c-f9aab8bef402" class="bulleted-list"><li style="list-style-type:circle">распределение меток в каждом сплите,</li></ul><ul id="2ab568fa-e39f-80d1-aaf4-eccc1aaf8b34" class="bulleted-list"><li style="list-style-type:circle">по 3 примера из train и validation.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80cf-b809-cae324fefaa4" class="numbered-list" start="3"><li>(Опционально) Добавь флаг/параметр, чтобы:<ul id="2ab568fa-e39f-8086-b0f7-d7d283782cac" class="bulleted-list"><li style="list-style-type:disc">можно было менять <code>test_size</code>,</li></ul><ul id="2ab568fa-e39f-80ea-8c26-dd7b27fafffd" class="bulleted-list"><li style="list-style-type:disc">и смотреть, как меняется распределение классов.</li></ul></li></ol><hr id="2ab568fa-e39f-80b3-b957-e4bb037374c6"/><p id="2ab568fa-e39f-8035-bc06-e2401bcfd822" class="">Если хочешь, дальше можем так же <strong>развернуть урок 3.2</strong>: полностью объяснить <code>map</code>, токенизацию батчами, <code>label2id</code>, показать все куски кода и разбор.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,865 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>9.2. Зачем нужны чанки и индекс</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80f2-b283-dc14f3ae58ae" class="page sans"><header><h1 class="page-title">9.2. Зачем нужны чанки и индекс</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8000-95a6-f36a5a8dcae5" class="">Погнали собирать “мозг” для бота — индекс базы знаний 🧠</p><p id="2ab568fa-e39f-804c-9cfc-fb0672c133e9" class="">Урок 9.2 — это про <strong>чанкинг + векторный индекс</strong>.</p><p id="2ab568fa-e39f-8050-a032-f9c974b02513" class="">После него ученик должен уметь:</p><ul id="2ab568fa-e39f-80d8-a574-e74085897362" class="bulleted-list"><li style="list-style-type:disc">загрузить пачку документов (FAQ, статьи, мануалы),</li></ul><ul id="2ab568fa-e39f-80e5-b1b1-ef49c0386cd3" class="bulleted-list"><li style="list-style-type:disc">нарезать их на удобные куски (чанки),</li></ul><ul id="2ab568fa-e39f-80a7-a4a5-eeeda0050366" class="bulleted-list"><li style="list-style-type:disc">посчитать эмбеддинги для всех чанков,</li></ul><ul id="2ab568fa-e39f-80a3-a0e8-ccf2086cc517" class="bulleted-list"><li style="list-style-type:disc">реализовать функцию <code>search_kb(query) → top-k релевантных кусочков</code>.</li></ul><p id="2ab568fa-e39f-806e-b245-e379395e1f05" class="">Я сделаю урок таким:</p><ol type="1" id="2ab568fa-e39f-80ec-adf5-fff2821492df" class="numbered-list" start="1"><li>Зачем вообще чанки и индекс.</li></ol><ol type="1" id="2ab568fa-e39f-80d9-8d8b-d50704d3b3d5" class="numbered-list" start="2"><li>Формат нашей базы знаний.</li></ol><ol type="1" id="2ab568fa-e39f-8088-8a35-c9711588e835" class="numbered-list" start="3"><li>Загрузка файлов и разрезка на чанки.</li></ol><ol type="1" id="2ab568fa-e39f-806a-af21-ccae26736550" class="numbered-list" start="4"><li>Вычисление эмбеддингов для всех чанков батчами.</li></ol><ol type="1" id="2ab568fa-e39f-8007-b775-f19422090366" class="numbered-list" start="5"><li>Простая реализация поиска (через numpy).</li></ol><ol type="1" id="2ab568fa-e39f-8025-8ab5-cd1799b525b9" class="numbered-list" start="6"><li>(Опционально) мини-вступление в FAISS.</li></ol><ol type="1" id="2ab568fa-e39f-803d-b64d-ff488bf57ac6" class="numbered-list" start="7"><li>Домашка.</li></ol><hr id="2ab568fa-e39f-802c-88a8-f86b59c106ce"/><p id="2ab568fa-e39f-80c6-a601-d9e929cc7d1f" class="">В 9.1 ты научился:</p><ul id="2ab568fa-e39f-80c1-be2f-e2b69c48b79a" class="bulleted-list"><li style="list-style-type:disc">превращать один текст → вектор,</li></ul><ul id="2ab568fa-e39f-80e0-a0a5-cdb819ff3c73" class="bulleted-list"><li style="list-style-type:disc">мерить похожесть между запросом и текстами.</li></ul><p id="2ab568fa-e39f-8025-84d1-ecb9a1a564a4" class="">Но в RAG’е у нас обычно:</p><ul id="2ab568fa-e39f-803d-9694-f6ad8725d910" class="bulleted-list"><li style="list-style-type:disc"><strong>сотни/тысячи документов</strong> (мануалы, статьи, release notes…),</li></ul><ul id="2ab568fa-e39f-8082-9afa-d2b0e22649f5" class="bulleted-list"><li style="list-style-type:disc">каждый документ может быть на <strong>несколько тысяч слов</strong>.</li></ul><p id="2ab568fa-e39f-80bb-982f-d0da42709b1e" class="">Если хранить “документ целиком”, будет больно:</p><ul id="2ab568fa-e39f-80c3-80d4-d4462f323b13" class="bulleted-list"><li style="list-style-type:disc">запрос “вылетает при загрузке фото” → у тебя матчится огромный мануал,</li></ul><ul id="2ab568fa-e39f-80fa-aaea-e6683be17e93" class="bulleted-list"><li style="list-style-type:disc">в контекст ты не можешь пихнуть 10 страниц текста,</li></ul><ul id="2ab568fa-e39f-8047-9b30-f2a547076838" class="bulleted-list"><li style="list-style-type:disc">и модель чаще утонет, чем нормально ответит.</li></ul><p id="2ab568fa-e39f-8047-a160-e9e001bc2177" class="">Поэтому:</p><ul id="2ab568fa-e39f-8060-b869-f435075a54ae" class="bulleted-list"><li style="list-style-type:disc">большие документы режем на <strong>разумные куски</strong> — чанки (абзацы / блоки текста),</li></ul><ul id="2ab568fa-e39f-8017-b62b-e8674e4934f0" class="bulleted-list"><li style="list-style-type:disc">считаем эмбеддинги <strong>для каждого чанка</strong>,</li></ul><ul id="2ab568fa-e39f-80bd-af05-f6ea97c049c2" class="bulleted-list"><li style="list-style-type:disc">и ищем похожие чанки для каждого вопроса.</li></ul><p id="2ab568fa-e39f-8034-9522-ed6c901e0a84" class="">Это и есть наша “векторная база знаний”.</p><hr id="2ab568fa-e39f-80d9-9e0b-fe2f5954ab1d"/><h2 id="2ab568fa-e39f-806d-8241-c8f59e00b3e7" class="">9.2.1. Формат нашей базы знаний</h2><p id="2ab568fa-e39f-807c-b74a-d556ea062de2" class="">Представь, что у тебя есть папка:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8058-878a-d41237e0e9a0" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">kb/
+  getting_started.md
+  billing.md
+  troubleshooting_gallery.md
+  login_issues.md
+</code></pre><p id="2ab568fa-e39f-80dc-82d3-f21107745727" class="">Каждый <code>.md</code> — это статья.</p><p id="2ab568fa-e39f-8083-8b03-e6ae63c3701f" class="">Мы хотим привести всё к унифицированному виду:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b2-b8ee-e2286e60fc6b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+    &quot;doc_id&quot;: &quot;troubleshooting_gallery.md&quot;,  # откуда кусок
+    &quot;chunk_id&quot;: 3,                           # какой по счёту кусок
+    &quot;text&quot;: &quot;конкретный абзац/блок текста&quot;,
+}
+</code></pre><p id="2ab568fa-e39f-80e6-9593-eacea84f7fcc" class="">А рядом — матрица эмбеддингов <code>embeddings</code> размером:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8064-87af-d1c3a8ce4b3b" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">(num_chunks, embedding_dim)
+</code></pre><p id="2ab568fa-e39f-80c8-9a70-e72b3d15d28d" class="">Плюс объект нашей модели-эмбеддера.</p><hr id="2ab568fa-e39f-8011-bff9-d4729fb5e816"/><h2 id="2ab568fa-e39f-8067-94a4-f18317398871" class="">9.2.2. Шаг 1. Загрузка документов из каталога</h2><p id="2ab568fa-e39f-8013-89f1-ef1451fe0d56" class="">Начнём с простого: прочитаем все <code>.md</code> из папки <code>kb/</code>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8040-b452-f96de347fe3f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import os
+
+def load_kb_documents(kb_dir=&quot;kb&quot;):
+    docs = []
+    for fname in os.listdir(kb_dir):
+        if not fname.endswith(&quot;.md&quot;):
+            continue  # пропускаем всё, что не markdown-файл
+        path = os.path.join(kb_dir, fname)
+        with open(path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+            text = f.read()
+        docs.append({
+            &quot;id&quot;: fname,   # идентификатор документа
+            &quot;text&quot;: text,  # полный текст
+        })
+    return docs
+
+docs = load_kb_documents(&quot;kb&quot;)
+print(&quot;Loaded docs:&quot;, len(docs))
+print(docs[0][&quot;id&quot;])
+print(docs[0][&quot;text&quot;][:500])
+</code></pre><p id="2ab568fa-e39f-80e6-b8d5-d829e79d145a" class=""><strong>Что тут важно объяснить ученику:</strong></p><ul id="2ab568fa-e39f-80bc-b9df-fb5ed2e944a5" class="bulleted-list"><li style="list-style-type:disc"><code>kb_dir</code> — путь к папке с документацией.</li></ul><ul id="2ab568fa-e39f-8067-b60a-fc37b600a8bb" class="bulleted-list"><li style="list-style-type:disc"><code>fname.endswith(&quot;.md&quot;)</code> — пока берём только Markdown.<p id="2ab568fa-e39f-800c-bbeb-d998e340d9b3" class="">Потом легко расширится на <code>.txt</code>, <code>.html</code>, и т.д.</p></li></ul><ul id="2ab568fa-e39f-8078-a59c-de0cdf57e41d" class="bulleted-list"><li style="list-style-type:disc">Каждый документ — это словарь с:<ul id="2ab568fa-e39f-80d9-9ecf-dc10375634c7" class="bulleted-list"><li style="list-style-type:circle"><code>id</code> — имя файла (или любой уникальный ID),</li></ul><ul id="2ab568fa-e39f-8060-b941-d8b85a3c0ec2" class="bulleted-list"><li style="list-style-type:circle"><code>text</code> — полный текст.</li></ul></li></ul><hr id="2ab568fa-e39f-80ab-b0cc-d43fb8df7850"/><h2 id="2ab568fa-e39f-8014-9072-e9b212cfb272" class="">9.2.3. Шаг 2. Разрезка документа на чанки</h2><p id="2ab568fa-e39f-8043-90bc-f3bd2cffd986" class="">Следующий вопрос: <strong>как резать</strong>?</p><p id="2ab568fa-e39f-80e7-b46a-dc4c52869f2d" class="">Варианты:</p><ol type="1" id="2ab568fa-e39f-8018-ab2b-fb9c6f11ee6c" class="numbered-list" start="1"><li>По абзацам (<code>\n\n</code>) — самый простой старт.</li></ol><ol type="1" id="2ab568fa-e39f-80c7-a60b-c0b56b0f7efc" class="numbered-list" start="2"><li>По длине (например, каждые N символов / токенов).</li></ol><ol type="1" id="2ab568fa-e39f-802e-a999-f4ad2266c5a7" class="numbered-list" start="3"><li>Sliding window (чуть пересекающиеся куски).</li></ol><p id="2ab568fa-e39f-80d1-a3de-ff971508aa5d" class="">Для урока делаем <strong>простой, но рабочий вариант</strong>:</p><ul id="2ab568fa-e39f-800e-a7bc-dc09585d1e6e" class="bulleted-list"><li style="list-style-type:disc">делим по <code>\n\n</code> → параграфы,</li></ul><ul id="2ab568fa-e39f-8012-a661-e8ca0fc19d4d" class="bulleted-list"><li style="list-style-type:disc">если параграф слишком длинный — режем его ещё по фиксированному <code>max_chars</code>.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8021-81bb-ca71b2637e0d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def split_into_chunks(doc, max_chars=500):
+    &quot;&quot;&quot;
+    doc: {&quot;id&quot;: ..., &quot;text&quot;: ...}
+    max_chars: максимальная длина чанка в символах
+    &quot;&quot;&quot;
+    paragraphs = [p.strip() for p in doc[&quot;text&quot;].split(&quot;\n\n&quot;) if p.strip()]
+    chunks = []
+
+    for i, p in enumerate(paragraphs):
+        if len(p) &lt;= max_chars:
+            chunks.append({
+                &quot;doc_id&quot;: doc[&quot;id&quot;],
+                &quot;chunk_id&quot;: i,
+                &quot;text&quot;: p,
+            })
+        else:
+            # Длинный параграф режем по max_chars
+            for j in range(0, len(p), max_chars):
+                part = p[j : j + max_chars]
+                chunks.append({
+                    &quot;doc_id&quot;: doc[&quot;id&quot;],
+                    &quot;chunk_id&quot;: f&quot;{i}_{j}&quot;,  # сложный id, но нам норм
+                    &quot;text&quot;: part,
+                })
+
+    return chunks
+
+# применяем к всем документам
+all_chunks = []
+for doc in docs:
+    all_chunks.extend(split_into_chunks(doc, max_chars=500))
+
+print(&quot;Total chunks:&quot;, len(all_chunks))
+print(all_chunks[0][&quot;doc_id&quot;], all_chunks[0][&quot;chunk_id&quot;])
+print(all_chunks[0][&quot;text&quot;])
+</code></pre><p id="2ab568fa-e39f-8079-8d6e-d4003a062e56" class=""><strong>Пояснения:</strong></p><ul id="2ab568fa-e39f-80e2-b9ca-dc71594d9113" class="bulleted-list"><li style="list-style-type:disc"><code>paragraphs = doc[&quot;text&quot;].split(&quot;\n\n&quot;)</code>:<ul id="2ab568fa-e39f-8071-86bb-d24e68dad9ea" class="bulleted-list"><li style="list-style-type:circle">простая эвристика: двойной перевод строки = новый абзац.</li></ul></li></ul><ul id="2ab568fa-e39f-8031-8fbd-f26ef12c638c" class="bulleted-list"><li style="list-style-type:disc">Если <code>len(p) &lt;= max_chars</code>:<ul id="2ab568fa-e39f-8083-be38-d69969b749fb" class="bulleted-list"><li style="list-style-type:circle">берем абзац как есть.</li></ul></li></ul><ul id="2ab568fa-e39f-8034-b8d6-cc6a24cfa170" class="bulleted-list"><li style="list-style-type:disc">Если <code>len(p) &gt; max_chars</code>:<ul id="2ab568fa-e39f-809e-b917-d143cbec3010" class="bulleted-list"><li style="list-style-type:circle">режем по символам в цикле <code>for j in range(0, len(p), max_chars)</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8044-9938-fb9e3b361cf5" class="">Можно сразу проговорить:</p><blockquote id="2ab568fa-e39f-80f8-9b6f-f7a728aa8d7c" class="">Это не идеально. Можно ещё умнее резать — по предложениям, по токенам, с overlap’ом.<p id="2ab568fa-e39f-80ab-b059-f4c7eba7d9bf" class="">Но для начала, и для большинства задач, такой вариант уже работает нормально.</p></blockquote><hr id="2ab568fa-e39f-801a-87e8-e6689dadc33b"/><h2 id="2ab568fa-e39f-8061-9183-c39ff50a1cab" class="">9.2.4. Шаг 3. Подготовка списка текстов для эмбеддингов</h2><p id="2ab568fa-e39f-80b6-a512-e0c150939e79" class="">Сейчас у нас есть <code>all_chunks</code> ~ список словарей с <code>text</code>. Нам нужен просто список строк.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8025-a6d5-f91417b84698" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">texts = [c[&quot;text&quot;] for c in all_chunks]
+print(&quot;Total texts for embeddings:&quot;, len(texts))
+</code></pre><hr id="2ab568fa-e39f-8039-85c8-c77597d71131"/><h2 id="2ab568fa-e39f-809b-8584-e9fe673b6c78" class="">9.2.5. Шаг 4. Вычисление эмбеддингов батчами</h2><p id="2ab568fa-e39f-8012-bed8-d31d7419306e" class="">Берём тот же <code>SentenceTransformer</code>, что в 9.1. Делаем батчевую обработку, чтобы не взорвать память и время.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807d-94f5-d435242d56ea" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sentence_transformers import SentenceTransformer
+import numpy as np
+from tqdm.auto import tqdm  # для прогресс-бара (опционально)
+
+embed_model = SentenceTransformer(&quot;sentence-transformers/all-MiniLM-L6-v2&quot;)
+
+batch_size = 64
+embeddings_list = []
+
+for i in tqdm(range(0, len(texts), batch_size)):
+    batch_texts = texts[i : i + batch_size]
+    batch_emb = embed_model.encode(batch_texts, normalize_embeddings=True)
+    embeddings_list.append(batch_emb)
+
+embeddings = np.vstack(embeddings_list)
+print(&quot;Embeddings shape:&quot;, embeddings.shape)  # (num_chunks, dim)
+</code></pre><p id="2ab568fa-e39f-8068-b44f-d1195e61dcfd" class=""><strong>Объяснение:</strong></p><ul id="2ab568fa-e39f-80e5-9c58-edf13daedbf4" class="bulleted-list"><li style="list-style-type:disc"><code>batch_size</code>:<ul id="2ab568fa-e39f-80b6-89b1-c4ca9c23dde1" class="bulleted-list"><li style="list-style-type:circle">подбираем под свою видеокарту / CPU,</li></ul><ul id="2ab568fa-e39f-80e9-a401-cfd5feddb599" class="bulleted-list"><li style="list-style-type:circle">32/64/128 — нормальные стартовые значения.</li></ul></li></ul><ul id="2ab568fa-e39f-809a-bb13-f04de1b06664" class="bulleted-list"><li style="list-style-type:disc"><code>normalize_embeddings=True</code>:<ul id="2ab568fa-e39f-809a-978c-fe52ebb29014" class="bulleted-list"><li style="list-style-type:circle">сразу нормализуем, потом поиск будет проще (dot = cosine).</li></ul></li></ul><ul id="2ab568fa-e39f-802e-a9bc-f37777073024" class="bulleted-list"><li style="list-style-type:disc"><code>embeddings_list</code>:<ul id="2ab568fa-e39f-80c7-9756-ee5572ff4470" class="bulleted-list"><li style="list-style-type:circle">копим эмбеддинги каждого батча,</li></ul><ul id="2ab568fa-e39f-8030-b912-cb454889d9b2" class="bulleted-list"><li style="list-style-type:circle">потом <code>np.vstack</code> объединяет в одну матрицу.</li></ul></li></ul><p id="2ab568fa-e39f-80ed-908f-d169f7daa5a4" class="">Сейчас у нас:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805e-9688-fdc76afe54ed" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">kb_index = {
+    &quot;chunks&quot;: all_chunks,     # список словарей: doc_id, chunk_id, text
+    &quot;embeddings&quot;: embeddings, # numpy-массив (N, dim)
+}
+</code></pre><p id="2ab568fa-e39f-8077-8401-ff5c016af0ab" class="">Можно так и зафиксировать:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806f-a5e1-ea793271dccd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">kb_index = {
+    &quot;chunks&quot;: all_chunks,
+    &quot;embeddings&quot;: embeddings,
+}
+</code></pre><hr id="2ab568fa-e39f-801e-8684-dd491d41d858"/><h2 id="2ab568fa-e39f-8037-bb35-c19b2587444b" class="">9.2.6. Шаг 5. Реализация поиска по индексу (plain numpy)</h2><p id="2ab568fa-e39f-8005-b17e-d54c86b02b7e" class="">Теперь самая приятная часть: собственно <strong>поиск</strong>.</p><p id="2ab568fa-e39f-8062-85ed-f6a144e128b9" class="">Идея:</p><ul id="2ab568fa-e39f-80bc-bd28-d1654ead4708" class="bulleted-list"><li style="list-style-type:disc">Для запроса <code>query</code> считаем эмбеддинг <code>q_emb</code>.</li></ul><ul id="2ab568fa-e39f-80ee-a79b-c851e81c1a3d" class="bulleted-list"><li style="list-style-type:disc">Берём матрицу эмбеддингов <code>kb_emb</code> (<code>shape = (N, dim)</code>).</li></ul><ul id="2ab568fa-e39f-8057-8268-c92528438ac8" class="bulleted-list"><li style="list-style-type:disc">Считаем <code>scores = kb_emb dot q_emb</code> (если нормализовали → это cosine).</li></ul><ul id="2ab568fa-e39f-80c3-bc89-efc55120170e" class="bulleted-list"><li style="list-style-type:disc">Сортируем по убыванию, берём top-k индексы.</li></ul><h3 id="2ab568fa-e39f-8096-a31a-f1ba720855bf" class="">Функция поиска</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a1-8f5c-f2a1fd46f517" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def search_kb(query, kb_index, embed_model, top_k=5):
+    # 1. Эмбеддинг запроса (shape = (dim,))
+    q_emb = embed_model.encode([query], normalize_embeddings=True)[0]  # (dim,)
+
+    kb_emb = kb_index[&quot;embeddings&quot;]  # (N, dim)
+
+    # 2. Косинусная похожесть: при нормированных векторах это просто dot product
+    scores = np.dot(kb_emb, q_emb)  # (N,)
+
+    # 3. Индексы топ-k
+    top_idx = np.argsort(scores)[::-1][:top_k]  # сортируем по убыванию
+
+    results = []
+    for idx in top_idx:
+        chunk = kb_index[&quot;chunks&quot;][idx]
+        score = scores[idx]
+        results.append({
+            &quot;score&quot;: float(score),
+            &quot;doc_id&quot;: chunk[&quot;doc_id&quot;],
+            &quot;chunk_id&quot;: chunk[&quot;chunk_id&quot;],
+            &quot;text&quot;: chunk[&quot;text&quot;],
+        })
+
+    return results
+</code></pre><h3 id="2ab568fa-e39f-801f-89b0-d52a040a0270" class="">Тест поиска</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ce-8488-e8839cb9a6af" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">query = &quot;The app crashes when I try to upload photos&quot;
+
+results = search_kb(query, kb_index, embed_model, top_k=3)
+
+for r in results:
+    print(f&quot;[{r[&#x27;score&#x27;]:.3f}] {r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]}&quot;)
+    print(r[&quot;text&quot;])
+    print(&quot;-&quot; * 80)
+</code></pre><p id="2ab568fa-e39f-807a-938c-f51d134ecc01" class=""><strong>Что разобрать со студентами:</strong></p><ul id="2ab568fa-e39f-805b-a176-ea0864638382" class="bulleted-list"><li style="list-style-type:disc"><code>scores</code> ~ “насколько этот чанк похож по смыслу на запрос”.</li></ul><ul id="2ab568fa-e39f-80cb-8683-e275f3e818d1" class="bulleted-list"><li style="list-style-type:disc">Топ-чанки из <code>troubleshooting_gallery.md</code> (или похожих) должны всплывать первыми.</li></ul><ul id="2ab568fa-e39f-803a-a0af-eac41b6be648" class="bulleted-list"><li style="list-style-type:disc">Можно делать sanity-check:<ul id="2ab568fa-e39f-8008-b907-e84bcc56a189" class="bulleted-list"><li style="list-style-type:circle">сравнить query, сильно поменяв формулировку,</li></ul><ul id="2ab568fa-e39f-8047-a7ab-f5ca4b3ebcb0" class="bulleted-list"><li style="list-style-type:circle">проверить, сохраняется ли релевантность.</li></ul></li></ul><hr id="2ab568fa-e39f-800c-b57c-c7c2d2acc110"/><h2 id="2ab568fa-e39f-80b9-a584-e20aac733fb8" class="">9.2.7. (Опционально) FAISS: когда документов много</h2><p id="2ab568fa-e39f-803a-acf3-dbefdfe59c8f" class="">Если ученик дорос до больших KB (десятки/сотни тысяч чанков), нужен более быстрый и/или approximate nearest neighbors индекс. Сейчас хотя бы покажем, что такое FAISS.</p><p id="2ab568fa-e39f-8067-a45f-dd7c9e91f594" class=""><strong>Почему FAISS:</strong></p><ul id="2ab568fa-e39f-80cd-b2e8-d09c6f943de3" class="bulleted-list"><li style="list-style-type:disc"><code>np.dot</code> по всем документам — O(N) на запрос,</li></ul><ul id="2ab568fa-e39f-805d-9245-dcfb26a8e2f4" class="bulleted-list"><li style="list-style-type:disc">FAISS умеет:<ul id="2ab568fa-e39f-8038-a8e0-c43c0af1dbf4" class="bulleted-list"><li style="list-style-type:circle">хранить эмбеддинги,</li></ul><ul id="2ab568fa-e39f-806d-b404-f8b37fa3a2ae" class="bulleted-list"><li style="list-style-type:circle">быстро искать ближайших соседей,</li></ul><ul id="2ab568fa-e39f-8064-9ab8-edd1477e77cd" class="bulleted-list"><li style="list-style-type:circle">использовать GPU и разные индексы (flat / IVF / HNSW и т.д.).</li></ul></li></ul><h3 id="2ab568fa-e39f-80cf-9eca-cf72b2299ccb" class="">Мини-пример с FAISS (IndexFlatIP)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ce-b37f-d2fec7b227c2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import faiss
+
+# Пусть embeddings уже в float32
+kb_emb_f32 = embeddings.astype(&quot;float32&quot;)
+dim = kb_emb_f32.shape[1]
+
+# IndexFlatIP — простейший индекс по inner product (подходит для normalized vectors)
+index = faiss.IndexFlatIP(dim)
+index.add(kb_emb_f32)  # добавляем все вектора в индекс
+
+def search_kb_faiss(query, kb_index, embed_model, index, top_k=5):
+    q_emb = embed_model.encode([query], normalize_embeddings=True).astype(&quot;float32&quot;)  # (1, dim)
+    scores, idxs = index.search(q_emb, top_k)  # scores: (1, top_k), idxs: (1, top_k)
+
+    scores = scores[0]
+    idxs = idxs[0]
+
+    results = []
+    for score, idx in zip(scores, idxs):
+        chunk = kb_index[&quot;chunks&quot;][idx]
+        results.append({
+            &quot;score&quot;: float(score),
+            &quot;doc_id&quot;: chunk[&quot;doc_id&quot;],
+            &quot;chunk_id&quot;: chunk[&quot;chunk_id&quot;],
+            &quot;text&quot;: chunk[&quot;text&quot;],
+        })
+    return results
+
+query = &quot;How can I change my subscription plan?&quot;
+results = search_kb_faiss(query, kb_index, embed_model, index, top_k=3)
+
+for r in results:
+    print(f&quot;[{r[&#x27;score&#x27;]:.3f}] {r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]}&quot;)
+    print(r[&quot;text&quot;])
+    print(&quot;-&quot; * 80)
+</code></pre><p id="2ab568fa-e39f-800e-a97e-f4483d80ce1b" class="">Можно честно сказать ученикам:</p><blockquote id="2ab568fa-e39f-80f0-bde5-fc939b50f80d" class="">Для маленьких проектов достаточно numpy-реализации.<p id="2ab568fa-e39f-8083-a3a0-c4f3eb1480ae" class="">FAISS становится реально полезным, когда чанков → десятки/сотни тысяч, и нужно очень быстро отвечать на много запросов.</p></blockquote><hr id="2ab568fa-e39f-80c7-b976-d0b1851febb6"/><h2 id="2ab568fa-e39f-8035-a0db-c70a93c7973c" class="">9.2.8. Советы и типичные косяки</h2><p id="2ab568fa-e39f-80f4-95bb-cfd4b8dbc031" class="">Что стоит сразу проговорить:</p><ol type="1" id="2ab568fa-e39f-804d-89da-c9b38815c7cc" class="numbered-list" start="1"><li><strong>Чанки слишком большие.</strong><ul id="2ab568fa-e39f-8036-be3e-edd07e360e06" class="bulleted-list"><li style="list-style-type:disc">Если <code>max_chars</code> слишком велик, в чанк попадает всё подряд, модель в контексте утонет.</li></ul><ul id="2ab568fa-e39f-804f-869f-dbb3fa1d05a4" class="bulleted-list"><li style="list-style-type:disc">Если слишком маленький — куски становятся “обрывками”, тяжело понять контекст.</li></ul><ul id="2ab568fa-e39f-8059-9d9e-d95b4d30e623" class="bulleted-list"><li style="list-style-type:disc">Здравый диапазон — ~200–800 символов (или ~100–300 токенов).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-803d-a079-e755f8c1f219" class="numbered-list" start="2"><li><strong>Нет сохранения индекса.</strong><ul id="2ab568fa-e39f-8040-9271-e33552900dac" class="bulleted-list"><li style="list-style-type:disc">Долго пересчитывать эмбеддинги каждый раз.</li></ul><ul id="2ab568fa-e39f-80af-9e70-e68a8c82ac6d" class="bulleted-list"><li style="list-style-type:disc">Для курса ок, но в реальной жизни:<ul id="2ab568fa-e39f-8018-bc9d-e3432c1d4ea6" class="bulleted-list"><li style="list-style-type:circle">сохраняем <code>embeddings</code> (например, через <code>np.save</code>),</li></ul><ul id="2ab568fa-e39f-8078-981b-c62671aefd2f" class="bulleted-list"><li style="list-style-type:circle">сохраняем <code>chunks</code> (json/pkl).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8012-98b0-ce81dd4fb453" class="numbered-list" start="3"><li><strong>Смешивание языков.</strong><ul id="2ab568fa-e39f-8063-be18-d3a6d77f450a" class="bulleted-list"><li style="list-style-type:disc">Если KB и запросы на разных языках, нужен либо:<ul id="2ab568fa-e39f-80ab-ade9-f792b181dd48" class="bulleted-list"><li style="list-style-type:circle">мультиязычный эмбеддер,</li></ul><ul id="2ab568fa-e39f-8073-9b2c-e41828d6ac1a" class="bulleted-list"><li style="list-style-type:circle">либо надо явно приводить к одному языку (переводы).</li></ul></li></ul></li></ol><hr id="2ab568fa-e39f-805f-88b8-df55dc226eae"/><h2 id="2ab568fa-e39f-808a-babe-c31b6d0ffecc" class="">9.2.9. Домашка для ученика</h2><p id="2ab568fa-e39f-806d-90dd-cf30d0de1223" class=""><strong>Основное задание 9.2:</strong></p><ol type="1" id="2ab568fa-e39f-80de-bd9b-c2e3cb1a3db0" class="numbered-list" start="1"><li>Подготовь свою мини-базу знаний:<ul id="2ab568fa-e39f-8018-b6f8-fa35108b6c43" class="bulleted-list"><li style="list-style-type:disc">создай папку <code>kb/</code>,</li></ul><ul id="2ab568fa-e39f-8092-95c5-e591bb606847" class="bulleted-list"><li style="list-style-type:disc">положи туда минимум <strong>5–10 </strong><code><strong>.md</strong></code><strong> или </strong><code><strong>.txt</strong></code><strong> файлов</strong> с:<ul id="2ab568fa-e39f-809c-a969-fd715d6afba1" class="bulleted-list"><li style="list-style-type:circle">описаниями багов,</li></ul><ul id="2ab568fa-e39f-801c-b19e-c66e38def11c" class="bulleted-list"><li style="list-style-type:circle">инструкциями по настройке,</li></ul><ul id="2ab568fa-e39f-806d-9425-e26230bf5d69" class="bulleted-list"><li style="list-style-type:circle">FAQ по оплате и подписке,</li></ul><ul id="2ab568fa-e39f-80f7-8b1b-e468ab862606" class="bulleted-list"><li style="list-style-type:circle">чем угодно, но по тематике твоего “продукта”.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f0-9b48-ccb1220385ef" class="numbered-list" start="2"><li>Напиши код, который:<ul id="2ab568fa-e39f-803a-8de7-ded0678720c4" class="bulleted-list"><li style="list-style-type:disc">загружает все документы из <code>kb/</code>,</li></ul><ul id="2ab568fa-e39f-80d5-a099-d54517f0f09b" class="bulleted-list"><li style="list-style-type:disc">режет их на чанки (по абзацам + по <code>max_chars</code>),</li></ul><ul id="2ab568fa-e39f-80c0-9d12-cece1e8f06dc" class="bulleted-list"><li style="list-style-type:disc">считает эмбеддинги для всех чанков <strong>батчами</strong>,</li></ul><ul id="2ab568fa-e39f-806e-9577-cf4defef2c7d" class="bulleted-list"><li style="list-style-type:disc">сохраняет <code>kb_index = {&quot;chunks&quot;: ..., &quot;embeddings&quot;: ...}</code> в память.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80ef-a094-dd62770bb17d" class="numbered-list" start="3"><li>Реализуй функцию <code>search_kb(query, kb_index, embed_model, top_k=5)</code>, как в уроке.</li></ol><ol type="1" id="2ab568fa-e39f-8094-897e-c59dc8614863" class="numbered-list" start="4"><li>Протестируй:<ul id="2ab568fa-e39f-8001-ab42-fbf0a2d0d8ff" class="bulleted-list"><li style="list-style-type:disc">придумай 5–10 запросов разных типов:<ul id="2ab568fa-e39f-80b4-bc91-e66b0bef241b" class="bulleted-list"><li style="list-style-type:circle">баги (“вылетает при загрузке фото”),</li></ul><ul id="2ab568fa-e39f-80cd-900f-cba3210f522a" class="bulleted-list"><li style="list-style-type:circle">биллинг (“как вернуть деньги за подписку”),</li></ul><ul id="2ab568fa-e39f-80c3-acd4-f57ec1754ed5" class="bulleted-list"><li style="list-style-type:circle">настройки (“как сменить язык интерфейса”),</li></ul></li></ul><ul id="2ab568fa-e39f-8012-93d4-f5cf16430663" class="bulleted-list"><li style="list-style-type:disc">для каждого запроса напечатай топ-3 чанка с <code>score</code> и текстом,</li></ul><ul id="2ab568fa-e39f-80fa-a94e-c30206641d93" class="bulleted-list"><li style="list-style-type:disc">глазами оцени: релевантны ли результаты.</li></ul></li></ol><p id="2ab568fa-e39f-804a-8f27-f3d66a4fc852" class=""><strong>Доп. задание (по желанию):</strong></p><ul id="2ab568fa-e39f-8092-a77a-fd96e74ab58a" class="bulleted-list"><li style="list-style-type:disc">Реализуй <strong>простую фильтрацию по порогу</strong>:<ul id="2ab568fa-e39f-809f-95f8-db5ca4356c34" class="bulleted-list"><li style="list-style-type:circle">если <code>max_score &lt; 0.4</code> (или иной порог) — считаем, что KB не знает ответа,</li></ul><ul id="2ab568fa-e39f-8011-9b57-eb0c49d5d66d" class="bulleted-list"><li style="list-style-type:circle">в дальнейшем это можно использовать, чтобы бот честно говорил “я не нашёл информации в базе”.</li></ul></li></ul><hr id="2ab568fa-e39f-8029-bb68-cb5ea3a99f3a"/><p id="2ab568fa-e39f-8069-b2c3-f840fe103940" class="">Если хочешь, дальше могу так же расписать <strong>урок 9.3</strong>:</p><p id="2ab568fa-e39f-8023-94d8-e9ac1af08d9c" class="">полный RAG-пайплайн — <code>retrieve → prompt → generate</code>, прямо с промптом, генерацией и базовой проверкой “модель опирается на контекст, а не галлюцинирует”.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,899 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.2. NER: подсветка сущностей в обращениях пользователей</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-807c-b50c-e33545e61afb" class="page sans"><header><h1 class="page-title">Урок 1.2. NER: подсветка сущностей в обращениях пользователей</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8034-9d04-e4c4a964c36f" class="">Хорошо, продолжаем строить наш “NLP для саппорта” 💼🧠</p><p id="2ab568fa-e39f-8003-9054-c079d8e7d320" class="">Сейчас урок 1.2 — полностью про <strong>NER</strong>: как подсвечивать сущности в текстах тикетов.</p><hr id="2ab568fa-e39f-80ce-b005-c1e2181872eb"/><h2 id="2ab568fa-e39f-8063-a3e4-c0dcab0e2e75" class="">1. Цели урока</h2><p id="2ab568fa-e39f-80ff-bf6c-dc097731d21d" class="">К концу урока студент:</p><ul id="2ab568fa-e39f-800b-9634-d4d87859d5f1" class="bulleted-list"><li style="list-style-type:disc">понимает, что такое <strong>NER</strong> (Named Entity Recognition) и чем это отличается от обычной классификации текста;</li></ul><ul id="2ab568fa-e39f-8036-ad42-f15462cfaff7" class="bulleted-list"><li style="list-style-type:disc">знает, как работает <code>pipeline(&quot;token-classification&quot;)</code> / <code>pipeline(&quot;ner&quot;)</code>;</li></ul><ul id="2ab568fa-e39f-801d-83c9-fe90077fb36a" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-8056-8df1-de06d0cb1d2a" class="bulleted-list"><li style="list-style-type:circle">запустить NER на одной строке и на батче текстов,</li></ul><ul id="2ab568fa-e39f-8085-adbe-ea046e603b62" class="bulleted-list"><li style="list-style-type:circle">пользоваться <code>grouped_entities=True</code>,</li></ul><ul id="2ab568fa-e39f-808b-b51f-e26bb6ca5f86" class="bulleted-list"><li style="list-style-type:circle">интерпретировать <code>start</code>, <code>end</code>, <code>word</code>, <code>entity</code>, <code>entity_group</code>;</li></ul></li></ul><ul id="2ab568fa-e39f-808f-8f5d-f4e76f858200" class="bulleted-list"><li style="list-style-type:disc">может написать функции:<ul id="2ab568fa-e39f-8016-bca5-c4dae504fa86" class="bulleted-list"><li style="list-style-type:circle">для подсветки сущностей прямо в тексте,</li></ul><ul id="2ab568fa-e39f-80dd-8e2d-ec0bb5c37e8f" class="bulleted-list"><li style="list-style-type:circle">для массовой обработки тикетов и анализа “какие сущности у нас чаще всего встречаются”.</li></ul></li></ul><hr id="2ab568fa-e39f-806b-86a9-f10571d6106a"/><h2 id="2ab568fa-e39f-80f3-afd5-d8d40872b28a" class="">2. Мотивация и постановка задачи (5–10 минут)</h2><p id="2ab568fa-e39f-80e7-848d-c772ee82cae9" class=""><strong>Кейс саппорта:</strong></p><p id="2ab568fa-e39f-8076-91a3-d4262fecad38" class="">В тикетах пользователи пишут что-то вроде:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b0-a447-f206eca1223c" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">&quot;App crashes on iOS 17.1 when I try to upload photos in the Pro plan.&quot;
+&quot;I can&#x27;t log in to my account with email john.doe@example.com.&quot;
+&quot;Payment failed when using my Visa card in Germany.&quot;
+</code></pre><p id="2ab568fa-e39f-80da-9d91-eb75a0f11a7e" class="">Люди там постоянно упоминают:</p><ul id="2ab568fa-e39f-8067-a87d-c4254a392586" class="bulleted-list"><li style="list-style-type:disc">платформы и ОС: <code>iOS</code>, <code>Android</code>, <code>Windows</code>;</li></ul><ul id="2ab568fa-e39f-808c-8417-cf79da06b216" class="bulleted-list"><li style="list-style-type:disc">версии: <code>17.1</code>, <code>v5.2.1</code>;</li></ul><ul id="2ab568fa-e39f-80ef-827b-dd60f5ec4ab1" class="bulleted-list"><li style="list-style-type:disc">тарифы: <code>Pro</code>, <code>Basic</code>;</li></ul><ul id="2ab568fa-e39f-8044-891c-f3f6196ae9b7" class="bulleted-list"><li style="list-style-type:disc">имена, e-mail, страны и т.д.</li></ul><p id="2ab568fa-e39f-8089-b8b0-e7be034132b0" class="">Что хочется:</p><ul id="2ab568fa-e39f-80a3-8c84-fb2efb28b4da" class="bulleted-list"><li style="list-style-type:disc">автоматически вытаскивать <strong>ключевые сущности</strong>:<ul id="2ab568fa-e39f-8028-ac1e-f2e79712a805" class="bulleted-list"><li style="list-style-type:circle">ОС, страны, организации, возможно продукты;</li></ul></li></ul><ul id="2ab568fa-e39f-8096-aad4-c35245564b2d" class="bulleted-list"><li style="list-style-type:disc">использовать их:<ul id="2ab568fa-e39f-80d5-8391-fbb975e374cb" class="bulleted-list"><li style="list-style-type:circle">для аналитики (на какой версии чаще падает),</li></ul><ul id="2ab568fa-e39f-8076-a028-c45db3873edf" class="bulleted-list"><li style="list-style-type:circle">для фильтрации (посмотреть все тикеты по тарифу Pro),</li></ul><ul id="2ab568fa-e39f-80ef-b1f0-ea49feddaa50" class="bulleted-list"><li style="list-style-type:circle">в будущем — для роутинга (тикеты про Billing → Billing-команда).</li></ul></li></ul><p id="2ab568fa-e39f-80cd-8d7f-cddf6f19742f" class="">Для этого нам нужен <strong>NER</strong>.</p><hr id="2ab568fa-e39f-80ef-8adc-ed4263d1e717"/><h2 id="2ab568fa-e39f-8035-8f53-f63c97c2623e" class="">3. Теория: NER и token classification (15–20 минут)</h2><h3 id="2ab568fa-e39f-80de-8765-c315b7746adf" class="">3.1. Что такое NER</h3><p id="2ab568fa-e39f-8046-a74a-e48898964911" class=""><strong>NER (Named Entity Recognition)</strong> — задача выделения “имённых сущностей” в тексте.</p><p id="2ab568fa-e39f-802d-b961-c7a1bb0ef6ce" class="">Типичные типы сущностей:</p><ul id="2ab568fa-e39f-8060-963e-eebbc27eb9f7" class="bulleted-list"><li style="list-style-type:disc"><code>PER</code> / <code>PERSON</code> — человек,</li></ul><ul id="2ab568fa-e39f-8003-a709-e0fee2905386" class="bulleted-list"><li style="list-style-type:disc"><code>ORG</code> — организация / компания,</li></ul><ul id="2ab568fa-e39f-8055-8eaf-da1576ccce4e" class="bulleted-list"><li style="list-style-type:disc"><code>LOC</code> — локация,</li></ul><ul id="2ab568fa-e39f-80b7-a93f-cbf1eb6b1818" class="bulleted-list"><li style="list-style-type:disc"><code>GPE</code> — “geopolitical entity” (страна/город),</li></ul><ul id="2ab568fa-e39f-8092-911e-d9cb94fb68f6" class="bulleted-list"><li style="list-style-type:disc"><code>DATE</code>, <code>TIME</code>, <code>MONEY</code>, <code>EVENT</code> и т.п.</li></ul><p id="2ab568fa-e39f-807a-ba73-c789c75bc75c" class="">Пример:</p><blockquote id="2ab568fa-e39f-808b-9b02-d4487c470565" class="">Текст: &quot;I met John in Berlin last Monday.&quot;<p id="2ab568fa-e39f-80ff-b76e-e0450b3904ef" class="">NER:</p><ul id="2ab568fa-e39f-8022-b129-e7366be90a24" class="bulleted-list"><li style="list-style-type:disc"><code>John</code> → <code>PERSON</code></li></ul><ul id="2ab568fa-e39f-8098-bf29-efb6ba59739e" class="bulleted-list"><li style="list-style-type:disc"><code>Berlin</code> → <code>LOC</code></li></ul><ul id="2ab568fa-e39f-80fd-a5c2-c24fc3e5c3a0" class="bulleted-list"><li style="list-style-type:disc"><code>last Monday</code> → <code>DATE</code></li></ul></blockquote><p id="2ab568fa-e39f-8048-bef1-ddb61cc5b037" class="">Важно:</p><ul id="2ab568fa-e39f-804e-a540-e1ca25831afc" class="bulleted-list"><li style="list-style-type:disc">NER — это <strong>классификация токенов</strong>, а не целого текста;</li></ul><ul id="2ab568fa-e39f-8092-a28d-e80615f1fd4b" class="bulleted-list"><li style="list-style-type:disc">модель возвращает <strong>метку для каждого токена</strong>.</li></ul><h3 id="2ab568fa-e39f-8055-a5ac-fb9f3697740b" class="">3.2. Token classification и BIO/IOB-разметка (очень кратко)</h3><p id="2ab568fa-e39f-8081-9b47-f38dda312b91" class="">Под капотом модель работает с токенами (например, subword’ами). Одна из популярных схем разметки — <strong>BIO</strong>:</p><ul id="2ab568fa-e39f-80b6-9586-e7e71b1253fa" class="bulleted-list"><li style="list-style-type:disc"><code>B-ORG</code> — начало сущности типа ORG,</li></ul><ul id="2ab568fa-e39f-8092-8b49-dbf13fad4744" class="bulleted-list"><li style="list-style-type:disc"><code>I-ORG</code> — продолжение сущности ORG,</li></ul><ul id="2ab568fa-e39f-80cc-9b4c-cb9729135c27" class="bulleted-list"><li style="list-style-type:disc"><code>O</code> — не сущность.</li></ul><p id="2ab568fa-e39f-80fb-a70a-fe8e56f69559" class="">Например, <code>&quot;New York&quot;</code>:</p><ul id="2ab568fa-e39f-80a5-8b39-dfec4a9df160" class="bulleted-list"><li style="list-style-type:disc"><code>New</code> → <code>B-LOC</code>,</li></ul><ul id="2ab568fa-e39f-8033-b320-f341e2a499f3" class="bulleted-list"><li style="list-style-type:disc"><code>York</code> → <code>I-LOC</code>.</li></ul><p id="2ab568fa-e39f-80fc-a60e-c46aa55a930c" class="">Нам глубоко копать BIO-схему сейчас не надо, но важно понять:</p><ul id="2ab568fa-e39f-8073-91cc-caaecf997460" class="bulleted-list"><li style="list-style-type:disc">модель <strong>возвращает токен-уровень</strong>,</li></ul><ul id="2ab568fa-e39f-80e2-9062-d2a94ace9bd5" class="bulleted-list"><li style="list-style-type:disc"><code>pipeline</code> может склеивать их в цельные сущности.</li></ul><h3 id="2ab568fa-e39f-80a6-9d06-e72300e9d7a4" class="">3.3. <code>pipeline(&quot;token-classification&quot;)</code> / <code>pipeline(&quot;ner&quot;)</code></h3><p id="2ab568fa-e39f-805c-955e-cfdf297329dd" class="">В <code>transformers</code> для NER используют:</p><ul id="2ab568fa-e39f-80b1-a458-c4f0fd640dc8" class="bulleted-list"><li style="list-style-type:disc">либо <code>pipeline(&quot;ner&quot;)</code>,</li></ul><ul id="2ab568fa-e39f-80f5-8c8c-fe4c442ecc9c" class="bulleted-list"><li style="list-style-type:disc">либо <code>pipeline(&quot;token-classification&quot;)</code> (это более общий вариант).</li></ul><p id="2ab568fa-e39f-8031-b4a0-ee2e40c4f57c" class="">Минимальный пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80aa-8e9c-e2ac8b075d0d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+ner = pipeline(&quot;token-classification&quot;)
+</code></pre><p id="2ab568fa-e39f-8032-8c1d-c8b33f2b5b34" class="">Но так лучше <strong>не</strong> делать, потому что дефолтная модель может быть не той, что нам нужна. Чаще:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ff-bd8f-e2581bbcf353" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">ner = pipeline(
+    &quot;token-classification&quot;,
+    model=&quot;dslim/bert-base-NER&quot;,  # конкретная модель
+)
+</code></pre><p id="2ab568fa-e39f-80fb-9432-c248bc187cc3" class="">Что возвращает пайплайн:</p><ul id="2ab568fa-e39f-8095-8a1f-c25cceac6d22" class="bulleted-list"><li style="list-style-type:disc">список словарей, каждый словарь — сущность или токен (в зависимости от настроек);</li></ul><ul id="2ab568fa-e39f-8054-b8fc-dfa72f1de387" class="bulleted-list"><li style="list-style-type:disc">базовые поля:<ul id="2ab568fa-e39f-804d-8dc6-d3791dfb73e6" class="bulleted-list"><li style="list-style-type:circle"><code>word</code> — текстовый фрагмент,</li></ul><ul id="2ab568fa-e39f-80c4-aa82-e458aea2c961" class="bulleted-list"><li style="list-style-type:circle"><code>score</code> — уверенность,</li></ul><ul id="2ab568fa-e39f-80cf-ba80-f6c5e1580d91" class="bulleted-list"><li style="list-style-type:circle"><code>entity</code> или <code>entity_group</code> — тип сущности (<code>PER</code>, <code>ORG</code>, <code>LOC</code>, …),</li></ul><ul id="2ab568fa-e39f-80db-99f3-d44b4a917527" class="bulleted-list"><li style="list-style-type:circle"><code>start</code>, <code>end</code> — индексы в исходной строке.</li></ul></li></ul><h3 id="2ab568fa-e39f-807c-b62d-f04e83aa1860" class="">3.4. grouped_entities / aggregation_strategy</h3><p id="2ab568fa-e39f-8028-a7de-c1f6ab2738df" class="">Проблема:</p><p id="2ab568fa-e39f-8054-89c4-dbb4d91f8307" class="">Если не склеивать токены, <code>&quot;New York&quot;</code> может прийти как две сущности:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ec-be05-c7f4c31c2dfa" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[
+  {&quot;word&quot;: &quot;New&quot;, &quot;entity&quot;: &quot;B-LOC&quot;, ...},
+  {&quot;word&quot;: &quot;York&quot;, &quot;entity&quot;: &quot;I-LOC&quot;, ...},
+]
+</code></pre><p id="2ab568fa-e39f-8010-bcc6-fe50ae079b24" class="">Чтобы сразу получить “цельные” сущности, есть:</p><ul id="2ab568fa-e39f-8034-af0b-f0ac548d6771" class="bulleted-list"><li style="list-style-type:disc">аргумент <code>grouped_entities=True</code>,<p id="2ab568fa-e39f-801a-8ef4-c05732a05cd6" class="">или</p></li></ul><ul id="2ab568fa-e39f-80c8-99aa-f518f61e6d54" class="bulleted-list"><li style="list-style-type:disc"><code>aggregation_strategy=&quot;simple&quot;</code> / <code>&quot;first&quot;</code> / <code>&quot;max&quot;</code> и т.п. (более новый API).</li></ul><p id="2ab568fa-e39f-80e0-9808-d00fd58d9d88" class="">Мы сейчас пойдём <strong>простым путём</strong>: <code>grouped_entities=True</code>.</p><hr id="2ab568fa-e39f-8045-9281-d053f0cdcea3"/><h2 id="2ab568fa-e39f-803f-a535-d9b52c982bac" class="">4. Практика. Часть 1: базовый NER по тикету (20 минут)</h2><h3 id="2ab568fa-e39f-8032-9bf5-cbec860f9f7e" class="">4.1. Первый запуск NER на одном тексте</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8008-9d20-f86502e676de" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+ner = pipeline(
+    &quot;token-classification&quot;,
+    model=&quot;dslim/bert-base-NER&quot;,
+    grouped_entities=True,  # склеиваем токены в цельные сущности
+)
+
+ticket = &quot;App crashes on iOS 17.1 when I try to upload photos in the Pro plan.&quot;
+
+entities = ner(ticket)
+for e in entities:
+    print(e)
+</code></pre><p id="2ab568fa-e39f-8088-aa16-dc534b7957bb" class="">Пример того, что можно увидеть (структура, не дословно):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8096-92a9-c2d17737d885" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+  &#x27;entity_group&#x27;: &#x27;ORG&#x27;,
+  &#x27;score&#x27;: 0.99,
+  &#x27;word&#x27;: &#x27;iOS&#x27;,
+  &#x27;start&#x27;: 17,
+  &#x27;end&#x27;: 20
+}
+{
+  &#x27;entity_group&#x27;: &#x27;MISC&#x27;,
+  &#x27;score&#x27;: 0.95,
+  &#x27;word&#x27;: &#x27;Pro&#x27;,
+  &#x27;start&#x27;: 60,
+  &#x27;end&#x27;: 63
+}
+</code></pre><p id="2ab568fa-e39f-8055-bed7-f57b33180052" class="">Поясняем каждое поле:</p><ul id="2ab568fa-e39f-8095-98ad-fac36b2e9a83" class="bulleted-list"><li style="list-style-type:disc"><code>entity_group</code> — тип сущности, уже без <code>B-</code>/<code>I-</code>, агрегированный;</li></ul><ul id="2ab568fa-e39f-8006-a67e-f0833889997f" class="bulleted-list"><li style="list-style-type:disc"><code>score</code> — уверенность модели;</li></ul><ul id="2ab568fa-e39f-8020-8d36-c5a57adb6cf7" class="bulleted-list"><li style="list-style-type:disc"><code>word</code> — кусок текста (может быть с <code>##</code> в начале/конце если subword, но <code>grouped_entities</code> обычно очищает);</li></ul><ul id="2ab568fa-e39f-80df-a318-c5b72227800c" class="bulleted-list"><li style="list-style-type:disc"><code>start</code>, <code>end</code> — позиции в исходной строке (Python-style, <code>end</code> не включительно).</li></ul><p id="2ab568fa-e39f-80aa-8984-e4445b059eac" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-80d8-86b4-ff1d6130124b" class="bulleted-list"><li style="list-style-type:disc">да, модель <code>dslim/bert-base-NER</code> обучена на новостях → иногда странно классифицирует <code>iOS</code> как <code>ORG</code> или <code>MISC</code> — это нормально;</li></ul><ul id="2ab568fa-e39f-8065-85ce-d343b1b73d65" class="bulleted-list"><li style="list-style-type:disc">для наших кастомных типов (PRODUCT, PLAN, VERSION) потом будем <strong>дообучать свою модель</strong> — это уже тема других модулей.</li></ul><h3 id="2ab568fa-e39f-8097-84f2-c12e33eb9d96" class="">4.2. NER на наборе тикетов (batch)</h3><p id="2ab568fa-e39f-80e9-ab29-c42a71ba0b68" class="">Берём список:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8013-81b7-dacdd57cfc5c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tickets = [
+    &quot;App crashes on iOS 17.1 when I try to upload photos in the Pro plan.&quot;,
+    &quot;I can&#x27;t log in to my account with email john.doe@example.com.&quot;,
+    &quot;Payment failed when using my Visa card in Germany.&quot;,
+    &quot;The Android version 5.2.1 works fine, but Windows app crashes.&quot;,
+]
+</code></pre><p id="2ab568fa-e39f-8071-a0bb-f4a2612d465a" class="">Прогоняем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cd-8e5f-f6c0be398ae2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">entities_per_ticket = ner(tickets, batch_size=8)
+
+for text, ents in zip(tickets, entities_per_ticket):
+    print(&quot;TEXT:&quot;, text)
+    print(&quot;ENTITIES:&quot;)
+    for e in ents:
+        print(&quot; &quot;, e)
+    print(&quot;-&quot; * 60)
+</code></pre><p id="2ab568fa-e39f-8002-9b8d-d364c17f1cc8" class="">Здесь важно зафиксировать:</p><ul id="2ab568fa-e39f-802b-ba2d-c6b4160496ff" class="bulleted-list"><li style="list-style-type:disc"><code>ner(tickets)</code> вернёт <strong>список списков</strong>:<ul id="2ab568fa-e39f-80e4-9dbf-ccaeb204538e" class="bulleted-list"><li style="list-style-type:circle">внешний список — по текстам,</li></ul><ul id="2ab568fa-e39f-8018-9567-c4e8765467e6" class="bulleted-list"><li style="list-style-type:circle">внутренний — по сущностям внутри текста;</li></ul></li></ul><ul id="2ab568fa-e39f-8021-93b3-f3ac18b88d45" class="bulleted-list"><li style="list-style-type:disc"><code>batch_size</code> управляет скоростью обработки: большая пачка → быстрее, но нужно следить за памятью.</li></ul><hr id="2ab568fa-e39f-806b-90ae-e099a02df18a"/><h2 id="2ab568fa-e39f-808b-a9ca-c4a97dc87cb2" class="">5. Практика. Часть 2: подсветка сущностей в тексте (20–25 минут)</h2><p id="2ab568fa-e39f-803b-a41d-c18b7980dc74" class="">Чтобы результат был более понятным для человека, делаем функцию, которая <strong>подсветит сущности прямо в строке</strong>, например:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8089-a76e-ea30f3f09359" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">App crashes on [iOS&lt;ORG&gt;] 17.1 when I try to upload photos in the [Pro&lt;MISC&gt;] plan.
+</code></pre><h3 id="2ab568fa-e39f-80c3-b104-e8aa566df08d" class="">5.1. Простая функция highlight_entities</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b8-a6eb-d6ca677b7cf1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def highlight_entities(text: str, entities: list[dict]) -&gt; str:
+    &quot;&quot;&quot;
+    text: исходный текст
+    entities: список словарей из NER-пайплайна (с start, end, entity_group)
+    return: строка с подсветкой вида [слово&lt;TYPE&gt;]
+    &quot;&quot;&quot;
+    # сортируем сущности по позиции в тексте
+    entities_sorted = sorted(entities, key=lambda x: x[&quot;start&quot;])
+
+    result = []
+    last_idx = 0
+
+    for e in entities_sorted:
+        start = e[&quot;start&quot;]
+        end = e[&quot;end&quot;]
+        label = e.get(&quot;entity_group&quot;) or e.get(&quot;entity&quot;)
+
+        # добавляем текст до сущности
+        result.append(text[last_idx:start])
+        # добавляем подсвеченную сущность
+        result.append(f&quot;[{text[start:end]}&lt;{label}&gt;]&quot;)
+        last_idx = end
+
+    # добавляем хвост после последней сущности
+    result.append(text[last_idx:])
+
+    return &quot;&quot;.join(result)
+</code></pre><p id="2ab568fa-e39f-8090-a7d9-e4f6ad94e67c" class="">Тест:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80fa-9f24-f98daf4ce0a0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">ticket = &quot;App crashes on iOS 17.1 when I try to upload photos in the Pro plan.&quot;
+entities = ner(ticket)  # grouped_entities=True
+
+highlighted = highlight_entities(ticket, entities)
+print(highlighted)
+</code></pre><p id="2ab568fa-e39f-808c-ae4f-eb3e6d6a4d0a" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-8096-a186-e52da3915f2c" class="bulleted-list"><li style="list-style-type:disc">почему мы сортируем по <code>start</code> — чтобы идти по тексту слева направо;</li></ul><ul id="2ab568fa-e39f-806c-81aa-c6108d3f37c5" class="bulleted-list"><li style="list-style-type:disc"><code>last_idx</code> нужен, чтобы не потерять куски текста между сущностями;</li></ul><ul id="2ab568fa-e39f-8006-9d22-f04c5952ce64" class="bulleted-list"><li style="list-style-type:disc">если сущности пересекаются (редко, но бывает) — в такой простой схеме одна может “перекрыть” другую:<ul id="2ab568fa-e39f-80fd-96d7-fd549982c94d" class="bulleted-list"><li style="list-style-type:circle">пока это игнорируем,</li></ul><ul id="2ab568fa-e39f-8054-a78f-fe000565abd6" class="bulleted-list"><li style="list-style-type:circle">если очень хочется, можно фильтровать пересечения заранее.</li></ul></li></ul><h3 id="2ab568fa-e39f-8094-ae35-c554d491f635" class="">5.2. Подсветка для всех тикетов</h3><p id="2ab568fa-e39f-8052-a043-dcc3855f1a99" class="">Теперь распространяем эту идею на батч:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8087-ada7-c9e2c77e18e5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def highlight_tickets(tickets: list[str], ner_pipe) -&gt; list[str]:
+    all_entities = ner_pipe(tickets, batch_size=8)
+    highlighted_texts = []
+
+    for text, ents in zip(tickets, all_entities):
+        highlighted_texts.append(highlight_entities(text, ents))
+
+    return highlighted_texts
+
+highlighted = highlight_tickets(tickets, ner)
+for h in highlighted:
+    print(h)
+    print(&quot;-&quot; * 60)
+</code></pre><p id="2ab568fa-e39f-80b5-9280-ca4568a96734" class="">Это уже:</p><ul id="2ab568fa-e39f-80f8-82af-d5bba4d194ee" class="bulleted-list"><li style="list-style-type:disc">отличный формат для отчётов/доков,</li></ul><ul id="2ab568fa-e39f-80b0-896b-e9e9f934a560" class="bulleted-list"><li style="list-style-type:disc">удобная штука, чтобы показывать пример саппорт-команде (“вот что модель увидела”).</li></ul><h3 id="2ab568fa-e39f-80d8-bb3b-ee47bb629d3f" class="">5.3. Вариант: HTML-подсветка (для фронта/демки)</h3><p id="2ab568fa-e39f-8082-9da2-e5a89d99053b" class="">Если хотим использовать это в веб-интерфейсе — можно генерить HTML:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e1-9cb6-f76532c1a2c2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def highlight_entities_html(text: str, entities: list[dict]) -&gt; str:
+    &quot;&quot;&quot;
+    Возвращает HTML-строку с &lt;span&gt; вокруг сущностей.
+    &quot;&quot;&quot;
+    entities_sorted = sorted(entities, key=lambda x: x[&quot;start&quot;])
+    result = []
+    last_idx = 0
+
+    for e in entities_sorted:
+        start = e[&quot;start&quot;]
+        end = e[&quot;end&quot;]
+        label = e.get(&quot;entity_group&quot;) or e.get(&quot;entity&quot;)
+
+        result.append(text[last_idx:start])
+
+        # простая подсветка: цвет по типу сущности
+        color = &quot;#ffd54f&quot;  # в реальности можно сделать маппинг по label
+        span = f&#x27;&lt;span style=&quot;background-color: {color};&quot; title=&quot;{label}&quot;&gt;{text[start:end]}&lt;/span&gt;&#x27;
+        result.append(span)
+
+        last_idx = end
+
+    result.append(text[last_idx:])
+    return &quot;&quot;.join(result)
+</code></pre><p id="2ab568fa-e39f-8004-b4e6-dc1b3627ec7d" class="">Дальше можно это просто рендерить в ноутбуке через <code>display(HTML(...))</code> или в обычной веб-странице.</p><hr id="2ab568fa-e39f-8030-a463-e5a0b8740634"/><h2 id="2ab568fa-e39f-80f5-8591-fa32f9ce0aac" class="">6. Практика. Часть 3: аналитика по сущностям (20 минут)</h2><p id="2ab568fa-e39f-8042-800c-c4937cd3a92c" class="">Чтобы NER был не просто “подсветкой”, а полезной аналитикой, сделаем простый подсчёт:</p><p id="2ab568fa-e39f-80da-b1d2-fde01e84c175" class=""><strong>какие сущности встречаются чаще всего?</strong></p><h3 id="2ab568fa-e39f-8046-9029-c99df69467e5" class="">6.1. Сбор статистики по сущностям</h3><p id="2ab568fa-e39f-807f-9f7f-ed6abd87c9d4" class="">Напишем функцию, которая:</p><ul id="2ab568fa-e39f-80ac-8db5-d1f1b75ed7ab" class="bulleted-list"><li style="list-style-type:disc">прогонит все тикеты через NER,</li></ul><ul id="2ab568fa-e39f-8067-acbe-e650e52a6df2" class="bulleted-list"><li style="list-style-type:disc">соберёт список всех (label, word),</li></ul><ul id="2ab568fa-e39f-808d-8fd3-f9606027bbcd" class="bulleted-list"><li style="list-style-type:disc">посчитает частоты.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ac-af98-cc36fc383337" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import Counter
+
+def collect_entity_stats(tickets: list[str], ner_pipe):
+    all_entities = ner_pipe(tickets, batch_size=8)
+
+    label_counter = Counter()
+    text_counter = Counter()
+
+    for ents in all_entities:
+        for e in ents:
+            label = e.get(&quot;entity_group&quot;) or e.get(&quot;entity&quot;)
+            word = e[&quot;word&quot;]
+            label_counter[label] += 1
+            text_counter[word] += 1
+
+    return label_counter, text_counter
+
+label_stats, word_stats = collect_entity_stats(tickets, ner)
+
+print(&quot;Entities by label:&quot;)
+for label, cnt in label_stats.most_common():
+    print(f&quot;{label}: {cnt}&quot;)
+
+print(&quot;\nTop entity surface forms:&quot;)
+for word, cnt in word_stats.most_common(10):
+    print(f&quot;{word}: {cnt}&quot;)
+</code></pre><p id="2ab568fa-e39f-801d-9d56-febef4f1a2a8" class="">Это уже похоже на:</p><ul id="2ab568fa-e39f-805e-985e-d250e09298be" class="bulleted-list"><li style="list-style-type:disc">“какие типы сущностей у нас чаще всего мелькают в саппорте?”,</li></ul><ul id="2ab568fa-e39f-8089-ad24-fc27b887b0fd" class="bulleted-list"><li style="list-style-type:disc">“какие конкретные названия (OS, countries, планы) встречаются чаще всего?”.</li></ul><h3 id="2ab568fa-e39f-809e-aa82-d4966218858f" class="">6.2. Как это использовать в продуктовой логике</h3><p id="2ab568fa-e39f-80c6-a431-d4e956505ff6" class="">Здесь можно проговорить пару идей:</p><ul id="2ab568fa-e39f-801e-acf8-f57cfc515bf9" class="bulleted-list"><li style="list-style-type:disc">если <code>ORG</code> часто = название конкурента → кейс для Product/Marketing;</li></ul><ul id="2ab568fa-e39f-808e-aea5-fa5cb8ff9325" class="bulleted-list"><li style="list-style-type:disc">если <code>LOC</code> = <code>Germany</code>, <code>France</code> и т.п. — видно, где пользователи жалуются больше;</li></ul><ul id="2ab568fa-e39f-80ff-8f08-e9e9dcb3f28c" class="bulleted-list"><li style="list-style-type:disc">если видим много упоминаний <code>iOS 17.1</code> — возможно, стоит приоритизировать баг именно там.</li></ul><hr id="2ab568fa-e39f-80c8-9f9b-f6e4d15c830d"/><h2 id="2ab568fa-e39f-8064-9f4a-de0c10457325" class="">7. Собираем мини-модуль NER для саппорта (5–10 минут)</h2><p id="2ab568fa-e39f-805e-bf48-da90b034b64b" class="">В конце урока можно оформить небольшой модуль <code>ner_support.py</code>, который:</p><ul id="2ab568fa-e39f-80eb-90fc-f6a4a0019e46" class="bulleted-list"><li style="list-style-type:disc">создаёт <code>ner</code>pipeline,</li></ul><ul id="2ab568fa-e39f-8028-8cdc-f8483190a840" class="bulleted-list"><li style="list-style-type:disc">предоставляет функции:<ul id="2ab568fa-e39f-80f5-96ad-de11d66045e5" class="bulleted-list"><li style="list-style-type:circle"><code>extract_entities(text)</code>,</li></ul><ul id="2ab568fa-e39f-80b6-ae53-e90e1174e198" class="bulleted-list"><li style="list-style-type:circle"><code>highlight_text(text)</code>,</li></ul><ul id="2ab568fa-e39f-8036-98bb-ebadbe8de914" class="bulleted-list"><li style="list-style-type:circle"><code>analyze_tickets(tickets)</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8019-ba59-d4488f4a9f59" class="">Пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8084-baaf-f3c1bbfc92ff" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+from collections import Counter
+
+ner = pipeline(
+    &quot;token-classification&quot;,
+    model=&quot;dslim/bert-base-NER&quot;,
+    grouped_entities=True,
+)
+
+def extract_entities(text: str):
+    return ner(text)
+
+def highlight_text(text: str):
+    entities = extract_entities(text)
+    return highlight_entities(text, entities)
+
+def analyze_tickets(tickets: list[str]):
+    all_entities = ner(tickets, batch_size=8)
+    label_counter = Counter()
+    text_counter = Counter()
+
+    for ents in all_entities:
+        for e in ents:
+            label = e.get(&quot;entity_group&quot;) or e.get(&quot;entity&quot;)
+            word = e[&quot;word&quot;]
+            label_counter[label] += 1
+            text_counter[word] += 1
+
+    return {
+        &quot;label_counts&quot;: label_counter,
+        &quot;word_counts&quot;: text_counter,
+    }
+</code></pre><p id="2ab568fa-e39f-8081-9aa0-cd4d611296c2" class="">Дальше можно:</p><ul id="2ab568fa-e39f-80ec-9538-c77887de9155" class="bulleted-list"><li style="list-style-type:disc">импортнуть это в другой скрипт,</li></ul><ul id="2ab568fa-e39f-8069-bf10-ff7ec904a735" class="bulleted-list"><li style="list-style-type:disc">использовать в веб/API,</li></ul><ul id="2ab568fa-e39f-801c-bf83-d5625dd8ba0a" class="bulleted-list"><li style="list-style-type:disc">подключить к уже написанной в 1.1 классификации тональности/эмоций.</li></ul><hr id="2ab568fa-e39f-802e-9861-e6b4c0cdec9b"/><h2 id="2ab568fa-e39f-8066-8d21-d567f22409ff" class="">8. Домашнее задание по уроку 1.2</h2><p id="2ab568fa-e39f-8052-a887-e79cb6425ba8" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-801d-8544-ee24813ff2dd" class="numbered-list" start="1"><li>Взять минимум <strong>20–30 тикетов/отзывов</strong> (можно синтетических, но лучше реальных).</li></ol><ol type="1" id="2ab568fa-e39f-8064-b68e-f3c0ff33dc65" class="numbered-list" start="2"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-80ee-9b84-c882c5b8691d" class="bulleted-list"><li style="list-style-type:disc">прогоняет их через NER-pipeline,</li></ul><ul id="2ab568fa-e39f-80e0-ae13-f0a794ea2a3a" class="bulleted-list"><li style="list-style-type:disc">сохраняет результат в структуру:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8082-9dcb-fa554ea2119f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[
+  {
+    &quot;text&quot;: &quot;...&quot;,
+    &quot;entities&quot;: [
+      {&quot;word&quot;: &quot;...&quot;, &quot;label&quot;: &quot;...&quot;, &quot;start&quot;: ..., &quot;end&quot;: ...},
+      ...
+    ]
+  },
+  ...
+]
+</code></pre></li></ul><ul id="2ab568fa-e39f-8062-be15-c8b5fc1450c3" class="bulleted-list"><li style="list-style-type:disc">для каждого текста печатает подсвеченную строку в консоль (через твою <code>highlight_entities</code>).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c4-b0e4-ef3e344add5c" class="numbered-list" start="3"><li>Посчитать:<ul id="2ab568fa-e39f-800a-8f0d-d60bdb9a425b" class="bulleted-list"><li style="list-style-type:disc">топ-5 самых частых <code>label</code> (типы сущностей),</li></ul><ul id="2ab568fa-e39f-8020-a13c-e7173781986d" class="bulleted-list"><li style="list-style-type:disc">топ-10 самых частых <code>word</code> (конкретные строки сущностей).</li></ul></li></ol><p id="2ab568fa-e39f-80b9-9553-facf96e03433" class=""><strong>Продвинутая часть (по желанию):</strong></p><ol type="1" id="2ab568fa-e39f-8078-9f17-d20355d0686b" class="numbered-list" start="1"><li>Сделать HTML-подсветку и посмотреть на это в браузере / в ноутбуке.</li></ol><ol type="1" id="2ab568fa-e39f-8034-946d-d65abdf031ae" class="numbered-list" start="2"><li>Придумать простую эвристику:<ul id="2ab568fa-e39f-805e-99b8-d03787594fa9" class="bulleted-list"><li style="list-style-type:disc">все <code>ORG</code>, содержащие <code>App</code> или <code>Pro</code> → считать “нашим продуктом”,</li></ul><ul id="2ab568fa-e39f-8080-a0aa-c454e634d1ca" class="bulleted-list"><li style="list-style-type:disc">все <code>LOC</code> → список стран/городов, где чаще всего жалуются;</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8053-a7b1-e5dfe76bfaef" class="numbered-list" start="3"><li>Написать мини-отчёт (текстом), что ты увидел по своей выборке.</li></ol><hr id="2ab568fa-e39f-800e-961c-ea4d91a33db3"/><p id="2ab568fa-e39f-8015-bb64-d5b62a89d921" class="">Если хочешь, дальше можем:</p><ul id="2ab568fa-e39f-809a-a6d9-d7287c7102c8" class="bulleted-list"><li style="list-style-type:disc">так же развернуть <strong>урок 1.3 (QA по FAQ)</strong> в таком же формате,</li></ul><ul id="2ab568fa-e39f-8088-abe2-dfcd36c1e853" class="bulleted-list"><li style="list-style-type:disc">или уже шагнуть к <strong>модулю 2</strong>, где мы снимем обёртку <code>pipeline</code> и залезем в <code>AutoTokenizer</code>/<code>AutoModelFor*</code> руками.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

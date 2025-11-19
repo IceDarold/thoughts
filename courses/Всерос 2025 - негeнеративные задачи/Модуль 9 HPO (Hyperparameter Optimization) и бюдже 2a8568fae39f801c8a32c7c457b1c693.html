@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 9. HPO (Hyperparameter Optimization) и бюджет времени</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-801c-8a32-c7c457b1c693" class="page sans"><header><h1 class="page-title">Модуль 9. HPO (Hyperparameter Optimization) и бюджет времени</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8006-8356-ec94cbc53534" class=""><strong>Модуль 9 — “HPO и бюджет времени под формат Всероса (6 часов)”</strong>. Цель — научить учеников быстро и безопасно «выжимать» метрику без ловушек переоптимизации и провалов на приватном тесте. Теория → лабы на реальных задачах (Георейтинг/Мыслим категориями/Т-Шопинг/Не слышу тебя/АвтоПрайс).</p><hr id="2a8568fa-e39f-8006-89a0-ee6560fabde1"/><h2 id="2a8568fa-e39f-80ff-bae3-f6d8aafaa0a1" class="">1) Результаты модуля (что должен уметь студент)</h2><ul id="2a8568fa-e39f-80a0-8a87-c9f6b6cbee65" class="bulleted-list"><li style="list-style-type:disc">Выбирать <strong>что</strong> имеет смысл тюнить, а что — нет, под конкретную метрику и формат данных.</li></ul><ul id="2a8568fa-e39f-80c1-a8e2-d483e5660d60" class="bulleted-list"><li style="list-style-type:disc">Настраивать <strong>быстрый HPO-контур</strong> (Optuna/Random/ASHA) с прунерами, таймаутами и <strong>прокси-оценкой</strong>, чтобы получать прирост за 20–60 минут.</li></ul><ul id="2a8568fa-e39f-80b5-8ab7-d599a3695ed3" class="bulleted-list"><li style="list-style-type:disc">Проектировать <strong>многоуровневый бюджет</strong> (Ladder: 10→30→60→120 мин) и <strong>остановки</strong> по «достаточности».</li></ul><ul id="2a8568fa-e39f-8017-aab4-f12912c4f4b9" class="bulleted-list"><li style="list-style-type:disc">Держать HPO <strong>репродьюсабельным и без утечек</strong> (OOF, фиксированные сплиты, детерминизм, кэш).</li></ul><ul id="2a8568fa-e39f-80c3-8d5e-c7fec73d424b" class="bulleted-list"><li style="list-style-type:disc">Знать <strong>готовые поисковые пространства</strong> для: CatBoost/LightGBM/XGBoost (регрессия/классификация/ранжирование), ранжёров RecSys, KWS-сетей (CNN/CRNN), текстовых моделей (LR/SGD, маленький BERT), CV-фьюжн (регрессор + агрегатор эмбеддингов).</li></ul><hr id="2a8568fa-e39f-8048-acaa-f8c3e4575e3c"/><h2 id="2a8568fa-e39f-80b5-86bf-f0eed50b7283" class="">2) Теория (90–120 минут)</h2><h3 id="2a8568fa-e39f-80e9-bd09-f833e27ef501" class="">A. Когда HPO даёт очки, а когда — нет</h3><ul id="2a8568fa-e39f-806b-8a70-ce4b927e23a0" class="bulleted-list"><li style="list-style-type:disc"><strong>Да:</strong> когда бейзлайн уже чистый (CV совпадает с ЛБ), и «узкие» гиперпараметры реально влияют на <em>вашу метрику</em> (MAE/medianAPE, mAP@20, H@3, harmonic).</li></ul><ul id="2a8568fa-e39f-80f5-93bd-fd6adc19cd7e" class="bulleted-list"><li style="list-style-type:disc"><strong>Нет/мало:</strong> когда CV ненадёжен, есть утечки/дрейф, слабые фичи или неправильный пост-проц (например, не «ровно 3» в H@3, не дополняете до 20 в RecSys). Сначала чините это.</li></ul><h3 id="2a8568fa-e39f-80a9-a516-c3a9d959d0d8" class="">B. Бюджет времени: лестница решений (Ladder)</h3><ul id="2a8568fa-e39f-8019-b92c-d2059a2c545f" class="bulleted-list"><li style="list-style-type:disc"><strong>10 мин</strong> — «быстрый подгон»: мелкое пространство, фикс epochs/iterations и ранняя остановка.</li></ul><ul id="2a8568fa-e39f-808e-8c01-d9b0206c3447" class="bulleted-list"><li style="list-style-type:disc"><strong>30 мин</strong> — расширяем пространство 2–3 ключевых гиперов, <strong>ASHA/MedianPruner</strong>.</li></ul><ul id="2a8568fa-e39f-809c-8542-ff92ec9a2edb" class="bulleted-list"><li style="list-style-type:disc"><strong>60 мин</strong> — добавляем интеракции гиперов, seed-bagging на 3–5 сидов (устойчивость).</li></ul><ul id="2a8568fa-e39f-80f1-9566-d4ad44093fe4" class="bulleted-list"><li style="list-style-type:disc"><strong>120 мин</strong> — если прирост стабилен, пробуем <strong>мульти-фиделити</strong> (сабсэмпл данных/фич/кандидатов, уменьшенная длина эпох) и переносим лучшие сетки на полный объём.</li></ul><p id="2a8568fa-e39f-80b9-a76e-de1e471f8da6" class=""><strong>Правило «стоп»</strong>: если прирост &lt; 25–33% от разрыва до топа/целевого бейзлайна → <strong>HPO прекращаем</strong>, идём в фичеринг/ансамбль/пост-проц.</p><h3 id="2a8568fa-e39f-80cb-9851-f854f653d000" class="">C. Объектив под метрику (и прокси-оценка)</h3><ul id="2a8568fa-e39f-803f-8e51-cd45329eac1b" class="bulleted-list"><li style="list-style-type:disc">Заворачиваем обучение в <code>objective(trial)</code> и считаем <strong>ровно целевую метрику</strong> на вал-сплите:<ul id="2a8568fa-e39f-8084-808d-c3f7e7ccaa27" class="bulleted-list"><li style="list-style-type:circle">Табличка: <code>−MAE</code> или <code>−medianAPE</code> (минимизируем ошибку).</li></ul><ul id="2a8568fa-e39f-8073-a820-d46df7a5b47c" class="bulleted-list"><li style="list-style-type:circle">Текст (H@3): доля попаданий из <strong>топ-3</strong>.</li></ul><ul id="2a8568fa-e39f-80f8-a1dc-d876c5f9546f" class="bulleted-list"><li style="list-style-type:circle">RecSys: <strong>mAP@20</strong> на hold-out 7 дней (как в постановке).</li></ul><ul id="2a8568fa-e39f-80f2-a89a-f6ac3d1b7fc1" class="bulleted-list"><li style="list-style-type:circle">KWS: harmonic(1−FRR,1−FAR) <strong>после калибровки порога</strong> τ* для данного trial.</li></ul></li></ul><ul id="2a8568fa-e39f-8010-950f-ddca82d9c019" class="bulleted-list"><li style="list-style-type:disc"><strong>Прокси</strong>: уменьшение итераций/эпох, сабсэмпл строк/кандидатов, уменьшение размерности эмбеддингов, сокращение фичблока. Ведём журнал корреляции «прокси→фулл» и используем только устойчивые прокси.</li></ul><h3 id="2a8568fa-e39f-8082-8727-d84c74dc1b28" class="">D. Анти-утечки и репрод</h3><ul id="2a8568fa-e39f-8051-876a-cdf08c4d6b9a" class="bulleted-list"><li style="list-style-type:disc">Сплиты и все трансформы — <strong>OOF</strong>. Никаких fit на всём train, если трансформ использует таргет/статистики.</li></ul><ul id="2a8568fa-e39f-80fd-b24b-e2253285e345" class="bulleted-list"><li style="list-style-type:disc"><strong>Детерминизм:</strong> фикс сиды (например, 42/2025/1729), отключение несинхронных усилителей, контроль n_jobs.</li></ul><ul id="2a8568fa-e39f-803a-aabe-e96b8205b6c9" class="bulleted-list"><li style="list-style-type:disc"><strong>Кэш:</strong> фичи/эмбеддинги/кандидаты на диск (parquet/npy) — HPO не должен заново их считать.</li></ul><h3 id="2a8568fa-e39f-8065-9041-ca75e4ba8e1d" class="">E. Стратегии HPO</h3><ul id="2a8568fa-e39f-80f6-87d2-cb6faa11a1ff" class="bulleted-list"><li style="list-style-type:disc"><strong>Random Search</strong> — удивительно конкурентен на 10–30 мин, особенно с хорошим пространством.</li></ul><ul id="2a8568fa-e39f-804f-86b6-fb57adb48e6a" class="bulleted-list"><li style="list-style-type:disc"><strong>TPE (Optuna)</strong> — байесовский подбор 50–150 трaйлов.</li></ul><ul id="2a8568fa-e39f-801b-8070-fda5d87a6a34" class="bulleted-list"><li style="list-style-type:disc"><strong>ASHA/Successive Halving</strong> — прунинг «слабых» конфигураций по ранним итерациям/эпохам.</li></ul><ul id="2a8568fa-e39f-80e7-b783-e95a49549b7f" class="bulleted-list"><li style="list-style-type:disc"><strong>Multi-fidelity</strong> — сначала дешёвые оценки (меньше данных/итераций), затем дообучение top-k.</li></ul><h3 id="2a8568fa-e39f-8055-841e-ec77f95076b7" class="">F. «Безопасные» и «опасные» гиперы</h3><ul id="2a8568fa-e39f-80ea-84a1-e376efb7b029" class="bulleted-list"><li style="list-style-type:disc"><strong>Табличка GBDT (безопасные):</strong> <code>num_leaves / max_depth</code>, <code>min_data_in_leaf</code>, <code>feature_fraction</code>, <code>bagging_fraction</code>, <code>lambda_l1/l2</code>, <code>learning_rate</code> (с ранней остановкой).</li></ul><ul id="2a8568fa-e39f-80c9-845e-f7c53f144fd4" class="bulleted-list"><li style="list-style-type:disc"><strong>Опасные:</strong> слишком маленькие <code>min_data_in_leaf</code>, агрессивные <code>max_leaves</code> на малых данных (оверфит), нестабильный <code>colsample_bytree</code> при богатых фичах.</li></ul><ul id="2a8568fa-e39f-8009-973d-d59ce9fa14ca" class="bulleted-list"><li style="list-style-type:disc"><strong>Ранжирование:</strong> следить за группами (user_id), иначе HPO «обучится» на невалидном миксе.</li></ul><h3 id="2a8568fa-e39f-8080-84fb-d9c120bbb5e8" class="">G. Готовые пространства (шпаргалка)</h3><ul id="2a8568fa-e39f-809f-a553-e27adb1a5ce8" class="bulleted-list"><li style="list-style-type:disc"><strong>LightGBM (reg/MAE, medianAPE):</strong><p id="2a8568fa-e39f-8052-ba0b-d8f252f5522d" class=""><code>num_leaves: 31–255</code>, <code>max_depth: 6–12</code>, <code>min_data_in_leaf: 50–500</code> (≈ 0.1–1% выборки),</p><p id="2a8568fa-e39f-803a-9bc8-f8428961b146" class=""><code>feature_fraction: 0.6–0.95</code>, <code>bagging_fraction: 0.6–0.95</code>, <code>bagging_freq: 1–5</code>,</p><p id="2a8568fa-e39f-80c2-a490-d6015e5b75fd" class=""><code>lambda_l1: 0–10</code>, <code>lambda_l2: 0–20</code>, <code>learning_rate: 0.01–0.08</code>, <code>min_gain_to_split: 0–0.05</code>.</p><p id="2a8568fa-e39f-808e-ad7e-e52f41d340ab" class="">Ранжирование (<code>lambdarank</code>): те же + <code>max_position = 20</code>, <code>label_gain</code> по убыванию.</p></li></ul><ul id="2a8568fa-e39f-8051-8473-e4c613aaaa4c" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost (reg/class):</strong><p id="2a8568fa-e39f-803e-ace7-d7deb86a411e" class=""><code>depth: 6–10</code>, <code>learning_rate: 0.02–0.2</code>, <code>l2_leaf_reg: 1–15</code>,</p><p id="2a8568fa-e39f-80dd-bd75-fbcfab1b019f" class=""><code>bagging_temperature: 0–1</code>, <code>rsm: 0.6–1.0</code>, <code>border_count: 128–255</code>,</p><p id="2a8568fa-e39f-8065-a762-d47f532d3562" class=""><code>random_strength: 0–1</code>. Для классификации добавить <code>scale_pos_weight</code> при сильном дисбалансе.</p></li></ul><ul id="2a8568fa-e39f-808a-a00a-cdb6c1af2d0a" class="bulleted-list"><li style="list-style-type:disc"><strong>XGBoost (reg):</strong><p id="2a8568fa-e39f-804c-b182-d192a6d77c79" class=""><code>max_depth: 5–10</code>, <code>min_child_weight: 1–20</code>, <code>eta: 0.01–0.1</code>,</p><p id="2a8568fa-e39f-8049-9541-c72466c32942" class=""><code>subsample: 0.6–1.0</code>, <code>colsample_bytree: 0.6–1.0</code>,</p><p id="2a8568fa-e39f-80c6-bff5-eeb8177fb977" class=""><code>reg_alpha: 0–10</code>, <code>reg_lambda: 1–30</code>, <code>gamma: 0–5</code>. <code>tree_method=hist</code>.</p></li></ul><ul id="2a8568fa-e39f-80f5-baf4-cd7dff355370" class="bulleted-list"><li style="list-style-type:disc"><strong>RecSys Ranker (LGBM):</strong> как выше + проверка <code>min_data_in_leaf ≥ 100</code> и стабильность по пользователям (группы).</li></ul><ul id="2a8568fa-e39f-80b9-abfa-efd80db27ead" class="bulleted-list"><li style="list-style-type:disc"><strong>KWS CNN/CRNN:</strong><p id="2a8568fa-e39f-801b-9d39-cfd939904609" class=""><code>lr: 1e−4…5e−3</code>, <code>batch_size: 16–64</code>, <code>weight_decay: 0–1e−3</code>, <code>dropout: 0–0.5</code>,</p><p id="2a8568fa-e39f-8018-b7be-d563d7d29097" class=""><code>n_mels: 64/80/96</code>, <code>time_mask: 0–2</code>, <code>freq_mask: 0–2</code>.</p><p id="2a8568fa-e39f-8025-bc64-de363aab47c3" class="">В Objective <strong>всегда</strong> считать метрику <em>после подбора порога</em> τ* на вал-клипах.</p></li></ul><ul id="2a8568fa-e39f-805d-be34-d0492e871fa8" class="bulleted-list"><li style="list-style-type:disc"><strong>Текст H@3 (TF-IDF + LR/SGD):</strong><p id="2a8568fa-e39f-80df-b798-c39d77a74049" class=""><code>ngram_range: (1,2)/(1,3)</code>, <code>max_features: 50k–300k</code>,</p><p id="2a8568fa-e39f-807f-9eff-d6e7eb493389" class=""><code>C (LR): 0.1–10</code>, <code>alpha (SGD): 1e−6…1e−3</code>,</p><p id="2a8568fa-e39f-8053-a7be-fe9cc1de0781" class="">нормализация <code>norm: l2/None</code>, прунинг по вал-H@3.</p><p id="2a8568fa-e39f-80e3-a281-eaf8515fbd6c" class=""><strong>BERT-лайт:</strong> <code>lr: 1e−5…5e−5</code>, <code>epochs: 1–3</code>, <code>warmup_ratio: 0–0.1</code>, <code>max_len: 128–256</code>.</p></li></ul><ul id="2a8568fa-e39f-80c9-aa61-dbb0d2b30c74" class="bulleted-list"><li style="list-style-type:disc"><strong>CV (АвтоПрайс) — фьюжн:</strong><p id="2a8568fa-e39f-806c-aa9e-c28998aa8b7f" class="">Табличный как LGBM/Cat; для фото-регрессора: <code>head_type: linear/GBDT</code>, <code>agg: mean/max/topk/attention</code>, <code>embed_dim_reduce: none/PCA(256)</code>,</p><p id="2a8568fa-e39f-8069-920b-dfa5e5ff9d4e" class="">лоссы: <strong>Huber</strong> δ=1–5 или <strong>Quantile τ=0.5</strong>, пост-клиппинг по перцентилям (1–99%).</p></li></ul><hr id="2a8568fa-e39f-80b6-9aab-e5fae084709a"/><h2 id="2a8568fa-e39f-805d-8e43-e30fed905f13" class="">3) Практика (лабы, 3–4 часа)</h2><h3 id="2a8568fa-e39f-80fa-bf63-e3324e4e2e8a" class="">Лаба 1. Универсальный HPO-каркас</h3><ul id="2a8568fa-e39f-80d3-982b-cca34dd7683c" class="bulleted-list"><li style="list-style-type:disc">Завести <code>hpo/optuna_runner.py</code> с: таймаутом, <code>n_trials</code> лимитом, <strong>MedianPruner/ASHA</strong>, сохранением best-trial и <code>.yaml</code> конфигом.</li></ul><ul id="2a8568fa-e39f-80d0-81c8-f88aeaf332c4" class="bulleted-list"><li style="list-style-type:disc">Написать обёртки <code>objective_*</code>:<ul id="2a8568fa-e39f-809c-a5c3-d9107bab2a25" class="bulleted-list"><li style="list-style-type:circle"><code>objective_tabular_mae</code>, <code>objective_text_h3</code>,</li></ul><ul id="2a8568fa-e39f-8093-8dff-f36a57b89afc" class="bulleted-list"><li style="list-style-type:circle"><code>objective_recsys_map20</code> (hold-out 7 дней),</li></ul><ul id="2a8568fa-e39f-8077-933e-c5ba8519d17a" class="bulleted-list"><li style="list-style-type:circle"><code>objective_kws_harmonic</code> (с подбором τ внутри trial),</li></ul><ul id="2a8568fa-e39f-8087-ad14-f7ffeea4714d" class="bulleted-list"><li style="list-style-type:circle"><code>objective_cv_medianape</code> (TimeSplit).</li></ul></li></ul><ul id="2a8568fa-e39f-807c-9838-e41230041a9c" class="bulleted-list"><li style="list-style-type:disc">Логи: метрика по фолдам, σ по фолдам, время trial, хеш фичсета.</li></ul><h3 id="2a8568fa-e39f-8083-bb6e-c817e6acdfb1" class="">Лаба 2. 30-мин HPO на «Георейтинге» (MAE)</h3><ul id="2a8568fa-e39f-800a-b3f0-ff54ffa687fc" class="bulleted-list"><li style="list-style-type:disc">Пространство LGBM (урезанное), ранняя остановка 100–200 итераций, <code>n_trials≈50</code> или <code>timeout=30m</code>.</li></ul><ul id="2a8568fa-e39f-8095-a339-d1fcf5485bba" class="bulleted-list"><li style="list-style-type:disc">Сравнить <code>Random vs TPE</code>, выбрать лучший по median MAE. <em>(Проверяем, что Score=1/(1+MAE) тоже растёт на локале.)</em></li></ul><h3 id="2a8568fa-e39f-80b7-b211-dd23486c997f" class="">Лаба 3. RecSys Ranker на «Т-Шопинг» (mAP@20)</h3><ul id="2a8568fa-e39f-800e-a61b-ed2ed96e0f3d" class="bulleted-list"><li style="list-style-type:disc">Фиксируем <strong>кандидатов</strong> из М4 (никаких пересчётов внутри trial).</li></ul><ul id="2a8568fa-e39f-8098-b72e-f9bc5c6e1fb8" class="bulleted-list"><li style="list-style-type:disc">В Objective: формируем фичи и тренируем LGBM Ranker (или pointwise) → считаем <strong>mAP@20</strong> на hold-out.</li></ul><ul id="2a8568fa-e39f-8014-b5c8-c9cbf211b04f" class="bulleted-list"><li style="list-style-type:disc">Прунинг по ранним деревьям (итерациям), 20–40 минут.</li></ul><h3 id="2a8568fa-e39f-804b-b112-ccc9091eb5be" class="">Лаба 4. KWS (harmonic): CNN с порогом τ*</h3><ul id="2a8568fa-e39f-80ee-8eaa-c6b102349f3c" class="bulleted-list"><li style="list-style-type:disc">Внутри trial: 3–5 эпох с SpecAugment; потом <strong>скан τ∈[0,1]</strong> → берём максимум score, возвращаем его как objective.</li></ul><ul id="2a8568fa-e39f-8047-9956-d92e1e13fec5" class="bulleted-list"><li style="list-style-type:disc">Добавить <strong>ASHA</strong> по эпохам, чтобы слабые конфигурации отсекались.</li></ul><h3 id="2a8568fa-e39f-808d-acdb-fb55d7fd0b78" class="">Лаба 5. CV «АвтоПрайс» (medianAPE): фьюжн</h3><ul id="2a8568fa-e39f-80f3-ac95-da1231e72ebc" class="bulleted-list"><li style="list-style-type:disc">Прокси-режим: эмбеддинги для 1 из 4 фото (ускорение) + уменьшенная модель.</li></ul><ul id="2a8568fa-e39f-809f-bb6f-c2afd4f2045c" class="bulleted-list"><li style="list-style-type:disc">Объектив — medianAPE на TimeSplit; потом <strong>переносим топ-гиперы</strong> на полный пайплайн (все 4 фото) и проверяем uplift.</li></ul><h3 id="2a8568fa-e39f-806e-b285-e273bb6fc7db" class="">Лаба 6. Лестница бюджета и правила «стоп»</h3><ul id="2a8568fa-e39f-80f3-822d-c4e974649c4f" class="bulleted-list"><li style="list-style-type:disc">Скрипт <code>hpo_ladder.sh</code>: 10m→30m→60m с автоматическим <strong>early-stop</strong>, если прирост &lt; порога.</li></ul><ul id="2a8568fa-e39f-80d6-b6ca-f9fd6886df1c" class="bulleted-list"><li style="list-style-type:disc">Отчёт: где HPO выгоднее, где — нет; предложения по фичерингу/ансамблям вместо дальнейшего тюнинга.</li></ul><hr id="2a8568fa-e39f-805a-8a99-f165804f056f"/><h2 id="2a8568fa-e39f-80f9-b7b3-d7ec6cc0e3b5" class="">4) Критерии сдачи</h2><ul id="2a8568fa-e39f-803a-ac07-d9ba9c9cecbb" class="bulleted-list"><li style="list-style-type:disc">Есть универсальный каркас HPO с прунерами/таймаутами, <strong>без утечек</strong> и с устойчивостью (сид-бэггинг/σ по фолдам).</li></ul><ul id="2a8568fa-e39f-80af-aab6-dc1b0b782628" class="bulleted-list"><li style="list-style-type:disc">На <strong>двух разных задачах</strong> (например, Георейтинг + Т-Шопинг или KWS + АвтоПрайс) получен стабильный uplift метрики vs базовая конфигурация.</li></ul><ul id="2a8568fa-e39f-80f1-9555-c0fc5c2587bc" class="bulleted-list"><li style="list-style-type:disc">Приложен <code>hpo_report.md</code>: пространства, кривая «качество↔время», best-trial параметры, где сработало/не сработало, решения об остановке.</li></ul><ul id="2a8568fa-e39f-8074-a2f0-f4b97116c68b" class="bulleted-list"><li style="list-style-type:disc">Конвейер <strong>репродьюсится</strong> командой <code>repro_hpo.sh</code> (кэш фич/эмбеддингов/кандидатов используется корректно).</li></ul><hr id="2a8568fa-e39f-8059-8249-e1da23c37987"/><h2 id="2a8568fa-e39f-805d-9d5c-e6569b8dff98" class="">5) Домашнее задание</h2><ol type="1" id="2a8568fa-e39f-8006-939f-ebb424c57a10" class="numbered-list" start="1"><li>Для выбранной задачи проведите <strong>две серии</strong>: Random 30 мин и TPE 30 мин. Сравните медиану метрики и дисперсию.</li></ol><ol type="1" id="2a8568fa-e39f-80c1-b2f1-c625b1523c89" class="numbered-list" start="2"><li>Реализуйте <strong>ASHA</strong> и покажите ускорение vs без прунинга на 60 мин.</li></ol><ol type="1" id="2a8568fa-e39f-8066-9870-ea846c0f014a" class="numbered-list" start="3"><li>Постройте <strong>Ladder</strong> 10→30→60 мин c правилом «стоп» и аргументируйте, где разумнее переключиться на фичеринг/бленд.</li></ol><ol type="1" id="2a8568fa-e39f-8083-b431-cd277000853d" class="numbered-list" start="4"><li>Сформируйте <code>best_params.yaml</code> и зафиксируйте <strong>правила переноса</strong> на полный пайплайн (что менять/замораживать).</li></ol><hr id="2a8568fa-e39f-8021-8de8-f0b27c7fa746"/><p id="2a8568fa-e39f-80fb-9033-fe53f8471cbb" class="">Если ок — дальше упакуем <strong>Модуль 10: I/O и скорость</strong> (Polars/Parquet, батч-инференс, кэш, детерминизм) — это напрямую экономит минуты в финальном спринте и позволяет успеть сделать оба сабмита.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

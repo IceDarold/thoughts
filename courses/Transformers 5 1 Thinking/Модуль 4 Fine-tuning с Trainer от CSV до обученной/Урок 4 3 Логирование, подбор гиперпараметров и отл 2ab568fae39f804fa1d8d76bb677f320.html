@@ -1,0 +1,855 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 4.3. Логирование, подбор гиперпараметров и отладка обучения</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-804f-a1d8-d76bb677f320" class="page sans"><header><h1 class="page-title">Урок 4.3. Логирование, подбор гиперпараметров и отладка обучения</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80e8-ab45-fd34e73a49f2" class="">Хорошо, теперь учимся не просто “жать train”, а <strong>осознанно крутить ручки</strong> и смотреть на графики, как взрослые 🧠📊</p><p id="2ab568fa-e39f-8048-b14e-e0bead3e66fa" class="">Сделаю урок 4.3 в том же формате, что 4.1 и 4.2: теория → полный код → разбор → домашка.</p><hr id="2ab568fa-e39f-80c5-914e-d896dc7dfef0"/><h2 id="2ab568fa-e39f-8043-8bb2-d2254e74d9e9" class="">0. Что мы делаем в этом уроке</h2><p id="2ab568fa-e39f-809f-9911-f550cb9fcfb2" class=""><strong>Цель урока:</strong></p><ul id="2ab568fa-e39f-800c-bb52-db2f9ba09f1c" class="bulleted-list"><li style="list-style-type:disc">Научиться логировать процесс обучения (loss/метрики) и смотреть на графики.</li></ul><ul id="2ab568fa-e39f-8033-97bc-f24742f9115a" class="bulleted-list"><li style="list-style-type:disc">Разобраться с ключевыми гиперпараметрами:<ul id="2ab568fa-e39f-80d5-b139-f5211a09c884" class="bulleted-list"><li style="list-style-type:circle"><code>learning_rate</code>,</li></ul><ul id="2ab568fa-e39f-8074-9963-fb71a70b7bad" class="bulleted-list"><li style="list-style-type:circle"><code>num_train_epochs</code>,</li></ul><ul id="2ab568fa-e39f-806a-a02a-c48be4b7f68e" class="bulleted-list"><li style="list-style-type:circle"><code>per_device_train_batch_size</code>,</li></ul><ul id="2ab568fa-e39f-8016-9dff-cddd867d9f69" class="bulleted-list"><li style="list-style-type:circle"><code>weight_decay</code>,</li></ul><ul id="2ab568fa-e39f-8019-827f-cf71a8b36cdb" class="bulleted-list"><li style="list-style-type:circle"><code>warmup_ratio</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-806c-8d5c-c4faf5ccbce1" class="bulleted-list"><li style="list-style-type:disc">Научиться по графикам и метрикам понимать:<ul id="2ab568fa-e39f-80c6-a0f1-e1e0767f3f4e" class="bulleted-list"><li style="list-style-type:circle">модель недоучилась,</li></ul><ul id="2ab568fa-e39f-80d7-949a-f679a464b15e" class="bulleted-list"><li style="list-style-type:circle">модель переобучилась,</li></ul><ul id="2ab568fa-e39f-80db-b9f6-e51f3dcc297a" class="bulleted-list"><li style="list-style-type:circle">или всё нормально.</li></ul></li></ul><p id="2ab568fa-e39f-80a6-93c7-f17e3966cb4a" class="">В конце урока у тебя будет скрипт <code>train_tickets_tuned.py</code>, где:</p><ul id="2ab568fa-e39f-80a3-97ab-da7ab58f4002" class="bulleted-list"><li style="list-style-type:disc">Trainer пишет понятные логи,</li></ul><ul id="2ab568fa-e39f-8044-9f72-f453ca6a6316" class="bulleted-list"><li style="list-style-type:disc">включен warmup LR,</li></ul><ul id="2ab568fa-e39f-8005-aea7-fe202fa104e1" class="bulleted-list"><li style="list-style-type:disc">есть адекватные настройки для экспериментов.</li></ul><hr id="2ab568fa-e39f-8088-abe4-ed9fb55763aa"/><h2 id="2ab568fa-e39f-803a-ba31-db8820e709a2" class="">1. Контекст: на чём мы стоим</h2><p id="2ab568fa-e39f-806b-8dc5-c34ccd6c5038" class="">К этому моменту у нас уже есть:</p><ul id="2ab568fa-e39f-80f6-8fca-f1e918a331fd" class="bulleted-list"><li style="list-style-type:disc"><code>data_pipeline.py</code> с <code>load_and_prepare_data(...)</code>;</li></ul><ul id="2ab568fa-e39f-80b2-ae46-eca589595213" class="bulleted-list"><li style="list-style-type:disc"><code>train_tickets_metrics.py</code> из урока 4.2:<ul id="2ab568fa-e39f-8065-b784-f39149503053" class="bulleted-list"><li style="list-style-type:circle">считает accuracy/F1/precision/recall,</li></ul><ul id="2ab568fa-e39f-80b4-9d91-d2b8264a9ddd" class="bulleted-list"><li style="list-style-type:circle">выбирает лучшую модель по F1.</li></ul></li></ul><p id="2ab568fa-e39f-8070-bc72-e92a0ab3f258" class="">Теперь хотим не просто смотреть на финальные цифры, а:</p><ul id="2ab568fa-e39f-8036-b023-e014086b395d" class="bulleted-list"><li style="list-style-type:disc">видеть <strong>динамику</strong> обучения (loss/метрики по эпохам/шагам),</li></ul><ul id="2ab568fa-e39f-8069-b77f-c8b5123e4766" class="bulleted-list"><li style="list-style-type:disc">осознанно трогать гиперы и читать, что происходит.</li></ul><hr id="2ab568fa-e39f-8076-837b-d26d7cc3c525"/><h2 id="2ab568fa-e39f-80df-9dac-c619789f473a" class="">2. Теория: ключевые гиперпараметры</h2><h3 id="2ab568fa-e39f-80cc-9336-ee31dbb3a9a7" class="">2.1. Learning rate (lr)</h3><p id="2ab568fa-e39f-8010-976e-fd7408047935" class="">Это скорость, с которой мы делаем шаг по градиенту.</p><ul id="2ab568fa-e39f-8058-85d3-c8546f0b7bf7" class="bulleted-list"><li style="list-style-type:disc">Слишком <strong>большой lr</strong>:<ul id="2ab568fa-e39f-8078-8ba0-d8328d2842eb" class="bulleted-list"><li style="list-style-type:circle">loss может прыгать,</li></ul><ul id="2ab568fa-e39f-8016-b070-f1fbbc5616b6" class="bulleted-list"><li style="list-style-type:circle">модель может “взорваться” (NaN-ы, вообще не сходится).</li></ul></li></ul><ul id="2ab568fa-e39f-8092-a19a-cf113a8ce3fa" class="bulleted-list"><li style="list-style-type:disc">Слишком <strong>маленький lr</strong>:<ul id="2ab568fa-e39f-80d8-a580-f7d490b879ea" class="bulleted-list"><li style="list-style-type:circle">loss падает очень медленно,</li></ul><ul id="2ab568fa-e39f-803e-9a7c-f6e5502bbf84" class="bulleted-list"><li style="list-style-type:circle">модель может за отведённые эпохи толком не обучиться.</li></ul></li></ul><p id="2ab568fa-e39f-8083-83da-ebc1b0d41c52" class="">Для BERT-подобных моделей:</p><ul id="2ab568fa-e39f-8070-b051-ee7f8c741e68" class="bulleted-list"><li style="list-style-type:disc">типичные значения при fine-tuning’е: <strong>1e-5 – 5e-5</strong>.</li></ul><h3 id="2ab568fa-e39f-8095-8c4c-c1863ca7d87d" class="">2.2. Количество эпох (num_train_epochs)</h3><ul id="2ab568fa-e39f-8008-8492-c4dff279e817" class="bulleted-list"><li style="list-style-type:disc">Малое число эпох:<ul id="2ab568fa-e39f-80ed-83ff-cb5bb0901009" class="bulleted-list"><li style="list-style-type:circle">модель не успевает “подстроиться” → недообучение.</li></ul></li></ul><ul id="2ab568fa-e39f-80b0-94cf-c323f1c41083" class="bulleted-list"><li style="list-style-type:disc">Слишком большое:<ul id="2ab568fa-e39f-8085-abb7-e6454ea50450" class="bulleted-list"><li style="list-style-type:circle">train loss продолжает падать,</li></ul><ul id="2ab568fa-e39f-800f-b180-dbf0b820e017" class="bulleted-list"><li style="list-style-type:circle">а eval loss/метрики перестают улучшаться или ухудшаются → переобучение.</li></ul></li></ul><p id="2ab568fa-e39f-8020-a8f3-dc2b61e68ef0" class="">Типичный диапазон: <strong>2–5 эпох</strong>.</p><h3 id="2ab568fa-e39f-8084-9ee2-ff06e38bc9aa" class="">2.3. Batch size</h3><p id="2ab568fa-e39f-808c-8370-ecb2a71798c7" class=""><code>per_device_train_batch_size</code>:</p><ul id="2ab568fa-e39f-805e-a0dc-f50c7828a297" class="bulleted-list"><li style="list-style-type:disc">Большой батч:<ul id="2ab568fa-e39f-808f-9dda-ffa8b558170c" class="bulleted-list"><li style="list-style-type:circle">быстрее обучение (меньше шагов на эпоху),</li></ul><ul id="2ab568fa-e39f-808b-bfc1-e641ba7f2dc7" class="bulleted-list"><li style="list-style-type:circle">устойчивее градиенты,</li></ul><ul id="2ab568fa-e39f-808e-885c-e763669bf6e5" class="bulleted-list"><li style="list-style-type:circle">но требует больше памяти.</li></ul></li></ul><ul id="2ab568fa-e39f-8078-9771-eb86e4245344" class="bulleted-list"><li style="list-style-type:disc">Маленький батч:<ul id="2ab568fa-e39f-8013-a8c6-c6b7e3436843" class="bulleted-list"><li style="list-style-type:circle">менее стабильные градиенты (шум),</li></ul><ul id="2ab568fa-e39f-80c8-9491-d2570981b5a0" class="bulleted-list"><li style="list-style-type:circle">иногда даже <strong>лучше обобщение</strong>,</li></ul><ul id="2ab568fa-e39f-80ed-aec3-cc98e6a34c97" class="bulleted-list"><li style="list-style-type:circle">но каждый шаг “несёт меньше информации”.</li></ul></li></ul><p id="2ab568fa-e39f-806b-9653-c149be07d0b3" class="">В реальности часто ограничены <strong>GPU-памятью</strong>.</p><h3 id="2ab568fa-e39f-80e1-8c87-f2bd59e52010" class="">2.4. Weight decay</h3><p id="2ab568fa-e39f-80f2-9e5b-d8d1cd84d261" class=""><code>weight_decay</code> ~ L2-регуляризация:</p><ul id="2ab568fa-e39f-8009-a2ca-d9ebc77d6bf7" class="bulleted-list"><li style="list-style-type:disc">Не даёт весам слишком разрастаться.</li></ul><ul id="2ab568fa-e39f-8016-be91-e20ccfa83869" class="bulleted-list"><li style="list-style-type:disc">Полезен против переобучения.</li></ul><ul id="2ab568fa-e39f-8014-949d-d91d20f47ed6" class="bulleted-list"><li style="list-style-type:disc">Типичные значения: <code>0.01</code> или <code>0.0</code> (без него).</li></ul><h3 id="2ab568fa-e39f-80af-b38f-f2afe87e7288" class="">2.5. Warmup</h3><p id="2ab568fa-e39f-805b-a1ca-d265672ee0f7" class=""><code>warmup_steps</code> / <code>warmup_ratio</code>:</p><ul id="2ab568fa-e39f-8093-9333-c655479cd887" class="bulleted-list"><li style="list-style-type:disc">Это период “разогрева” learning rate:<ul id="2ab568fa-e39f-80e2-94ac-ef981252107e" class="bulleted-list"><li style="list-style-type:circle">в начале lr стартует с 0,</li></ul><ul id="2ab568fa-e39f-8014-93b5-ef97c508892c" class="bulleted-list"><li style="list-style-type:circle">постепенно растёт до целевого <code>learning_rate</code> за первые <code>warmup_steps</code> шагов.</li></ul></li></ul><ul id="2ab568fa-e39f-8048-baa2-dc5b7e8a82c9" class="bulleted-list"><li style="list-style-type:disc">Зачем:<ul id="2ab568fa-e39f-80c3-a7dd-dd6f04ef92c9" class="bulleted-list"><li style="list-style-type:circle">в начале модель ещё “шокирована” новыми градиентами,</li></ul><ul id="2ab568fa-e39f-80e6-bf1b-ccc28543a248" class="bulleted-list"><li style="list-style-type:circle">большой lr может её сильно “ударить”,</li></ul><ul id="2ab568fa-e39f-8009-9221-fba19c64fb33" class="bulleted-list"><li style="list-style-type:circle">warmup сглаживает старт и делает обучение стабильнее.</li></ul></li></ul><p id="2ab568fa-e39f-80dc-b56a-f3a09d78196d" class="">Типичные настройки: <code>warmup_ratio=0.1</code> (10% шагов — разогрев).</p><hr id="2ab568fa-e39f-8010-bd38-f5df98db9c66"/><h2 id="2ab568fa-e39f-80d5-aa59-de00ea45fa50" class="">3. Теория: как понять, что что-то не так</h2><p id="2ab568fa-e39f-807d-aa6a-dbb64f6044da" class="">Очень базовые паттерны:</p><h3 id="2ab568fa-e39f-8031-ba73-d5ae57c433b5" class="">3.1. Недообучение</h3><ul id="2ab568fa-e39f-80cb-85be-d930211ad7ae" class="bulleted-list"><li style="list-style-type:disc">train loss высокое и <strong>особо не падает</strong>;</li></ul><ul id="2ab568fa-e39f-8025-8134-ea4b6d169125" class="bulleted-list"><li style="list-style-type:disc">eval loss также высокое,</li></ul><ul id="2ab568fa-e39f-8031-894c-fd16b14dfc77" class="bulleted-list"><li style="list-style-type:disc">accuracy/F1 низкие.</li></ul><p id="2ab568fa-e39f-80a5-93ce-c699cc4d8275" class="">Что делать:</p><ul id="2ab568fa-e39f-800d-80e2-db2738047cd4" class="bulleted-list"><li style="list-style-type:disc">увеличить <code>num_train_epochs</code>,</li></ul><ul id="2ab568fa-e39f-80fd-a240-ff925a62ceef" class="bulleted-list"><li style="list-style-type:disc">слегка увеличить <code>learning_rate</code> (если совсем микроскопический),</li></ul><ul id="2ab568fa-e39f-8023-b034-c27a06a66f51" class="bulleted-list"><li style="list-style-type:disc">проверить, что данные адекватные (нет ли падения в правильности разметки).</li></ul><h3 id="2ab568fa-e39f-8083-9915-e7844a4620a4" class="">3.2. Переобучение</h3><ul id="2ab568fa-e39f-8059-b221-ccbf8cc3d625" class="bulleted-list"><li style="list-style-type:disc">train loss активно падает,</li></ul><ul id="2ab568fa-e39f-8083-bf99-ee7e729e31ca" class="bulleted-list"><li style="list-style-type:disc">eval loss:<ul id="2ab568fa-e39f-8048-bfa3-df9572551a6b" class="bulleted-list"><li style="list-style-type:circle">сначала падает,</li></ul><ul id="2ab568fa-e39f-804e-bfa6-e9ce095bf7c3" class="bulleted-list"><li style="list-style-type:circle">потом начинает <strong>расти</strong> после какой-то эпохи;</li></ul></li></ul><ul id="2ab568fa-e39f-8081-8b64-e6a54bd7c776" class="bulleted-list"><li style="list-style-type:disc">train метрики сильно выше eval.</li></ul><p id="2ab568fa-e39f-807e-9b59-d832632c04d2" class="">Что делать:</p><ul id="2ab568fa-e39f-8044-b989-db6845e178a2" class="bulleted-list"><li style="list-style-type:disc">уменьшить <code>num_train_epochs</code>,</li></ul><ul id="2ab568fa-e39f-806d-a34d-f11c47d5b612" class="bulleted-list"><li style="list-style-type:disc">увеличить регуляризацию:<ul id="2ab568fa-e39f-8044-922f-f4c8690d5c94" class="bulleted-list"><li style="list-style-type:circle"><code>weight_decay</code>,</li></ul><ul id="2ab568fa-e39f-80f7-acb8-f5c75857ddcb" class="bulleted-list"><li style="list-style-type:circle">data augmentation (в более продвинутых сценариях),</li></ul></li></ul><ul id="2ab568fa-e39f-80e8-83b6-d395838e9c57" class="bulleted-list"><li style="list-style-type:disc">иногда уменьшить <code>learning_rate</code> или batch size.</li></ul><h3 id="2ab568fa-e39f-80e6-ae0b-e463804acbc5" class="">3.3. Слишком большой lr</h3><ul id="2ab568fa-e39f-80cc-9bc0-f6ff5ec1ccc4" class="bulleted-list"><li style="list-style-type:disc">loss может:<ul id="2ab568fa-e39f-80af-9418-e0039e25df23" class="bulleted-list"><li style="list-style-type:circle">прыгать туда-сюда,</li></ul><ul id="2ab568fa-e39f-8031-8b7b-db42d28edb10" class="bulleted-list"><li style="list-style-type:circle">не иметь явного тренда вниз,</li></ul><ul id="2ab568fa-e39f-8042-a661-db5f00432aaa" class="bulleted-list"><li style="list-style-type:circle">иногда становится NaN.</li></ul></li></ul><ul id="2ab568fa-e39f-8001-bb3b-d33535238bda" class="bulleted-list"><li style="list-style-type:disc">метрики не растут.</li></ul><p id="2ab568fa-e39f-80c7-947f-f638b5610a5a" class="">Что делать:</p><ul id="2ab568fa-e39f-80f5-8a8c-f5a58e60effc" class="bulleted-list"><li style="list-style-type:disc">уменьшать <code>learning_rate</code>,</li></ul><ul id="2ab568fa-e39f-8056-b4df-f91b5ddfc901" class="bulleted-list"><li style="list-style-type:disc">добавить <code>warmup_ratio</code>.</li></ul><hr id="2ab568fa-e39f-80b8-a3c5-d63cf02c2f5a"/><h2 id="2ab568fa-e39f-8056-9066-c3f17613582f" class="">4. Логирование: что умеет Trainer</h2><h3 id="2ab568fa-e39f-80f6-83c2-ebdebacbd99a" class="">4.1. Основные параметры логирования в TrainingArguments</h3><ul id="2ab568fa-e39f-80db-b409-e1c294b09855" class="bulleted-list"><li style="list-style-type:disc"><code>logging_strategy</code>:<ul id="2ab568fa-e39f-8015-afb1-e58e9ddc7061" class="bulleted-list"><li style="list-style-type:circle"><code>&quot;steps&quot;</code> — логировать каждые <code>logging_steps</code> шагов,</li></ul><ul id="2ab568fa-e39f-80e1-adc6-e08cc59929d4" class="bulleted-list"><li style="list-style-type:circle"><code>&quot;epoch&quot;</code> — логировать раз в эпоху.</li></ul></li></ul><ul id="2ab568fa-e39f-8069-aeac-c6f0b23ccc6c" class="bulleted-list"><li style="list-style-type:disc"><code>logging_steps</code> — через сколько шагов писать лог (если стратегия <code>&quot;steps&quot;</code>).</li></ul><ul id="2ab568fa-e39f-80fc-87c5-f32ce89f4a7b" class="bulleted-list"><li style="list-style-type:disc"><code>report_to</code>:<ul id="2ab568fa-e39f-80d6-ab91-d162afadff00" class="bulleted-list"><li style="list-style-type:circle"><code>[&quot;none&quot;]</code> — только stdout/файлы Trainer’а,</li></ul><ul id="2ab568fa-e39f-8072-8964-c29443643962" class="bulleted-list"><li style="list-style-type:circle"><code>[&quot;tensorboard&quot;]</code> — логи для TensorBoard,</li></ul><ul id="2ab568fa-e39f-8050-9c08-ded0770775ab" class="bulleted-list"><li style="list-style-type:circle"><code>[&quot;wandb&quot;]</code>, <code>[&quot;mlflow&quot;]</code> и т.д. — интеграции.</li></ul></li></ul><h3 id="2ab568fa-e39f-80c7-9905-eb2caa507c11" class="">4.2. TensorBoard (опционально)</h3><p id="2ab568fa-e39f-801a-b399-d775d5b5b6cd" class="">Если включить <code>report_to=[&quot;tensorboard&quot;]</code>, Trainer будет:</p><ul id="2ab568fa-e39f-80c8-93e2-dc4e74f735c9" class="bulleted-list"><li style="list-style-type:disc">сохранять логи в <code>output_dir/runs/...</code>,</li></ul><ul id="2ab568fa-e39f-80ac-89e5-ca29bbae5177" class="bulleted-list"><li style="list-style-type:disc">там будут:<ul id="2ab568fa-e39f-8099-91ec-c62b7ef0f12a" class="bulleted-list"><li style="list-style-type:circle"><code>train/loss</code>,</li></ul><ul id="2ab568fa-e39f-80db-8564-cac5be2d6ab3" class="bulleted-list"><li style="list-style-type:circle"><code>eval/loss</code>,</li></ul><ul id="2ab568fa-e39f-8088-b58d-dd25e6bd3d79" class="bulleted-list"><li style="list-style-type:circle"><code>eval/accuracy</code>, <code>eval/f1</code>, и т.п.</li></ul></li></ul><p id="2ab568fa-e39f-80f8-bd86-ea91afbbfc48" class="">Потом можно запустить:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8030-807b-ce014e2dabc3" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">tensorboard --logdir checkpoints/tickets_tuned
+</code></pre><p id="2ab568fa-e39f-8034-b5ae-c956227eb1e6" class="">и открыть веб-интерфейс (по умолчанию <code>http://localhost:6006</code>).</p><p id="2ab568fa-e39f-805c-b0d7-fc3b9d7819a0" class="">Если TensorBoard не хочешь — можно вообще обойтись <code>report_to=[&quot;none&quot;]</code> и смотреть только текстовые логи.</p><hr id="2ab568fa-e39f-8036-b84f-e85fee58cc6e"/><h2 id="2ab568fa-e39f-8081-8353-fa936aeb5063" class="">5. Полный скрипт урока: <code>train_tickets_tuned.py</code></h2><p id="2ab568fa-e39f-805c-bb95-da465212fe74" class="">Сейчас напишем версию тренировки, которая:</p><ul id="2ab568fa-e39f-80a2-b5e1-ef2fa3fb5865" class="bulleted-list"><li style="list-style-type:disc">логирует всё по шагам,</li></ul><ul id="2ab568fa-e39f-80f7-b418-dc556748b2c5" class="bulleted-list"><li style="list-style-type:disc">использует warmup,</li></ul><ul id="2ab568fa-e39f-80ad-8893-d35db2b65c82" class="bulleted-list"><li style="list-style-type:disc">нормальные настройки для экспериментов.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e5-9a76-f84cb3550373" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># train_tickets_tuned.py
+
+import numpy as np
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+
+from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+    Trainer,
+)
+from data_pipeline import load_and_prepare_data
+
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+
+    preds = np.argmax(logits, axis=-1)
+
+    acc = accuracy_score(labels, preds)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels,
+        preds,
+        average=&quot;weighted&quot;,
+        zero_division=0,
+    )
+
+    return {
+        &quot;accuracy&quot;: acc,
+        &quot;f1&quot;: f1,
+        &quot;precision&quot;: precision,
+        &quot;recall&quot;: recall,
+    }
+
+
+def main():
+    csv_path = &quot;tickets.csv&quot;
+    base_model_name = &quot;distilbert-base-uncased&quot;
+
+    # 1. Данные
+    (
+        tokenized_dataset,
+        label2id,
+        id2label,
+        tokenizer,
+        data_collator,
+    ) = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=base_model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    # 2. Модель
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        base_model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    # 3. Аргументы обучения с более тонкими настройками
+    training_args = TrainingArguments(
+        output_dir=&quot;checkpoints/tickets_tuned&quot;,
+
+        # === Eval / Save ===
+        evaluation_strategy=&quot;epoch&quot;,   # eval в конце каждой эпохи
+        save_strategy=&quot;epoch&quot;,         # чекпоинт в конце каждой эпохи
+        save_total_limit=3,            # не хранить бесконечно много чекпоинтов
+
+        # === Оптимизация ===
+        learning_rate=3e-5,            # чуть больше, чем 2e-5
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=32,
+        num_train_epochs=4,            # чуть больше эпох
+        weight_decay=0.01,
+        warmup_ratio=0.1,              # 10% шагов — разогрев LR
+
+        # === Логирование ===
+        logging_strategy=&quot;steps&quot;,
+        logging_steps=20,              # каждые 20 шагов — лог
+        report_to=[&quot;none&quot;],            # можно заменить на [&quot;tensorboard&quot;]
+
+        # === Лучшая модель ===
+        load_best_model_at_end=True,
+        metric_for_best_model=&quot;f1&quot;,
+        greater_is_better=True,
+
+        # === Прочее ===
+        logging_first_step=True,       # логировать уже на первом шаге
+    )
+
+    # 4. Trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset[&quot;train&quot;],
+        eval_dataset=tokenized_dataset[&quot;validation&quot;],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+    )
+
+    # 5. Обучение
+    trainer.train()
+
+    # 6. Итоговая оценка
+    metrics = trainer.evaluate()
+    print(&quot;Final eval metrics:&quot;, metrics)
+
+    # 7. Сохраняем лучшую модель
+    final_model_dir = &quot;models/tickets_classifier_tuned&quot;
+    trainer.save_model(final_model_dir)
+    tokenizer.save_pretrained(final_model_dir)
+
+    print(&quot;Best model checkpoint:&quot;, trainer.state.best_model_checkpoint)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><hr id="2ab568fa-e39f-80b1-b2f2-c66941a3e092"/><h2 id="2ab568fa-e39f-804b-993c-cdd520732ef7" class="">6. Разбор <code>train_tickets_tuned.py</code></h2><p id="2ab568fa-e39f-80c9-9efb-e15452404610" class="">С фокусом на отличиях от 4.2.</p><h3 id="2ab568fa-e39f-8006-9b7a-d30c24de2fea" class="">6.1. Блок оптимизации</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8032-b274-e2c74d9d361f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">learning_rate=3e-5,
+per_device_train_batch_size=16,
+per_device_eval_batch_size=32,
+num_train_epochs=4,
+weight_decay=0.01,
+warmup_ratio=0.1,
+</code></pre><ul id="2ab568fa-e39f-80b8-b722-e15d16d88f2f" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate=3e-5</code>:<ul id="2ab568fa-e39f-8032-936a-f3b01134eeb1" class="bulleted-list"><li style="list-style-type:circle">слегка выше, чем классические 2e-5;</li></ul><ul id="2ab568fa-e39f-805e-a7f9-d813a9507f8c" class="bulleted-list"><li style="list-style-type:circle">можно поиграть: 2e-5, 3e-5, 5e-5.</li></ul></li></ul><ul id="2ab568fa-e39f-8036-b0b7-f386aca0781b" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs=4</code>:<ul id="2ab568fa-e39f-80e8-bd74-e198b6aa0909" class="bulleted-list"><li style="list-style-type:circle">даём модели чуть больше времени дообучиться, чем в 3 эпохи;</li></ul><ul id="2ab568fa-e39f-8020-bfcb-e237ba45c842" class="bulleted-list"><li style="list-style-type:circle">по графикам можно будет понять, есть ли переобучение.</li></ul></li></ul><ul id="2ab568fa-e39f-8056-8b43-c981c21d84ff" class="bulleted-list"><li style="list-style-type:disc"><code>warmup_ratio=0.1</code>:<ul id="2ab568fa-e39f-8084-980f-fd74f7395130" class="bulleted-list"><li style="list-style-type:circle">первые 10% шагов lr растёт с 0 до 3e-5,</li></ul><ul id="2ab568fa-e39f-803c-9c23-ddb3ef4f9183" class="bulleted-list"><li style="list-style-type:circle">потом начнётся планомерный decay (по дефолту линейный).</li></ul></li></ul><h3 id="2ab568fa-e39f-802a-9fbd-e0feb6746020" class="">6.2. Логирование</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8092-9bad-c3b451d9d827" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">logging_strategy=&quot;steps&quot;,
+logging_steps=20,
+report_to=[&quot;none&quot;],
+logging_first_step=True,
+</code></pre><ul id="2ab568fa-e39f-8097-aaf9-e007dd873847" class="bulleted-list"><li style="list-style-type:disc"><code>logging_strategy=&quot;steps&quot;</code> + <code>logging_steps=20</code>:<ul id="2ab568fa-e39f-8097-a306-fc7b38cfbe4e" class="bulleted-list"><li style="list-style-type:circle">Trainer пишет логи каждые 20 шагов:<ul id="2ab568fa-e39f-80d4-ab01-f9b7ceca95c9" class="bulleted-list"><li style="list-style-type:square"><code>step</code>,</li></ul><ul id="2ab568fa-e39f-800c-9faf-f456ddf1d893" class="bulleted-list"><li style="list-style-type:square"><code>loss</code>,</li></ul><ul id="2ab568fa-e39f-80f3-b9aa-fce5938cfbc6" class="bulleted-list"><li style="list-style-type:square">иногда lr, если включён scheduler.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-800e-b962-de57d9d206b3" class="bulleted-list"><li style="list-style-type:disc"><code>logging_first_step=True</code>:<ul id="2ab568fa-e39f-80e3-afb3-eeadbd413210" class="bulleted-list"><li style="list-style-type:circle">уже на нулевом шаге покажет первый лог,</li></ul><ul id="2ab568fa-e39f-8029-808c-e8fbcf8ee604" class="bulleted-list"><li style="list-style-type:circle">полезно, чтобы видеть стартовый loss.</li></ul></li></ul><ul id="2ab568fa-e39f-807f-98ed-f23dba2cff12" class="bulleted-list"><li style="list-style-type:disc"><code>report_to=[&quot;none&quot;]</code>:<ul id="2ab568fa-e39f-8028-9e16-d4702009b443" class="bulleted-list"><li style="list-style-type:circle">Trainer будет логировать в stdout и свои файлы.</li></ul><ul id="2ab568fa-e39f-8050-bd43-e4b22b5b12b7" class="bulleted-list"><li style="list-style-type:circle">Если хочешь использовать TensorBoard:<ul id="2ab568fa-e39f-80d6-acf0-d85f6c25dcfe" class="bulleted-list"><li style="list-style-type:square">ставишь <code>report_to=[&quot;tensorboard&quot;]</code>,</li></ul><ul id="2ab568fa-e39f-808d-9243-e6b726ed816d" class="bulleted-list"><li style="list-style-type:square">запускаешь <code>tensorboard --logdir checkpoints/tickets_tuned</code>.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-807f-8fee-dded000c2971" class="">Пример того, что можно увидеть в консоли:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8000-b310-fc707a005ada" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Step    Training Loss
+20      0.86
+40      0.74
+60      0.65
+...
+
+***** Running Evaluation *****
+  Num examples = 100
+  ...
+  eval_loss = 0.58
+  eval_accuracy = 0.82
+  eval_f1 = 0.81
+</code></pre><h3 id="2ab568fa-e39f-80a5-870c-cd2c288f0774" class="">6.3. Ограничение числа чекпоинтов</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8056-a75b-ca0533451ebd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">save_total_limit=3,
+</code></pre><ul id="2ab568fa-e39f-8074-a320-fa4633e923ad" class="bulleted-list"><li style="list-style-type:disc">Trainer будет хранить только последние (или лучшие) чекпоинты,</li></ul><ul id="2ab568fa-e39f-80e2-b6a7-fcfcc8999ce2" class="bulleted-list"><li style="list-style-type:disc">старые будет удалять.</li></ul><ul id="2ab568fa-e39f-80ce-ae55-c866aba528ff" class="bulleted-list"><li style="list-style-type:disc">Это полезно, чтобы не забивать диск огромным количеством папок <code>checkpoint-xxx</code>.</li></ul><h3 id="2ab568fa-e39f-80ed-b2e6-f7ca28260ee8" class="">6.4. Лучшая модель</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ed-8ef4-e83409540114" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">load_best_model_at_end=True,
+metric_for_best_model=&quot;f1&quot;,
+greater_is_better=True,
+</code></pre><ul id="2ab568fa-e39f-8051-83c5-c9bd5a187c96" class="bulleted-list"><li style="list-style-type:disc">Всё так же, как в 4.2.</li></ul><ul id="2ab568fa-e39f-802e-9dfc-e81934d2d994" class="bulleted-list"><li style="list-style-type:disc">Но теперь, из-за другого набора гиперпараметров, лучшая эпоха может быть другая (например, 3-я вместо 2-й).</li></ul><hr id="2ab568fa-e39f-80a8-8eb4-e3be3911fea1"/><h2 id="2ab568fa-e39f-8046-9d27-cdabd47231b7" class="">7. Как анализировать эксперименты</h2><p id="2ab568fa-e39f-8004-8f2b-c1e1e0e6f3e0" class="">Совет: сделай себе мини-табличку (в голове или в блокноте):</p><table id="2ab568fa-e39f-8008-a87e-dcd255056a44" class="simple-table"><thead class="simple-table-header"><tr id="2ab568fa-e39f-809e-a048-d74b37ac92c4"><th id="wdav" class="simple-table-header-color simple-table-header">эксперимент</th><th id="knGn" class="simple-table-header-color simple-table-header">epochs</th><th id="a&lt;&gt;j" class="simple-table-header-color simple-table-header">lr</th><th id="q&lt;Fm" class="simple-table-header-color simple-table-header">warmup</th><th id="^^oU" class="simple-table-header-color simple-table-header">best_f1</th><th id="nty{" class="simple-table-header-color simple-table-header">комментарий</th></tr></thead><tbody><tr id="2ab568fa-e39f-808e-8ca6-ee5091394810"><td id="wdav" class="">baseline</td><td id="knGn" class="">3</td><td id="a&lt;&gt;j" class="">2e-5</td><td id="q&lt;Fm" class="">0.0</td><td id="^^oU" class="">0.84</td><td id="nty{" class="">базовый скрипт 4.2</td></tr><tr id="2ab568fa-e39f-80cc-a57a-e48a5d9d0ac4"><td id="wdav" class="">tuned_1</td><td id="knGn" class="">4</td><td id="a&lt;&gt;j" class="">3e-5</td><td id="q&lt;Fm" class="">0.1</td><td id="^^oU" class="">0.86</td><td id="nty{" class="">улучшилось, переобучения не видно</td></tr><tr id="2ab568fa-e39f-806f-8574-c77543ed82a7"><td id="wdav" class="">tuned_2 (переобучение?)</td><td id="knGn" class="">6</td><td id="a&lt;&gt;j" class="">3e-5</td><td id="q&lt;Fm" class="">0.1</td><td id="^^oU" class="">0.85</td><td id="nty{" class="">F1 не растёт, возможен перефит</td></tr><tr id="2ab568fa-e39f-80cb-97e2-de4f89f5c2c7"><td id="wdav" class="">tuned_3 (слишком большой lr)</td><td id="knGn" class="">4</td><td id="a&lt;&gt;j" class="">1e-4</td><td id="q&lt;Fm" class="">0.1</td><td id="^^oU" class="">0.75</td><td id="nty{" class="">loss скачет, хуже качества</td></tr></tbody></table><p id="2ab568fa-e39f-8070-ab03-cb1f3cf61c84" class="">На что смотреть:</p><ul id="2ab568fa-e39f-80dc-b307-c366a9b9a5d7" class="bulleted-list"><li style="list-style-type:disc">Как ведёт себя <strong>eval_f1</strong> по эпохам:<ul id="2ab568fa-e39f-8076-831b-f6c9ca2305b9" class="bulleted-list"><li style="list-style-type:circle">растёт → норм,</li></ul><ul id="2ab568fa-e39f-8078-b6dc-c1b2ef514947" class="bulleted-list"><li style="list-style-type:circle">растёт, а потом падает → переобучение.</li></ul></li></ul><ul id="2ab568fa-e39f-80ab-860c-d65cca866f14" class="bulleted-list"><li style="list-style-type:disc">Отношение train vs eval:<ul id="2ab568fa-e39f-8096-9c5c-c87c074d45e0" class="bulleted-list"><li style="list-style-type:circle">train очень высокое, eval заметно ниже → переобучение.</li></ul><ul id="2ab568fa-e39f-80a7-a12d-de2ad2c3f36f" class="bulleted-list"><li style="list-style-type:circle">оба низкие → недообучение / мало данных / плохой lr.</li></ul></li></ul><hr id="2ab568fa-e39f-8022-bbc8-f75990867e1c"/><h2 id="2ab568fa-e39f-801c-ba56-ff26bab6a739" class="">8. Домашка по уроку 4.3</h2><p id="2ab568fa-e39f-8031-b9c3-c754bdc58050" class=""><strong>Часть 1. Логирование</strong></p><ol type="1" id="2ab568fa-e39f-801d-83cd-ff03fefb5054" class="numbered-list" start="1"><li>Запусти <code>train_tickets_tuned.py</code> с:<ul id="2ab568fa-e39f-80dc-91c7-cf49527b5b0f" class="bulleted-list"><li style="list-style-type:disc"><code>report_to=[&quot;none&quot;]</code> — просто почитай логи в консоли.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8007-8daa-e65e15c2478f" class="numbered-list" start="2"><li>Потом поменяй на:<ul id="2ab568fa-e39f-80fa-90dc-d1ec13e6b0c4" class="bulleted-list"><li style="list-style-type:disc"><code>report_to=[&quot;tensorboard&quot;]</code>,</li></ul><ul id="2ab568fa-e39f-8090-b49a-d0fe9292e631" class="bulleted-list"><li style="list-style-type:disc">запусти:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cf-a65a-e0d177da5710" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">tensorboard --logdir checkpoints/tickets_tuned
+</code></pre></li></ul><ul id="2ab568fa-e39f-8095-86d9-d0b7ec67c852" class="bulleted-list"><li style="list-style-type:disc">открой графики:<ul id="2ab568fa-e39f-80ac-a179-fba5484680b2" class="bulleted-list"><li style="list-style-type:circle"><code>train/loss</code>,</li></ul><ul id="2ab568fa-e39f-808c-bb11-d4950a0fc75a" class="bulleted-list"><li style="list-style-type:circle"><code>eval/loss</code>,</li></ul><ul id="2ab568fa-e39f-80ad-b317-d052a5f5c8b3" class="bulleted-list"><li style="list-style-type:circle"><code>eval/accuracy</code>, <code>eval/f1</code>.</li></ul></li></ul></li></ol><p id="2ab568fa-e39f-80a3-b820-f2370ab96c60" class=""><strong>Часть 2. Эксперименты с гиперпараметрами</strong></p><p id="2ab568fa-e39f-80a5-ac64-eac6574a2c33" class="">Сделай минимум <strong>3 запуска</strong>, меняя:</p><ul id="2ab568fa-e39f-8047-ad65-f17f9784828d" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs</code> (например, 3, 4, 6),</li></ul><ul id="2ab568fa-e39f-8088-bb01-d1495307d187" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate</code> (2e-5, 3e-5, 5e-5).</li></ul><p id="2ab568fa-e39f-8004-b71f-ee697e2b89be" class="">Для каждого:</p><ol type="1" id="2ab568fa-e39f-8060-88c9-cfb8ca5b1d2e" class="numbered-list" start="1"><li>Зафиксируй:<ul id="2ab568fa-e39f-8030-935c-d21cca6b2996" class="bulleted-list"><li style="list-style-type:disc"><code>Final eval metrics</code> (accuracy, f1, precision, recall).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f6-bf74-e31a74bac4b1" class="numbered-list" start="2"><li>Посмотри графики:<ul id="2ab568fa-e39f-8033-82fa-cc9d78972cd9" class="bulleted-list"><li style="list-style-type:disc">как ведёт себя train loss,</li></ul><ul id="2ab568fa-e39f-80e5-ada2-fc03a466afe2" class="bulleted-list"><li style="list-style-type:disc">как ведёт себя eval loss и eval F1 по эпохам.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8042-825e-e5766bb3592d" class="numbered-list" start="3"><li>Сделай вывод:<ul id="2ab568fa-e39f-80be-b763-e20a83f8a2b5" class="bulleted-list"><li style="list-style-type:disc">в каком эксперименте модель:<ul id="2ab568fa-e39f-80b9-9eae-f40baf3fcf4c" class="bulleted-list"><li style="list-style-type:circle">недоучилась,</li></ul><ul id="2ab568fa-e39f-809f-b999-fd4305d490b0" class="bulleted-list"><li style="list-style-type:circle">переобучилась,</li></ul><ul id="2ab568fa-e39f-8096-9aa7-d3c04f4c5fb8" class="bulleted-list"><li style="list-style-type:circle">выглядела наиболее адекватно.</li></ul></li></ul></li></ol><p id="2ab568fa-e39f-800d-849c-ee88ef0aea64" class=""><strong>Часть 3 (опционально, чуть продвинутый уровень)</strong></p><ol type="1" id="2ab568fa-e39f-801e-b9ac-da506b5c0abe" class="numbered-list" start="1"><li>Поиграй с <code>warmup_ratio</code>:<ul id="2ab568fa-e39f-809b-aa04-c02fc77420cd" class="bulleted-list"><li style="list-style-type:disc">0.0 (без warmup),</li></ul><ul id="2ab568fa-e39f-80f0-a5ea-fe74b11631d0" class="bulleted-list"><li style="list-style-type:disc">0.1,</li></ul><ul id="2ab568fa-e39f-80e0-b167-cc928e181834" class="bulleted-list"><li style="list-style-type:disc">0.2.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808f-b721-ece60929da33" class="numbered-list" start="2"><li>Посмотри, как это влияет:<ul id="2ab568fa-e39f-80b2-806f-f3d14050b78f" class="bulleted-list"><li style="list-style-type:disc">на стабильность первых шагов,</li></ul><ul id="2ab568fa-e39f-80a9-910e-c5e5d67142b4" class="bulleted-list"><li style="list-style-type:disc">на итоговый F1.</li></ul></li></ol><hr id="2ab568fa-e39f-802e-99ea-f77e9489b7ed"/><p id="2ab568fa-e39f-8084-a0de-d5833cc638c3" class="">Если хочешь, дальше можем:</p><ul id="2ab568fa-e39f-800b-bd43-f3c4c7bf45d3" class="bulleted-list"><li style="list-style-type:disc">так же развернуть <strong>урок 4.4</strong> (полный пайплайн: train → save → inference с отдельным скриптом предсказаний),</li></ul><ul id="2ab568fa-e39f-806b-846e-d90fcb985d72" class="bulleted-list"><li style="list-style-type:disc">или собрать отдельный <code>predict.py</code>, который берёт текст тикета из консоли и выдаёт готовый ответ модели с уверенностью.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

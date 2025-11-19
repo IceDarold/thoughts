@@ -1,0 +1,721 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 7. Мульти-объективные и multi-task рекомендательные системы</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-80a1-9b73-de60bb738cd0" class="page sans"><header><h1 class="page-title">Модуль 7. Мульти-объективные и multi-task рекомендательные системы</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-8030-a855-db04be7a2c88" class=""><strong>После модуля студент должен уметь:</strong></p><ul id="2aa568fa-e39f-8011-b4cd-ddbf6a1ab013" class="bulleted-list"><li style="list-style-type:disc">формулировать задачу с <strong>несколькими типами событий</strong> (view/click/cart/purchase/like/subscribe…);</li></ul><ul id="2aa568fa-e39f-8041-a038-f86f6ef19b74" class="bulleted-list"><li style="list-style-type:disc">строить модели, которые:<ul id="2aa568fa-e39f-809e-b22f-e55af365a3ce" class="bulleted-list"><li style="list-style-type:circle">предсказывают <strong>сразу несколько таргетов</strong> (multi-task);</li></ul><ul id="2aa568fa-e39f-80ab-98a5-c5de9bbfa8b5" class="bulleted-list"><li style="list-style-type:circle">умеют учитывать <strong>иерархию событий</strong> (воронка);</li></ul></li></ul><ul id="2aa568fa-e39f-804f-99e5-ea78c6c5bfca" class="bulleted-list"><li style="list-style-type:disc">проектировать <strong>общий loss</strong>:<ul id="2aa568fa-e39f-8048-8fa5-e88b4cb20cc7" class="bulleted-list"><li style="list-style-type:circle">ручные веса,</li></ul><ul id="2aa568fa-e39f-800d-9b89-c10c4db84cec" class="bulleted-list"><li style="list-style-type:circle">data-driven веса,</li></ul><ul id="2aa568fa-e39f-8038-bf53-c95030df78f7" class="bulleted-list"><li style="list-style-type:circle">uncertainty weighting;</li></ul></li></ul><ul id="2aa568fa-e39f-8068-b081-fc68034b9fab" class="bulleted-list"><li style="list-style-type:disc">оценивать такие модели:<ul id="2aa568fa-e39f-8033-abfb-d243988cc3a5" class="bulleted-list"><li style="list-style-type:circle">метрики по каждой цели,</li></ul><ul id="2aa568fa-e39f-804e-9170-c07506f37703" class="bulleted-list"><li style="list-style-type:circle">общую агрегированную метрику (как в соревнованиях/бизнесе);</li></ul></li></ul><ul id="2aa568fa-e39f-8093-b77a-dfa8d0b2ab33" class="bulleted-list"><li style="list-style-type:disc">встраивать всё это в пайплайн:<ul id="2aa568fa-e39f-80ff-b0ed-d9134da22447" class="bulleted-list"><li style="list-style-type:circle">candidate generation,</li></ul><ul id="2aa568fa-e39f-80e3-8433-d8eb62e77d82" class="bulleted-list"><li style="list-style-type:circle">ranking,</li></ul><ul id="2aa568fa-e39f-8070-b58d-c04089243854" class="bulleted-list"><li style="list-style-type:circle">re-ranking под бизнес-цели.</li></ul></li></ul><hr id="2aa568fa-e39f-80c3-9b25-e0adc8bee69d"/><h2 id="2aa568fa-e39f-80ed-bc44-c1fb5abbb343" class="">Структура модуля</h2><p id="2aa568fa-e39f-80f1-9776-d727f0341335" class="">Сделаем 4 урока + мини-проект:</p><ol type="1" id="2aa568fa-e39f-802e-8100-c5ce41f6e0b4" class="numbered-list" start="1"><li><strong>Урок 7.1. Постановка multi-objective задачи и воронка событий</strong></li></ol><ol type="1" id="2aa568fa-e39f-8052-814b-e887f6c6d3fc" class="numbered-list" start="2"><li><strong>Урок 7.2. Архитектуры multi-task моделей и дизайн loss’а</strong></li></ol><ol type="1" id="2aa568fa-e39f-8013-9ed6-e9a7e7463b56" class="numbered-list" start="3"><li><strong>Урок 7.3. Обучение, дисбаланс, sampling и метрики для multi-objective</strong></li></ol><ol type="1" id="2aa568fa-e39f-80a9-8623-efd817af99e6" class="numbered-list" start="4"><li><strong>Урок 7.4. Интеграция в пайплайн и бизнес-ориентированный re-ranking</strong></li></ol><ol type="1" id="2aa568fa-e39f-8092-bc44-d27fe60a5aa7" class="numbered-list" start="5"><li><strong>Мини-проект:</strong> полный multi-task пайплайн для воронки (click → cart → purchase)</li></ol><p id="2aa568fa-e39f-804d-9ffd-e07f9df6bdfa" class="">Идеальный датасет: e-commerce лог с разными типами event’ов (просмотр / клик / корзина / покупка). Можно взять любой похожий сорев/датасет.</p><hr id="2aa568fa-e39f-80e8-9273-fe11238c2a7f"/><h2 id="2aa568fa-e39f-80bd-b08f-f0b33f968fba" class="">Урок 7.1. Постановка multi-objective задачи и воронка</h2><h3 id="2aa568fa-e39f-8013-931e-c60d9b77d2a0" class="">Цели</h3><ul id="2aa568fa-e39f-809c-bae6-cad8003e7a5e" class="bulleted-list"><li style="list-style-type:disc">Научить <strong>правильно формулировать</strong> задачу с несколькими таргетами.</li></ul><ul id="2aa568fa-e39f-809f-b98c-e0dc95854b0e" class="bulleted-list"><li style="list-style-type:disc">Разобрать <strong>воронку событий</strong> и зависимости между ними.</li></ul><ul id="2aa568fa-e39f-80ea-b27d-de3e4bc27c6c" class="bulleted-list"><li style="list-style-type:disc">Приземлить всё в формат: «как это будет выглядеть в данных и метриках».</li></ul><h3 id="2aa568fa-e39f-8008-be1a-d5e5ef58a8b8" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8043-a733-d3659bfc67f9" class="numbered-list" start="1"><li><strong>Воронка событий (conversion funnel)</strong><p id="2aa568fa-e39f-8067-9b8a-f30bc31fff53" class="">Типичный e-commerce/контент сценарий:</p><ul id="2aa568fa-e39f-801e-afbf-e5239c433311" class="bulleted-list"><li style="list-style-type:disc"><code>impression</code> (показ);</li></ul><ul id="2aa568fa-e39f-801c-bf57-dab175314296" class="bulleted-list"><li style="list-style-type:disc"><code>view/click</code> (переход на карточку/просмотр);</li></ul><ul id="2aa568fa-e39f-8093-9876-c1f77584873c" class="bulleted-list"><li style="list-style-type:disc"><code>add_to_cart</code> / <code>like</code> / <code>wish</code>;</li></ul><ul id="2aa568fa-e39f-8025-9f93-ebabf9b5c7b0" class="bulleted-list"><li style="list-style-type:disc"><code>purchase</code> / <code>subscribe</code>.</li></ul><p id="2aa568fa-e39f-8072-a4a9-cfc6de17326f" class="">Связь:</p><ul id="2aa568fa-e39f-804e-9b66-d3a42e8037c0" class="bulleted-list"><li style="list-style-type:disc"><code>purchase</code> почти всегда ⊂ <code>add_to_cart</code>, ⊂ <code>click</code>, ⊂ <code>impression</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8064-8cdc-dd04a2c10109" class="numbered-list" start="2"><li><strong>Почему одной цели недостаточно</strong><ul id="2aa568fa-e39f-80cf-ac26-f92fd32dc439" class="bulleted-list"><li style="list-style-type:disc">Если оптимизировать только <strong>клик</strong>:<ul id="2aa568fa-e39f-802f-b507-effa182db4e2" class="bulleted-list"><li style="list-style-type:circle">можем получить clickbait/клик-приманки, которые не конвертятся в покупки.</li></ul></li></ul><ul id="2aa568fa-e39f-805c-9a59-f4847f8fbdaa" class="bulleted-list"><li style="list-style-type:disc">Если оптимизировать только <strong>покупку</strong>:<ul id="2aa568fa-e39f-808f-a801-c0e01ce27a93" class="bulleted-list"><li style="list-style-type:circle">мало данных, редкий сигнал, модель нестабильна.</li></ul></li></ul><ul id="2aa568fa-e39f-80ba-a44b-c3a9c8775d01" class="bulleted-list"><li style="list-style-type:disc">В реальности:<ul id="2aa568fa-e39f-8015-9a7c-e01def279019" class="bulleted-list"><li style="list-style-type:circle">бизнесу важно max GMV/выручка,</li></ul><ul id="2aa568fa-e39f-80ac-af0a-fb7a2c0110e9" class="bulleted-list"><li style="list-style-type:circle">но промежуточные шаги тоже важны (просмотры, вовлечённость).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d4-9072-cd24a07b5958" class="numbered-list" start="3"><li><strong>Формулировка multi-objective задачи</strong><p id="2aa568fa-e39f-8085-9fd8-f20a724fc1fe" class="">Примеры:</p><ul id="2aa568fa-e39f-8039-887f-d99ca6bcf2ce" class="bulleted-list"><li style="list-style-type:disc">Multi-label prediction:<ul id="2aa568fa-e39f-800f-9ade-e3bc590caa79" class="bulleted-list"><li style="list-style-type:circle">модель предсказывает сразу несколько вероятностей:<ul id="2aa568fa-e39f-8017-9c57-d399e4aaeb0d" class="bulleted-list"><li style="list-style-type:square"><code>P(click | u, i, context)</code>,</li></ul><ul id="2aa568fa-e39f-801e-a63c-fa93ba5a4e33" class="bulleted-list"><li style="list-style-type:square"><code>P(cart | u, i, context)</code>,</li></ul><ul id="2aa568fa-e39f-80b6-9ed5-c89a2d498c56" class="bulleted-list"><li style="list-style-type:square"><code>P(purchase | u, i, context)</code>.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-8010-9f2c-caebd39bc3de" class="bulleted-list"><li style="list-style-type:disc">Multi-task:<ul id="2aa568fa-e39f-80ae-bdae-c363e1a4eb29" class="bulleted-list"><li style="list-style-type:circle">один shared backbone (эмбеддинги, общая часть сети/GBM),</li></ul><ul id="2aa568fa-e39f-80d2-8499-cc6f70c3bc7b" class="bulleted-list"><li style="list-style-type:circle">несколько «голов» (heads), каждая под свой таргет.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e3-806f-ee43b11782de" class="numbered-list" start="4"><li><strong>Как это выглядит в данных</strong><ul id="2aa568fa-e39f-807a-af3e-e2cdf7bcae9e" class="bulleted-list"><li style="list-style-type:disc">Табличка логов:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80ab-830c-fca05ee7d6df" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">user_id | item_id | context... | label_click | label_cart | label_purchase
+</code></pre></li></ul><ul id="2aa568fa-e39f-80fd-855b-c05252c08f26" class="bulleted-list"><li style="list-style-type:disc">Либо sequence-формат (модуль 6), где:<ul id="2aa568fa-e39f-804d-89f7-ef8c79c87f3b" class="bulleted-list"><li style="list-style-type:circle">на каждый <code>(user, session, item)</code> в момент показа или клика есть набор бинарных таргетов.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cf-be19-f0e9199bc822" class="numbered-list" start="5"><li><strong>Типичные сценарии в индустрии/соревнованиях</strong><ul id="2aa568fa-e39f-8007-87c0-f37a42251f3a" class="bulleted-list"><li style="list-style-type:disc">E-commerce с click/cart/order;</li></ul><ul id="2aa568fa-e39f-809c-88c8-d693d6fc3a45" class="bulleted-list"><li style="list-style-type:disc">Контент: click, long_view, like, subscribe;</li></ul><ul id="2aa568fa-e39f-802c-b664-fdde3bdb84c6" class="bulleted-list"><li style="list-style-type:disc">Финтех: click, apply, approve.</li></ul></li></ol><h3 id="2aa568fa-e39f-807e-adc4-f6ca38208976" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80ee-8c23-dde614460263" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-8083-a104-e2522b03db00" class="numbered-list" start="1"><li>Взять датасет с событиями и собрать табличку:<ul id="2aa568fa-e39f-80fb-8a54-e54786e74527" class="bulleted-list"><li style="list-style-type:disc">строки — `(user_id, item_id, context, timestamp)&#x27;;</li></ul><ul id="2aa568fa-e39f-8064-8020-e29fb7ded7de" class="bulleted-list"><li style="list-style-type:disc">таргеты:<ul id="2aa568fa-e39f-8059-a066-c438e662637a" class="bulleted-list"><li style="list-style-type:circle"><code>clicked</code> (0/1),</li></ul><ul id="2aa568fa-e39f-8007-bbd9-feb675390ef7" class="bulleted-list"><li style="list-style-type:circle"><code>added_to_cart</code> (0/1),</li></ul><ul id="2aa568fa-e39f-80d3-b90d-deef562a94e8" class="bulleted-list"><li style="list-style-type:circle"><code>purchased</code> (0/1).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8017-9c14-ce0b8c3e82f4" class="numbered-list" start="2"><li>Посчитать базовую статистику:<ul id="2aa568fa-e39f-8095-9744-cb6362debd05" class="bulleted-list"><li style="list-style-type:disc">сколько % показов → клик,</li></ul><ul id="2aa568fa-e39f-8003-8f98-fe3012cc9d56" class="bulleted-list"><li style="list-style-type:disc">из кликов → корзина,</li></ul><ul id="2aa568fa-e39f-8023-a395-e39bc8a063f1" class="bulleted-list"><li style="list-style-type:disc">из корзины → покупка (конверсия по воронке).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803d-9f6d-f05a4e3aec31" class="numbered-list" start="3"><li>Нарисовать (хотя бы в текстовом виде) маленькую воронку с конверсиями.</li></ol></li></ul><h3 id="2aa568fa-e39f-801b-9291-f27a488ca346" class="">Домашка 7.1</h3><ol type="1" id="2aa568fa-e39f-8073-8fc0-caff3f05f27a" class="numbered-list" start="1"><li>Для выбранного датасета:<ul id="2aa568fa-e39f-8088-8b44-c5b4eb00fa71" class="bulleted-list"><li style="list-style-type:disc">описать воронку (3–4 шага);</li></ul><ul id="2aa568fa-e39f-809b-af5b-f756e07552d4" class="bulleted-list"><li style="list-style-type:disc">посчитать конверсии на каждом переходе;</li></ul><ul id="2aa568fa-e39f-80e9-961a-dde3fc9b1273" class="bulleted-list"><li style="list-style-type:disc">написать, какие <strong>две–три цели</strong> ты считаешь приоритетными и почему (с точки зрения бизнеса).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8020-a5f2-fd46b7c2f720" class="numbered-list" start="2"><li>Подготовить dataset в формате, удобном для multi-label / multi-task модели:<ul id="2aa568fa-e39f-80bf-831a-f7bbc65ccdfe" class="bulleted-list"><li style="list-style-type:disc">одна строка = один «кейс» (показ/клик),</li></ul><ul id="2aa568fa-e39f-8010-96eb-e8fc1484562d" class="bulleted-list"><li style="list-style-type:disc">несколько бинарных столбцов-таргетов.</li></ul></li></ol><hr id="2aa568fa-e39f-80dd-93db-e61c13a744e5"/><h2 id="2aa568fa-e39f-80ca-a1b1-c10f745b4f62" class="">Урок 7.2. Архитектуры multi-task моделей и дизайн loss’а</h2><h3 id="2aa568fa-e39f-8021-9a62-f056a1b133ab" class="">Цели</h3><ul id="2aa568fa-e39f-80f4-86f6-f0248a464815" class="bulleted-list"><li style="list-style-type:disc">Научить строить модели с <strong>общей частью и несколькими головами</strong>.</li></ul><ul id="2aa568fa-e39f-80ca-93b9-fc617b658a37" class="bulleted-list"><li style="list-style-type:disc">Показать разные варианты <strong>loss’ов</strong> и их комбинации.</li></ul><ul id="2aa568fa-e39f-8089-8c22-d04749e80258" class="bulleted-list"><li style="list-style-type:disc">Показать, как использовать уже знакомые модели (GBM/MLP/sequence) в multi-task режиме.</li></ul><h3 id="2aa568fa-e39f-809c-ac5f-f0dfe1aa0637" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80e6-9aab-c1de859e745e" class="numbered-list" start="1"><li><strong>Shared backbone + multi-head</strong><p id="2aa568fa-e39f-80eb-9e61-c9a1a6be9847" class="">Общая идея:</p><ul id="2aa568fa-e39f-80d9-9b45-ccd604c8b3be" class="bulleted-list"><li style="list-style-type:disc">есть общие фичи <code>(user, item, context, history_features, embeddings…)</code>;</li></ul><ul id="2aa568fa-e39f-8041-9118-fa896e71000b" class="bulleted-list"><li style="list-style-type:disc">на них учится <strong>shared feature extractor</strong>:<ul id="2aa568fa-e39f-8062-9b5d-ef260f47f75d" class="bulleted-list"><li style="list-style-type:circle">GBDT / MLP / sequence encoder;</li></ul></li></ul><ul id="2aa568fa-e39f-8072-8d01-fe530f052c03" class="bulleted-list"><li style="list-style-type:disc">дальше для каждого таргета своя head:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80f4-9833-ffd9f9dd3a93" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">shared_features = Encoder(x)
+p_click     = Head_click(shared_features)
+p_cart      = Head_cart(shared_features)
+p_purchase  = Head_purchase(shared_features)
+</code></pre></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-800b-a66b-cb0571f35a66" class="numbered-list" start="2"><li><strong>Какие модели могут быть backbone</strong><ul id="2aa568fa-e39f-8067-afdf-cd51dbf421a8" class="bulleted-list"><li style="list-style-type:disc">Табличные:<ul id="2aa568fa-e39f-80c2-900d-c89a346cd48b" class="bulleted-list"><li style="list-style-type:circle">GBDT (CatBoost/XGBoost/LightGBM) → несколько моделей / одна модель с multi-label?</li></ul><ul id="2aa568fa-e39f-806e-aa78-e8ad5f07c3a1" class="bulleted-list"><li style="list-style-type:circle">MLP с табличными фичами.</li></ul></li></ul><ul id="2aa568fa-e39f-807f-825d-d2d5174a822c" class="bulleted-list"><li style="list-style-type:disc">Embedding-based:<ul id="2aa568fa-e39f-8031-8da5-e4c900ec472d" class="bulleted-list"><li style="list-style-type:circle">MF/ALS/LightFM эмбеддинги + tabular;</li></ul></li></ul><ul id="2aa568fa-e39f-8096-ba0c-cf753741c266" class="bulleted-list"><li style="list-style-type:disc">Sequence-based:<ul id="2aa568fa-e39f-80f9-9b23-daaa10855954" class="bulleted-list"><li style="list-style-type:circle">GRU/Transformer из модуля 6 → выдаёт representation user+session;</li></ul><ul id="2aa568fa-e39f-8092-a109-d94c9e6ef3bb" class="bulleted-list"><li style="list-style-type:circle">поверх него multi-head MLP.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ed-a0d0-f687d6637dba" class="numbered-list" start="3"><li><strong>Дизайн loss’а</strong><p id="2aa568fa-e39f-8061-a587-cd3b0f2966fd" class="">Допустим, у нас 3 таргета: click/cart/purchase, все бинарные (0/1).</p><ul id="2aa568fa-e39f-806a-91ac-de41bedc8a09" class="bulleted-list"><li style="list-style-type:disc">Pointwise multi-label:<p id="2aa568fa-e39f-8067-b821-cedcdb19bfd5" class="">[</p><p id="2aa568fa-e39f-805e-8263-e270918ed4fe" class="">L = α \cdot BCE(click) + β \cdot BCE(cart) + γ \cdot BCE(purchase)</p><p id="2aa568fa-e39f-80e5-9001-d15fe7c4e5b9" class="">]</p><p id="2aa568fa-e39f-8079-9f3c-c4b0fa7a113c" class="">где <code>α, β, γ</code> — веса.</p></li></ul><ul id="2aa568fa-e39f-806d-be29-e20fc63f9c5a" class="bulleted-list"><li style="list-style-type:disc">Можно использовать:<ul id="2aa568fa-e39f-8079-a785-f05eba8a17aa" class="bulleted-list"><li style="list-style-type:circle">разные веса для разных задач,</li></ul><ul id="2aa568fa-e39f-8040-b519-e545047e384f" class="bulleted-list"><li style="list-style-type:circle">более высокий вес <code>purchase</code> (rare, но важный),</li></ul><ul id="2aa568fa-e39f-80f7-be5b-f7b23087faa1" class="bulleted-list"><li style="list-style-type:circle">чуть меньше — <code>cart</code>,</li></ul><ul id="2aa568fa-e39f-80dc-9ddb-f0a2625fa999" class="bulleted-list"><li style="list-style-type:circle">ещё меньше — <code>click</code>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8073-98b7-fd94261cc2b3" class="numbered-list" start="4"><li><strong>Как выбирать веса (α, β, γ)</strong><p id="2aa568fa-e39f-8071-a7cd-d9531b5cbac2" class="">Варианты:</p><ul id="2aa568fa-e39f-8083-9c5e-c250f8b2c51d" class="bulleted-list"><li style="list-style-type:disc"><strong>Ручные (rule-based)</strong>:<ul id="2aa568fa-e39f-801a-ad10-cecf46d5dbcb" class="bulleted-list"><li style="list-style-type:circle">настроены по важности целей:<ul id="2aa568fa-e39f-80fb-a5b2-cd9491c9b00e" class="bulleted-list"><li style="list-style-type:square">выручка &gt; корзина &gt; клик.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-8096-a670-fe776b174884" class="bulleted-list"><li style="list-style-type:disc"><strong>По частоте</strong>:<ul id="2aa568fa-e39f-8062-b3fe-d4868c8fa126" class="bulleted-list"><li style="list-style-type:circle">сделать так, чтобы вклады задач в loss были примерно сравнимы:<ul id="2aa568fa-e39f-8071-8293-f996d92bcc0d" class="bulleted-list"><li style="list-style-type:square">увеличиваем вес редких задач (purchase).</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-802b-9ee9-d0c2182fc917" class="bulleted-list"><li style="list-style-type:disc"><strong>Uncertainty weighting (упоминание)</strong>:<ul id="2aa568fa-e39f-80ad-b3fd-c9f1731effd8" class="bulleted-list"><li style="list-style-type:circle">учим веса как параметры, исходя из дисперсий задач.</li></ul></li></ul><ul id="2aa568fa-e39f-8012-a34e-fe905c313833" class="bulleted-list"><li style="list-style-type:disc">Грубое правило для курса:<ul id="2aa568fa-e39f-80d7-b0ef-d12680bbf5ab" class="bulleted-list"><li style="list-style-type:circle">начинать с ручных весов,</li></ul><ul id="2aa568fa-e39f-8005-a6ca-ff529a370fa7" class="bulleted-list"><li style="list-style-type:circle">проверять, не доминирует ли одна задача все остальные (по градиентам/по loss contributions).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8089-996f-d44d6672091e" class="numbered-list" start="5"><li><strong>Иерархические зависимости в loss’е</strong><ul id="2aa568fa-e39f-808a-9615-f996ce3e77a6" class="bulleted-list"><li style="list-style-type:disc">Можно учитывать воронку:<ul id="2aa568fa-e39f-8091-9bb1-cbc0b3fb0157" class="bulleted-list"><li style="list-style-type:circle">вероятность покупки = <code>P(click) * P(purchase | click)</code> и т.п.</li></ul></li></ul><ul id="2aa568fa-e39f-80f3-8a1d-d3566d27a228" class="bulleted-list"><li style="list-style-type:disc">Для начала:<ul id="2aa568fa-e39f-8075-8585-f97854b5b71c" class="bulleted-list"><li style="list-style-type:circle">обучаем heads независимо через общий backbone;</li></ul><ul id="2aa568fa-e39f-80fa-b39b-f8c05e5f428e" class="bulleted-list"><li style="list-style-type:circle">обсуждаем потенциальные улучшения:<ul id="2aa568fa-e39f-8085-b31f-f0d99ac418f4" class="bulleted-list"><li style="list-style-type:square">каскадная архитектура:<ul id="2aa568fa-e39f-8019-b0ef-f48cce6631ac" class="bulleted-list"><li style="list-style-type:disc">head_purchase получает на вход p_click, p_cart и т.д.</li></ul></li></ul></li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80b7-ba96-cf5d37e8a635" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80cd-8f66-f860d19b7bbd" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке (простая табличная multi-task MLP):<ol type="1" id="2aa568fa-e39f-806f-964a-ca7a621ad478" class="numbered-list" start="1"><li>Подготовить фичи (user/item/context/history).</li></ol><ol type="1" id="2aa568fa-e39f-8084-bfd5-cc783259eb9b" class="numbered-list" start="2"><li>Построить MLP-backbone + 3 heads:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-804a-89fa-d72ad9cdba5c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">shared = MLP_backbone(x)
+p_click = sigmoid(head_click(shared))
+p_cart = sigmoid(head_cart(shared))
+p_purchase = sigmoid(head_purchase(shared))
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-8062-954d-c600fc20c144" class="numbered-list" start="3"><li>Реализовать loss:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80c7-9014-d902c192277a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">loss = alpha * BCE(click, p_click) + \
+       beta  * BCE(cart, p_cart)  + \
+       gamma * BCE(purchase, p_purchase)
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-8034-8816-df681d45b7f9" class="numbered-list" start="4"><li>Обучить несколько эпох:<ul id="2aa568fa-e39f-80ed-a8b2-fa887c5a9238" class="bulleted-list"><li style="list-style-type:disc">следить отдельно за компонентами loss’а для click/cart/purchase;</li></ul><ul id="2aa568fa-e39f-8081-85ea-c8c3a441395d" class="bulleted-list"><li style="list-style-type:disc">убедиться, что все heads учатся (loss падает).</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-806d-826c-de1590bf18a4" class="">Домашка 7.2</h3><ol type="1" id="2aa568fa-e39f-8076-9292-e5d72d4be6d1" class="numbered-list" start="1"><li>Поиграть с весами <code>(α, β, γ)</code>:<ul id="2aa568fa-e39f-80e4-9ca7-e4ef293126cf" class="bulleted-list"><li style="list-style-type:disc">вариант A: <code>1, 1, 1</code>;</li></ul><ul id="2aa568fa-e39f-8094-ad08-c800abe51008" class="bulleted-list"><li style="list-style-type:disc">вариант B: <code>1, 2, 5</code> (больше вес purchase);</li></ul><ul id="2aa568fa-e39f-8092-9099-f1e482b23340" class="bulleted-list"><li style="list-style-type:disc">вариант C: «по частоте» (например, так, чтобы суммарный градиент по каждой задаче был похож).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80dc-9114-c71138cbd739" class="numbered-list" start="2"><li>Для каждого варианта:<ul id="2aa568fa-e39f-80a4-aac0-f3e11ec9ab13" class="bulleted-list"><li style="list-style-type:disc">посчитать на validation:<ul id="2aa568fa-e39f-80f5-83af-e0837ca3df37" class="bulleted-list"><li style="list-style-type:circle">ROC-AUC / PR-AUC / logloss отдельно для click/cart/purchase;</li></ul></li></ul><ul id="2aa568fa-e39f-80fc-981d-d3c73d1ec1dd" class="bulleted-list"><li style="list-style-type:disc">написать:<ul id="2aa568fa-e39f-80e9-93a9-e5f082fd556c" class="bulleted-list"><li style="list-style-type:circle">какие таргеты улучшились/ухудшились,</li></ul><ul id="2aa568fa-e39f-80fd-85ff-d1939f879b1b" class="bulleted-list"><li style="list-style-type:circle">виден ли trade-off между задачами.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-8051-a746-fc7cbf6593ca"/><h2 id="2aa568fa-e39f-80ff-a674-ff88b5e3a00b" class="">Урок 7.3. Обучение, дисбаланс, sampling и метрики</h2><h3 id="2aa568fa-e39f-809a-b804-c27bb77aa1d6" class="">Цели</h3><ul id="2aa568fa-e39f-8086-9086-cdc28d5e0c60" class="bulleted-list"><li style="list-style-type:disc">Научить <strong>адекватно обучать</strong> multi-task модель на сильно дисбалансных таргетах (purchase очень редкий).</li></ul><ul id="2aa568fa-e39f-80fa-a7bf-e76ec1cd9c83" class="bulleted-list"><li style="list-style-type:disc">Показать разные подходы к sampling.</li></ul><ul id="2aa568fa-e39f-80d4-80c4-d0773bc85ab8" class="bulleted-list"><li style="list-style-type:disc">Показать, как <strong>оценивать multi-objective модель</strong>:<ul id="2aa568fa-e39f-80e0-9b86-de8083409773" class="bulleted-list"><li style="list-style-type:circle">по каждой задаче,</li></ul><ul id="2aa568fa-e39f-80be-b8bf-fd83c5544332" class="bulleted-list"><li style="list-style-type:circle">общей агрегированной метрикой.</li></ul></li></ul><h3 id="2aa568fa-e39f-809b-ad82-f32d5fa02978" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8079-a7fd-e15ebf7af2dd" class="numbered-list" start="1"><li><strong>Дисбаланс классов</strong><ul id="2aa568fa-e39f-809c-be59-dca2c7fdc143" class="bulleted-list"><li style="list-style-type:disc">Click ~ проценты;</li></ul><ul id="2aa568fa-e39f-8062-99b3-c9b174a1b9f5" class="bulleted-list"><li style="list-style-type:disc">Cart ~ десятые/сотые процента;</li></ul><ul id="2aa568fa-e39f-806f-b849-e8586957c8b2" class="bulleted-list"><li style="list-style-type:disc">Purchase ~ сотые/тысячные.</li></ul><ul id="2aa568fa-e39f-80bb-b167-d15ae73c2b77" class="bulleted-list"><li style="list-style-type:disc">Если учить «как есть», модель:<ul id="2aa568fa-e39f-80d9-9af9-eaa753618ffe" class="bulleted-list"><li style="list-style-type:circle">может почти игнорировать редкие события.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c0-abee-da68cfc8cd8a" class="numbered-list" start="2"><li><strong>Sampling стратегии</strong><ul id="2aa568fa-e39f-80fa-b111-f3abbc6e9c7f" class="bulleted-list"><li style="list-style-type:disc"><strong>Undersampling негативов</strong>:<ul id="2aa568fa-e39f-8063-9a57-cf54c793f5a3" class="bulleted-list"><li style="list-style-type:circle">для каждой позитивной записи:<ul id="2aa568fa-e39f-8095-8346-eafd52e13cd1" class="bulleted-list"><li style="list-style-type:square">выбираем M негативов (где нет события).</li></ul></li></ul><ul id="2aa568fa-e39f-800c-aea7-e72a3525403d" class="bulleted-list"><li style="list-style-type:circle">Отдельно по каждой задаче:<ul id="2aa568fa-e39f-80ba-9c29-e3bebf707d27" class="bulleted-list"><li style="list-style-type:square">для purchase можно взять больше негативов, чем для click.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-80b2-9930-dd6e679177a8" class="bulleted-list"><li style="list-style-type:disc"><strong>Oversampling позитивов</strong> (осторожно):<ul id="2aa568fa-e39f-80ec-97e9-f041e85469fb" class="bulleted-list"><li style="list-style-type:circle">дублируем редкие события;</li></ul><ul id="2aa568fa-e39f-8020-9d13-fea2e6136f5e" class="bulleted-list"><li style="list-style-type:circle">но есть риск переобучения на «особенных» кейсах.</li></ul></li></ul><ul id="2aa568fa-e39f-805f-a31c-fed7ae2b60a8" class="bulleted-list"><li style="list-style-type:disc"><strong>Balanced batch composition</strong>:<ul id="2aa568fa-e39f-800d-8ede-fe2ee8e8765f" class="bulleted-list"><li style="list-style-type:circle">в каждом батче держать фиксированные пропорции:<ul id="2aa568fa-e39f-8063-ab2e-fe56c295e583" class="bulleted-list"><li style="list-style-type:square"><code>p=1</code> примеров с purchase,</li></ul><ul id="2aa568fa-e39f-805d-b345-d07511cddeb0" class="bulleted-list"><li style="list-style-type:square"><code>p=K</code> с cart,</li></ul><ul id="2aa568fa-e39f-80b8-885a-ebf6daae1455" class="bulleted-list"><li style="list-style-type:square"><code>p=N</code> с click,</li></ul><ul id="2aa568fa-e39f-803e-8c31-fda641efed5f" class="bulleted-list"><li style="list-style-type:square">плюс негативы.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8085-8ee8-d5256092d80d" class="numbered-list" start="3"><li><strong>Negative sampling по item’ам и users</strong><ul id="2aa568fa-e39f-8091-acd0-d61501a69530" class="bulleted-list"><li style="list-style-type:disc">Для ranking-подходов:<ul id="2aa568fa-e39f-8024-8660-e495596032cf" class="bulleted-list"><li style="list-style-type:circle">вместо pointwise BCE можно использовать pairwise:<ul id="2aa568fa-e39f-8038-9b83-dbfaf00980eb" class="bulleted-list"><li style="list-style-type:square">для каждой пары <code>(u, i⁺)</code> (покупка) добавить несколько <code>(u, j⁻)</code> без покупки.</li></ul></li></ul><ul id="2aa568fa-e39f-80fb-b421-fb58a8f793d5" class="bulleted-list"><li style="list-style-type:circle">можно делать это для каждой задачи (click/cart/purchase).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80fb-9e86-e5fb057c8dd5" class="numbered-list" start="4"><li><strong>Метрики по каждой задаче</strong><ul id="2aa568fa-e39f-80d2-8452-e7a928639f16" class="bulleted-list"><li style="list-style-type:disc">Для бинарных таргетов:<ul id="2aa568fa-e39f-8030-8749-df148ff863dd" class="bulleted-list"><li style="list-style-type:circle">ROC-AUC;</li></ul><ul id="2aa568fa-e39f-80a3-ad20-fb5dda9fec88" class="bulleted-list"><li style="list-style-type:circle">PR-AUC (особенно для редких событий);</li></ul><ul id="2aa568fa-e39f-8016-831e-f0393a86719e" class="bulleted-list"><li style="list-style-type:circle">logloss.</li></ul></li></ul><ul id="2aa568fa-e39f-808b-ba86-cd70a3d133a0" class="bulleted-list"><li style="list-style-type:disc">Для рекомендаций (top-K):<ul id="2aa568fa-e39f-80a0-9efa-c33aed70419c" class="bulleted-list"><li style="list-style-type:circle">для каждого таргета можно считать:<ul id="2aa568fa-e39f-8024-8beb-ee0f019b30a4" class="bulleted-list"><li style="list-style-type:square">Recall@K (click/cart/purchase);</li></ul><ul id="2aa568fa-e39f-8079-b0d6-f7afebc21be6" class="bulleted-list"><li style="list-style-type:square">NDCG@K.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cb-b65f-ffc6899d36da" class="numbered-list" start="5"><li><strong>Общая мульти-объективная метрика</strong><p id="2aa568fa-e39f-8026-87ff-fd9ad5d97f4c" class="">Примеры:</p><ul id="2aa568fa-e39f-80b4-ac47-e01099d6440d" class="bulleted-list"><li style="list-style-type:disc"><strong>Взвешенная сумма</strong>:<ul id="2aa568fa-e39f-80e9-9883-ccc2357aa265" class="bulleted-list"><li style="list-style-type:circle"><code>Total_score = w_click * metric_click + w_cart * metric_cart + w_purchase * metric_purchase</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-8078-bce7-d5c36389192f" class="bulleted-list"><li style="list-style-type:disc"><strong>Business-ориентированный GMV proxy</strong>:<ul id="2aa568fa-e39f-804c-a72f-d38ba4314bb8" class="bulleted-list"><li style="list-style-type:circle">присваиваем каждому событию денежный вес:<ul id="2aa568fa-e39f-800c-ac2e-dd489e5821e1" class="bulleted-list"><li style="list-style-type:square"><code>v_click</code>, <code>v_cart</code>, <code>v_purchase</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-802c-a1c0-dc69d2a3e8f8" class="bulleted-list"><li style="list-style-type:circle">считаем ожидаемый GMV:<ul id="2aa568fa-e39f-8005-9b7f-cc39f3870406" class="bulleted-list"><li style="list-style-type:square"><code>GMV_pred ≈ v_click * P(click) + v_cart * P(cart) + v_purchase * P(purchase)</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-80eb-b021-f260d9c76ac8" class="bulleted-list"><li style="list-style-type:circle">и оптимизируем его.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8055-bde8-c4b806b97fe0" class="numbered-list" start="6"><li><strong>Trade-off между задачами</strong><ul id="2aa568fa-e39f-8080-8bd6-d82636dbe7c7" class="bulleted-list"><li style="list-style-type:disc">Модель может улучшать одну задачу и ухудшать другую;</li></ul><ul id="2aa568fa-e39f-8037-b42b-e21b8311b2ed" class="bulleted-list"><li style="list-style-type:disc">Важно иметь:<ul id="2aa568fa-e39f-8020-a33c-dc263ec46252" class="bulleted-list"><li style="list-style-type:circle"><strong>detailed metrics dashboard</strong> по каждой задаче,</li></ul><ul id="2aa568fa-e39f-807a-b945-dd42381bcdb6" class="bulleted-list"><li style="list-style-type:circle">и одну выбранную <strong>«главную» итоговую метрику</strong>.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-802a-8a50-e35e4e88af29" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80de-b05e-f665d5f1a695" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-8054-bee2-e2b958d82cb0" class="numbered-list" start="1"><li>Добавить sampling / class weights для обучения multi-task MLP из урока 7.2.</li></ol><ol type="1" id="2aa568fa-e39f-8029-8728-ce5deb7289f6" class="numbered-list" start="2"><li>Реализовать:<ul id="2aa568fa-e39f-8075-a87b-c8afce3db271" class="bulleted-list"><li style="list-style-type:disc">ROC-AUC / PR-AUC по каждому таргету;</li></ul><ul id="2aa568fa-e39f-800b-ab22-eb0d2e7cf797" class="bulleted-list"><li style="list-style-type:disc">Recall@K / NDCG@K для multi-label:<ul id="2aa568fa-e39f-8051-b046-ce4acd55f79a" class="bulleted-list"><li style="list-style-type:circle">например, оценивать Recall@K отдельно по click и purchase.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807b-824e-e9dfb2dff10a" class="numbered-list" start="3"><li>Реализовать общую метрику, например:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80f9-80f4-ce34f5c791b3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">score_total = 0.2 * NDCG_click + 0.3 * NDCG_cart + 0.5 * NDCG_purchase
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-801b-821c-c34b11c0c0e1" class="numbered-list" start="4"><li>Сравнить:<ul id="2aa568fa-e39f-8085-bff4-f6656d91aca4" class="bulleted-list"><li style="list-style-type:disc">модель без балансировки;</li></ul><ul id="2aa568fa-e39f-80de-a20b-ea1bcb401829" class="bulleted-list"><li style="list-style-type:disc">модель с sampling/class weights.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-808a-a53c-c6fc96fb8cdf" class="">Домашка 7.3</h3><ol type="1" id="2aa568fa-e39f-807b-8515-cff8da2b7c95" class="numbered-list" start="1"><li>Эксперимент:<ul id="2aa568fa-e39f-8097-9e4c-c019ce93c5a7" class="bulleted-list"><li style="list-style-type:disc">вариант 1: без sampling, без class weights;</li></ul><ul id="2aa568fa-e39f-802c-b5f7-fdc8a547f15e" class="bulleted-list"><li style="list-style-type:disc">вариант 2: с class weights (inverse frequency);</li></ul><ul id="2aa568fa-e39f-80ef-871e-e7ff7d1da154" class="bulleted-list"><li style="list-style-type:disc">вариант 3: с negative sampling (фиксированное ratio).</li></ul><p id="2aa568fa-e39f-808a-a502-ed3fa7122a92" class="">Для каждого варианта:</p><ul id="2aa568fa-e39f-805f-9eed-e85a853da833" class="bulleted-list"><li style="list-style-type:disc">табличка:<table id="2aa568fa-e39f-80c2-9246-e54f1a7b2415" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-8044-b848-e406107dc7f2"><th id="&gt;{|I" class="simple-table-header-color simple-table-header">Вариант</th><th id="MAV@" class="simple-table-header-color simple-table-header">AUC_click</th><th id="Vg:J" class="simple-table-header-color simple-table-header">AUC_cart</th><th id="NIBy" class="simple-table-header-color simple-table-header">AUC_purchase</th><th id="p\^E" class="simple-table-header-color simple-table-header">NDCG_click</th><th id="J\EY" class="simple-table-header-color simple-table-header">NDCG_purchase</th><th id="|t^;" class="simple-table-header-color simple-table-header">total_score</th></tr></thead><tbody></tbody></table></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cf-bfa1-f0370cd0bda7" class="numbered-list" start="2"><li>Написать вывод:<ul id="2aa568fa-e39f-80c0-b9be-caef5a8150fa" class="bulleted-list"><li style="list-style-type:disc">какой вариант даёт лучшую «общую» метрику;</li></ul><ul id="2aa568fa-e39f-80a3-9bc5-da50e19b76ab" class="bulleted-list"><li style="list-style-type:disc">не «загнобили» ли мы click ради purchase (или наоборот);</li></ul><ul id="2aa568fa-e39f-80f9-a0ca-f1d71a55b594" class="bulleted-list"><li style="list-style-type:disc">что ты бы выбрал как компромисс для реального продукта.</li></ul></li></ol><hr id="2aa568fa-e39f-8096-880e-d871332344f8"/><h2 id="2aa568fa-e39f-8006-8509-d69a0d9c528f" class="">Урок 7.4. Интеграция multi-objective модели в пайплайн и бизнес-re-ranking</h2><h3 id="2aa568fa-e39f-8026-b59d-fc0593435878" class="">Цели</h3><ul id="2aa568fa-e39f-8062-afe8-e6163284a06c" class="bulleted-list"><li style="list-style-type:disc">Показать, как multi-task модель живёт в <strong>полном RecSys пайплайне</strong>.</li></ul><ul id="2aa568fa-e39f-80a0-8a43-e79723ef8b02" class="bulleted-list"><li style="list-style-type:disc">Научить делать <strong>re-ranking под бизнес</strong>:<ul id="2aa568fa-e39f-80f5-b70c-f308893689b4" class="bulleted-list"><li style="list-style-type:circle">GMV,</li></ul><ul id="2aa568fa-e39f-8069-8f54-f4cf1f0284d4" class="bulleted-list"><li style="list-style-type:circle">разнообразие,</li></ul><ul id="2aa568fa-e39f-805a-8712-c69edfd15ae5" class="bulleted-list"><li style="list-style-type:circle">промо-товары.</li></ul></li></ul><ul id="2aa568fa-e39f-80bd-aee8-e0c15881edcf" class="bulleted-list"><li style="list-style-type:disc">Показать, как работать с <strong>разными целями для разных страниц/сценариев</strong>.</li></ul><h3 id="2aa568fa-e39f-80d8-9ef9-cfab5b35b125" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8065-b03b-f18acb0496fc" class="numbered-list" start="1"><li><strong>Где именно живёт multi-task модель</strong><ul id="2aa568fa-e39f-806d-bdb7-e3f8aa1e919e" class="bulleted-list"><li style="list-style-type:disc">Candidate generation:<ul id="2aa568fa-e39f-805b-bfe9-f9bc8adf7022" class="bulleted-list"><li style="list-style-type:circle">часто более простые модели:<ul id="2aa568fa-e39f-8095-9dca-e6e7639cad06" class="bulleted-list"><li style="list-style-type:square">популярность,</li></ul><ul id="2aa568fa-e39f-8062-89b4-fede475b57bc" class="bulleted-list"><li style="list-style-type:square">CF/MF/graph/sequence.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-8023-a7a5-c4122fe2ed58" class="bulleted-list"><li style="list-style-type:disc">Multi-objective ranker:<ul id="2aa568fa-e39f-803f-bb5f-cc71b5f891aa" class="bulleted-list"><li style="list-style-type:circle">получает 100–1000 кандидатов,</li></ul><ul id="2aa568fa-e39f-804b-b758-f4da5345d196" class="bulleted-list"><li style="list-style-type:circle">для каждого считает:<ul id="2aa568fa-e39f-80c3-84ce-f1effc35b8ab" class="bulleted-list"><li style="list-style-type:square"><code>P(click)</code>, <code>P(cart)</code>, <code>P(purchase)</code> + вспомогательные фичи,</li></ul></li></ul><ul id="2aa568fa-e39f-8095-b305-cacfbcfc1937" class="bulleted-list"><li style="list-style-type:circle">выдаёт общий score.</li></ul></li></ul><ul id="2aa568fa-e39f-8089-8320-d704204ef2b5" class="bulleted-list"><li style="list-style-type:disc">Таким образом:<ul id="2aa568fa-e39f-8096-bd86-fdaf7677e52d" class="bulleted-list"><li style="list-style-type:circle">MTL-модель почти всегда — <strong>ranker</strong>, не generator.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80fd-826f-c794f218e174" class="numbered-list" start="2"><li><strong>Формирование итогового score</strong><p id="2aa568fa-e39f-802b-a60f-dc375ac40c54" class="">Варианты:</p><ul id="2aa568fa-e39f-80e8-8a12-fb0958a77137" class="bulleted-list"><li style="list-style-type:disc">Линейная комбинация:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80be-bf9c-d968b35ef102" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">score = w_click * p_click + w_cart * p_cart + w_purchase * p_purchase
+</code></pre></li></ul><ul id="2aa568fa-e39f-804b-a41b-f5e4bfad9737" class="bulleted-list"><li style="list-style-type:disc">GMV-ориентированный score:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80f2-b84f-c5ba84075961" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">score = p_purchase * price * margin  + small * p_cart  + tiny * p_click
+</code></pre></li></ul><ul id="2aa568fa-e39f-805b-a8c5-d0c69ea73ffd" class="bulleted-list"><li style="list-style-type:disc">Нормировка:<ul id="2aa568fa-e39f-8002-bc10-fba968d68d05" class="bulleted-list"><li style="list-style-type:circle">привести каждую вероятность/score к сопоставимой шкале:<ul id="2aa568fa-e39f-8047-9ccd-c10d4cdbea6c" class="bulleted-list"><li style="list-style-type:square">z-score,</li></ul><ul id="2aa568fa-e39f-80f5-b3be-d7037442a04d" class="bulleted-list"><li style="list-style-type:square">min-max нормировка,</li></ul><ul id="2aa568fa-e39f-8089-957e-c9cb6ee3a8f6" class="bulleted-list"><li style="list-style-type:square">калиброванные вероятности.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8001-a332-f1aac6753893" class="numbered-list" start="3"><li><strong>Re-ranking под бизнес-ограничения</strong><ul id="2aa568fa-e39f-8075-b38d-d4e5f15445d9" class="bulleted-list"><li style="list-style-type:disc">Ограничения:<ul id="2aa568fa-e39f-8006-a83c-ddce148e1c72" class="bulleted-list"><li style="list-style-type:circle">не показывать запрещённые категории;</li></ul><ul id="2aa568fa-e39f-808a-95a1-e87be7cbce2a" class="bulleted-list"><li style="list-style-type:circle">ограничивать долю определённых брендов / категорий;</li></ul><ul id="2aa568fa-e39f-805c-bb0a-f66a62643523" class="bulleted-list"><li style="list-style-type:circle">регулировать diversity (не 20 почти одинаковых товаров).</li></ul></li></ul><ul id="2aa568fa-e39f-8077-afbb-eecc9f3d467c" class="bulleted-list"><li style="list-style-type:disc">Подмешивание промо/новинок:<ul id="2aa568fa-e39f-80a5-8668-f5a0a19df88e" class="bulleted-list"><li style="list-style-type:circle">иногда надо принудительно поднимать товары:<ul id="2aa568fa-e39f-807a-82bd-ec1c680de323" class="bulleted-list"><li style="list-style-type:square">новые,</li></ul><ul id="2aa568fa-e39f-8084-bf59-d4ae896a8fea" class="bulleted-list"><li style="list-style-type:square">брендовые,</li></ul><ul id="2aa568fa-e39f-80fa-811c-ccffdec55f5a" class="bulleted-list"><li style="list-style-type:square">высокомаржинальные.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-80dd-86ca-d919a40690e8" class="bulleted-list"><li style="list-style-type:disc">Алгоритмически:<ul id="2aa568fa-e39f-802f-9798-f627d607f53f" class="bulleted-list"><li style="list-style-type:circle">сначала сортируем по score,</li></ul><ul id="2aa568fa-e39f-8082-8e55-c6da642128d7" class="bulleted-list"><li style="list-style-type:circle">потом применяем re-ranking с ограничениями:<ul id="2aa568fa-e39f-8076-b446-cefc21f5b34d" class="bulleted-list"><li style="list-style-type:square">heuristics (greedy),</li></ul><ul id="2aa568fa-e39f-80e4-8625-c7c3ec4c2405" class="bulleted-list"><li style="list-style-type:square">иногда — небольшая оптимизационная задача.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8044-8828-cabe17baa348" class="numbered-list" start="4"><li><strong>Разные цели для разных страниц</strong><ul id="2aa568fa-e39f-8092-90ea-c910308358db" class="bulleted-list"><li style="list-style-type:disc">Главная:<ul id="2aa568fa-e39f-8097-bb27-fd66e3851c39" class="bulleted-list"><li style="list-style-type:circle">больше discovery / exploration;</li></ul></li></ul><ul id="2aa568fa-e39f-80ba-86b3-fad3aaf58a53" class="bulleted-list"><li style="list-style-type:disc">Страница категории:<ul id="2aa568fa-e39f-804d-b135-e88113be0402" class="bulleted-list"><li style="list-style-type:circle">больше relevance и GMV;</li></ul></li></ul><ul id="2aa568fa-e39f-800f-915c-c65e161ca681" class="bulleted-list"><li style="list-style-type:disc">Рассылка/пуш:<ul id="2aa568fa-e39f-8010-91aa-f887a9348de8" class="bulleted-list"><li style="list-style-type:circle">больше вероятность покупки/возврата пользователя.</li></ul></li></ul><ul id="2aa568fa-e39f-806a-8a78-fdba9b8c8bde" class="bulleted-list"><li style="list-style-type:disc">Multi-task модель даёт:<ul id="2aa568fa-e39f-80dd-90de-d8ff41da2f3f" class="bulleted-list"><li style="list-style-type:circle">набор вероятностей;</li></ul><ul id="2aa568fa-e39f-80ae-91bf-c1b64719c367" class="bulleted-list"><li style="list-style-type:circle">на каждой витрине можно использовать <strong>разную формулу score</strong>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a6-9007-f46c61ac8a9c" class="numbered-list" start="5"><li><strong>Связь с предыдущими модулями</strong><ul id="2aa568fa-e39f-809f-89dc-c3a62237cb71" class="bulleted-list"><li style="list-style-type:disc">Candidate generators:<ul id="2aa568fa-e39f-80da-9c4e-cc126327f70f" class="bulleted-list"><li style="list-style-type:circle">из модулей 1–6: popularity, CF/MF, content, sequence, graph.</li></ul></li></ul><ul id="2aa568fa-e39f-80b0-bcfd-f6aa357895df" class="bulleted-list"><li style="list-style-type:disc">Ranker:<ul id="2aa568fa-e39f-80e4-9ac4-c5eba00f63d8" class="bulleted-list"><li style="list-style-type:circle">multi-task модель (модуль 7).</li></ul></li></ul><ul id="2aa568fa-e39f-8017-80d0-dcbb9ec8c9be" class="bulleted-list"><li style="list-style-type:disc">Дальше:<ul id="2aa568fa-e39f-806f-8d3b-c162bfbed341" class="bulleted-list"><li style="list-style-type:circle">графы (модуль 8),</li></ul><ul id="2aa568fa-e39f-80b7-bd2f-ceca5f296bb7" class="bulleted-list"><li style="list-style-type:circle">production архитектура (модуль 10 в твоём большом плане).</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8069-b529-d43cdce4ed02" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80a8-9dd1-dee76117dd55" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-80eb-8c3a-f554f4379a74" class="numbered-list" start="1"><li>Взять уже обученную multi-task модель (7.2–7.3) и кандидатов:<ul id="2aa568fa-e39f-8011-abb3-f0dd0890e023" class="bulleted-list"><li style="list-style-type:disc">например: объединение кандидатов из popularity + MF + sequence (если есть).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803c-bbe3-e1fe903f71b4" class="numbered-list" start="2"><li>Для каждого <code>(user, candidate_item)</code> посчитать:<ul id="2aa568fa-e39f-80f6-b42f-d9d61230edcf" class="bulleted-list"><li style="list-style-type:disc"><code>p_click</code>, <code>p_cart</code>, <code>p_purchase</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8040-b875-f133b1a8d81a" class="numbered-list" start="3"><li>Реализовать разные scoring-функции:<ul id="2aa568fa-e39f-800a-9e68-f85eb3f5ce70" class="bulleted-list"><li style="list-style-type:disc">click-ориентированную;</li></ul><ul id="2aa568fa-e39f-8044-bede-e5416dcb50ab" class="bulleted-list"><li style="list-style-type:disc">purchase/GMV-ориентированную;</li></ul><ul id="2aa568fa-e39f-8065-9619-e4026cbfdddd" class="bulleted-list"><li style="list-style-type:disc">комбинированную.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809c-8775-e118f68be525" class="numbered-list" start="4"><li>Посчитать:<ul id="2aa568fa-e39f-80ae-9837-ec9ea1abeb52" class="bulleted-list"><li style="list-style-type:disc">top-K списки под каждую цель;</li></ul><ul id="2aa568fa-e39f-800f-b0fc-d579bd9eccaa" class="bulleted-list"><li style="list-style-type:disc">метрики:<ul id="2aa568fa-e39f-806e-b0eb-d4ee84b1c879" class="bulleted-list"><li style="list-style-type:circle">NDCG_click, NDCG_purchase, GMV proxy для каждой формулы.</li></ul></li></ul></li></ol></li></ul><ul id="2aa568fa-e39f-806e-8a7c-fef366f028d6" class="bulleted-list"><li style="list-style-type:disc">Дополнительно:<ul id="2aa568fa-e39f-80b2-a5d5-cdafa512104f" class="bulleted-list"><li style="list-style-type:circle">сделать простое re-ranking:<ul id="2aa568fa-e39f-80c9-b961-fcee7fbb1096" class="bulleted-list"><li style="list-style-type:square">ограничение на max 3 товара из одной категории в топ-10;</li></ul><ul id="2aa568fa-e39f-801e-af93-c2d851fa95a1" class="bulleted-list"><li style="list-style-type:square">посмотреть, как меняется diversity и NDCG.</li></ul></li></ul></li></ul><h3 id="2aa568fa-e39f-80a0-8fcd-c89b00a854a3" class="">Домашка 7.4</h3><ol type="1" id="2aa568fa-e39f-80fd-bfb6-ca5a49a2e394" class="numbered-list" start="1"><li>Сравнить:<ul id="2aa568fa-e39f-80d5-8d7f-f3e8fa24d5e3" class="bulleted-list"><li style="list-style-type:disc">чисто click-ориентированный score;</li></ul><ul id="2aa568fa-e39f-8064-8d22-c90cd19b2eab" class="bulleted-list"><li style="list-style-type:disc">чисто purchase-ориентированный score;</li></ul><ul id="2aa568fa-e39f-80a6-b847-d33a10aa5285" class="bulleted-list"><li style="list-style-type:disc">GMV-ориентированный гибрид.</li></ul><p id="2aa568fa-e39f-809d-9cc2-c4e9dabc71c9" class="">По:</p><ul id="2aa568fa-e39f-809d-b1c5-dd9379771508" class="bulleted-list"><li style="list-style-type:disc">метрикам,</li></ul><ul id="2aa568fa-e39f-80bb-ad71-fe27138ff113" class="bulleted-list"><li style="list-style-type:disc">распределению категорий в топ-K,</li></ul><ul id="2aa568fa-e39f-808e-8601-d6ed54ddd695" class="bulleted-list"><li style="list-style-type:disc">ожидаемому GMV.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8004-84a8-f3c3a20a616e" class="numbered-list" start="2"><li>Написать:<ul id="2aa568fa-e39f-80f8-a785-c0d8d8fe75ed" class="bulleted-list"><li style="list-style-type:disc">какую формулу score ты бы использовал:<ul id="2aa568fa-e39f-80d7-bbc1-e0c57b52201f" class="bulleted-list"><li style="list-style-type:circle">на главной странице,</li></ul><ul id="2aa568fa-e39f-80f8-9c70-e78eaf1c3113" class="bulleted-list"><li style="list-style-type:circle">на странице распродажи,</li></ul><ul id="2aa568fa-e39f-80e1-9884-f8d8e2da22fc" class="bulleted-list"><li style="list-style-type:circle">в подборке «Похожие товары».</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-808e-9c3f-d7a6f3603153"/><h2 id="2aa568fa-e39f-80f2-8590-d6093dd91faf" class="">Мини-проект по модулю 7</h2><p id="2aa568fa-e39f-80a5-b08e-cf5c602017ba" class=""><strong>Название:</strong></p><p id="2aa568fa-e39f-80da-aaa4-d56e4b26048f" class="">«Рекомендательная воронка: от кликов до покупок»</p><p id="2aa568fa-e39f-809e-84cf-cd72d196874e" class=""><strong>Задача проекта:</strong></p><p id="2aa568fa-e39f-80a3-8c78-ef4a9a6cd562" class="">На одном e-commerce/контент датасете, где есть хотя бы 3 типа событий (click/cart/purchase или их аналоги), построить <strong>полный multi-objective пайплайн</strong>.</p><p id="2aa568fa-e39f-8033-b413-d2a8dd1ed08f" class=""><strong>Шаги проекта:</strong></p><ol type="1" id="2aa568fa-e39f-804e-b20f-e64b5437af94" class="numbered-list" start="1"><li><strong>Формализация задачи и воронки:</strong><ul id="2aa568fa-e39f-8043-96a2-cdb242b1e1f6" class="bulleted-list"><li style="list-style-type:disc">описать события и воронку;</li></ul><ul id="2aa568fa-e39f-802b-87b8-f0dcf6609f01" class="bulleted-list"><li style="list-style-type:disc">посчитать конверсии;</li></ul><ul id="2aa568fa-e39f-801f-905c-c0357b74a09a" class="bulleted-list"><li style="list-style-type:disc">выбрать ключевые 2–3 цели.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ce-b85e-d4941bab40d3" class="numbered-list" start="2"><li><strong>Моделирование:</strong><ul id="2aa568fa-e39f-80ab-8458-effd1061d78d" class="bulleted-list"><li style="list-style-type:disc">собрать фичи (user, item, context, history);</li></ul><ul id="2aa568fa-e39f-8046-ba39-fbe6aa13e738" class="bulleted-list"><li style="list-style-type:disc">обучить multi-task модель:<ul id="2aa568fa-e39f-80a7-a8b6-e28f00f1a483" class="bulleted-list"><li style="list-style-type:circle">backbone (GBM/MLP/sequence),</li></ul><ul id="2aa568fa-e39f-80fe-8b9b-f5890ab58e1f" class="bulleted-list"><li style="list-style-type:circle">несколько heads для click/cart/purchase;</li></ul></li></ul><ul id="2aa568fa-e39f-8027-88e2-ceca9ba4256a" class="bulleted-list"><li style="list-style-type:disc">решить проблему дисбаланса (class weights / sampling).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e2-9b97-fdb1812ce352" class="numbered-list" start="3"><li><strong>Eval:</strong><ul id="2aa568fa-e39f-8014-88b7-fa6a990ebb31" class="bulleted-list"><li style="list-style-type:disc">реализовать метрики:<ul id="2aa568fa-e39f-8014-840e-c3984eabec5d" class="bulleted-list"><li style="list-style-type:circle">AUC/PR-AUC по каждой задаче;</li></ul><ul id="2aa568fa-e39f-80ff-8119-e4cd977ecab7" class="bulleted-list"><li style="list-style-type:circle">Recall@K / NDCG@K по каждой;</li></ul><ul id="2aa568fa-e39f-80c1-843c-d6bcd934da54" class="bulleted-list"><li style="list-style-type:circle">общую multi-objective метрику (weighted score / GMV proxy).</li></ul></li></ul><ul id="2aa568fa-e39f-8092-9b4f-f3da30e1bfbf" class="bulleted-list"><li style="list-style-type:disc">сравнить:<ul id="2aa568fa-e39f-8034-89fd-c39c7bc466ce" class="bulleted-list"><li style="list-style-type:circle">single-task модели (отдельная модель на click, purchase);</li></ul><ul id="2aa568fa-e39f-8095-b293-d5284bb12301" class="bulleted-list"><li style="list-style-type:circle">multi-task модель.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809a-a21d-edac7034daba" class="numbered-list" start="4"><li><strong>Интеграция:</strong><ul id="2aa568fa-e39f-807f-bdd8-ee182b1461bb" class="bulleted-list"><li style="list-style-type:disc">построить candidate generation (из предыдущих модулей — pop, CF/MF, content, sequence);</li></ul><ul id="2aa568fa-e39f-8008-a1a8-c9709bb7a4bb" class="bulleted-list"><li style="list-style-type:disc">использовать multi-task модель как ranker;</li></ul><ul id="2aa568fa-e39f-8025-8038-c270895c67e0" class="bulleted-list"><li style="list-style-type:disc">реализовать хотя бы одну формулу business-score (например, GMV-ориентированную).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8059-8b04-fdc19118874b" class="numbered-list" start="5"><li><strong>Отчёт:</strong><ul id="2aa568fa-e39f-80ae-8940-da0237a76a84" class="bulleted-list"><li style="list-style-type:disc">постановка задачи;</li></ul><ul id="2aa568fa-e39f-80bb-bf94-e946e6668c33" class="bulleted-list"><li style="list-style-type:disc">архитектура модели;</li></ul><ul id="2aa568fa-e39f-8033-97d2-c40d8ac9105a" class="bulleted-list"><li style="list-style-type:disc">результаты по метрикам;</li></ul><ul id="2aa568fa-e39f-80a3-b15b-d969a5f1f47f" class="bulleted-list"><li style="list-style-type:disc">анализ trade-off’ов между задачами;</li></ul><ul id="2aa568fa-e39f-802c-8b8b-e3a4ad801dc8" class="bulleted-list"><li style="list-style-type:disc">предложение «production-варианта»:<ul id="2aa568fa-e39f-8080-a9c4-f4c5b2ea3764" class="bulleted-list"><li style="list-style-type:circle">как бы ты развернул это в реальном продукте.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-8067-8c1a-f5df77fa4506"/><p id="2aa568fa-e39f-8052-b2fb-f4d91ac9aea0" class="">Если хочешь, дальше могу так же детально расписать <strong>Модуль 8 (графовые рекомендатели: LightGCN/PinSage/Item2Vec)</strong> или уже начать собирать весь курс в <strong>единый roadmap + список конкретных Kaggle/All Cups соревнований под каждый модуль</strong>. Что двигаем следующим?</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

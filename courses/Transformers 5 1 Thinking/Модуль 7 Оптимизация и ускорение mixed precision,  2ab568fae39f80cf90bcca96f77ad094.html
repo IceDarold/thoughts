@@ -1,0 +1,1049 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 7. Оптимизация и ускорение: mixed precision, accelerate, большие модели и квантование</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80cf-90bc-ca96f77ad094" class="page sans"><header><h1 class="page-title">Модуль 7. Оптимизация и ускорение: mixed precision, accelerate, большие модели и квантование</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-809f-b580-fe2b1664e032" class="">Поехали разгонять всё это добро по скорости 🚀</p><p id="2ab568fa-e39f-80d6-b987-e95021e93c0b" class="">В <strong>модуле 7</strong> мы не учим новые типы моделей, а учим <strong>делать уже знакомые модели адекватными по скорости и памяти</strong>:</p><ul id="2ab568fa-e39f-80fb-a8ce-ed4aeb20c5f6" class="bulleted-list"><li style="list-style-type:disc">чтобы не падать с OOM при обучении,</li></ul><ul id="2ab568fa-e39f-80ea-b793-c5ff4c10cfed" class="bulleted-list"><li style="list-style-type:disc">чтобы можно было гонять ботов и суммаризаторы на одной видеокарте/CPU,</li></ul><ul id="2ab568fa-e39f-8078-af3a-c18bc850ba5a" class="bulleted-list"><li style="list-style-type:disc">чтобы понимать, что такое <code>fp16/bf16</code>, <code>gradient_accumulation</code>, <code>device_map</code>, <code>8bit/4bit</code>.</li></ul><p id="2ab568fa-e39f-80d9-a1e6-e094677c3ca4" class="">Будем продолжать на <strong>тех же задачах</strong>, что уже делали:</p><ul id="2ab568fa-e39f-80da-9dba-f1b5f37b943b" class="bulleted-list"><li style="list-style-type:disc">классификатор тикетов (М2–4),</li></ul><ul id="2ab568fa-e39f-80bc-ba7f-da1e2f928f7a" class="bulleted-list"><li style="list-style-type:disc">seq2seq-суммаризатор диалогов (М5),</li></ul><ul id="2ab568fa-e39f-8033-afa6-d555907f1c73" class="bulleted-list"><li style="list-style-type:disc">каузальный саппорт-бот (М6).</li></ul><hr id="2ab568fa-e39f-808c-b5fa-ca8e571e8ca2"/><p id="2ab568fa-e39f-802e-9be0-f789d92c7b7a" class="">Сделаем 4 урока:</p><ol type="1" id="2ab568fa-e39f-80fa-abf2-c27d4ae04f28" class="numbered-list" start="1"><li><strong>7.1</strong> — Mixed precision, градиентный аккумулинг и экономия памяти в <code>Trainer</code>.<figure id="2ab568fa-e39f-804c-b3f7-de9421f3225e" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%207%20%D0%9E%D0%BF%D1%82%D0%B8%D0%BC%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20%D1%83%D1%81%D0%BA%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B5%20mixed%20precision,%20/%D0%A3%D1%80%D0%BE%D0%BA%207%201%20Mixed%20precision%20%D0%B8%20gradient%20accumulation%20%D0%B2%202ab568fae39f804cb3f7de9421f3225e.html">Урок 7.1 Mixed precision и gradient accumulation в Trainer: учимся влезать в GPU и не страдать</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-80a4-b4bc-d7c68c9abf57" class="numbered-list" start="2"><li><strong>7.2</strong> — <code>accelerate</code> + свой train loop под классификатор.<figure id="2ab568fa-e39f-8037-9f48-e362d71640ce" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%207%20%D0%9E%D0%BF%D1%82%D0%B8%D0%BC%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20%D1%83%D1%81%D0%BA%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B5%20mixed%20precision,%20/%D0%A3%D1%80%D0%BE%D0%BA%207%202%20Accelerate%20+%20%D1%81%D0%B2%D0%BE%D0%B9%20training%20loop%20%D0%BA%D0%BE%D0%B3%D0%B4%D0%B0%20Tra%202ab568fae39f80379f48e362d71640ce.html">Урок 7.2 Accelerate + свой training loop: когда Trainer уже не хватает</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-8093-b2e0-ecc2c5742819" class="numbered-list" start="3"><li><strong>7.3</strong> — Большие модели: <code>device_map=&quot;auto&quot;</code>, offload, 8-bit/4-bit-квантование.<figure id="2ab568fa-e39f-804c-a3ad-ffd911429dda" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%207%20%D0%9E%D0%BF%D1%82%D0%B8%D0%BC%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20%D1%83%D1%81%D0%BA%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B5%20mixed%20precision,%20/%D0%A3%D1%80%D0%BE%D0%BA%207%203%20%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%B8%D0%B5%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%20device_map,%20offload,%208-bit%202ab568fae39f804ca3adffd911429dda.html">Урок 7.3 Большие модели: device_map, offload, 8-bit/4-bit квантование</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-8069-be02-c35d16c83fbc" class="numbered-list" start="4"><li><strong>7.4</strong> — Мини-проект: “лёгкий” саппорт-бот/суммаризатор для прод-инференса.<figure id="2ab568fa-e39f-807a-835e-fcf29efedcfc" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%207%20%D0%9E%D0%BF%D1%82%D0%B8%D0%BC%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20%D1%83%D1%81%D0%BA%D0%BE%D1%80%D0%B5%D0%BD%D0%B8%D0%B5%20mixed%20precision,%20/%D0%A3%D1%80%D0%BE%D0%BA%207%204%20%D0%9C%D0%B8%D0%BD%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%20%D0%BB%D1%91%D0%B3%D0%BA%D0%B8%D0%B9%20%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82-%D0%B1%D0%BE%D1%82%20%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%82%202ab568fae39f807a835efcf29efedcfc.html">Урок 7.4. Мини-проект: лёгкий саппорт-бот/суммаризатор для прод-инференса</a></figure></li></ol><hr id="2ab568fa-e39f-80ff-9324-e52f29ca0e2c"/><h2 id="2ab568fa-e39f-80b0-a41d-d996cc4c418e" class="">Урок 7.1. Mixed precision и эффективный batch size в Trainer</h2><p id="2ab568fa-e39f-80c0-b1f4-dab8a89ae548" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80a2-af4a-d11aaf4b0df4" class="">Научить:</p><ul id="2ab568fa-e39f-8093-9aff-e994f07e1e87" class="bulleted-list"><li style="list-style-type:disc">включать <code>fp16</code> / <code>bf16</code>обучение,</li></ul><ul id="2ab568fa-e39f-8075-9fdc-de4571cc09f0" class="bulleted-list"><li style="list-style-type:disc">использовать <code>gradient_accumulation_steps</code>,</li></ul><ul id="2ab568fa-e39f-800b-89f0-db8230e60d7d" class="bulleted-list"><li style="list-style-type:disc">понимать разницу между <code>per_device_train_batch_size</code> и <em>эффективным</em> batch size.</li></ul><h3 id="2ab568fa-e39f-809b-9f86-f56d602b2fba" class="">7.1.1. Кейс</h3><blockquote id="2ab568fa-e39f-8014-a5da-ebc44ce63873" class="">У нас есть модель из М4 (классификация тикетов) и не очень большая видеокарта.<p id="2ab568fa-e39f-80e1-9104-cd17de7921ed" class="">Мы хотим:</p><ul id="2ab568fa-e39f-80fb-a7cf-d5029d73161d" class="bulleted-list"><li style="list-style-type:disc">либо <strong>ускорить</strong> обучение,</li></ul><ul id="2ab568fa-e39f-8029-8288-c5177ae0cf57" class="bulleted-list"><li style="list-style-type:disc">либо <strong>влезть в память</strong> с большим batch size,</li></ul><ul id="2ab568fa-e39f-8024-9598-d7d74badba6a" class="bulleted-list"><li style="list-style-type:disc">не переписывая логику обучения — только на уровне <code>TrainingArguments</code>.</li></ul></blockquote><h3 id="2ab568fa-e39f-80c0-80b8-f3c1232b9aef" class="">7.1.2. Идея mixed precision</h3><p id="2ab568fa-e39f-8017-aacb-cd08906fc637" class="">Объясняем простыми словами:</p><ul id="2ab568fa-e39f-80ec-9166-c7fe80dc23f4" class="bulleted-list"><li style="list-style-type:disc"><code>fp32</code> — стандартные 32-бит float’ы.</li></ul><ul id="2ab568fa-e39f-8096-bd60-e055be1b1d0f" class="bulleted-list"><li style="list-style-type:disc"><code>fp16</code> / <code>bf16</code> — 16-бит float’ы:<ul id="2ab568fa-e39f-8068-86c5-e1fac5957a4b" class="bulleted-list"><li style="list-style-type:circle">меньше памяти,</li></ul><ul id="2ab568fa-e39f-80cc-97cd-e901cbb001d2" class="bulleted-list"><li style="list-style-type:circle">могут быть быстрее на современных GPU,</li></ul><ul id="2ab568fa-e39f-8051-8ea6-c69564bf2446" class="bulleted-list"><li style="list-style-type:circle">иногда чуть менее стабильное обучение (но обычно ок).</li></ul></li></ul><p id="2ab568fa-e39f-80c3-b23e-e552e10e718b" class="">В <code>TrainingArguments</code>:</p><ul id="2ab568fa-e39f-8050-b74a-f1aee095b43c" class="bulleted-list"><li style="list-style-type:disc"><code>fp16=True</code> — включаем смешанную точность (Ampere и т.п.).</li></ul><ul id="2ab568fa-e39f-80d6-b8df-d4df4ffad0cf" class="bulleted-list"><li style="list-style-type:disc"><code>bf16=True</code> — если GPU поддерживает bfloat16 (A100, некоторые новые).</li></ul><p id="2ab568fa-e39f-8099-9023-e9f9b2525c50" class="">⚠️ Важно: <strong>не включать одновременно</strong> <code>fp16</code> и <code>bf16</code>.</p><h3 id="2ab568fa-e39f-807b-bf7e-f2ec47652dd2" class="">7.1.3. Градиентный аккумулинг (gradient accumulation)</h3><ul id="2ab568fa-e39f-8062-bfa6-e5a61e289d5f" class="bulleted-list"><li style="list-style-type:disc"><code>per_device_train_batch_size</code> — сколько сэмплов в одном батче <strong>на устройстве</strong>.</li></ul><ul id="2ab568fa-e39f-808a-bd7a-d8b90b8e83d5" class="bulleted-list"><li style="list-style-type:disc"><code>gradient_accumulation_steps=k</code>:<ul id="2ab568fa-e39f-8014-9fef-e10f72f50dc8" class="bulleted-list"><li style="list-style-type:circle">мы делаем k <em>forward+backward</em> проходов <strong>до</strong> одного <code>optimizer.step()</code>,</li></ul><ul id="2ab568fa-e39f-80a6-90c3-c07224533634" class="bulleted-list"><li style="list-style-type:circle">эффективный batch size = <code>per_device_train_batch_size * gradient_accumulation_steps * num_devices</code>.</li></ul></li></ul><p id="2ab568fa-e39f-80ad-b5fa-d133478c32e0" class="">Пример:</p><p id="2ab568fa-e39f-804c-aa70-f030b37dd657" class=""><code>batch_size=8</code>, <code>grad_accum_steps=4</code>, <code>1 GPU</code> → эффективный batch = 32.</p><h3 id="2ab568fa-e39f-8071-a705-d2063537a9eb" class="">7.1.4. Код: адаптация нашего Trainer из М4</h3><p id="2ab568fa-e39f-8039-9750-d33c0d2731e9" class="">Допустим, есть код из М4:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c2-b414-fb90a96d0d88" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import TrainingArguments
+
+training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/tickets_final&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=3e-5,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=32,
+    num_train_epochs=4,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    logging_steps=20,
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;f1&quot;,
+    report_to=[&quot;none&quot;],
+)
+</code></pre><p id="2ab568fa-e39f-807e-a2b5-c0f57d9b5c97" class="">Делаем “оптимизированную” версию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803c-b981-e23472baf55d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/tickets_final_fp16&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=3e-5,
+    per_device_train_batch_size=8,      # уменьшаем батч, чтобы влезть
+    per_device_eval_batch_size=32,
+    num_train_epochs=4,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    logging_steps=20,
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;f1&quot;,
+    report_to=[&quot;none&quot;],
+    fp16=True,                          # включаем mixed precision
+    gradient_accumulation_steps=2,      # эффективный batch = 8*2 = 16
+)
+</code></pre><p id="2ab568fa-e39f-8099-a8ca-e70d68257fd4" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-800f-b180-f1390de183cd" class="bulleted-list"><li style="list-style-type:disc">Если раньше <code>16</code> не влезало, теперь:<ul id="2ab568fa-e39f-80ac-97a0-e41919b865d1" class="bulleted-list"><li style="list-style-type:circle">модель в <code>fp16</code> → меньше памяти,</li></ul><ul id="2ab568fa-e39f-8088-8ab3-cbd7e05f77d8" class="bulleted-list"><li style="list-style-type:circle">батч 8, но аккумулинг на 2 шага → по градиентам это как 16.</li></ul></li></ul><ul id="2ab568fa-e39f-801f-961a-ff7d6a969d54" class="bulleted-list"><li style="list-style-type:disc">Можно играться:<ul id="2ab568fa-e39f-8025-a9bf-d6a8d110c76f" class="bulleted-list"><li style="list-style-type:circle">уменьшать <code>per_device_train_batch_size</code> до тех пор, пока не перестанет быть OOM,</li></ul><ul id="2ab568fa-e39f-8039-8cf8-cbdc47b6a826" class="bulleted-list"><li style="list-style-type:circle">компенсировать <code>gradient_accumulation_steps</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-80db-8f03-d7297f3cd34f" class="">7.1.5. Домашка 7.1</h3><ol type="1" id="2ab568fa-e39f-8081-9147-c95d0b1a2924" class="numbered-list" start="1"><li>Взять свою задачу из М4 (классификация тикетов):<ul id="2ab568fa-e39f-801f-a07f-d5b65e5abc87" class="bulleted-list"><li style="list-style-type:disc">сначала обучить без <code>fp16</code> и аккумлинга,</li></ul><ul id="2ab568fa-e39f-8065-b2b7-ed7ef4ee3f28" class="bulleted-list"><li style="list-style-type:disc">замерить:<ul id="2ab568fa-e39f-806a-8e15-dd9da2823018" class="bulleted-list"><li style="list-style-type:circle">время на эпоху,</li></ul><ul id="2ab568fa-e39f-80a9-adec-f6a0c8e3186a" class="bulleted-list"><li style="list-style-type:circle">лучшую F1.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8051-9352-fc9305919f10" class="numbered-list" start="2"><li>Потом:<ul id="2ab568fa-e39f-8040-8e0c-f7119d569de1" class="bulleted-list"><li style="list-style-type:disc">включить <code>fp16=True</code>,</li></ul><ul id="2ab568fa-e39f-8008-99ea-f3b0af0ebc17" class="bulleted-list"><li style="list-style-type:disc">уменьшить <code>per_device_train_batch_size</code>,</li></ul><ul id="2ab568fa-e39f-80e3-a4de-df62057f0df1" class="bulleted-list"><li style="list-style-type:disc">добавить <code>gradient_accumulation_steps</code>,</li></ul><ul id="2ab568fa-e39f-8012-b0ef-c108bf12933b" class="bulleted-list"><li style="list-style-type:disc">снова замерить время и качество.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8021-a391-fc4789e8bd73" class="numbered-list" start="3"><li>Написать пару выводов:<ul id="2ab568fa-e39f-80af-b1fd-d37911bf9d38" class="bulleted-list"><li style="list-style-type:disc">получилось ли ускорить,</li></ul><ul id="2ab568fa-e39f-80a2-90df-f5ac9165d082" class="bulleted-list"><li style="list-style-type:disc">как изменилось использование памяти (по ощущениям / <code>nvidia-smi</code>),</li></ul><ul id="2ab568fa-e39f-8047-92bf-e468ad0e0f77" class="bulleted-list"><li style="list-style-type:disc">упало ли качество.</li></ul></li></ol><hr id="2ab568fa-e39f-807a-b4a7-ca617253ef90"/><h2 id="2ab568fa-e39f-8092-bf33-dcc2f28a6768" class="">Урок 7.2. Accelerate + свой train loop</h2><p id="2ab568fa-e39f-80c3-bdcd-f7fae4c22056" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-802b-9149-daa7c49302ef" class="">Научить:</p><ul id="2ab568fa-e39f-801b-957e-e26ffaee2a86" class="bulleted-list"><li style="list-style-type:disc">базово пользоваться <code>accelerate</code> для своего train loop,</li></ul><ul id="2ab568fa-e39f-8054-be7b-e917798f2e5b" class="bulleted-list"><li style="list-style-type:disc">писать кастомный цикл обучения без Trainer (но с мульти-GPU/мульти-device поддержкой),</li></ul><ul id="2ab568fa-e39f-8006-8650-e2e2cf596d61" class="bulleted-list"><li style="list-style-type:disc">понимать, как оборачивать модель, оптимизатор, даталоадер.</li></ul><h3 id="2ab568fa-e39f-802a-9f62-f8be051ba74f" class="">7.2.1. Кейс</h3><blockquote id="2ab568fa-e39f-80ad-a73a-dad7fea22665" class="">Нам иногда нужен полный контроль:<ul id="2ab568fa-e39f-8010-a48a-c385444ff057" class="bulleted-list"><li style="list-style-type:disc">нестандартный лосс,</li></ul><ul id="2ab568fa-e39f-80d2-ae6c-fb57407fa2c1" class="bulleted-list"><li style="list-style-type:disc">несколько моделей,</li></ul><ul id="2ab568fa-e39f-80fd-b831-c17d89d541dd" class="bulleted-list"><li style="list-style-type:disc">сложная логика обучения.</li></ul><p id="2ab568fa-e39f-8071-9307-d47f66a60092" class=""><code>Trainer</code> удобен, но не всегда гибок.</p><p id="2ab568fa-e39f-8015-bec3-fcec37081452" class="">Поэтому мы делаем <strong>свой цикл</strong>, но с помощью <code>Accelerator</code>:</p><ul id="2ab568fa-e39f-8091-85da-d3ca9ff8b2c8" class="bulleted-list"><li style="list-style-type:disc">чтобы не страдать с <code>.to(device)</code>/DDP вручную.</li></ul></blockquote><h3 id="2ab568fa-e39f-8073-a22b-cbb97571cf76" class="">7.2.2. Минимальный цикл обучения для классификатора тикетов</h3><p id="2ab568fa-e39f-80e1-b918-c7462854dc63" class="">Предположим, у нас уже есть:</p><ul id="2ab568fa-e39f-80a4-b35f-f821c3d357c6" class="bulleted-list"><li style="list-style-type:disc"><code>tokenized_dataset</code> и <code>data_collator</code> из М3,</li></ul><ul id="2ab568fa-e39f-802e-83d1-ea47b9a10a69" class="bulleted-list"><li style="list-style-type:disc">модель <code>AutoModelForSequenceClassification</code> из М4.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a0-85eb-da2315c74942" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from torch.utils.data import DataLoader
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from accelerate import Accelerator
+import torch
+from data_pipeline import load_and_prepare_data
+</code></pre><p id="2ab568fa-e39f-8076-93c8-eecd7e8fc949" class="">Собираем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b5-ae14-d3966805ff10" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def train_with_accelerate(
+    csv_path: str,
+    model_name: str = &quot;distilbert-base-uncased&quot;,
+    num_epochs: int = 3,
+    lr: float = 2e-5,
+    batch_size: int = 16,
+):
+    accelerator = Accelerator()  # сам разрулит device, fp16/bf16 и т.д.
+
+    # 1. Данные
+    tokenized_dataset, label2id, id2label, tokenizer, data_collator = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    train_dataset = tokenized_dataset[&quot;train&quot;]
+    val_dataset = tokenized_dataset[&quot;validation&quot;]
+
+    train_dataloader = DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True, collate_fn=data_collator
+    )
+    val_dataloader = DataLoader(
+        val_dataset, batch_size=batch_size, shuffle=False, collate_fn=data_collator
+    )
+
+    # 2. Модель и оптимизатор
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
+
+    # 3. Оборачиваем всё в accelerator
+    model, optimizer, train_dataloader, val_dataloader = accelerator.prepare(
+        model, optimizer, train_dataloader, val_dataloader
+    )
+
+    # 4. Цикл обучения
+    for epoch in range(num_epochs):
+        model.train()
+        total_loss = 0.0
+        for batch in train_dataloader:
+            optimizer.zero_grad()
+            outputs = model(
+                input_ids=batch[&quot;input_ids&quot;],
+                attention_mask=batch[&quot;attention_mask&quot;],
+                labels=batch[&quot;labels&quot;],
+            )
+            loss = outputs.loss
+            accelerator.backward(loss)
+            optimizer.step()
+            total_loss += loss.item()
+
+        avg_train_loss = total_loss / len(train_dataloader)
+
+        # Eval
+        model.eval()
+        total_eval_loss = 0.0
+        correct = 0
+        total = 0
+
+        for batch in val_dataloader:
+            with torch.no_grad():
+                outputs = model(
+                    input_ids=batch[&quot;input_ids&quot;],
+                    attention_mask=batch[&quot;attention_mask&quot;],
+                    labels=batch[&quot;labels&quot;],
+                )
+            loss = outputs.loss
+            logits = outputs.logits
+            total_eval_loss += loss.item()
+
+            preds = torch.argmax(logits, dim=-1)
+            correct += (preds == batch[&quot;labels&quot;]).sum().item()
+            total += batch[&quot;labels&quot;].size(0)
+
+        avg_eval_loss = total_eval_loss / len(val_dataloader)
+        accuracy = correct / total if total &gt; 0 else 0.0
+
+        accelerator.print(
+            f&quot;Epoch {epoch+1}/{num_epochs} | train_loss={avg_train_loss:.4f} | &quot;
+            f&quot;val_loss={avg_eval_loss:.4f} | val_acc={accuracy:.4f}&quot;
+        )
+
+    # Сохраняем модель (с учётом unwrap)
+    unwrapped_model = accelerator.unwrap_model(model)
+    unwrapped_model.save_pretrained(&quot;models/tickets_accelerate&quot;)
+    tokenizer.save_pretrained(&quot;models/tickets_accelerate&quot;)
+</code></pre><p id="2ab568fa-e39f-80d8-ae36-e12c4ce7555e" class="">Объясняем важные штуки:</p><ul id="2ab568fa-e39f-8050-977a-c4d8f93b22d3" class="bulleted-list"><li style="list-style-type:disc"><code>Accelerator()</code>:<ul id="2ab568fa-e39f-80c6-a9e3-c6b0143cca51" class="bulleted-list"><li style="list-style-type:circle">сам выбирает device,</li></ul><ul id="2ab568fa-e39f-8044-b849-e4d8b8964e6c" class="bulleted-list"><li style="list-style-type:circle">умеет работать с <code>fp16/bf16</code> при конфигах,</li></ul><ul id="2ab568fa-e39f-80f3-85d7-c3ef477267c7" class="bulleted-list"><li style="list-style-type:circle">если несколько GPU — сам ставит DDP.</li></ul></li></ul><ul id="2ab568fa-e39f-80cb-9ed6-fba0a0b976bf" class="bulleted-list"><li style="list-style-type:disc"><code>accelerator.prepare(...)</code>:<ul id="2ab568fa-e39f-8033-807d-c9e8a19ba056" class="bulleted-list"><li style="list-style-type:circle">“оборачивает” модель, оптимизатор и dataloader’ы.</li></ul></li></ul><ul id="2ab568fa-e39f-8033-a77a-e33e16620c17" class="bulleted-list"><li style="list-style-type:disc">Для логов используем <code>accelerator.print</code>, чтобы не дублировать на каждом процессе.</li></ul><h3 id="2ab568fa-e39f-809a-8487-db92ad736ff4" class="">7.2.3. Домашка 7.2</h3><ol type="1" id="2ab568fa-e39f-8033-9d67-c427f24a55b4" class="numbered-list" start="1"><li>Переписать обучение классификатора из М4 на <code>accelerate</code>:<ul id="2ab568fa-e39f-8055-9fc7-ff47914002d3" class="bulleted-list"><li style="list-style-type:disc">использовать почти тот же код, что выше.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80de-9511-e5530fe947ec" class="numbered-list" start="2"><li>Сравнить:<ul id="2ab568fa-e39f-8025-9d5a-c3c24329ebdf" class="bulleted-list"><li style="list-style-type:disc">качество (accuracy/F1),</li></ul><ul id="2ab568fa-e39f-806d-8fd8-d2d122cf49a0" class="bulleted-list"><li style="list-style-type:disc">скорость (примерно),</li></ul><ul id="2ab568fa-e39f-8016-9478-fb952757d501" class="bulleted-list"><li style="list-style-type:disc">как выглядит логика vs Trainer.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8079-af28-fdc7e7dec2f2" class="numbered-list" start="3"><li>(Опционально) Настроить <code>Accelerator(fp16=True)</code> или конфиг через CLI (<code>accelerate config</code>) и сравнить память.</li></ol><hr id="2ab568fa-e39f-8063-85f6-daecf6f63276"/><h2 id="2ab568fa-e39f-80e7-8dae-e2e42b895b25" class="">Урок 7.3. Большие модели: device_map, offload, 8-bit/4-bit квантование</h2><p id="2ab568fa-e39f-800b-b028-d5d0c822d468" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8023-b2fd-fcf9599f244c" class="">Научить:</p><ul id="2ab568fa-e39f-80b1-a94e-f88ab97f6be5" class="bulleted-list"><li style="list-style-type:disc">грузить <strong>большие</strong> модели, которые целиком не влезают в GPU,</li></ul><ul id="2ab568fa-e39f-80cf-8559-d8aba02fce07" class="bulleted-list"><li style="list-style-type:disc">использовать <code>device_map=&quot;auto&quot;</code> и offloading,</li></ul><ul id="2ab568fa-e39f-802a-ac6c-d83bef68be77" class="bulleted-list"><li style="list-style-type:disc">использовать 8-bit/4-bit-загрузку (<code>load_in_8bit</code>, <code>load_in_4bit</code>) для инференса.</li></ul><h3 id="2ab568fa-e39f-802f-a287-e1c56ea5afaa" class="">7.3.1. Кейс</h3><blockquote id="2ab568fa-e39f-80a2-bf88-d205329f527a" class="">В М6 мы делали саппорт-бота на сравнительно маленькой модели.<p id="2ab568fa-e39f-804c-b98c-da2995a0beca" class="">Теперь хотим:</p><ul id="2ab568fa-e39f-8006-a8bc-cf5ff77880c2" class="bulleted-list"><li style="list-style-type:disc">взять модель побольше (например, 7B),</li></ul><ul id="2ab568fa-e39f-8053-b71a-c5fde1fed83c" class="bulleted-list"><li style="list-style-type:disc">запустить её:<ul id="2ab568fa-e39f-80a3-9a94-eb0f5c2cf58f" class="bulleted-list"><li style="list-style-type:circle">либо с частичным размещением GPU+CPU,</li></ul><ul id="2ab568fa-e39f-805f-b82c-dda04effe30d" class="bulleted-list"><li style="list-style-type:circle">либо в 8-bit/4-bit варианте,</li></ul></li></ul><ul id="2ab568fa-e39f-80e3-827c-fd4bbc38e64f" class="bulleted-list"><li style="list-style-type:disc">чтобы использовать её для инференса в проде.</li></ul></blockquote><h3 id="2ab568fa-e39f-8072-907c-e895a5e8bbaa" class="">7.3.2. device_map=&quot;auto&quot; и offload</h3><p id="2ab568fa-e39f-80b1-ba07-fe3c87d74ff3" class="">Для больших моделей:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-9d93-f03ce36206bd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;big-llm/checkpoint&quot;  # пример
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,            # сам раскидает по доступным GPU/CPU
+    torch_dtype=&quot;auto&quot;,           # подберёт подходящий тип
+)
+</code></pre><p id="2ab568fa-e39f-80f3-bdda-f92c87bdc9a0" class="">Можно ещё:</p><ul id="2ab568fa-e39f-8055-a4d5-e7df4ca24b2d" class="bulleted-list"><li style="list-style-type:disc"><code>max_memory</code> задать словарём: сколько памяти на каждое устройство,</li></ul><ul id="2ab568fa-e39f-8031-a5d4-d38bf862d38b" class="bulleted-list"><li style="list-style-type:disc">использовать <code>offload_folder</code> (для CPU/disk offload) — для очень больших моделей.</li></ul><p id="2ab568fa-e39f-804d-a564-d7ba8cec6807" class="">Пример с offload на CPU/SSD:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800c-af8e-f77b1de5189a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    offload_folder=&quot;offload&quot;,
+    torch_dtype=&quot;auto&quot;,
+)
+</code></pre><h3 id="2ab568fa-e39f-807a-81b9-ea9698dd812d" class="">7.3.3. 8-bit / 4-bit загрузка (инференс)</h3><p id="2ab568fa-e39f-8056-ac09-d452fea3d58f" class="">Через интеграции с <code>bitsandbytes</code> (если установлен):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d2-a7ce-fd9a1f04ece0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;big-llm/checkpoint&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model_8bit = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    load_in_8bit=True,        # квант 8-бит
+)
+
+# или 4-бит (чаще для больших LLM):
+model_4bit = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    load_in_4bit=True,
+)
+</code></pre><p id="2ab568fa-e39f-803d-9cb2-f0a02db5e2f4" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-8062-ad43-dbaf4212d736" class="bulleted-list"><li style="list-style-type:disc">8-bit / 4-bit:<ul id="2ab568fa-e39f-80d0-a7e5-e977f89c943b" class="bulleted-list"><li style="list-style-type:circle">значительно экономят память,</li></ul><ul id="2ab568fa-e39f-80e6-9a5c-e08991439118" class="bulleted-list"><li style="list-style-type:circle">немного/заметно (4-bit) режут точность,</li></ul><ul id="2ab568fa-e39f-8096-a8fb-dd38933b04f0" class="bulleted-list"><li style="list-style-type:circle"><strong>отлично подходят для инференса</strong>, особенно если сделал PEFT/LoRA.</li></ul></li></ul><h3 id="2ab568fa-e39f-8022-a4eb-ccda1a45fcaa" class="">7.3.4. Сравнение: обычная vs 8-bit модель</h3><p id="2ab568fa-e39f-8045-8bf4-f27cae6dfc50" class="">Мини-скрипт (очень упрощённо):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802c-8b25-e27e4bff976a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import time
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;gpt2&quot;  # для демонстрации, вместо большой
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+text = &quot;User: The app keeps crashing.\nSupport:&quot;
+
+# Обычная модель
+model_fp32 = AutoModelForCausalLM.from_pretrained(model_name).to(&quot;cuda&quot;)
+
+inputs = tokenizer(text, return_tensors=&quot;pt&quot;).to(&quot;cuda&quot;)
+
+start = time.time()
+with torch.no_grad():
+    out_ids = model_fp32.generate(**inputs, max_new_tokens=50)
+torch.cuda.synchronize()
+t_fp32 = time.time() - start
+
+# 8-bit (если бы это была большая модель)
+# (на маленькой прирост может быть неочевиден, но зато меньше память)
+model_8bit = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;cuda&quot;,
+    load_in_8bit=True,
+)
+
+inputs_8 = tokenizer(text, return_tensors=&quot;pt&quot;).to(&quot;cuda&quot;)
+
+start = time.time()
+with torch.no_grad():
+    out_ids_8 = model_8bit.generate(**inputs_8, max_new_tokens=50)
+torch.cuda.synchronize()
+t_8bit = time.time() - start
+
+print(&quot;FP32 time:&quot;, t_fp32)
+print(&quot;8bit time:&quot;, t_8bit)
+</code></pre><p id="2ab568fa-e39f-80e4-8a7c-e9a4165d1bf0" class="">Важно: для маленьких моделей разница будет маленькой, но <strong>по памяти</strong> — будет заметно.</p><h3 id="2ab568fa-e39f-8009-b880-db2a3d4208bb" class="">7.3.5. Домашка 7.3</h3><ol type="1" id="2ab568fa-e39f-80cb-9251-de17fe73f3cb" class="numbered-list" start="1"><li>Взять свою каузальную модель из М6 (или любую побольше с Hub).</li></ol><ol type="1" id="2ab568fa-e39f-803c-b69d-d7c4bd765480" class="numbered-list" start="2"><li>Попробовать:<ul id="2ab568fa-e39f-8001-8de2-fd0f44037314" class="bulleted-list"><li style="list-style-type:disc">загрузить её обычным способом,</li></ul><ul id="2ab568fa-e39f-8050-8e82-d10593603843" class="bulleted-list"><li style="list-style-type:disc">загрузить с <code>device_map=&quot;auto&quot;</code>,</li></ul><ul id="2ab568fa-e39f-8026-876b-e980f4d68833" class="bulleted-list"><li style="list-style-type:disc">(если возможно) загрузить в <code>load_in_8bit</code> или <code>load_in_4bit</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8003-8ad4-f52a5e0497d4" class="numbered-list" start="3"><li>Сравнить:<ul id="2ab568fa-e39f-80bc-9c27-c37e4ca14fb1" class="bulleted-list"><li style="list-style-type:disc">сколько памяти занимает (по <code>nvidia-smi</code>),</li></ul><ul id="2ab568fa-e39f-80d4-8ab4-c4a76e0342db" class="bulleted-list"><li style="list-style-type:disc">как сильно меняется скорость инференса,</li></ul><ul id="2ab568fa-e39f-8023-adc4-dadb8305c0bc" class="bulleted-list"><li style="list-style-type:disc">есть ли заметное ухудшение качества ответов на глаз.</li></ul></li></ol><hr id="2ab568fa-e39f-8040-90cd-d6824dc40a98"/><h2 id="2ab568fa-e39f-80df-81d9-f93d4df7c3cd" class="">Урок 7.4. Мини-проект: “лёгкий” саппорт-бот / суммаризатор для прод-инференса</h2><p id="2ab568fa-e39f-80ed-855e-cbf4bd6af214" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8021-809a-c4eed61645ee" class="">Собрать <strong>реалистичный inference-пайплайн</strong>:</p><ul id="2ab568fa-e39f-8042-af5d-e8ed888b84ca" class="bulleted-list"><li style="list-style-type:disc">взять модель (классификатор/суммаризатор/бот),</li></ul><ul id="2ab568fa-e39f-80f3-9347-d5bc5fba9ce3" class="bulleted-list"><li style="list-style-type:disc">оптимизировать под инференс:<ul id="2ab568fa-e39f-8085-a342-c46cc7f54daf" class="bulleted-list"><li style="list-style-type:circle"><code>torch_dtype=&quot;bfloat16&quot;/&quot;float16&quot;</code>,</li></ul><ul id="2ab568fa-e39f-808b-9b79-ee02afb61766" class="bulleted-list"><li style="list-style-type:circle"><code>device_map=&quot;auto&quot;</code> / квантование,</li></ul></li></ul><ul id="2ab568fa-e39f-8054-9aa2-e4ee1bd8fa20" class="bulleted-list"><li style="list-style-type:disc">сделать небольшой API-скрипт (или CLI) для батчевого инференса.</li></ul><h3 id="2ab568fa-e39f-808f-b491-e4e17e784182" class="">7.4.1. Кейс</h3><blockquote id="2ab568fa-e39f-803b-9124-fced516ef444" class="">Представь, что нужно сделать endpoint:<p id="2ab568fa-e39f-8031-8435-ffea5fde62a0" class="">“по входному диалогу → вернуть:</p><ul id="2ab568fa-e39f-8098-b3a1-d39c4e9b2ac4" class="bulleted-list"><li style="list-style-type:disc">краткое summary,</li></ul><ul id="2ab568fa-e39f-80be-99cf-e9972c9af8a5" class="bulleted-list"><li style="list-style-type:disc">класс тикета (bug/feature/billing/other),</li></ul><ul id="2ab568fa-e39f-800a-8632-c8c6b440822f" class="bulleted-list"><li style="list-style-type:disc">черновик ответа”.</li></ul></blockquote><p id="2ab568fa-e39f-805f-9fa5-d6587cff0a01" class="">Ты уже умеешь:</p><ul id="2ab568fa-e39f-8073-9618-edf1ac4e844b" class="bulleted-list"><li style="list-style-type:disc">классифицировать тикеты (М4),</li></ul><ul id="2ab568fa-e39f-80c7-ae90-dea826f97fc8" class="bulleted-list"><li style="list-style-type:disc">суммаризировать диалог (М5),</li></ul><ul id="2ab568fa-e39f-8004-a3aa-e7d2d7dafb2e" class="bulleted-list"><li style="list-style-type:disc">генерировать ответ (М6).</li></ul><p id="2ab568fa-e39f-80bf-857d-f216c8e717cc" class="">Теперь нужно:</p><ul id="2ab568fa-e39f-8047-8e84-f7151cc40bee" class="bulleted-list"><li style="list-style-type:disc">всё это собрать в один <strong>оптимизированный скрипт</strong>,</li></ul><ul id="2ab568fa-e39f-80c7-84fc-d610ced945a6" class="bulleted-list"><li style="list-style-type:disc">который работает быстро и не убивает железо.</li></ul><h3 id="2ab568fa-e39f-805e-b8e4-faea4f1a54c0" class="">7.4.2. Каркас <code>support_inference_server.py</code> (без реального web-сервера, просто функции)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8034-bff5-fcf4b9d262c6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
+    AutoModelForCausalLM,
+)
+
+# Пути к обученным моделям
+CLS_MODEL_DIR = &quot;models/tickets_classifier_final&quot;
+SUMM_MODEL_DIR = &quot;models/dialog_summarizer&quot;
+BOT_MODEL_DIR = &quot;models/support_causal_sft_8bit&quot;  # допустим, ты сделал 8-bit квантованную версию
+
+device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+
+# 1. Классификатор тикетов
+cls_tokenizer = AutoTokenizer.from_pretrained(CLS_MODEL_DIR)
+cls_model = AutoModelForSequenceClassification.from_pretrained(
+    CLS_MODEL_DIR,
+    torch_dtype=torch.float16 if device.type == &quot;cuda&quot; else torch.float32,
+).to(device)
+
+
+def classify_ticket(text: str):
+    enc = cls_tokenizer(
+        text,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=128,
+    ).to(device)
+
+    with torch.no_grad():
+        outputs = cls_model(**enc)
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)[0]
+    pred_id = torch.argmax(probs).item()
+    id2label = cls_model.config.id2label
+    return {
+        &quot;label&quot;: id2label[pred_id],
+        &quot;confidence&quot;: float(probs[pred_id]),
+    }
+
+
+# 2. Суммаризатор диалогов (Seq2Seq)
+summ_tokenizer = AutoTokenizer.from_pretrained(SUMM_MODEL_DIR)
+summ_model = AutoModelForSeq2SeqLM.from_pretrained(
+    SUMM_MODEL_DIR,
+    torch_dtype=torch.float16 if device.type == &quot;cuda&quot; else torch.float32,
+).to(device)
+
+
+def summarize_dialog(dialog: str, max_new_tokens: int = 64) -&gt; str:
+    inputs = summ_tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    ).to(device)
+
+    with torch.no_grad():
+        out_ids = summ_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+        )
+
+    return summ_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+
+
+# 3. Квантованный саппорт-бот (Causal LM)
+bot_tokenizer = AutoTokenizer.from_pretrained(BOT_MODEL_DIR)
+bot_model = AutoModelForCausalLM.from_pretrained(
+    BOT_MODEL_DIR,
+    device_map=&quot;auto&quot;,           # пусть сам разругает устройства
+    # load_in_8bit=True или 4bit - предполагается, что модель уже в этом формате
+)
+
+def build_prompt(dialog: str, summary: str) -&gt; str:
+    # Можно использовать summary для подсказки:
+    prompt = (
+        &quot;System: You are a concise, polite support assistant.\n&quot;
+        f&quot;Summary of conversation: {summary}\n\n&quot;
+        f&quot;User: {dialog.strip()}\nSupport:&quot;
+    )
+    return prompt
+
+
+def generate_reply(dialog: str, summary: str, max_new_tokens: int = 80) -&gt; str:
+    prompt = build_prompt(dialog, summary)
+    inputs = bot_tokenizer(prompt, return_tensors=&quot;pt&quot;, truncation=True, max_length=512).to(bot_model.device)
+
+    with torch.no_grad():
+        out_ids = bot_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+        )
+
+    full_text = bot_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+    # Обрезаем по &quot;Support:&quot; если нужно
+    if &quot;Support:&quot; in full_text:
+        reply = full_text.split(&quot;Support:&quot;)[-1].strip()
+    else:
+        reply = full_text.strip()
+    return reply
+
+
+# 4. Композитная функция
+def handle_dialog(dialog: str):
+    summary = summarize_dialog(dialog)
+    cls_result = classify_ticket(dialog)
+    reply = generate_reply(dialog, summary)
+
+    return {
+        &quot;summary&quot;: summary,
+        &quot;ticket_class&quot;: cls_result[&quot;label&quot;],
+        &quot;ticket_confidence&quot;: cls_result[&quot;confidence&quot;],
+        &quot;reply&quot;: reply,
+    }
+
+
+if __name__ == &quot;__main__&quot;:
+    dialog = &quot;&quot;&quot;
+User: Hi, the app keeps crashing when I open the gallery after the last update.
+Support: I&#x27;m sorry about that. Could you share your device model and OS version?
+User: iPhone 13, iOS 17.1, app version 5.2.1.
+&quot;&quot;&quot;
+    result = handle_dialog(dialog)
+    print(&quot;SUMMARY:\n&quot;, result[&quot;summary&quot;])
+    print(&quot;CLASS:&quot;, result[&quot;ticket_class&quot;], f&quot;({result[&#x27;ticket_confidence&#x27;]:.3f})&quot;)
+    print(&quot;REPLY:\n&quot;, result[&quot;reply&quot;])
+</code></pre><h3 id="2ab568fa-e39f-80f1-8ecc-c9fa0342172e" class="">7.4.3. Домашка 7.4 (итоговая по модулю)</h3><ol type="1" id="2ab568fa-e39f-80be-8867-c3254e730206" class="numbered-list" start="1"><li>Собрать у себя аналогичный inference-скрипт:<ul id="2ab568fa-e39f-8077-9193-d3d5d7e59291" class="bulleted-list"><li style="list-style-type:disc">минимум: <strong>одна</strong> модель (классификатор <strong>или</strong> суммаризатор <strong>или</strong> бот),</li></ul><ul id="2ab568fa-e39f-80df-a5a2-e4d8d9ef45c9" class="bulleted-list"><li style="list-style-type:disc">лучше — композиция (summary + reply).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8065-a5aa-e604d7321b13" class="numbered-list" start="2"><li>Оптимизировать:<ul id="2ab568fa-e39f-80f0-bc11-d21b60a9d628" class="bulleted-list"><li style="list-style-type:disc">выставить <code>torch_dtype</code> (fp16/bf16 на GPU, fp32 на CPU),</li></ul><ul id="2ab568fa-e39f-8046-b0dd-fbbbffd86d03" class="bulleted-list"><li style="list-style-type:disc">если есть возможность — использовать 8-bit/4-bit для каузалки.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e4-bd70-d8e1b90e23de" class="numbered-list" start="3"><li>Потестить:<ul id="2ab568fa-e39f-80fb-9d31-c7cb085e7663" class="bulleted-list"><li style="list-style-type:disc">прогнать 10–20 диалогов,</li></ul><ul id="2ab568fa-e39f-8097-85cc-cb0a1a0b3290" class="bulleted-list"><li style="list-style-type:disc">посмотреть время ответа (грубо, “на глаз”),</li></ul><ul id="2ab568fa-e39f-8019-b577-e040f2ea3c71" class="bulleted-list"><li style="list-style-type:disc">убедиться, что всё не падает по памяти.</li></ul></li></ol><hr id="2ab568fa-e39f-80e6-a347-f9310a9a720f"/><h2 id="2ab568fa-e39f-800f-a305-dd29f18bed3b" class="">Что ученик умеет после модуля 7</h2><p id="2ab568fa-e39f-809e-abd8-f862185b8de9" class="">На этом уровне человек уже:</p><ul id="2ab568fa-e39f-8053-aeb3-c840f48cbed0" class="bulleted-list"><li style="list-style-type:disc">уверенно настраивает <strong>fp16/bf16</strong> и <code>gradient_accumulation_steps</code> в <code>Trainer</code>,</li></ul><ul id="2ab568fa-e39f-80bb-8bc3-c704a18db1e7" class="bulleted-list"><li style="list-style-type:disc">понимает, что такое <strong>эффективный batch size</strong>,</li></ul><ul id="2ab568fa-e39f-8081-b6d3-c90db37ec339" class="bulleted-list"><li style="list-style-type:disc">умеет писать <strong>свой train loop</strong> на <code>accelerate</code> для полной гибкости,</li></ul><ul id="2ab568fa-e39f-80ae-91e4-ce90aa00c2d8" class="bulleted-list"><li style="list-style-type:disc">знает, как:<ul id="2ab568fa-e39f-8043-88f8-f79caafd3d0c" class="bulleted-list"><li style="list-style-type:circle">грузить и гонять <strong>большие модели</strong> с <code>device_map=&quot;auto&quot;</code> и offload’ом,</li></ul><ul id="2ab568fa-e39f-80c1-9be6-de9af78c84b5" class="bulleted-list"><li style="list-style-type:circle">использовать <strong>8-bit/4-bit</strong>квантование для инференса,</li></ul></li></ul><ul id="2ab568fa-e39f-8065-87bc-e2b2075c8eb6" class="bulleted-list"><li style="list-style-type:disc">собрал <strong>оптимизированный inference-пайплайн</strong> для своего NLP-продукта (классификатор/суммаризатор/бот).</li></ul><p id="2ab568fa-e39f-8015-a78e-ff70e5671557" class="">Дальше логичный следующий шаг — модуль 8 про <strong>PEFT/LoRA</strong>:</p><p id="2ab568fa-e39f-8027-8a29-e4864f8c95ca" class="">как дообучать большие LLM дешевле и комбинировать это с квантованием.</p><p id="2ab568fa-e39f-809b-9f72-d816df203687" class="">Если хочешь, могу:</p><ul id="2ab568fa-e39f-8069-ba19-faec63699e1e" class="bulleted-list"><li style="list-style-type:disc">расписать модуль 8 (LoRA/PEFT для классификации, seq2seq и Causal LM),</li></ul><ul id="2ab568fa-e39f-801a-be0c-d6eab66bc6b7" class="bulleted-list"><li style="list-style-type:disc">или помочь собрать <strong>общий syllabus по всем модулям 0–7</strong> в компактном виде для лендинга/презентации курса.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

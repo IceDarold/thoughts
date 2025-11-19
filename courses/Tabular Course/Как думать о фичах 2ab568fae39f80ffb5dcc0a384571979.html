@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Как думать о фичах?</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80ff-b5dc-c0a384571979" class="page sans"><header><h1 class="page-title">Как думать о фичах?</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8077-a428-f8285636656e" class="">Окей, давай сделаем нормальный «фиче-инжиниринг мастер-класс», не список рандомных трюков, а <strong>как думать</strong>.</p><hr id="2ab568fa-e39f-806a-9df3-c3fa2c29b5f4"/><h2 id="2ab568fa-e39f-8099-98ba-f12f5fa88203" class="">0. Главная философия</h2><p id="2ab568fa-e39f-8047-868f-ff37422af8e9" class=""><strong>Каждый признак = гипотеза о мире.</strong></p><p id="2ab568fa-e39f-807c-b2e6-c1b5b3787e17" class="">Ты никогда не «накидываешь фичи ради фич».</p><p id="2ab568fa-e39f-804b-ba6c-d5ad921525ff" class="">Ты отвечаешь на вопросы:</p><blockquote id="2ab568fa-e39f-80b6-8bae-d6009d106bcf" class="">«Какую реальную закономерность в данных я пытаюсь поймать этим признаком?<p id="2ab568fa-e39f-800b-9ad0-ead5f2f0c42c" class="">Почему она должна помогать модели на новых данных, а не только в CV?»</p></blockquote><p id="2ab568fa-e39f-8058-9e70-e8f5a93cef7e" class="">Если на этот вопрос ответить нечем — фича мусор, даже если CV чуть подрос.</p><hr id="2ab568fa-e39f-808c-82ed-d87531a8b20a"/><h2 id="2ab568fa-e39f-809b-8e49-def38d802206" class="">1. Перед фичами: боевой фундамент</h2><p id="2ab568fa-e39f-805b-8d2d-c9b88d82de4d" class="">Грандмастерская штука: <strong>не трогаем фичи, пока не настроен сквозной pipeline.</strong></p><ol type="1" id="2ab568fa-e39f-80fb-9549-d32289e31eb0" class="numbered-list" start="1"><li><strong>Стабильная валидация.</strong><ul id="2ab568fa-e39f-804e-9a0c-d9e1a5db1aa5" class="bulleted-list"><li style="list-style-type:disc">Стратифицированный KFold / GroupKFold / TimeSeriesSplit — по логике задачи.</li></ul><ul id="2ab568fa-e39f-8033-b32b-cda1a6efc401" class="bulleted-list"><li style="list-style-type:disc">Проверил, что:<ul id="2ab568fa-e39f-807e-8d98-db58e2d7ec90" class="bulleted-list"><li style="list-style-type:circle">скор на фолдах не скачет дико;</li></ul><ul id="2ab568fa-e39f-8042-978d-cecb33485065" class="bulleted-list"><li style="list-style-type:circle">LB ≈ CV (по крайней мере порядок / динамика совпадают).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8036-89dc-e3f53b5690cb" class="numbered-list" start="2"><li><strong>Сильный базовый модельный стек.</strong><ul id="2ab568fa-e39f-80c5-a224-c371b8647924" class="bulleted-list"><li style="list-style-type:disc">Для таблички чаще всего:<ul id="2ab568fa-e39f-8086-89cb-f0707c585a26" class="bulleted-list"><li style="list-style-type:circle"><code>LGBM/XGB/CatBoost</code> (катбуст сам по себе уже половина фичей для катов).</li></ul></li></ul><ul id="2ab568fa-e39f-80b0-b9a2-e45f676970b4" class="bulleted-list"><li style="list-style-type:disc">Базовый набор:<ul id="2ab568fa-e39f-8094-8baa-d68c1d0f03c7" class="bulleted-list"><li style="list-style-type:circle">минимальный препроцессинг;</li></ul><ul id="2ab568fa-e39f-80e5-b2a2-f16aafa3b434" class="bulleted-list"><li style="list-style-type:circle">адекватные дефолтные гиперы.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d9-a2fe-c29910eb991f" class="numbered-list" start="3"><li><strong>Единый протокол экспериментов.</strong><ul id="2ab568fa-e39f-80c2-871d-e264edb7aef8" class="bulleted-list"><li style="list-style-type:disc">Все эксперименты логируешь:<p id="2ab568fa-e39f-80e5-b303-e798b2f9ea6a" class=""><em>«какие фичи добавил → какой CV/LB → комментарий».</em></p></li></ul><ul id="2ab568fa-e39f-80e0-a8b7-fb6ea6e40846" class="bulleted-list"><li style="list-style-type:disc">Иначе ты не сможешь думать системно, а будешь плавать в рандоме.</li></ul></li></ol><p id="2ab568fa-e39f-802b-b45f-c47011c0ca07" class="">👉 <strong>Вывод:</strong> фичи — это не магия, а контролируемые эксперименты на стабильной лаборатории (CV+baseline).</p><hr id="2ab568fa-e39f-80df-a0b5-d73241f820e7"/><h2 id="2ab568fa-e39f-8083-94af-d22c682685ca" class="">2. Первое крупное решение: <strong>как смотреть на данные</strong></h2><p id="2ab568fa-e39f-8091-ba7b-e645a81dd46b" class="">Перед тем, как «придумывать фичи», надо задать себе три вопроса:</p><h3 id="2ab568fa-e39f-8020-ae18-c1b1fea29377" class="">2.1. Что является <strong>сущностью</strong>?</h3><ul id="2ab568fa-e39f-8073-84fa-db1bde15f19d" class="bulleted-list"><li style="list-style-type:disc">Это строка — что она значит?<ul id="2ab568fa-e39f-8026-88c4-d2d9a9783135" class="bulleted-list"><li style="list-style-type:circle">Покупка?</li></ul><ul id="2ab568fa-e39f-80fb-8eeb-ce71aa3b43dd" class="bulleted-list"><li style="list-style-type:circle">Пользователь-день?</li></ul><ul id="2ab568fa-e39f-80ed-9e79-ed8047ea2778" class="bulleted-list"><li style="list-style-type:circle">Заказ?</li></ul><ul id="2ab568fa-e39f-8061-bdc2-df7327510ac1" class="bulleted-list"><li style="list-style-type:circle">Клиент-мерчант пара?</li></ul></li></ul><ul id="2ab568fa-e39f-80a1-9a2a-fbc0cd3bac5f" class="bulleted-list"><li style="list-style-type:disc">Какую <strong>штуку</strong> мы реально предсказываем?<ul id="2ab568fa-e39f-80ba-a68d-c8c7ddd2ab6f" class="bulleted-list"><li style="list-style-type:circle">Проплатит клиент кредит?</li></ul><ul id="2ab568fa-e39f-805e-a403-f94a89a78dde" class="bulleted-list"><li style="list-style-type:circle">Обманный транзакшн?</li></ul><ul id="2ab568fa-e39f-80e8-8e7c-c37c70463988" class="bulleted-list"><li style="list-style-type:circle">Выйдет из подписки?</li></ul></li></ul><blockquote id="2ab568fa-e39f-80d3-91dc-c157f9193c3b" class="">Ментальная модель: «У меня есть сущность X, о которой есть история событий. Я хочу из этой истории выжать сигнал о таргете Y».</blockquote><h3 id="2ab568fa-e39f-8062-ba2c-ff815da40b04" class="">2.2. Где <strong>группы</strong>?</h3><p id="2ab568fa-e39f-8092-8361-dbd3c448d42b" class="">Ищем:</p><ul id="2ab568fa-e39f-802d-ab89-d476178f8d0f" class="bulleted-list"><li style="list-style-type:disc"><code>user_id</code>, <code>client_id</code>, <code>merchant_id</code>, <code>product_id</code>, <code>session_id</code>, <code>contract_id</code>, etc.</li></ul><ul id="2ab568fa-e39f-8075-ae07-c78c2b2f4fef" class="bulleted-list"><li style="list-style-type:disc">Временные группы: по дню, неделе, месяцу.</li></ul><ul id="2ab568fa-e39f-807e-bed5-dc8593713669" class="bulleted-list"><li style="list-style-type:disc">Геогруппы: страна, город.</li></ul><p id="2ab568fa-e39f-80b9-9c0f-f7edb229d8b8" class=""><strong>Любой ID → потенциальный groupby.</strong></p><p id="2ab568fa-e39f-808a-88f6-d4968494ec74" class="">Это главный источник сильных фич.</p><h3 id="2ab568fa-e39f-8066-8dee-e15118376b23" class="">2.3. Как устроено <strong>время</strong>?</h3><ul id="2ab568fa-e39f-8094-8227-d0e4d74561f2" class="bulleted-list"><li style="list-style-type:disc">Есть ли timestamp?</li></ul><ul id="2ab568fa-e39f-8027-be0a-c6ddf9f1a1ca" class="bulleted-list"><li style="list-style-type:disc">Есть ли train/test сплит по времени?</li></ul><ul id="2ab568fa-e39f-805b-8ddd-d4702335b958" class="bulleted-list"><li style="list-style-type:disc">Есть ли явная утечка (фичи из будущего)?</li></ul><p id="2ab568fa-e39f-8042-af89-cd776b37b98b" class=""><strong>Правило GM:</strong></p><p id="2ab568fa-e39f-8030-9d9b-d43d9c01a986" class="">Если есть время — всегда думай в терминах <strong>истории и трендов</strong>, а не только статических значений.</p><hr id="2ab568fa-e39f-80b8-9bc1-ecae43ff3061"/><h2 id="2ab568fa-e39f-8006-ab63-c956e0776214" class="">3. Декомпозиция признаков: по типам и смыслу</h2><p id="2ab568fa-e39f-80e2-9e90-d662ef69751b" class="">Раскладываем сырые колонки в голове:</p><ol type="1" id="2ab568fa-e39f-8028-8db5-eaf244d06842" class="numbered-list" start="1"><li><strong>Числа (numeric)</strong><ul id="2ab568fa-e39f-80d1-b5c6-f5346eabe30f" class="bulleted-list"><li style="list-style-type:disc">деньги, возраста, суммы, балансы, количества.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80be-a3af-dbc94e81b66a" class="numbered-list" start="2"><li><strong>Категории (categorical)</strong><ul id="2ab568fa-e39f-8048-bb2e-e9f4097833b4" class="bulleted-list"><li style="list-style-type:disc">тип устройства, тип карты, город, регион, тип продукта.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d0-84ed-dc3aa259c790" class="numbered-list" start="3"><li><strong>ID (high-cardinality categorical)</strong><ul id="2ab568fa-e39f-804f-8c30-e8c3d64f597e" class="bulleted-list"><li style="list-style-type:disc">user_id, product_id, merchant_id — они особенные.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-806a-b66c-feaa2e4d29ba" class="numbered-list" start="4"><li><strong>Время</strong><ul id="2ab568fa-e39f-809c-a4ec-fa130a84f132" class="bulleted-list"><li style="list-style-type:disc">timestamp, дата, час дня, день недели, etc.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8051-b30e-e0e985793912" class="numbered-list" start="5"><li><strong>Текст/описания</strong><ul id="2ab568fa-e39f-8090-9899-dc76be2a5881" class="bulleted-list"><li style="list-style-type:disc">comments, product_name, merchant_name — даже Bag-of-Words / длины уже фичи.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80af-a600-d6b6d75cd63e" class="numbered-list" start="6"><li><strong>Гео</strong><ul id="2ab568fa-e39f-80a8-8c22-d265717361e5" class="bulleted-list"><li style="list-style-type:disc">широта/долгота, страна, город.</li></ul></li></ol><p id="2ab568fa-e39f-8016-8655-fac1e686aef5" class="">Для каждого типа — свой «каталог паттернов», который стоит прогнать мозгом.</p><hr id="2ab568fa-e39f-80d6-81df-f28855470dd7"/><h2 id="2ab568fa-e39f-80f0-bc42-ed363408acc6" class="">4. Ментальная модель: 4 слоя фичей</h2><p id="2ab568fa-e39f-806d-9596-d35f9d449985" class="">Дальше начинается «как думает грандмастер».</p><h3 id="2ab568fa-e39f-80f5-b539-cf6943c80d42" class="">Слой 1. «Физика мира»: прямые смысловые вещи</h3><p id="2ab568fa-e39f-809c-afac-d410aadc437d" class="">Задаешь себе вопросы:</p><ul id="2ab568fa-e39f-80e1-a359-f5514b0854c1" class="bulleted-list"><li style="list-style-type:disc">Как бы <strong>человек</strong> решал задачу, не имея модели?</li></ul><ul id="2ab568fa-e39f-805b-887d-d386b058d001" class="bulleted-list"><li style="list-style-type:disc">На что бы он посмотрел в таблице?</li></ul><p id="2ab568fa-e39f-80e6-963e-d7fed19909d7" class="">Примеры:</p><ul id="2ab568fa-e39f-80e0-b11a-de394dd61098" class="bulleted-list"><li style="list-style-type:disc">Кредитный скоринг:<ul id="2ab568fa-e39f-8058-9547-e90e1b6d4c49" class="bulleted-list"><li style="list-style-type:circle">debt / income ratio;</li></ul><ul id="2ab568fa-e39f-80e5-a491-efedd421bc30" class="bulleted-list"><li style="list-style-type:circle">кредитная нагрузка в процентах;</li></ul><ul id="2ab568fa-e39f-80e6-919c-ea4c2a54f22a" class="bulleted-list"><li style="list-style-type:circle">количество активных кредитов;</li></ul><ul id="2ab568fa-e39f-8064-9f84-e437629a2d5e" class="bulleted-list"><li style="list-style-type:circle">просрочки за N месяцев.</li></ul></li></ul><ul id="2ab568fa-e39f-80af-b7fb-c22720687a16" class="bulleted-list"><li style="list-style-type:disc">Антифрод:<ul id="2ab568fa-e39f-800e-bb9d-d385265d47b5" class="bulleted-list"><li style="list-style-type:circle">сумма транзакции / типичное среднее для этого юзера;</li></ul><ul id="2ab568fa-e39f-8014-81fb-d286d753059e" class="bulleted-list"><li style="list-style-type:circle">расстояние между точками транзакций;</li></ul><ul id="2ab568fa-e39f-80f0-8086-df2fd9a7093b" class="bulleted-list"><li style="list-style-type:circle">смена страны/устройства.</li></ul></li></ul><p id="2ab568fa-e39f-80d4-b5d3-e63fd6a3b084" class="">Это часто:</p><ul id="2ab568fa-e39f-800b-891b-f1d845a9dd6c" class="bulleted-list"><li style="list-style-type:disc"><strong>отношения</strong> (<code>sum1 / sum2</code>, <code>value / typical_value</code>);</li></ul><ul id="2ab568fa-e39f-8006-910d-f57883d563a6" class="bulleted-list"><li style="list-style-type:disc"><strong>разности</strong> (<code>now - last_time</code>, <code>current_amount - median_amount</code>).</li></ul><h3 id="2ab568fa-e39f-80fc-a223-c93b74339cda" class="">Слой 2. Групповые статистики (groupby-фетиш)</h3><p id="2ab568fa-e39f-80fe-a4f1-c2d2c51eedf1" class="">Это основа табличного GM-майндсета.</p><p id="2ab568fa-e39f-807e-a159-ed9a60133512" class="">Для каждой важной сущности (user, merchant, product, …) думаешь:</p><blockquote id="2ab568fa-e39f-8000-80c1-c6e60e756b87" class="">«Какие свойства у этого объекта, если посмотреть на его историю?»</blockquote><p id="2ab568fa-e39f-80a3-bdac-ef70f2545f92" class="">Примеры:</p><ul id="2ab568fa-e39f-8034-b93f-c3e3c14cc5f4" class="bulleted-list"><li style="list-style-type:disc">Для user_id:<ul id="2ab568fa-e39f-8092-8068-ee6a47acaf23" class="bulleted-list"><li style="list-style-type:circle"><code>n_transactions</code>, <code>total_spent</code>, <code>mean_spent</code>, <code>std_spent</code>;</li></ul><ul id="2ab568fa-e39f-8060-89a2-d0edebeb7b87" class="bulleted-list"><li style="list-style-type:circle"><code>n_merchants</code>, <code>n_countries</code>, <code>entropy_merchant</code>, <code>entropy_country</code>;</li></ul><ul id="2ab568fa-e39f-802a-9900-c80e0d8e380a" class="bulleted-list"><li style="list-style-type:circle"><code>ratio_online_offline</code>, <code>share_night_transactions</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-8084-8e74-cb847e5ceb3a" class="bulleted-list"><li style="list-style-type:disc">Для merchant_id:<ul id="2ab568fa-e39f-8004-9c8c-e52ececcbf14" class="bulleted-list"><li style="list-style-type:circle">сколько уникальных юзеров;</li></ul><ul id="2ab568fa-e39f-807f-9f37-d27db6fe2ed7" class="bulleted-list"><li style="list-style-type:circle">средний чек;</li></ul><ul id="2ab568fa-e39f-8065-8d10-c816c67b8691" class="bulleted-list"><li style="list-style-type:circle">доля фродовых транзакций (осторожно: target leakage! → считаем только по train/history и честно с учетом CV).</li></ul></li></ul><ul id="2ab568fa-e39f-809b-802b-f88d3be6227a" class="bulleted-list"><li style="list-style-type:disc">Для product_id:<ul id="2ab568fa-e39f-8082-a414-c8aada95e6d0" class="bulleted-list"><li style="list-style-type:circle">средняя цена;</li></ul><ul id="2ab568fa-e39f-800d-8e12-e790ba3efeb0" class="bulleted-list"><li style="list-style-type:circle">сколько раз покупали;</li></ul><ul id="2ab568fa-e39f-8014-b687-d50302565cd5" class="bulleted-list"><li style="list-style-type:circle">доля возвратов.</li></ul></li></ul><p id="2ab568fa-e39f-8032-a664-f26884db021d" class=""><strong>Шаблон мышления:</strong></p><ol type="1" id="2ab568fa-e39f-807a-a914-f818fa2fd048" class="numbered-list" start="1"><li>Берешь сущность <code>E</code> (user, merchant…).</li></ol><ol type="1" id="2ab568fa-e39f-8024-bcbd-e21702e77ff5" class="numbered-list" start="2"><li>Берешь событие <code>S</code> (строка/транзакция).</li></ol><ol type="1" id="2ab568fa-e39f-80d0-982f-ca3c70421223" class="numbered-list" start="3"><li>Спрашиваешь:<blockquote id="2ab568fa-e39f-80eb-ad98-e62e635ba2e2" class="">«Если взять историю всех S по E, какие статистики мне расскажут о поведении E?»</blockquote></li></ol><p id="2ab568fa-e39f-804a-b7da-f0676025c0ad" class="">Это главная фабрика мощных фич.</p><h3 id="2ab568fa-e39f-801a-81b5-f5a4fdccbbf0" class="">Слой 3. Время и динамика</h3><p id="2ab568fa-e39f-8093-9068-fce5e695a858" class="">Если есть время — GM почти всегда делает:</p><ol type="1" id="2ab568fa-e39f-801b-9306-f02ed3303069" class="numbered-list" start="1"><li><strong>Recency:</strong><ul id="2ab568fa-e39f-80ee-871e-d0dc3818c31f" class="bulleted-list"><li style="list-style-type:disc">время с последнего события;</li></ul><ul id="2ab568fa-e39f-80a1-94e1-f37bd637f908" class="bulleted-list"><li style="list-style-type:disc">средний интервал между событиями;</li></ul><ul id="2ab568fa-e39f-805e-9276-c2f25c675cd9" class="bulleted-list"><li style="list-style-type:disc">изменения интервалов (ускоряется активность или замедляется).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e7-969a-daf44a7f6aec" class="numbered-list" start="2"><li><strong>Роллинг-окна:</strong><ul id="2ab568fa-e39f-8004-b088-c18d195f1600" class="bulleted-list"><li style="list-style-type:disc">средняя сумма за последние 7/30 дней;</li></ul><ul id="2ab568fa-e39f-802f-8374-f2993c39a0da" class="bulleted-list"><li style="list-style-type:disc">количество событий за последние N дней;</li></ul><ul id="2ab568fa-e39f-80e4-9f5e-edeb8021605b" class="bulleted-list"><li style="list-style-type:disc">число подряд идущих дней активности.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8083-a787-e6497b2fd828" class="numbered-list" start="3"><li><strong>Тренды:</strong><ul id="2ab568fa-e39f-80f4-be78-caf29c76d184" class="bulleted-list"><li style="list-style-type:disc">slope: линейный тренд суммы/активности по времени;</li></ul><ul id="2ab568fa-e39f-802b-a3a4-e3812ffa6ba8" class="bulleted-list"><li style="list-style-type:disc">«до»/«после» какого-то события.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-804b-a8a8-cb12a4bca330" class="numbered-list" start="4"><li><strong>Календарные паттерны:</strong><ul id="2ab568fa-e39f-80f6-a475-e7681a55e080" class="bulleted-list"><li style="list-style-type:disc">день недели, час дня (fraud ночью, shopping вечером);</li></ul><ul id="2ab568fa-e39f-8008-b6a0-fe6d8a129420" class="bulleted-list"><li style="list-style-type:disc">праздники / выходные (если релевантно).</li></ul></li></ol><p id="2ab568fa-e39f-8090-8e93-f12ef4f19417" class="">Ментальный вопрос:</p><blockquote id="2ab568fa-e39f-802d-b298-c71e83b9f01d" class="">«Поведение меняется со временем? Если да, как это поймать: уровнем, скоростью, ускорением?»</blockquote><h3 id="2ab568fa-e39f-801f-9e3f-edb7439e7ef1" class="">Слой 4. Перекрестные взаимодействия (interactions)</h3><p id="2ab568fa-e39f-8062-927f-d169b4af89c5" class="">Когда есть хорошие базовые фичи, смотришь:</p><ul id="2ab568fa-e39f-8063-88de-cc83e89ddd8a" class="bulleted-list"><li style="list-style-type:disc">Какие <strong>пары признаков</strong> логично перемножить / разделить / столкнуть?</li></ul><ul id="2ab568fa-e39f-808d-bd94-f8fd6c737c3d" class="bulleted-list"><li style="list-style-type:disc">Где есть <strong>условная зависимость</strong>?</li></ul><p id="2ab568fa-e39f-80e9-824e-c53da12dc60a" class="">Примеры:</p><ul id="2ab568fa-e39f-80bc-b698-fe3a9d8341fd" class="bulleted-list"><li style="list-style-type:disc"><code>amount</code> само по себе и <code>mean_amount_user</code>.</li></ul><ul id="2ab568fa-e39f-80d7-b065-ebca96d7aa5e" class="bulleted-list"><li style="list-style-type:disc">Интересна разность: <code>amount - mean_amount_user</code>.</li></ul><ul id="2ab568fa-e39f-80e0-9062-d570755778de" class="bulleted-list"><li style="list-style-type:disc">Или ratio: <code>amount / (mean_amount_user + ε)</code>.</li></ul><p id="2ab568fa-e39f-80cc-a28f-cc4b681ba47f" class="">Другой пример:</p><ul id="2ab568fa-e39f-803a-bf91-f0f7d4a0c6ad" class="bulleted-list"><li style="list-style-type:disc"><code>country</code> и <code>device_type</code>:<p id="2ab568fa-e39f-80c2-a3d2-d9988680c7b7" class="">— странный девайс для этой страны → признак аномалии.</p></li></ul><p id="2ab568fa-e39f-80d3-9abe-ec38951580e8" class=""><strong>Правило:</strong></p><p id="2ab568fa-e39f-8004-9ffa-e8ba69a3a10c" class="">делаем взаимодействия не «по всем с любыми», а только когда есть <strong>сюжет</strong>.</p><hr id="2ab568fa-e39f-80ea-b4a2-debe53c5e6aa"/><h2 id="2ab568fa-e39f-802b-8157-e8b31034b7dd" class="">5. Как идейно генерировать фичи, а не случайные трюки</h2><h3 id="2ab568fa-e39f-8014-a273-e4890152b0bf" class="">5.1. Упражнение №1: рассказать историю таргета</h3><p id="2ab568fa-e39f-806b-9438-f879b179e3ad" class="">Ты берешь задачу (например, churn prediction) и проговариваешь:</p><blockquote id="2ab568fa-e39f-80c1-aed4-d19c8ebaa0e4" class="">«Пользователь отваливается, если…»<p id="2ab568fa-e39f-804d-9197-eaa2df3b5c9d" class="">– мало пользовался последнее время</p><p id="2ab568fa-e39f-80da-8eba-e6a5bbea6f72" class="">– получил негативный опыт (много ошибок / отмен)</p><p id="2ab568fa-e39f-8019-9a23-e6991c95d7a5" class="">– появился более привлекательный альтернативный сервис</p><p id="2ab568fa-e39f-80ae-843a-e1a807730036" class="">– его паттерн активности меняется.</p></blockquote><p id="2ab568fa-e39f-8034-9159-e0ecaa821b1a" class="">Каждый пункт → потенциальная группа фич:</p><ul id="2ab568fa-e39f-80b5-8d3b-e588857d103e" class="bulleted-list"><li style="list-style-type:disc">«мало пользовался» → recency, n_events_last_7d, ratio_last_7d_to_30d.</li></ul><ul id="2ab568fa-e39f-802e-b069-d8681d172d61" class="bulleted-list"><li style="list-style-type:disc">«негативный опыт» → count_failed_actions, ratio_failed_to_all, streaks_of_failures.</li></ul><ul id="2ab568fa-e39f-80f6-a627-eab7d1d93595" class="bulleted-list"><li style="list-style-type:disc">«альтернативный сервис» → если есть внешние признаки, ок; если нет — можно проксировать изменением паттернов.</li></ul><h3 id="2ab568fa-e39f-803b-b7bc-d28678bc96c4" class="">5.2. Упражнение №2: «если бы я был мошенником / хорошим клиентом…»</h3><p id="2ab568fa-e39f-80a2-8740-ee1aa6189c44" class="">В fraud / rating-type задачах работает инверсия:</p><blockquote id="2ab568fa-e39f-80bd-9437-cee3cd30dc33" class="">«Если бы я был fraudster, как бы я себя вел, чтобы меня не поймали?»<p id="2ab568fa-e39f-80e7-8bcf-eb2531eeb18d" class="">→ где искать несоответствия?</p></blockquote><p id="2ab568fa-e39f-8030-9ec8-d51e82826676" class="">Например:</p><ul id="2ab568fa-e39f-8034-94f5-c43711ef71df" class="bulleted-list"><li style="list-style-type:disc">сильно дробить суммы;</li></ul><ul id="2ab568fa-e39f-80a5-8fbc-db5e8804b3ea" class="bulleted-list"><li style="list-style-type:disc">тестировать карты на маленькие суммы;</li></ul><ul id="2ab568fa-e39f-80bb-9cc2-f4772775eaba" class="bulleted-list"><li style="list-style-type:disc">использовать новые девайсы / IP.</li></ul><p id="2ab568fa-e39f-80e9-9bb6-e4e0537b6193" class="">Каждая гипотеза → группа фич.</p><hr id="2ab568fa-e39f-80cd-8098-fda4e5126d3f"/><h2 id="2ab568fa-e39f-803c-aaf3-de2d415a9841" class="">6. Приоритизация: в каком порядке перебирать фичи</h2><p id="2ab568fa-e39f-8089-9cb1-c5be1e375e92" class="">В соревновательном режиме (5 часов, как ты любишь) важен <strong>ROI на время</strong>.</p><p id="2ab568fa-e39f-8019-8b5a-f30dd4811291" class="">Примерный порядок:</p><ol type="1" id="2ab568fa-e39f-80e8-a15f-e7fd3055c76d" class="numbered-list" start="1"><li><strong>Легкие дешевые фичи:</strong><ul id="2ab568fa-e39f-8090-bdb0-e668691cc42e" class="bulleted-list"><li style="list-style-type:disc">логарифмы, скейлы, биннинг чисел;</li></ul><ul id="2ab568fa-e39f-8016-b9c3-e89bf8630e34" class="bulleted-list"><li style="list-style-type:disc">day_of_week / hour / simple datetime parses;</li></ul><ul id="2ab568fa-e39f-80f3-a955-ebaec87d7bde" class="bulleted-list"><li style="list-style-type:disc">простые counts (<code>n_events</code>) и mean/std для ключевых ID.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8083-8972-ec0f929116cf" class="numbered-list" start="2"><li><strong>Групповые статистики по основным сущностям:</strong><ul id="2ab568fa-e39f-80d4-851b-d9ce35603ff1" class="bulleted-list"><li style="list-style-type:disc">user/product/merchant level features;</li></ul><ul id="2ab568fa-e39f-8030-829f-c9bf7ae8d5c2" class="bulleted-list"><li style="list-style-type:disc">frequency / rarity.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-803e-a52f-fcdfd63a918d" class="numbered-list" start="3"><li><strong>Recency &amp; rolling окна по ключевым метрикам:</strong><ul id="2ab568fa-e39f-8077-9291-d3bdc12ac9cf" class="bulleted-list"><li style="list-style-type:disc">для event-based задач с временем.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8099-9c80-cb430cb73ad9" class="numbered-list" start="4"><li><strong>Более тяжелые вещи:</strong><ul id="2ab568fa-e39f-800a-b894-f7a64f2b4ec2" class="bulleted-list"><li style="list-style-type:disc">target encoding с аккуратной схемой;</li></ul><ul id="2ab568fa-e39f-805b-a338-fe7e30a6c09e" class="bulleted-list"><li style="list-style-type:disc">сложные interaction-фичи;</li></ul><ul id="2ab568fa-e39f-80bb-927a-f5a1b4b6870a" class="bulleted-list"><li style="list-style-type:disc">entity embeddings / NN фичи.</li></ul></li></ol><p id="2ab568fa-e39f-80f0-a364-c2307534c612" class="">Всегда задавай вопрос:</p><blockquote id="2ab568fa-e39f-8018-9d81-ff33c8453828" class="">«Есть ли шанс, что эта идея даст хотя бы +0.002–0.005 на CV?<p id="2ab568fa-e39f-808b-87c7-c13720c643d7" class="">Или я просто страдаю фигней?»</p></blockquote><hr id="2ab568fa-e39f-809a-90e4-f1de39e531a5"/><h2 id="2ab568fa-e39f-800b-b3ae-d3873caee9cd" class="">7. Проверка гипотез: как валидировать фичи как GM</h2><h3 id="2ab568fa-e39f-8033-9dcb-f3341c65002a" class="">7.1. Не верь в одну метрику без разборки</h3><ul id="2ab568fa-e39f-809e-a22e-c07deef98e0e" class="bulleted-list"><li style="list-style-type:disc">Сравни:<ul id="2ab568fa-e39f-80dd-ad9b-d462657edf37" class="bulleted-list"><li style="list-style-type:circle"><strong>черновой baseline</strong> vs baseline+new_feature.</li></ul></li></ul><ul id="2ab568fa-e39f-80b2-a137-fe919ea4978f" class="bulleted-list"><li style="list-style-type:disc">Смотри:<ul id="2ab568fa-e39f-8065-8a2f-d2ebc00f7e25" class="bulleted-list"><li style="list-style-type:circle">средний CV;</li></ul><ul id="2ab568fa-e39f-800c-967e-d02676cf8786" class="bulleted-list"><li style="list-style-type:circle">разброс по фолдам;</li></ul><ul id="2ab568fa-e39f-8071-9f1e-d9b212af4cfc" class="bulleted-list"><li style="list-style-type:circle">на каких фолдах улучшения, на каких просадки.</li></ul></li></ul><p id="2ab568fa-e39f-80a7-b27c-df3e2b754c3e" class="">Если:</p><ul id="2ab568fa-e39f-80f6-8c35-e293bcbe97f5" class="bulleted-list"><li style="list-style-type:disc">+0.004, но стало сильно нестабильнее по фолдам — возможно, переобучение/утечка.</li></ul><h3 id="2ab568fa-e39f-80e6-bd74-d0a3fa6f2742" class="">7.2. Feature importance ≠ истина, но помогает думать</h3><ul id="2ab568fa-e39f-8056-95f3-f515fcccdf33" class="bulleted-list"><li style="list-style-type:disc">Смотри gain / split / permutation importance.</li></ul><ul id="2ab568fa-e39f-807e-b869-ded3281ef495" class="bulleted-list"><li style="list-style-type:disc">Если твоя «супер-смысловая фича» в хвосте — задаешь себе вопрос:<ul id="2ab568fa-e39f-80bc-b85d-c2d4cabaf593" class="bulleted-list"><li style="list-style-type:circle">я ее плохо посчитал?</li></ul><ul id="2ab568fa-e39f-80b9-ac77-df60c48fe930" class="bulleted-list"><li style="list-style-type:circle">я сделал утечку и модель игнорит «честные» фичи?</li></ul><ul id="2ab568fa-e39f-802b-a2df-f7bd871d408e" class="bulleted-list"><li style="list-style-type:circle">ее сигнал уже покрывают другие фичи?</li></ul></li></ul><h3 id="2ab568fa-e39f-80c9-aed4-c24e381af7c5" class="">7.3. Локальный анализ</h3><ul id="2ab568fa-e39f-8074-aaad-d1d6ba2b99d8" class="bulleted-list"><li style="list-style-type:disc">Возьми top- и bottom-предсказания.</li></ul><ul id="2ab568fa-e39f-802f-8ed5-d7996f9ac999" class="bulleted-list"><li style="list-style-type:disc">Посмотри на распределение новой фичи в этих группах.</li></ul><ul id="2ab568fa-e39f-8074-a821-e32c9cebcc47" class="bulleted-list"><li style="list-style-type:disc">Если фича действительно разделяет классы — ок, даже если importance не топ-1.</li></ul><hr id="2ab568fa-e39f-8030-b4fe-f9467ba76bf0"/><h2 id="2ab568fa-e39f-8098-b8e2-f7d29f292144" class="">8. Опасности и красные флаги</h2><h3 id="2ab568fa-e39f-80e4-b89c-cfa3893371ce" class="">8.1. Target leakage</h3><p id="2ab568fa-e39f-8079-be16-f170bca9acb7" class="">GM-паранойя всегда включена:</p><ul id="2ab568fa-e39f-80b3-8660-d217bed38878" class="bulleted-list"><li style="list-style-type:disc">Любой groupby с использованием таргета — делается:<ul id="2ab568fa-e39f-8083-90d3-f109a9571579" class="bulleted-list"><li style="list-style-type:circle">только по <strong>train</strong>,</li></ul><ul id="2ab568fa-e39f-80f6-9a6d-d8af03d9b41d" class="bulleted-list"><li style="list-style-type:circle">с <strong>out-of-fold</strong> схемой для каждой строки.</li></ul></li></ul><ul id="2ab568fa-e39f-8060-9d44-da871257d0e1" class="bulleted-list"><li style="list-style-type:disc">Никаких:<ul id="2ab568fa-e39f-8007-a510-c1a28d01cac1" class="bulleted-list"><li style="list-style-type:circle">mean_target_by_user, считанных по всей выборке сразу и потом примененных к train+test.</li></ul></li></ul><p id="2ab568fa-e39f-806e-99a3-cb658529e94c" class="">Если есть время, всегда делаешь «stress-test»:</p><ul id="2ab568fa-e39f-8067-8b02-e797de0ba2fe" class="bulleted-list"><li style="list-style-type:disc">Меняешь схему CV (например, время-based вместо random).</li></ul><ul id="2ab568fa-e39f-803e-b6a4-c2e90b3cdbad" class="bulleted-list"><li style="list-style-type:disc">Если «суперфичи» разваливаются — возможно, они смотрят в будущее.</li></ul><h3 id="2ab568fa-e39f-80a7-83e6-dab09e80b24f" class="">8.2. Высокая кардинальность + слабый сигнал</h3><ul id="2ab568fa-e39f-80b6-b00c-d1f4f0df13f4" class="bulleted-list"><li style="list-style-type:disc">200k уникальных категорий → целая куча фичей (TE, rare-levels).</li></ul><ul id="2ab568fa-e39f-8084-8fa8-eb9c36063c1f" class="bulleted-list"><li style="list-style-type:disc">Задаешь вопрос:<ul id="2ab568fa-e39f-80ee-a2ff-e9c3f58af5b8" class="bulleted-list"><li style="list-style-type:circle">это ключевая сущность (user_id)? Тогда да, надо потеть.</li></ul><ul id="2ab568fa-e39f-8088-ad6f-d09705de4f70" class="bulleted-list"><li style="list-style-type:circle">или это рандомный ID, который никак не связан? Тогда выкинуть.</li></ul></li></ul><h3 id="2ab568fa-e39f-80c1-a9e7-c69c8097bf13" class="">8.3. Усложнение без измеримого профита</h3><p id="2ab568fa-e39f-8067-b429-d81b006ac2c3" class="">GM-штука: <strong>быть жестким редактором фичей.</strong></p><ul id="2ab568fa-e39f-8084-bd25-cafddf2ac3a1" class="bulleted-list"><li style="list-style-type:disc">Оставлять только то, что:<ul id="2ab568fa-e39f-800a-a8e7-f987efc14669" class="bulleted-list"><li style="list-style-type:circle">дает стабильное улучшение;</li></ul><ul id="2ab568fa-e39f-8043-a1b5-ec6bb514eaa6" class="bulleted-list"><li style="list-style-type:circle">или критически важно по смыслу.</li></ul></li></ul><p id="2ab568fa-e39f-80d2-ab6a-e6bf63dd5fae" class="">Остальное выбрасывать, иначе:</p><ul id="2ab568fa-e39f-80ec-bc41-cc02a46d11ef" class="bulleted-list"><li style="list-style-type:disc">модели медленнее;</li></ul><ul id="2ab568fa-e39f-8061-a892-f4fd6b473e05" class="bulleted-list"><li style="list-style-type:disc">дебаг сложнее;</li></ul><ul id="2ab568fa-e39f-80d1-bd56-de01ddfca68c" class="bulleted-list"><li style="list-style-type:disc">риск переобучения растет.</li></ul><hr id="2ab568fa-e39f-80d0-9534-f9f23f1fd17c"/><h2 id="2ab568fa-e39f-80eb-9a02-d7a124f7c8ad" class="">9. Мини-практика (мысленный эксперимент)</h2><p id="2ab568fa-e39f-804c-a88b-d404706a9f4f" class="">Представь задачу: <strong>кредитный скоринг.</strong></p><p id="2ab568fa-e39f-805c-9f71-e5e188b212eb" class="">Есть:</p><ul id="2ab568fa-e39f-80b6-9c6e-f57695e60e2a" class="bulleted-list"><li style="list-style-type:disc"><code>age</code>, <code>income</code>, <code>loan_amount</code>, <code>past_loans</code>, <code>delinquencies</code>, <code>employer_type</code>, <code>region</code>, <code>application_date</code>, etc.</li></ul><p id="2ab568fa-e39f-80df-8db6-e14d64d24131" class="">Как думаем:</p><ol type="1" id="2ab568fa-e39f-8015-90d5-f30c317b4f7a" class="numbered-list" start="1"><li><strong>Сущность:</strong> клиент (client_id), таргет — дефолт по новому кредиту.</li></ol><ol type="1" id="2ab568fa-e39f-806c-ac4e-ee417f28add4" class="numbered-list" start="2"><li><strong>История:</strong> прошлые кредиты (если есть отдельная таблица).</li></ol><ol type="1" id="2ab568fa-e39f-80ce-8168-ed925ee53df8" class="numbered-list" start="3"><li><strong>Простые фичи:</strong><ul id="2ab568fa-e39f-80e9-aeb1-ed3df47a7562" class="bulleted-list"><li style="list-style-type:disc">debt_to_income = <code>loan_amount / income</code>;</li></ul><ul id="2ab568fa-e39f-807f-82e4-ed2d1f432844" class="bulleted-list"><li style="list-style-type:disc">total_past_debt, average_past_debt;</li></ul><ul id="2ab568fa-e39f-80e2-842c-dccb84a45134" class="bulleted-list"><li style="list-style-type:disc">age buckets (binning).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808d-b98f-cd0bf823afe3" class="numbered-list" start="4"><li><strong>Групповые:</strong><ul id="2ab568fa-e39f-809b-9fac-d7d4c9bda0da" class="bulleted-list"><li style="list-style-type:disc">для employer_type:<ul id="2ab568fa-e39f-80cf-b1dd-d0f48b1f4b2b" class="bulleted-list"><li style="list-style-type:circle">средняя дефолтность (TE по честной схеме);</li></ul></li></ul><ul id="2ab568fa-e39f-80ac-8ed5-cc572f4e71b6" class="bulleted-list"><li style="list-style-type:disc">для region:<ul id="2ab568fa-e39f-807c-9766-c566578097ad" class="bulleted-list"><li style="list-style-type:circle">средний дефолт rate, средний доход.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80fc-a524-c89843be68b6" class="numbered-list" start="5"><li><strong>Время:</strong><ul id="2ab568fa-e39f-8001-941b-faf3627cd602" class="bulleted-list"><li style="list-style-type:disc">стаж работы = <code>application_date - employment_start_date</code>;</li></ul><ul id="2ab568fa-e39f-8091-ba65-f70d778c6008" class="bulleted-list"><li style="list-style-type:disc">сколько времени с последнего кредита.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8075-9f43-e2635b936413" class="numbered-list" start="6"><li><strong>Interactions:</strong><ul id="2ab568fa-e39f-80a0-a224-dd3993b1c6b7" class="bulleted-list"><li style="list-style-type:disc">debt_to_income / region_default_rate;</li></ul><ul id="2ab568fa-e39f-8063-85ea-e29dadb2b17d" class="bulleted-list"><li style="list-style-type:disc">high_debt_flag * short_employment_flag.</li></ul></li></ol><p id="2ab568fa-e39f-8015-b5cc-eccd82de23e8" class="">Каждую фичу сопровождаешь историей:</p><blockquote id="2ab568fa-e39f-805e-8395-e7bba863273a" class="">«Эта фича моделирует финансовую нагрузку»,<p id="2ab568fa-e39f-80ae-a625-cc5810474b67" class="">«Эта фича показывает, насколько рискованный регион»,</p><p id="2ab568fa-e39f-8051-8cc6-deec48eb9a52" class="">«Эта — совмещает высокий риск региона и высокую нагрузку».</p></blockquote><hr id="2ab568fa-e39f-80e1-88c0-c957c1627fc5"/><h2 id="2ab568fa-e39f-80f7-a69d-f04e9a78eb0e" class="">10. Как из этого сделать привычку</h2><p id="2ab568fa-e39f-80e1-86c7-fe3cbf3ab132" class="">Чтобы мозг <strong>автоматически</strong> мыслил по-GM-шному, можно держать чек-лист (можешь реально себе в Notion / md файл забить):</p><h3 id="2ab568fa-e39f-80a1-96c5-eefce7eb0dfc" class="">Чек-лист при первом знакомстве с задачей</h3><ol type="1" id="2ab568fa-e39f-80be-b32f-e66609449ab8" class="numbered-list" start="1"><li>Сущность и таргет:<ul id="2ab568fa-e39f-805e-831a-c2b6cfcb162b" class="bulleted-list"><li style="list-style-type:disc">что за объект?</li></ul><ul id="2ab568fa-e39f-80fe-95d1-ccbf70dd7ee0" class="bulleted-list"><li style="list-style-type:disc">какое событие предсказываем?</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c5-a0a5-cd41dfd3293d" class="numbered-list" start="2"><li>Группы:<ul id="2ab568fa-e39f-8045-806e-e0f07073c3f8" class="bulleted-list"><li style="list-style-type:disc">какие ID есть?</li></ul><ul id="2ab568fa-e39f-8069-a937-d1cc4b3e8adb" class="bulleted-list"><li style="list-style-type:disc">какие из них — ключевые сущности?</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8045-9b3a-effd7bc4089d" class="numbered-list" start="3"><li>Время:<ul id="2ab568fa-e39f-8099-9497-eac8d67ab209" class="bulleted-list"><li style="list-style-type:disc">есть ли timestamp?</li></ul><ul id="2ab568fa-e39f-8031-934d-c348b853b7cc" class="bulleted-list"><li style="list-style-type:disc">есть ли явная временная структура?</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8006-8215-da522c73552b" class="numbered-list" start="4"><li>Типы признаков:<ul id="2ab568fa-e39f-8026-ba36-f15282461dbb" class="bulleted-list"><li style="list-style-type:disc">числовые, категориальные (low/high card), текст, гео.</li></ul></li></ol><h3 id="2ab568fa-e39f-80fb-8dbb-e7781b7f2f5f" class="">Чек-лист фич-фэктори</h3><p id="2ab568fa-e39f-80e4-a866-c4d45a340923" class="">Для каждого блока:</p><ul id="2ab568fa-e39f-8075-922d-f349f0c8baba" class="bulleted-list"><li style="list-style-type:disc"><strong>User/product/merchant-level stats:</strong><ul id="2ab568fa-e39f-8086-a3a7-c84766cb860c" class="bulleted-list"><li style="list-style-type:circle">counts, mean, std, min/max, diversity, entropy.</li></ul></li></ul><ul id="2ab568fa-e39f-802e-86f3-c221fb73cb67" class="bulleted-list"><li style="list-style-type:disc"><strong>Recency &amp; dynamics:</strong><ul id="2ab568fa-e39f-80da-b7e7-e6c160109162" class="bulleted-list"><li style="list-style-type:circle">время с последнего события;</li></ul><ul id="2ab568fa-e39f-80bc-bcc8-dba86d6d6e5c" class="bulleted-list"><li style="list-style-type:circle">rolling окна по ключевым метрикам.</li></ul></li></ul><ul id="2ab568fa-e39f-805d-bc04-d4d275871909" class="bulleted-list"><li style="list-style-type:disc"><strong>Ratios &amp; diffs:</strong><ul id="2ab568fa-e39f-80be-bf3c-f82208fdfd10" class="bulleted-list"><li style="list-style-type:circle">всё, что может стать «нормализованной» версией числа.</li></ul></li></ul><ul id="2ab568fa-e39f-8069-8c39-f29d5570e39a" class="bulleted-list"><li style="list-style-type:disc"><strong>Календарные паттерны:</strong><ul id="2ab568fa-e39f-80d5-8b32-e2b2b3349499" class="bulleted-list"><li style="list-style-type:circle">dayofweek, hour, holidays.</li></ul></li></ul><ul id="2ab568fa-e39f-806d-829c-fa324444ed24" class="bulleted-list"><li style="list-style-type:disc"><strong>TE / frequency encoding:</strong><ul id="2ab568fa-e39f-80e2-ad9f-f1dc87427d03" class="bulleted-list"><li style="list-style-type:circle">аккуратно, с честным CV.</li></ul></li></ul><hr id="2ab568fa-e39f-803a-9601-e645272e2792"/><p id="2ab568fa-e39f-809d-bdbe-cf3289e370b5" class="">Если хочешь, следующим шагом можем взять <strong>конкретную задачу</strong> (например, тот самый Kaggle Playground, что ты трогал) и я просто пройду по нему в формате:</p><blockquote id="2ab568fa-e39f-80b5-8c89-c3c7a1fb464a" class="">«Смотрим на описание → выделяем сущности → генерим фичи → приоритизируем под 5-часовой тур».</blockquote><p id="2ab568fa-e39f-80ca-ab22-ecf0e6cba274" class="">Но уже сейчас у тебя есть каркас: <strong>как думать</strong>, а не «какие 10 фич сделать».</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

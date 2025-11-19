@@ -1,0 +1,789 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 2.4. Negative sampling, имитация соревовой метрики и offline-фреймворк</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-80b0-8c51-c4245d15112c" class="page sans"><header><h1 class="page-title">Урок 2.4. Negative sampling, имитация соревовой метрики и offline-фреймворк</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-8091-825c-e1219e7a8308" class="">1. Цели урока</h2><p id="2aa568fa-e39f-80c1-9129-e307bd09c9cb" class="">К концу урока студент должен уметь:</p><ul id="2aa568fa-e39f-80cc-bd2e-c72e76336733" class="bulleted-list"><li style="list-style-type:disc">объяснить, <strong>зачем в offline-оценке нужны негативные кандидаты</strong>, если в логах есть только позитивы;</li></ul><ul id="2aa568fa-e39f-8051-9814-f6db189b0f0c" class="bulleted-list"><li style="list-style-type:disc">различать способы negative sampling и понимать их плюсы/минусы;</li></ul><ul id="2aa568fa-e39f-8071-9768-fc7c05f737f5" class="bulleted-list"><li style="list-style-type:disc">по описанию соревнования/продукта:<ul id="2aa568fa-e39f-80b2-908b-e3c360f34cec" class="bulleted-list"><li style="list-style-type:circle">придумать схему offline-оценки, максимально похожую на <strong>реальную/соревовую</strong> метрику;</li></ul></li></ul><ul id="2aa568fa-e39f-800b-bf44-d21a84571f7d" class="bulleted-list"><li style="list-style-type:disc">спроектировать и реализовать <strong>evaluation-фреймворк</strong>:<ul id="2aa568fa-e39f-801a-ae7f-ca5667bf05fc" class="bulleted-list"><li style="list-style-type:circle">интерфейс <code>Recommender</code>;</li></ul><ul id="2aa568fa-e39f-805f-afbd-fb5a0d54a792" class="bulleted-list"><li style="list-style-type:circle">функцию <code>evaluate(...)</code> с несколькими метриками;</li></ul><ul id="2aa568fa-e39f-80ed-8f84-d73e493b1ff4" class="bulleted-list"><li style="list-style-type:circle">по желанию — pluggable negative sampler;</li></ul></li></ul><ul id="2aa568fa-e39f-80e8-9148-e1cb3ff105f4" class="bulleted-list"><li style="list-style-type:disc">использовать этот фреймворк, чтобы <strong>сравнивать несколько моделей/бейзлайнов</strong>.</li></ul><hr id="2aa568fa-e39f-80cc-99e3-f82c76cb48df"/><h2 id="2aa568fa-e39f-80b0-b7d2-e16759196b18" class="">2. Структура урока (90–120 минут)</h2><p id="2aa568fa-e39f-80fa-b1a2-f78a977a65d3" class=""><strong>Блок 1 (15–20 мин)</strong> — проблема: почему нам вообще нужны «негативы»</p><p id="2aa568fa-e39f-8087-91d7-ee0d9f7a41bc" class=""><strong>Блок 2 (20–25 мин)</strong> — стратегии negative sampling и их подводные камни</p><p id="2aa568fa-e39f-8005-9bfb-d3d2c6658e17" class=""><strong>Блок 3 (20–25 мин)</strong> — как имитировать соревовую/реальную метрику offline</p><p id="2aa568fa-e39f-80d2-9ac4-dd13d85c5cb8" class=""><strong>Блок 4 (20–30 мин)</strong> — дизайн eval-фреймворка и интерфейсов</p><p id="2aa568fa-e39f-8001-8457-ccd438ffd2ca" class=""><strong>Блок 5 (15–20 мин)</strong> — практика в ноутбуке, тестирование на 2–3 моделях</p><p id="2aa568fa-e39f-80b5-94d4-ccef4450006f" class=""><strong>Домашка</strong> — собрать свой полный eval-движок для выбранного соревового датасета</p><hr id="2aa568fa-e39f-80a3-a09d-f175613bb771"/><h2 id="2aa568fa-e39f-80a1-ad95-ebed129d55ee" class="">3. Блок 1. Зачем вообще нужен negative sampling для оценки</h2><h3 id="2aa568fa-e39f-800d-985f-f9f58ae94720" class="">3.1. Проблема «у нас только позитивы»</h3><p id="2aa568fa-e39f-8038-8af9-d36084e36b5b" class="">Типичная ситуация:</p><ul id="2aa568fa-e39f-8001-924b-d47868d41d0c" class="bulleted-list"><li style="list-style-type:disc">В логах есть только <strong>положительные взаимодействия</strong>:<ul id="2aa568fa-e39f-80ba-b713-cc698215827d" class="bulleted-list"><li style="list-style-type:circle">user кликнул / купил / посмотрел.</li></ul></li></ul><ul id="2aa568fa-e39f-80ef-8a94-c2e7e2f7a1b0" class="bulleted-list"><li style="list-style-type:disc">Нигде явно не записано:<ul id="2aa568fa-e39f-80f6-8df7-c5f2e1ef4cf3" class="bulleted-list"><li style="list-style-type:circle">«ему показали item X, он его проигнорировал».</li></ul></li></ul><p id="2aa568fa-e39f-8010-95c3-da39c4884664" class="">Мы хотим измерить:</p><blockquote id="2aa568fa-e39f-803d-afe0-c1ed36d6f434" class="">«Насколько высоко среди всех возможных предметов модель ставит релевантные?»</blockquote><p id="2aa568fa-e39f-802b-93ed-ec1043c1d330" class="">Но offline:</p><ul id="2aa568fa-e39f-8069-a075-ee86897286c0" class="bulleted-list"><li style="list-style-type:disc">у нас есть:<ul id="2aa568fa-e39f-80ad-8a84-d7e1ac59672b" class="bulleted-list"><li style="list-style-type:circle">1–N релевантных (покупки, клики и т.п.),</li></ul><ul id="2aa568fa-e39f-80f6-b00b-f8d400e69b7a" class="bulleted-list"><li style="list-style-type:circle">и <strong>огромный каталог</strong> нерелевантных, который мы даже не видим целиком как «негативы».</li></ul></li></ul><h3 id="2aa568fa-e39f-803f-9fc6-dddb53d54530" class="">3.2. Наивная идеальная оценка (нереалистичная)</h3><p id="2aa568fa-e39f-8038-ae1e-d4530c6e5daf" class="">Идеально было бы:</p><ul id="2aa568fa-e39f-80bf-b4f6-e72d0b443663" class="bulleted-list"><li style="list-style-type:disc">для каждого user в validation:<ul id="2aa568fa-e39f-8075-8e77-dc19e4018834" class="bulleted-list"><li style="list-style-type:circle">взять:<ul id="2aa568fa-e39f-80ba-a769-f00de373a742" class="bulleted-list"><li style="list-style-type:square">полный список всех items каталога;</li></ul><ul id="2aa568fa-e39f-8021-9b31-c95d8af0f69a" class="bulleted-list"><li style="list-style-type:square">отметить релевантные (из ground truth);</li></ul></li></ul><ul id="2aa568fa-e39f-8000-ab4b-ea70d99ff5a6" class="bulleted-list"><li style="list-style-type:circle">прогнать через модель,</li></ul><ul id="2aa568fa-e39f-800d-a7c1-fe9c908a5b8c" class="bulleted-list"><li style="list-style-type:circle">отсортировать весь каталог,</li></ul><ul id="2aa568fa-e39f-8057-8bd5-c2a5e5d3b6c2" class="bulleted-list"><li style="list-style-type:circle">посчитать топ-K-метрики.</li></ul></li></ul><p id="2aa568fa-e39f-80e3-ac6b-ccae3b1a4510" class="">Проблема:</p><ul id="2aa568fa-e39f-8095-bda3-f28b144930d3" class="bulleted-list"><li style="list-style-type:disc">каталог → сотни тысяч / миллионы items;</li></ul><ul id="2aa568fa-e39f-8033-b7b0-f60d0c303ca8" class="bulleted-list"><li style="list-style-type:disc">пользователей → десятки / сотни тысяч;</li></ul><ul id="2aa568fa-e39f-804f-90b2-e39b54fa751b" class="bulleted-list"><li style="list-style-type:disc">полный прогон «user × весь каталог» — <strong>очень дорого</strong> (и часто невозможен).</li></ul><p id="2aa568fa-e39f-80a9-8ed2-ddc76e0e1627" class="">Поэтому делаем <strong>approximation</strong> → negative sampling.</p><hr id="2aa568fa-e39f-80de-9828-c3598cd1bee7"/><h2 id="2aa568fa-e39f-80bb-8507-f43e605760b8" class="">4. Блок 2. Negative sampling: подходы и их последствия</h2><h3 id="2aa568fa-e39f-804a-bf1e-cd0de68e9f21" class="">4.1. Базовая идея negative sampling</h3><p id="2aa568fa-e39f-800f-9f51-d8450307464d" class="">Для каждого (user, target_item):</p><ul id="2aa568fa-e39f-800b-87ec-e8c3fed700f1" class="bulleted-list"><li style="list-style-type:disc">добавляем к target ещё <strong>M «негативных» items</strong>;</li></ul><ul id="2aa568fa-e39f-8010-bb62-d39f6ddfb375" class="bulleted-list"><li style="list-style-type:disc">получаем ограниченный список кандидатов:<ul id="2aa568fa-e39f-80d6-aad8-cdd95e5acd49" class="bulleted-list"><li style="list-style-type:circle">1 положительный (иногда несколько) + M отрицательных;</li></ul></li></ul><ul id="2aa568fa-e39f-803a-b8c0-ee590faf730c" class="bulleted-list"><li style="list-style-type:disc">считаем метрики (MRR/Recall@K/NDCG@K) внутри этого списка.</li></ul><p id="2aa568fa-e39f-805b-887c-cff52729cedf" class="">Интуиция:</p><blockquote id="2aa568fa-e39f-805f-9830-e38ae5e922e3" class="">«Вместо того, чтобы сравнивать таргет со всем миром, мы сравниваем его с репрезентативным подмножеством мира».</blockquote><h3 id="2aa568fa-e39f-807d-bef2-f6327856d5c2" class="">4.2. Способы выбора негативов</h3><ol type="1" id="2aa568fa-e39f-80cc-a676-edb1f5d4efe0" class="numbered-list" start="1"><li><strong>Uniform random negative sampling</strong><ul id="2aa568fa-e39f-80dd-ada0-e691709c41ed" class="bulleted-list"><li style="list-style-type:disc">случайно выбираем M items из всего каталога, кроме таргета;</li></ul><ul id="2aa568fa-e39f-8050-9d5c-e45a1cc15c8e" class="bulleted-list"><li style="list-style-type:disc">простейший подход.</li></ul><p id="2aa568fa-e39f-8025-a4f2-fa53b2ead718" class="">Плюсы:</p><ul id="2aa568fa-e39f-803d-aa36-d6e1113de37e" class="bulleted-list"><li style="list-style-type:disc">легко реализовать;</li></ul><ul id="2aa568fa-e39f-8005-80a7-ec2a60a0543f" class="bulleted-list"><li style="list-style-type:disc">быстрый.</li></ul><p id="2aa568fa-e39f-8062-ac01-ded3ba1f4815" class="">Минусы:</p><ul id="2aa568fa-e39f-80ca-a6fe-d2885c31dae6" class="bulleted-list"><li style="list-style-type:disc">слишком лёгкие негативы:<ul id="2aa568fa-e39f-80d4-b7fb-d3e821d7d2cb" class="bulleted-list"><li style="list-style-type:circle">модель почти всегда ставит таргет выше случайных item’ов;</li></ul><ul id="2aa568fa-e39f-802e-a6b9-d1e9172ec03b" class="bulleted-list"><li style="list-style-type:circle">метрики оказываются <strong>завышенными</strong>, не очень информативны.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8030-bf82-e7a35a83f523" class="numbered-list" start="2"><li><strong>Popularity-based negative sampling</strong><ul id="2aa568fa-e39f-8030-ac66-c05035fc6f47" class="bulleted-list"><li style="list-style-type:disc">выбираем негативы:<ul id="2aa568fa-e39f-80cd-898c-f6f52348c3ce" class="bulleted-list"><li style="list-style-type:circle">из популярных товаров;</li></ul><ul id="2aa568fa-e39f-80cf-8f99-e120b63c1da6" class="bulleted-list"><li style="list-style-type:circle">или с вероятностью пропорциональной популярности.</li></ul></li></ul><p id="2aa568fa-e39f-80fe-901b-d096135db568" class="">Плюсы:</p><ul id="2aa568fa-e39f-8083-a38e-cfab63a9bc0b" class="bulleted-list"><li style="list-style-type:disc">негативы более реалистичны: именно популярные товары чаще «конкурируют» в выдаче;</li></ul><ul id="2aa568fa-e39f-806f-ae46-ce56a917baa5" class="bulleted-list"><li style="list-style-type:disc">метрики становятся более консервативными, ближе к реальности.</li></ul><p id="2aa568fa-e39f-80bc-8ef7-ed9663a014b1" class="">Минусы:</p><ul id="2aa568fa-e39f-8048-ae5e-ef6900110f8c" class="bulleted-list"><li style="list-style-type:disc">сложнее реализовать (нужно считать популярность);</li></ul><ul id="2aa568fa-e39f-801e-bf69-e3feb065b2f4" class="bulleted-list"><li style="list-style-type:disc">может быть bias в сторону популярных товаров.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ea-aace-d0087f5b2001" class="numbered-list" start="3"><li><strong>Hard negatives / «сложные» негативы</strong><ul id="2aa568fa-e39f-802b-8a30-d5e0190bf6ad" class="bulleted-list"><li style="list-style-type:disc">негативы, которые <strong>похожи</strong> на таргет или интересы пользователя:<ul id="2aa568fa-e39f-80f4-b43d-cd06b7b73861" class="bulleted-list"><li style="list-style-type:circle">товары из тех же категорий;</li></ul><ul id="2aa568fa-e39f-8014-9431-c56b6706a354" class="bulleted-list"><li style="list-style-type:circle">товары, которые он часто смотрел, но не купил;</li></ul><ul id="2aa568fa-e39f-8034-b998-edd49ddeff21" class="bulleted-list"><li style="list-style-type:circle">товары, похожие по embedding’ам.</li></ul></li></ul><p id="2aa568fa-e39f-8082-b28a-fedd2fd2f2f8" class="">Плюсы:</p><ul id="2aa568fa-e39f-80da-907a-dc979ab69718" class="bulleted-list"><li style="list-style-type:disc">оценка становится ещё более реалистичной:<ul id="2aa568fa-e39f-80d5-9126-ffc97eeb642e" class="bulleted-list"><li style="list-style-type:circle">модель должна не просто отличать таргет от рандомного мусора,<p id="2aa568fa-e39f-8047-816c-d0fccc16ed1a" class="">а выигрывать в соревновании с «почти релевантными» товарами.</p></li></ul></li></ul><p id="2aa568fa-e39f-8050-9972-eee147f25727" class="">Минусы:</p><ul id="2aa568fa-e39f-80fb-8b89-cea4ca66a06b" class="bulleted-list"><li style="list-style-type:disc">сильно сложнее реализовать;</li></ul><ul id="2aa568fa-e39f-8090-9293-c3334612683b" class="bulleted-list"><li style="list-style-type:disc">риск сделать оценку <strong>слишком pessimistic</strong>;</li></ul><ul id="2aa568fa-e39f-8033-9e44-db6d8f0c8c50" class="bulleted-list"><li style="list-style-type:disc">нужен контроль, чтобы не считать псевдо-позитивы негативами.</li></ul></li></ol><h3 id="2aa568fa-e39f-8092-9f16-ebab1d79a1f7" class="">4.3. Сколько негативов брать?</h3><ul id="2aa568fa-e39f-80dc-8455-cb02d045118d" class="bulleted-list"><li style="list-style-type:disc">M (число негативов на один позитив):<ul id="2aa568fa-e39f-8068-b872-e37da4a929a3" class="bulleted-list"><li style="list-style-type:circle"><strong>маленький M (10–20)</strong>:<ul id="2aa568fa-e39f-8072-af8d-f24c2145e002" class="bulleted-list"><li style="list-style-type:square">быстро;</li></ul><ul id="2aa568fa-e39f-80f2-ac69-ddcb2a20da0a" class="bulleted-list"><li style="list-style-type:square">но высокая дисперсия метрики, сильная зависимость от выбора негативов;</li></ul></li></ul><ul id="2aa568fa-e39f-807b-b570-fbe27d0b769c" class="bulleted-list"><li style="list-style-type:circle"><strong>большой M (100–1000)</strong>:<ul id="2aa568fa-e39f-8070-997f-ca64e232631a" class="bulleted-list"><li style="list-style-type:square">ближе к ситуации «весь каталог»;</li></ul><ul id="2aa568fa-e39f-806e-86e3-f1e9928ef6bd" class="bulleted-list"><li style="list-style-type:square">но медленнее.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-801d-9004-f5f379b9b146" class="bulleted-list"><li style="list-style-type:disc">Компромисс:<ul id="2aa568fa-e39f-80aa-8229-f86fc87f311b" class="bulleted-list"><li style="list-style-type:circle">выбрать M так, чтобы:<ul id="2aa568fa-e39f-807b-a40d-e162aa510b13" class="bulleted-list"><li style="list-style-type:square">метрика достаточно стабильна (несколько выборок → похожие результаты);</li></ul><ul id="2aa568fa-e39f-8057-841b-d10e963dc5bd" class="bulleted-list"><li style="list-style-type:square">оценка укладывается во время.</li></ul></li></ul></li></ul><h3 id="2aa568fa-e39f-80a5-8888-f602aee1a3d9" class="">4.4. Важный момент: фиксировать негативы</h3><p id="2aa568fa-e39f-8002-aa80-ff20c28c460b" class="">Чтобы сравнивать разные модели честно:</p><ul id="2aa568fa-e39f-80bf-808c-dec0053902f8" class="bulleted-list"><li style="list-style-type:disc">желательно <strong>фиксировать набор негативов</strong> для каждого user/target:<ul id="2aa568fa-e39f-8089-901d-c911332a5e44" class="bulleted-list"><li style="list-style-type:circle">один раз сэмплировать негативы и сохранить;</li></ul><ul id="2aa568fa-e39f-8000-b7af-d16e347f2918" class="bulleted-list"><li style="list-style-type:circle">для всех моделей использовать <strong>один и тот же</strong> набор.</li></ul></li></ul><ul id="2aa568fa-e39f-80c5-a5a8-f33d2815c0f0" class="bulleted-list"><li style="list-style-type:disc">Если каждый раз пере-сэмплировать:<ul id="2aa568fa-e39f-803f-a0f9-f0955afa3ab7" class="bulleted-list"><li style="list-style-type:circle">разница между моделями может быть частично шумом выбора негативов.</li></ul></li></ul><hr id="2aa568fa-e39f-804c-9ddd-f89ab15b65ff"/><h2 id="2aa568fa-e39f-806c-b9ea-e1c3c06a3688" class="">5. Блок 3. Имитируем соревовую метрику offline</h2><h3 id="2aa568fa-e39f-8081-87de-e6b421b01459" class="">5.1. Разбор формата соревовой задачи</h3><p id="2aa568fa-e39f-806e-bea3-df2e26c621ed" class="">По описанию соревнования/датасета:</p><ul id="2aa568fa-e39f-80b3-acb1-ed0232f7effe" class="bulleted-list"><li style="list-style-type:disc">На каком уровне считается метрика?<ul id="2aa568fa-e39f-806d-958d-c4e004e71b3a" class="bulleted-list"><li style="list-style-type:circle">per user?</li></ul><ul id="2aa568fa-e39f-80e0-900c-e40681aef57c" class="bulleted-list"><li style="list-style-type:circle">per session?</li></ul><ul id="2aa568fa-e39f-80dc-9006-f5bd7573bfff" class="bulleted-list"><li style="list-style-type:circle">per interaction?</li></ul></li></ul><ul id="2aa568fa-e39f-80de-bbe0-cebf011211aa" class="bulleted-list"><li style="list-style-type:disc">Что считается <strong>релевантным</strong>?<ul id="2aa568fa-e39f-80af-a6a8-d6ce75ffbf13" class="bulleted-list"><li style="list-style-type:circle">покупка;</li></ul><ul id="2aa568fa-e39f-803e-b7aa-f457b2282cc8" class="bulleted-list"><li style="list-style-type:circle">клик;</li></ul><ul id="2aa568fa-e39f-8015-a079-c27f3f59ebc4" class="bulleted-list"><li style="list-style-type:circle">просмотр до конца;</li></ul><ul id="2aa568fa-e39f-8093-b6d3-e9310ff40000" class="bulleted-list"><li style="list-style-type:circle">несколько типов событий одновременно?</li></ul></li></ul><ul id="2aa568fa-e39f-8073-9441-d1404087c89d" class="bulleted-list"><li style="list-style-type:disc">Как выглядит сабмит?<ul id="2aa568fa-e39f-8055-984e-eae6fc8bf317" class="bulleted-list"><li style="list-style-type:circle"><code>user_id, item_1 ... item_K</code>;</li></ul><ul id="2aa568fa-e39f-80dc-9cef-e649749f2144" class="bulleted-list"><li style="list-style-type:circle"><code>session_id, item_1 ... item_K</code>;</li></ul><ul id="2aa568fa-e39f-8088-8fa7-d4775400fed5" class="bulleted-list"><li style="list-style-type:circle">или что-то более хитрое (multi-objective, weighted events).</li></ul></li></ul><h3 id="2aa568fa-e39f-8047-981e-cae56d800abc" class="">5.2. Имитация на train/validation</h3><p id="2aa568fa-e39f-806a-bb37-d07d1e5ff411" class="">Цель:</p><blockquote id="2aa568fa-e39f-8051-b1f6-c4e04da3aee9" class="">Сделать так, чтобы offline evaluation максимально повторял то,<p id="2aa568fa-e39f-8078-8b46-ee31cc79e749" class="">как метрика будет считаться на test / в реальном мире.</p></blockquote><p id="2aa568fa-e39f-8047-888f-dcd8ec84a978" class="">Структура:</p><ol type="1" id="2aa568fa-e39f-8027-992f-edd7eed2731e" class="numbered-list" start="1"><li>Выбираем <strong>split</strong> (из урока 2.3):<p id="2aa568fa-e39f-80d0-a529-eee467e9ae89" class="">time-based / leave-one-out / session-based.</p></li></ol><ol type="1" id="2aa568fa-e39f-80bc-a789-ff9fcf193a0e" class="numbered-list" start="2"><li>Формируем ground truth:<ul id="2aa568fa-e39f-80be-99d9-f76e67f61de1" class="bulleted-list"><li style="list-style-type:disc">для каждого user/session в validation определяем:<ul id="2aa568fa-e39f-80e7-b41a-e1e2d640aa64" class="bulleted-list"><li style="list-style-type:circle">какие item’ы считаем релевантными;</li></ul><ul id="2aa568fa-e39f-80ca-86d6-e9b07f704cac" class="bulleted-list"><li style="list-style-type:circle">возможно, с весами (если разные события).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-804f-846b-ebd94fb9d0d5" class="numbered-list" start="3"><li>Определяем кандидатов:<ul id="2aa568fa-e39f-80ee-a97b-c40151376935" class="bulleted-list"><li style="list-style-type:disc">либо весь каталог (маленький датасет),</li></ul><ul id="2aa568fa-e39f-8012-99cd-d12b5f7928f1" class="bulleted-list"><li style="list-style-type:disc">либо таргет + негативы (negative sampling), если данных много.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807b-ab7a-d377907438e1" class="numbered-list" start="4"><li>Считаем метрику:<ul id="2aa568fa-e39f-807d-adae-d3812a343570" class="bulleted-list"><li style="list-style-type:disc">по user/session, как в сореве;</li></ul><ul id="2aa568fa-e39f-8037-ace7-c3906e734770" class="bulleted-list"><li style="list-style-type:disc">усредняем по всем.</li></ul></li></ol><h3 id="2aa568fa-e39f-8032-acf3-fae558e3fac0" class="">5.3. Примеры имитаций</h3><p id="2aa568fa-e39f-8007-84d1-d5c4ebb4810b" class=""><strong>Пример 1: top-K покупки в e-commerce</strong></p><ul id="2aa568fa-e39f-800c-a1f4-c79e519f208c" class="bulleted-list"><li style="list-style-type:disc">Submit: для каждого user → список товаров, которые он купит.</li></ul><ul id="2aa568fa-e39f-801f-a42e-e3ebc8fadaa3" class="bulleted-list"><li style="list-style-type:disc">Валидация:<ul id="2aa568fa-e39f-806c-a78b-c488682a88c0" class="bulleted-list"><li style="list-style-type:circle">split по времени;</li></ul><ul id="2aa568fa-e39f-80ae-9583-d0aeadbdb443" class="bulleted-list"><li style="list-style-type:circle">валидационные покупки = ground truth;</li></ul><ul id="2aa568fa-e39f-8087-98de-f2f412c0d10a" class="bulleted-list"><li style="list-style-type:circle">рекомендации = top-K по модели;</li></ul><ul id="2aa568fa-e39f-801d-ae0d-ec4cbb9cfd9c" class="bulleted-list"><li style="list-style-type:circle">считать Recall@K и MAP@K.</li></ul></li></ul><p id="2aa568fa-e39f-8021-9c53-f3534931480b" class=""><strong>Пример 2: next-item в сессии</strong></p><ul id="2aa568fa-e39f-8070-9dd8-ea779eb1a955" class="bulleted-list"><li style="list-style-type:disc">Submit: для каждой сессии → следующий item.</li></ul><ul id="2aa568fa-e39f-8066-bd5c-e4297b57e423" class="bulleted-list"><li style="list-style-type:disc">Валидация:<ul id="2aa568fa-e39f-8040-b9c4-fcc4782ac746" class="bulleted-list"><li style="list-style-type:circle">для каждой сессии:<ul id="2aa568fa-e39f-8081-85c2-f78c38d67399" class="bulleted-list"><li style="list-style-type:square">prefix = train;</li></ul><ul id="2aa568fa-e39f-8010-9a23-c6f2308ddcde" class="bulleted-list"><li style="list-style-type:square">последний item = target;</li></ul></li></ul><ul id="2aa568fa-e39f-8075-ba82-e5be4fcd1868" class="bulleted-list"><li style="list-style-type:circle">кандидатами:<ul id="2aa568fa-e39f-80dc-a36a-f1d43189c017" class="bulleted-list"><li style="list-style-type:square">таргет + негативы;</li></ul></li></ul><ul id="2aa568fa-e39f-80c5-a9de-f01ed1145839" class="bulleted-list"><li style="list-style-type:circle">считаем MRR / HitRate@K.</li></ul></li></ul><hr id="2aa568fa-e39f-8047-92f1-d10743600221"/><h2 id="2aa568fa-e39f-80cb-a8da-d32965e301a9" class="">6. Блок 4. Дизайн eval-фреймворка</h2><p id="2aa568fa-e39f-80c1-9476-c0a6f6b312cd" class="">Тут учим студентов мыслить как инженеры: «не тысяча раз писать одно и то же».</p><h3 id="2aa568fa-e39f-80e5-95ad-e137dce10373" class="">6.1. Интерфейс рекомендателя</h3><p id="2aa568fa-e39f-80df-9d19-cb5b16e9d9d9" class="">Задаём базовый интерфейс:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8051-aa88-d333410558c4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class Recommender:
+    def recommend(self, user_id, k: int) -&gt; list:
+        &quot;&quot;&quot;
+        Вернуть список item_id длины &lt;= k, отсортированный по убыванию score.
+        &quot;&quot;&quot;
+        raise NotImplementedError
+</code></pre><p id="2aa568fa-e39f-80fa-b1f4-f809f87232c8" class="">Опционально: добавить поддержку session-based:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d9-96a9-d0a14b3e0d27" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class SessionRecommender:
+    def recommend(self, session_items: list, k: int) -&gt; list:
+        ...
+</code></pre><h3 id="2aa568fa-e39f-8034-a0fe-efe71a776651" class="">6.2. Интерфейс negative sampler’а (опционально)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d9-9242-f00266bcfb66" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class NegativeSampler:
+    def sample(self, user_id, positive_items: list, num_negatives: int) -&gt; list:
+        &quot;&quot;&quot;
+        Вернуть список негативных item_id для данного пользователя/таргета.
+        &quot;&quot;&quot;
+        raise NotImplementedError
+</code></pre><p id="2aa568fa-e39f-8049-ac14-d8bc27c11f6a" class="">Реализации:</p><ul id="2aa568fa-e39f-80cd-ba7a-e074cd65a978" class="bulleted-list"><li style="list-style-type:disc">RandomNegativeSampler;</li></ul><ul id="2aa568fa-e39f-8017-8cd4-c808d34ac03d" class="bulleted-list"><li style="list-style-type:disc">PopularityNegativeSampler;</li></ul><ul id="2aa568fa-e39f-8071-a9d5-fc7ea88736b5" class="bulleted-list"><li style="list-style-type:disc">HardNegativeSampler (позже, в продвинутых модулях).</li></ul><h3 id="2aa568fa-e39f-80a7-ab2b-de33df7ec298" class="">6.3. Функция evaluate(...)</h3><p id="2aa568fa-e39f-800a-a48a-f0120038a2d2" class="">Базовая сигнатура:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80ba-bf7a-f0a0f39b8a4b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def evaluate(
+    recommender,
+    val_data,
+    ground_truth,
+    k: int = 10,
+    metrics: tuple = (&quot;hit&quot;, &quot;recall&quot;, &quot;map&quot;, &quot;ndcg&quot;),
+    negative_sampler=None,
+    num_negatives: int = 100,
+):
+    ...
+</code></pre><p id="2aa568fa-e39f-80b1-9cdf-f7fdfb9b123b" class="">Где:</p><ul id="2aa568fa-e39f-803b-b476-c7719c01f796" class="bulleted-list"><li style="list-style-type:disc"><code>val_data</code> — список пользователей/сессий, по которым считаем метрику;</li></ul><ul id="2aa568fa-e39f-8085-958e-f9f4ae46e881" class="bulleted-list"><li style="list-style-type:disc"><code>ground_truth[user_id]</code> — релевантные items для этого user;</li></ul><ul id="2aa568fa-e39f-8021-975d-f940b5af2407" class="bulleted-list"><li style="list-style-type:disc"><code>negative_sampler</code> — объект, умеющий выдавать негативы (или <code>None</code>, если не используем sampling);</li></ul><ul id="2aa568fa-e39f-80b9-a901-ccc80f890148" class="bulleted-list"><li style="list-style-type:disc"><code>num_negatives</code> — сколько негативов добавлять.</li></ul><p id="2aa568fa-e39f-80e0-ab8c-ff50a4864252" class="">Внутри:</p><ol type="1" id="2aa568fa-e39f-8039-8820-fd142d2a5590" class="numbered-list" start="1"><li>Для каждого user:<ul id="2aa568fa-e39f-804c-b9fb-d75db6492e07" class="bulleted-list"><li style="list-style-type:disc">получаем его ground truth;</li></ul><ul id="2aa568fa-e39f-8064-921f-f56e0bc8b07a" class="bulleted-list"><li style="list-style-type:disc">либо формируем кандидатов:<ul id="2aa568fa-e39f-8021-b957-cddc9d00be7d" class="bulleted-list"><li style="list-style-type:circle"><strong>путь А:</strong> сразу берём топ-K от модели (если она сама внутри делает candidate generation);</li></ul><ul id="2aa568fa-e39f-803a-ba45-d1fdd4529920" class="bulleted-list"><li style="list-style-type:circle"><strong>путь Б:</strong> формируем список «таргет + негативы» и просим модель дать оценку всем → из них берём top-K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8046-bd89-fbf3d21b42c4" class="numbered-list" start="2"><li>Считаем метрики на основании рекомендаций и ground truth.</li></ol><ol type="1" id="2aa568fa-e39f-8001-a793-d8bb1876f889" class="numbered-list" start="3"><li>Агрегируем результаты по всем user.</li></ol><h3 id="2aa568fa-e39f-800b-b8a1-c22a851c9ec8" class="">6.4. Логирование и reproducibility</h3><ul id="2aa568fa-e39f-8087-aec9-dda099d439a1" class="bulleted-list"><li style="list-style-type:disc">Важно:<ul id="2aa568fa-e39f-80a1-9970-dab70ca603ab" class="bulleted-list"><li style="list-style-type:circle">фиксировать random seed при negative sampling;</li></ul><ul id="2aa568fa-e39f-80ac-95d8-da8210977b8c" class="bulleted-list"><li style="list-style-type:circle">логировать параметры:<ul id="2aa568fa-e39f-8041-97e9-f601b5742b26" class="bulleted-list"><li style="list-style-type:square">какой split использовали;</li></ul><ul id="2aa568fa-e39f-8024-967b-cbff17255adc" class="bulleted-list"><li style="list-style-type:square">какие метрики;</li></ul><ul id="2aa568fa-e39f-80d2-87c2-f6812b649a4d" class="bulleted-list"><li style="list-style-type:square">какой sampler;</li></ul><ul id="2aa568fa-e39f-8076-bc75-db11cc3cc88d" class="bulleted-list"><li style="list-style-type:square">num_negatives;</li></ul></li></ul><ul id="2aa568fa-e39f-80df-86f9-ff68c966b9b4" class="bulleted-list"><li style="list-style-type:circle">сохранять результаты в понятном виде:<ul id="2aa568fa-e39f-8011-96dc-e9fa249130cd" class="bulleted-list"><li style="list-style-type:square">JSON/CSV:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8003-94a8-e438e0983f28" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;model&quot;: &quot;popularity_v2&quot;,
+  &quot;split&quot;: &quot;time_based_2024-09-01&quot;,
+  &quot;k&quot;: 20,
+  &quot;num_negatives&quot;: 100,
+  &quot;metrics&quot;: {
+    &quot;hit&quot;: 0.62,
+    &quot;recall&quot;: 0.38,
+    &quot;map&quot;: 0.21,
+    &quot;ndcg&quot;: 0.35
+  }
+}
+</code></pre></li></ul></li></ul></li></ul><hr id="2aa568fa-e39f-8000-8744-f16247297a27"/><h2 id="2aa568fa-e39f-80e6-b5fc-f505ba6ba884" class="">7. Блок 5. Практика на уроке</h2><h3 id="2aa568fa-e39f-8032-94f9-cf30b26d35fc" class="">7.1. Основная цель</h3><p id="2aa568fa-e39f-80a1-9a79-c7760ca09c9b" class="">За один урок студенты должны:</p><ul id="2aa568fa-e39f-801c-b165-c85508999a99" class="bulleted-list"><li style="list-style-type:disc">реализовать минимальный negative sampler (random или popularity-based);</li></ul><ul id="2aa568fa-e39f-80a4-82a1-cd76535e3f36" class="bulleted-list"><li style="list-style-type:disc">обернуть уже написанные метрики (из урока 2.2) в функцию <code>evaluate</code>;</li></ul><ul id="2aa568fa-e39f-80f1-8b8c-d13c5efc668a" class="bulleted-list"><li style="list-style-type:disc">посчитать метрики для <strong>двух разных моделей/бейзлайнов</strong> на одном и том же split’е.</li></ul><h3 id="2aa568fa-e39f-80c3-8f32-d460d2481017" class="">7.2. Шаги</h3><ol type="1" id="2aa568fa-e39f-8056-aee3-fcfdd678d8d0" class="numbered-list" start="1"><li><strong>Negative sampler (random)</strong><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8032-a013-f867bd4f4aab" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import random
+
+class RandomNegativeSampler:
+    def __init__(self, all_items):
+        self.all_items = list(all_items)
+
+    def sample(self, user_id, positive_items, num_negatives=100):
+        positives_set = set(positive_items)
+        negatives = []
+        while len(negatives) &lt; num_negatives:
+            item = random.choice(self.all_items)
+            if item not in positives_set:
+                negatives.append(item)
+        return negatives
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-809c-a99d-f18e499011c7" class="numbered-list" start="2"><li><strong>Eval-функция (упрощённый вариант)</strong><p id="2aa568fa-e39f-8061-907d-d0d5071ffd07" class="">Псевдо-код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-807d-bb7c-c9a013e01898" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def evaluate_model(
+    recommender,
+    val_users,
+    ground_truth,
+    k=10,
+    metrics=(&quot;hit&quot;, &quot;recall&quot;, &quot;map&quot;),
+):
+    results = {m: 0.0 for m in metrics}
+    n = 0
+
+    for user_id in val_users:
+        gt_items = ground_truth.get(user_id, [])
+        if not gt_items:
+            continue
+
+        recs = recommender.recommend(user_id, k)
+        # здесь recs — уже top-K (без negative sampling)
+        # считаем метрики, используя функции из урока 2.2
+        hr = hit_rate_at_k(recs, gt_items, k)
+        rec = recall_at_k(recs, gt_items, k)
+        ap = ap_at_k(recs, gt_items, k)
+        # и т.д.
+
+        results[&quot;hit&quot;] += hr
+        results[&quot;recall&quot;] += rec
+        results[&quot;map&quot;] += ap
+        n += 1
+
+    for m in results:
+        results[m] /= max(n, 1)
+
+    return results
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-809f-bd7e-d3852839d4b5" class="numbered-list" start="3"><li><strong>Запуск на двух моделях</strong><ul id="2aa568fa-e39f-80dd-a599-f92170d9aaa9" class="bulleted-list"><li style="list-style-type:disc">Model A: popularity-only recommender;</li></ul><ul id="2aa568fa-e39f-80b7-93c6-c930f0b63ab1" class="bulleted-list"><li style="list-style-type:disc">Model B: popularity + item-to-item.</li></ul><p id="2aa568fa-e39f-80ea-9e16-fc0683e761d5" class="">И сравнить:</p><ul id="2aa568fa-e39f-80d3-9465-c1620d328055" class="bulleted-list"><li style="list-style-type:disc">где какой лучше по HitRate/Recall/MAP/NDCG;</li></ul><ul id="2aa568fa-e39f-8005-bb0a-d75b305a2755" class="bulleted-list"><li style="list-style-type:disc">нет ли конфликтов: одна метрика лучше у одной модели, другая — у другой.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b5-b1f7-f3ab2119a263" class="numbered-list" start="4"><li><strong>Если успеваете:</strong><p id="2aa568fa-e39f-80e1-a63d-f0f4239e7108" class="">сделать версию с negative sampling:</p><ul id="2aa568fa-e39f-80e8-8a11-c1e01ce6b1c6" class="bulleted-list"><li style="list-style-type:disc">кандидаты = таргет + негативы,</li></ul><ul id="2aa568fa-e39f-8021-b463-f10c561b20a7" class="bulleted-list"><li style="list-style-type:disc">модель даёт score каждому,</li></ul><ul id="2aa568fa-e39f-8094-bcd0-eecc09f7d0e0" class="bulleted-list"><li style="list-style-type:disc">сортируем → берём top-K → считаем метрики.</li></ul></li></ol><hr id="2aa568fa-e39f-80a7-9203-c83704ea0871"/><h2 id="2aa568fa-e39f-80b5-ace6-c6e8b50548f5" class="">8. Домашнее задание 2.4</h2><p id="2aa568fa-e39f-8061-944a-facc9919346d" class=""><strong>Задача:</strong></p><p id="2aa568fa-e39f-8004-bf34-e1dfc9a9af0f" class="">собрать <strong>полный offline-eval движок</strong> для своего конкретного соревового датасета.</p><h3 id="2aa568fa-e39f-80aa-960b-da8458bf2d32" class="">Шаг 1. Формулировка</h3><p id="2aa568fa-e39f-8025-a492-c75df67325e7" class="">В письменном виде:</p><ol type="1" id="2aa568fa-e39f-80ee-9eb3-f9c70be1bcb2" class="numbered-list" start="1"><li>Описать:<ul id="2aa568fa-e39f-8040-ab66-ec86c83b0aed" class="bulleted-list"><li style="list-style-type:disc">тип задачи (implicit/next-item/multi-objective…);</li></ul><ul id="2aa568fa-e39f-80ad-9679-ece8b7924c80" class="bulleted-list"><li style="list-style-type:disc">какой split ты выбрал (из урока 2.3) и почему;</li></ul><ul id="2aa568fa-e39f-80c4-aa43-c57d1a25bf88" class="bulleted-list"><li style="list-style-type:disc">что считаешь ground truth (какие события, за какой период).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ed-8fbf-fdc6127ac89a" class="numbered-list" start="2"><li>Описать, как <strong>соревовая/реальная метрика</strong> устроена (по description или по своей логике):<ul id="2aa568fa-e39f-80c7-aa16-df5d8b4769a9" class="bulleted-list"><li style="list-style-type:disc">на каком уровне считается (user/session/interaction);</li></ul><ul id="2aa568fa-e39f-8053-b398-db2d0fbf1301" class="bulleted-list"><li style="list-style-type:disc">какая формула (если известна).</li></ul></li></ol><h3 id="2aa568fa-e39f-80c9-b4f1-c319433f104f" class="">Шаг 2. Реализация</h3><ol type="1" id="2aa568fa-e39f-80ff-b256-e5dea651d509" class="numbered-list" start="1"><li>Написать код:<ul id="2aa568fa-e39f-8014-a903-d21916ff59da" class="bulleted-list"><li style="list-style-type:disc">функции метрик (из урока 2.2; можно реюзать);</li></ul><ul id="2aa568fa-e39f-80c1-904c-faadec74408c" class="bulleted-list"><li style="list-style-type:disc">выбранная схема сплита (time-based или leave-one-out);</li></ul><ul id="2aa568fa-e39f-8063-b57c-ecd722ccfb2a" class="bulleted-list"><li style="list-style-type:disc">интерфейс Recommender (можно простой, как в модуле 1);</li></ul><ul id="2aa568fa-e39f-803e-b5f3-e65a2495207a" class="bulleted-list"><li style="list-style-type:disc">функция <code>evaluate_model(...)</code>, считающая минимум 2–3 метрики.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80dd-becd-c694b9b603cf" class="numbered-list" start="2"><li>(Опционально, но круто) Реализовать <code>NegativeSampler</code>:<ul id="2aa568fa-e39f-807e-8144-cfa2cd146232" class="bulleted-list"><li style="list-style-type:disc">Random или popularity-based;</li></ul><ul id="2aa568fa-e39f-80f2-91a2-cee215a5e3c3" class="bulleted-list"><li style="list-style-type:disc">сделать вариант eval с sampling и без (если это имеет смысл).</li></ul></li></ol><h3 id="2aa568fa-e39f-802b-b227-caba7f5a8243" class="">Шаг 3. Сравнить модели</h3><p id="2aa568fa-e39f-80f7-93aa-f883daf56190" class="">Взять <strong>минимум 2–3 модели/бейзлайна</strong>:</p><ul id="2aa568fa-e39f-8016-aa8e-e600ab821350" class="bulleted-list"><li style="list-style-type:disc">global popularity;</li></ul><ul id="2aa568fa-e39f-806c-92f2-e722d3448e1d" class="bulleted-list"><li style="list-style-type:disc">popularity + segmentation;</li></ul><ul id="2aa568fa-e39f-8011-80e4-dbddb5a3946a" class="bulleted-list"><li style="list-style-type:disc">item-to-item.</li></ul><p id="2aa568fa-e39f-8089-a539-c357d249fb32" class="">Для каждой:</p><ul id="2aa568fa-e39f-8072-a258-c630456dbffb" class="bulleted-list"><li style="list-style-type:disc">посчитать метрики (<code>HitRate@K</code>, <code>Recall@K</code>, <code>MAP@K</code>, <code>NDCG@K</code> на выбранном K);</li></ul><ul id="2aa568fa-e39f-8063-b0d7-dd52c290b13d" class="bulleted-list"><li style="list-style-type:disc">оформить результаты в таблицу:<table id="2aa568fa-e39f-806c-8fae-ff008b34096d" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-80bf-b8e2-e0131000485a"><th id="CCMX" class="simple-table-header-color simple-table-header">Model</th><th id="jZtN" class="simple-table-header-color simple-table-header">Hit@K</th><th id="xMQb" class="simple-table-header-color simple-table-header">Recall@K</th><th id="u^iQ" class="simple-table-header-color simple-table-header">MAP@K</th><th id="y~;~" class="simple-table-header-color simple-table-header">NDCG@K</th></tr></thead><tbody><tr id="2aa568fa-e39f-8080-98db-df5b7dab60a5"><td id="CCMX" class="">Popularity</td><td id="jZtN" class=""></td><td id="xMQb" class=""></td><td id="u^iQ" class=""></td><td id="y~;~" class=""></td></tr><tr id="2aa568fa-e39f-80b6-a478-dd6e140b2c0f"><td id="CCMX" class="">Pop + Segment</td><td id="jZtN" class=""></td><td id="xMQb" class=""></td><td id="u^iQ" class=""></td><td id="y~;~" class=""></td></tr><tr id="2aa568fa-e39f-800f-90dc-f9721c84979a"><td id="CCMX" class="">Item-to-item</td><td id="jZtN" class=""></td><td id="xMQb" class=""></td><td id="u^iQ" class=""></td><td id="y~;~" class=""></td></tr></tbody></table></li></ul><h3 id="2aa568fa-e39f-80b2-a3fe-e70f9e3592fc" class="">Шаг 4. Вывод</h3><p id="2aa568fa-e39f-802a-8e8b-efde7cc502f6" class="">В текстовом отчёте (1–2 страницы):</p><ul id="2aa568fa-e39f-80b2-8395-d0b228903302" class="bulleted-list"><li style="list-style-type:disc">Ответить:<ul id="2aa568fa-e39f-801c-8874-c57dea18f718" class="bulleted-list"><li style="list-style-type:circle">какая модель на твоей offline-валидации <strong>лучше</strong> и по каким метрикам;</li></ul><ul id="2aa568fa-e39f-8041-a043-e1a33cdbe0a8" class="bulleted-list"><li style="list-style-type:circle">что тебя <strong>удивило</strong> в результатах (если было);</li></ul><ul id="2aa568fa-e39f-8055-95ec-f6953d9e8ad1" class="bulleted-list"><li style="list-style-type:circle">какие есть ограничения у твоего eval-движка:<ul id="2aa568fa-e39f-80de-b575-c0ce2afce1d0" class="bulleted-list"><li style="list-style-type:square">«мы не учитываем стоимость/маржу»;</li></ul><ul id="2aa568fa-e39f-804c-854b-d376e65d3ba8" class="bulleted-list"><li style="list-style-type:square">«у нас нет сложных негативов»;</li></ul><ul id="2aa568fa-e39f-80da-a770-f77b2ff4c21b" class="bulleted-list"><li style="list-style-type:square">«split может быть не очень похож на реальную production-ситуацию» и т.п.</li></ul></li></ul></li></ul><hr id="2aa568fa-e39f-8063-bcc6-c58fbf19ca6e"/><h2 id="2aa568fa-e39f-804d-9c0f-f9e172449b59" class="">9. Чек-лист усвоения урока 2.4</h2><p id="2aa568fa-e39f-8068-9ad3-de84ebb680c0" class="">Студент прошёл урок, если он:</p><ul id="2aa568fa-e39f-805d-bb2a-cfcc88e15f85" class="bulleted-list"><li style="list-style-type:disc">может объяснить:<ul id="2aa568fa-e39f-80cc-bd3b-edc1bbb02a70" class="bulleted-list"><li style="list-style-type:circle">что такое negative sampling и зачем он нужен в offline-оценке;</li></ul><ul id="2aa568fa-e39f-80f0-9cdd-c247c8be85c7" class="bulleted-list"><li style="list-style-type:circle">чем отличаются random/popularity/hard negatives;</li></ul><ul id="2aa568fa-e39f-801d-8b68-eb84d4f5e4c1" class="bulleted-list"><li style="list-style-type:circle">почему важно фиксировать набор негативов для сравнения моделей;</li></ul></li></ul><ul id="2aa568fa-e39f-803d-b956-f308f1b1236f" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2aa568fa-e39f-80a3-a9dd-f84c65803cd2" class="bulleted-list"><li style="list-style-type:circle">спроектировать схему оценки под конкретную постановку;</li></ul><ul id="2aa568fa-e39f-807a-94a7-c6e29d48c55c" class="bulleted-list"><li style="list-style-type:circle">написать функцию <code>evaluate(...)</code>, которая считает несколько метрик;</li></ul><ul id="2aa568fa-e39f-80b6-af4d-d18a70278e2a" class="bulleted-list"><li style="list-style-type:circle">использовать её, чтобы сравнить разные бейзлайны.</li></ul></li></ul><hr id="2aa568fa-e39f-809b-a1a5-e8f41419736f"/><p id="2aa568fa-e39f-8066-9eca-ddc8591213b3" class="">На этом <strong>Модуль 2</strong> можно считать аккуратно завершённым: у тебя есть</p><p id="2aa568fa-e39f-8062-948f-efe08fd6d02f" class="">и метрики, и сплиты, и eval-фреймворк.</p><p id="2aa568fa-e39f-80f0-9f8b-df110d946a6f" class="">Дальше очень логично идти в <strong>Модуль 3: классическая CF (user-based / item-based)</strong> и уже учить студентов менять <strong>только модель</strong>, а всё окружение (данные, сплиты, метрики, eval) использовать одно и то же. Если хочешь — могу следующим шагом расписать Модуль 3 или сразу урок 3.1.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

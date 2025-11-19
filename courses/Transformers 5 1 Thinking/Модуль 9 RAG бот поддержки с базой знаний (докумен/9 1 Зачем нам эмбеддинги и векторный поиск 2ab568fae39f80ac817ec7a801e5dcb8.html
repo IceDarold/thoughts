@@ -1,0 +1,804 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>9.1. Зачем нам эмбеддинги и векторный поиск</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80ac-817e-c7a801e5dcb8" class="page sans"><header><h1 class="page-title">9.1. Зачем нам эмбеддинги и векторный поиск</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8042-8ffb-dda70a4836d8" class="">Давай, теперь делаем <strong>урок 9.1 “как думать эмбеддингами”</strong> 🧠</p><p id="2ab568fa-e39f-80da-b2f3-fb176cdb9488" class="">Цель: после него ученик должен:</p><ul id="2ab568fa-e39f-8047-8ae9-e167823f7306" class="bulleted-list"><li style="list-style-type:disc">понимать, <em>что вообще такое эмбеддинг текста</em>;</li></ul><ul id="2ab568fa-e39f-80a1-9b34-d832aa4dc5f1" class="bulleted-list"><li style="list-style-type:disc">уметь получить эмбеддинги из модели (<code>sentence-transformers</code> или <code>AutoModel</code>);</li></ul><ul id="2ab568fa-e39f-8021-968a-dadbebf972aa" class="bulleted-list"><li style="list-style-type:disc">уметь мерить похожесть (cosine similarity) и видеть, что это действительно работает.</li></ul><p id="2ab568fa-e39f-80fa-b2ca-cde7c98c7e07" class="">Я разбью урок так:</p><ol type="1" id="2ab568fa-e39f-808c-af08-ddac97ca1960" class="numbered-list" start="1"><li>Зачем вообще эмбеддинги и векторный поиск.</li></ol><ol type="1" id="2ab568fa-e39f-80b9-b9e7-e9dfe2103446" class="numbered-list" start="2"><li>Как устроены эмбеддинги и косинусная похожесть.</li></ol><ol type="1" id="2ab568fa-e39f-8070-9449-e742fc44b863" class="numbered-list" start="3"><li>Практика 1: <code>sentence-transformers</code> — quickest win.</li></ol><ol type="1" id="2ab568fa-e39f-80ef-bdb8-f1ed434045db" class="numbered-list" start="4"><li>Практика 2: тот же самый смысл, но руками через <code>AutoModel</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8015-bdc6-c9a3188ab26c" class="numbered-list" start="5"><li>Частые грабли и что говорить студентам.</li></ol><ol type="1" id="2ab568fa-e39f-800f-9f33-f993a5f07378" class="numbered-list" start="6"><li>Домашка.</li></ol><hr id="2ab568fa-e39f-8085-a32b-da275858411f"/><p id="2ab568fa-e39f-800b-a4aa-e0b47ffc6db5" class="">Начнём не с формул, а с задачи.</p><p id="2ab568fa-e39f-803b-beeb-f50a7f49d0e9" class="">У нас есть:</p><ul id="2ab568fa-e39f-80f2-97b3-d605192b9f3f" class="bulleted-list"><li style="list-style-type:disc">куча текстов: статьи базы знаний, FAQ, ответы саппорта,</li></ul><ul id="2ab568fa-e39f-8081-a067-e21ea4c67174" class="bulleted-list"><li style="list-style-type:disc">пользовательский вопрос:<p id="2ab568fa-e39f-8069-a8e8-e4084855466f" class="">«После обновления приложение вылетает при загрузке фото. Что делать?»</p></li></ul><p id="2ab568fa-e39f-8016-bd4f-d26d281903f8" class="">Мы хотим:</p><ol type="1" id="2ab568fa-e39f-8052-930d-cc48ef8362df" class="numbered-list" start="1"><li>Найти <strong>несколько наиболее похожих</strong> кусочков из базы знаний (инструкции по крашам при загрузке фото).</li></ol><ol type="1" id="2ab568fa-e39f-8067-9d28-da2b01e178d8" class="numbered-list" start="2"><li>Передать их модели, чтобы она уже красиво ответила (это будет в 9.3).</li></ol><p id="2ab568fa-e39f-8006-bf5e-e9b6c146c1c2" class="">Классический поиск по словам (<code>contains(&quot;вылетает&quot;)</code>) работает так себе:</p><ul id="2ab568fa-e39f-8065-b39e-ef042dde4c19" class="bulleted-list"><li style="list-style-type:disc">синонимы (“вылетает”, “крашится”, “application error”),</li></ul><ul id="2ab568fa-e39f-8051-979b-e9e8ea9c7dbd" class="bulleted-list"><li style="list-style-type:disc">другой язык (английский/русский),</li></ul><ul id="2ab568fa-e39f-8050-b7f2-d7b7e00364f1" class="bulleted-list"><li style="list-style-type:disc">разные формулировки.</li></ul><p id="2ab568fa-e39f-80d1-a292-d0ddd5aa0177" class=""><strong>Эмбеддинги</strong> решают это так:</p><ul id="2ab568fa-e39f-8052-8961-fb332ce6963a" class="bulleted-list"><li style="list-style-type:disc">каждый текст → <strong>вектор</strong> (например, из 384, 768 или 1024 чисел);</li></ul><ul id="2ab568fa-e39f-80e5-afce-ead215716d89" class="bulleted-list"><li style="list-style-type:disc">похожие по смыслу тексты → лежат близко в векторном пространстве;</li></ul><ul id="2ab568fa-e39f-8025-a1ee-fa2a78d4f756" class="bulleted-list"><li style="list-style-type:disc">дальше можно искать ближайших соседей по <strong>косинусной похожести</strong>.</li></ul><hr id="2ab568fa-e39f-8027-aaf5-c3ae7d35a7d7"/><h2 id="2ab568fa-e39f-8071-9a26-e49d09cdc3ae" class="">9.1.1. Что такое эмбеддинг текста на уровне интуиции</h2><p id="2ab568fa-e39f-8043-aa1d-ffe96c8c8dbe" class="">Можно объяснить ученикам примерно так:</p><ul id="2ab568fa-e39f-803b-9ae4-d19e8e8a315e" class="bulleted-list"><li style="list-style-type:disc">Модель (BERT/МiniLM и т.п.) — это функция<p id="2ab568fa-e39f-80e1-ab8e-d07c5c148f6c" class=""><code>f(text) → vector ∈ ℝ^d</code>.</p></li></ul><ul id="2ab568fa-e39f-8031-94b4-c52940627352" class="bulleted-list"><li style="list-style-type:disc">На тренировке модель училась:<ul id="2ab568fa-e39f-8077-9685-da721c8b6dbe" class="bulleted-list"><li style="list-style-type:circle">предсказывать маскированные слова,</li></ul><ul id="2ab568fa-e39f-80fb-98e8-d185b015167b" class="bulleted-list"><li style="list-style-type:circle">или угадывать, какие предложения идут рядом,</li></ul><ul id="2ab568fa-e39f-8067-9af2-e94786a3d278" class="bulleted-list"><li style="list-style-type:circle">или решать задачи семантического сходства.</li></ul></li></ul><ul id="2ab568fa-e39f-8024-9df0-c76f974f17fc" class="bulleted-list"><li style="list-style-type:disc">В процессе обучения она научилась <strong>кодировать смысл</strong> текста в вектор так, что:<ul id="2ab568fa-e39f-809c-8913-d2ba9ad8864a" class="bulleted-list"><li style="list-style-type:circle">тексты про “крэши при загрузке фото” в разных формулировках → близко;</li></ul><ul id="2ab568fa-e39f-80a6-ae2e-e597bc0de7fe" class="bulleted-list"><li style="list-style-type:circle">тексты про “оплату подписки” → кучкуются отдельно.</li></ul></li></ul><p id="2ab568fa-e39f-801c-9290-f643003e12d5" class="">Дальше всё просто:</p><ul id="2ab568fa-e39f-80b7-9508-ff095fee611f" class="bulleted-list"><li style="list-style-type:disc">у нас есть векторы документов <code>D1, D2, ..., DN</code>,</li></ul><ul id="2ab568fa-e39f-80c5-85a4-ef64361ae183" class="bulleted-list"><li style="list-style-type:disc">и вектор запроса <code>Q</code>,</li></ul><ul id="2ab568fa-e39f-8082-b6f4-c9d8717d1cae" class="bulleted-list"><li style="list-style-type:disc">мы ищем top-k документов с максимальной похожестью <code>sim(Q, Di)</code>.</li></ul><hr id="2ab568fa-e39f-8082-97e6-f11c6f6f6049"/><h2 id="2ab568fa-e39f-80d2-b50a-eabf3ad7fc90" class="">9.1.2. Косинусная похожесть — наш главный друг</h2><p id="2ab568fa-e39f-80dc-b549-e7294cf33442" class="">Формула для косинуса между двумя векторами <code>a</code> и <code>b</code>:</p><p id="2ab568fa-e39f-806e-b418-ec39b3e54829" class="">[</p><p id="2ab568fa-e39f-8031-947b-d794780c62c7" class="">\cos(a, b) = \frac{a · b}{||a||·||b||}</p><p id="2ab568fa-e39f-804b-a7a8-e9c258d4d798" class="">]</p><p id="2ab568fa-e39f-805b-b49e-f1b3f5369e85" class="">Интуитивно:</p><ul id="2ab568fa-e39f-807a-9c94-c000625d74ba" class="bulleted-list"><li style="list-style-type:disc">если угол между векторами маленький → косинус близок к 1 (очень похожи),</li></ul><ul id="2ab568fa-e39f-806a-8e5e-d3ddc400a1ca" class="bulleted-list"><li style="list-style-type:disc">если 90° → косинус ≈ 0 (не похожи),</li></ul><ul id="2ab568fa-e39f-801b-9bdc-c92962ed2a91" class="bulleted-list"><li style="list-style-type:disc">если в противоположные стороны → косинус &lt; 0 (для эмбеддингов текста такое редко нужно).</li></ul><p id="2ab568fa-e39f-80d1-829b-c5800dbbf5f4" class="">Частый приём:</p><ul id="2ab568fa-e39f-80ab-9ecd-ca7f9a29bd5e" class="bulleted-list"><li style="list-style-type:disc"><strong>нормализовать</strong> вектора до длины 1:<ul id="2ab568fa-e39f-80f0-b939-e49fa34e90e8" class="bulleted-list"><li style="list-style-type:circle">тогда скалярное произведение <code>a · b</code> = косинус.</li></ul></li></ul><hr id="2ab568fa-e39f-800e-bf7d-f821f141fc54"/><h2 id="2ab568fa-e39f-800e-8624-c6b958985cf8" class="">9.1.3. Практика 1: эмбеддинги через sentence-transformers</h2><p id="2ab568fa-e39f-8095-b06c-c0d68c67daa5" class="">Это самый простой и “правильный” вариант для продакшена.</p><p id="2ab568fa-e39f-8025-a1e5-ee88239a4d80" class="">Модели из <code>sentence-transformers</code> уже специально обучены под <strong>semantics similarity</strong>.</p><h3 id="2ab568fa-e39f-80f8-a025-cc057e60d668" class="">Установка (показываешь студентам):</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a2-94ea-d104f0ecfac5" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install sentence-transformers
+</code></pre><h3 id="2ab568fa-e39f-8023-9cba-dc00be791646" class="">Пример: считаем эмбеддинги и косинус</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803d-97fc-f1891071341c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sentence_transformers import SentenceTransformer
+import numpy as np
+from numpy.linalg import norm
+
+# 1. Загружаем модель эмбеддингов
+model_name = &quot;sentence-transformers/all-MiniLM-L6-v2&quot;
+embed_model = SentenceTransformer(model_name)
+
+# 2. Несколько примеров текстов
+texts = [
+    &quot;The app crashes when I open the gallery.&quot;,
+    &quot;Application error when viewing photos.&quot;,
+    &quot;How can I change my subscription plan?&quot;,
+    &quot;What is the refund policy for annual subscriptions?&quot;,
+]
+
+# 3. Считаем эмбеддинги
+# normalize_embeddings=True → модель сразу вернёт нормированные вектора (||v|| ≈ 1)
+embeddings = embed_model.encode(texts, normalize_embeddings=True)
+print(&quot;Embeddings shape:&quot;, embeddings.shape)  # (4, dim)
+
+
+# 4. Функция косинусной похожести
+def cosine_sim(a, b):
+    # На случай, если нормализации не было, можно явно поделить на длины
+    return float(np.dot(a, b) / (norm(a) * norm(b)))
+
+
+# 5. Смотрим похожесть между текстами
+pairs = [
+    (0, 1),  # оба про краши/фото
+    (0, 2),  # краши vs подписка
+    (2, 3),  # оба про подписку/оплату
+]
+
+for i, j in pairs:
+    sim = cosine_sim(embeddings[i], embeddings[j])
+    print(f&quot;Sim(text[{i}], text[{j}]): {sim:.3f}&quot;)
+</code></pre><p id="2ab568fa-e39f-8084-895b-c8b590845bf5" class=""><strong>Что объяснить по коду:</strong></p><ul id="2ab568fa-e39f-8008-b2f5-ce62309d801d" class="bulleted-list"><li style="list-style-type:disc"><code>embed_model.encode(texts)</code>:<ul id="2ab568fa-e39f-8032-809d-dc3444a17843" class="bulleted-list"><li style="list-style-type:circle">принимает список строк,</li></ul><ul id="2ab568fa-e39f-80f0-b707-dfb6cda58562" class="bulleted-list"><li style="list-style-type:circle">возвращает матрицу <code>shape = (num_texts, hidden_dim)</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-801f-8e76-e4e7428d7f9c" class="bulleted-list"><li style="list-style-type:disc">Мы нормализуем вектора:<ul id="2ab568fa-e39f-8080-9084-ddf8807dd79f" class="bulleted-list"><li style="list-style-type:circle">либо через <code>normalize_embeddings=True</code>,</li></ul><ul id="2ab568fa-e39f-80c8-8213-d830b055b0e2" class="bulleted-list"><li style="list-style-type:circle">либо вручную через <code>normalize</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-8030-ab10-e4706dfb15dc" class="bulleted-list"><li style="list-style-type:disc">При выборе пар ожидаем:<ul id="2ab568fa-e39f-801c-a12b-fb00c57a718f" class="bulleted-list"><li style="list-style-type:circle"><code>Sim(0,1)</code> будет <strong>значительно выше</strong>, чем <code>Sim(0,2)</code>,</li></ul><ul id="2ab568fa-e39f-8071-82e1-f83d4ae08c86" class="bulleted-list"><li style="list-style-type:circle"><code>Sim(2,3)</code> — тоже должен быть прилично высоким (оба про подписку/деньги).</li></ul></li></ul><p id="2ab568fa-e39f-80f6-a82e-f2212e546e2f" class="">Можно прям сказать ученикам:</p><blockquote id="2ab568fa-e39f-8001-a6bf-dcece9033f4c" class="">“Если модель адекватная, то similarity для пары (про краши) будет сильно выше, чем для пары (краш vs billing).”</blockquote><hr id="2ab568fa-e39f-80f3-836c-ef6b2761c2de"/><h2 id="2ab568fa-e39f-80f6-8c9d-f7d504e51146" class="">9.1.4. Практика 2: эмбеддинги через чистый AutoModel</h2><p id="2ab568fa-e39f-80ee-96ef-ea440c9b5e8d" class="">Иногда мы не хотим тянуть <code>sentence-transformers</code>, а хотим:</p><ul id="2ab568fa-e39f-8097-9cce-cd89827b7cb7" class="bulleted-list"><li style="list-style-type:disc">либо использовать свою модель,</li></ul><ul id="2ab568fa-e39f-8045-be17-d6c80f0e2f35" class="bulleted-list"><li style="list-style-type:disc">либо полностью понимать, что там внутри.</li></ul><p id="2ab568fa-e39f-80c2-83eb-cd6657775156" class="">Тогда делаем так:</p><ol type="1" id="2ab568fa-e39f-80a6-9834-f00898a09f7e" class="numbered-list" start="1"><li>Берём любую model+tokenizer с HuggingFace.</li></ol><ol type="1" id="2ab568fa-e39f-8061-8bad-c1caa140549d" class="numbered-list" start="2"><li>Прогоняем текст → получаем <code>last_hidden_state</code> размером <code>[batch, seq_len, hidden_size]</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80b3-959b-eed76a102709" class="numbered-list" start="3"><li>Делаем <strong>pooling</strong> по токенам, например:<ul id="2ab568fa-e39f-80f2-bef3-f80b54d5b03e" class="bulleted-list"><li style="list-style-type:disc">берём <code>[CLS]</code> токен (часто позиция 0),</li></ul><ul id="2ab568fa-e39f-80d4-885f-db5bdd23d6b0" class="bulleted-list"><li style="list-style-type:disc">или делаем mean pooling по <code>attention_mask</code>.</li></ul></li></ol><p id="2ab568fa-e39f-80b7-97dd-d784e7329e83" class="">Покажем <strong>mean pooling</strong> — это более надёжный вариант.</p><h3 id="2ab568fa-e39f-807f-99cd-e3625dca45d3" class="">Код: mean pooling руками</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8091-82e9-e2eed7973645" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModel
+
+# Можно использовать ту же модель, что и в sentence-transformers
+model_id = &quot;sentence-transformers/all-MiniLM-L6-v2&quot;
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+base_model = AutoModel.from_pretrained(model_id)
+
+texts = [
+    &quot;The app crashes when I open the gallery.&quot;,
+    &quot;Application error when viewing photos.&quot;,
+    &quot;How can I change my subscription plan?&quot;,
+    &quot;What is the refund policy for annual subscriptions?&quot;,
+]
+
+def encode_texts(texts):
+    # 1. Токенизация
+    enc = tokenizer(
+        texts,
+        padding=True,
+        truncation=True,
+        return_tensors=&quot;pt&quot;,
+    )
+
+    with torch.no_grad():
+        outputs = base_model(**enc)
+
+    # 2. Эмбеддинги токенов: [batch, seq_len, hidden_size]
+    token_embeddings = outputs.last_hidden_state  # или pooler_output, но мы показываем last_hidden_state
+
+    # 3. Attention mask: где 1 — реальный токен, где 0 — паддинг
+    attention_mask = enc[&quot;attention_mask&quot;]  # [batch, seq_len]
+
+    # 4. Mean pooling: усредняем только по реальным токенам
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    # суммируем embeddings по токенам
+    sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, dim=1)
+    # считаем количество реальных токенов
+    sum_mask = torch.clamp(input_mask_expanded.sum(dim=1), min=1e-9)
+    # делим
+    embeddings = sum_embeddings / sum_mask  # [batch, hidden_size]
+    return embeddings
+
+embeddings = encode_texts(texts)
+print(&quot;Emb shape:&quot;, embeddings.shape)
+
+# Нормализуем
+emb_norm = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+
+# Косинусная похожесть
+def cosine_sim_torch(a, b):
+    return torch.sum(a * b).item()
+
+pairs = [(0, 1), (0, 2), (2, 3)]
+
+for i, j in pairs:
+    sim = cosine_sim_torch(emb_norm[i], emb_norm[j])
+    print(f&quot;Sim(text[{i}], text[{j}]): {sim:.3f}&quot;)
+</code></pre><p id="2ab568fa-e39f-8070-bd8a-e7cbfde545d2" class=""><strong>Что объяснить:</strong></p><ul id="2ab568fa-e39f-80b3-a8c5-d21adde6b887" class="bulleted-list"><li style="list-style-type:disc"><code>last_hidden_state</code> — это эмбеддинги <strong>каждого токена</strong>.</li></ul><ul id="2ab568fa-e39f-800b-8188-d6fb9ac37c15" class="bulleted-list"><li style="list-style-type:disc">Мы умножаем на <code>attention_mask</code>, чтобы игнорировать паддинг.</li></ul><ul id="2ab568fa-e39f-8057-8c42-fa092c66ad42" class="bulleted-list"><li style="list-style-type:disc"><code>mean pooling</code>:<ul id="2ab568fa-e39f-8098-8d73-d3fcf431413c" class="bulleted-list"><li style="list-style-type:circle">складываем эмбеддинги по длине,</li></ul><ul id="2ab568fa-e39f-801b-823c-f9a09fc9484c" class="bulleted-list"><li style="list-style-type:circle">делим на количество реальных токенов.</li></ul></li></ul><ul id="2ab568fa-e39f-806b-95f2-cb8533b11be0" class="bulleted-list"><li style="list-style-type:disc"><code>normalize</code> → чтобы косинус = dot product.</li></ul><p id="2ab568fa-e39f-80c9-93b2-c6b2959d108e" class="">Упомянуть ученикам:</p><blockquote id="2ab568fa-e39f-80bb-831b-ed8572bb94ef" class="">“Многие sentence-transformers делают примерно то же самое внутри, плюс ещё дообучены специальной задачей, чтобы векторы лучше отражали семантику.”</blockquote><hr id="2ab568fa-e39f-8050-94df-ec4ed00f067f"/><h2 id="2ab568fa-e39f-8013-a920-d25c60335ae1" class="">9.1.5. Типичные грабли (и что сразу проговорить студентам)</h2><p id="2ab568fa-e39f-804d-bd67-f1c8a7366242" class="">Чтобы потом не бегать и не чинить одни и те же баги, стоит проговорить такие моменты:</p><ol type="1" id="2ab568fa-e39f-8040-948c-eb8110df2478" class="numbered-list" start="1"><li><strong>Языки.</strong><ul id="2ab568fa-e39f-8036-b7ac-da94c65f8449" class="bulleted-list"><li style="list-style-type:disc">Если база знаний на русском, а берёте англоцентричную модель — качество будет так себе.</li></ul><ul id="2ab568fa-e39f-8089-89b8-e34a63a49a2c" class="bulleted-list"><li style="list-style-type:disc">Лучше взять мультиязычную (<code>paraphrase-multilingual-MiniLM</code> и т.п.) или русскоязычную.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8000-9516-c9733c421dc7" class="numbered-list" start="2"><li><strong>Длина текста.</strong><ul id="2ab568fa-e39f-804a-84c9-deb0dd8a868d" class="bulleted-list"><li style="list-style-type:disc">Модели ограничены по <code>max_length</code> (часто 512/768 токенов).</li></ul><ul id="2ab568fa-e39f-801e-bfe4-efa4f00512bf" class="bulleted-list"><li style="list-style-type:disc">Слишком длинные документы нужно <strong>резать на чанки</strong> (это уже в 9.2).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8069-b1ca-ef095c829b6f" class="numbered-list" start="3"><li><strong>Нормализация векторов.</strong><ul id="2ab568fa-e39f-80e3-bc89-d345d3ccb174" class="bulleted-list"><li style="list-style-type:disc">Если не нормализуете, сравнение dot product и cosine — разные вещи.</li></ul><ul id="2ab568fa-e39f-8008-a8e2-e765bfca9b2d" class="bulleted-list"><li style="list-style-type:disc">Без нормализации со скалярным произведением результаты могут быть странными.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-805b-aad5-d70d912a5caa" class="numbered-list" start="4"><li><strong>Batch size и скорость.</strong><ul id="2ab568fa-e39f-802b-a911-ff894cc6d6cc" class="bulleted-list"><li style="list-style-type:disc">Вычислять эмбеддинги по одному документу сильно медленнее, чем батчами.</li></ul><ul id="2ab568fa-e39f-80df-a2c3-ee29f1a0135a" class="bulleted-list"><li style="list-style-type:disc">Для большого KB всегда считаем эмбеддинги батчами.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80a1-b78b-d090597da62e" class="numbered-list" start="5"><li><strong>Стабильность результата.</strong><ul id="2ab568fa-e39f-80bc-baad-ed679507701e" class="bulleted-list"><li style="list-style-type:disc">Эмбеддинги не идеальны: иногда “семантически не очень похожие” тексты становятся соседями.</li></ul><ul id="2ab568fa-e39f-80de-8120-c69ba76f71ba" class="bulleted-list"><li style="list-style-type:disc">Важно показывать это студентам на реальных примерах, чтобы они не верили слепо числам.</li></ul></li></ol><hr id="2ab568fa-e39f-800d-8243-e11cbc93f4ae"/><h2 id="2ab568fa-e39f-8051-82f5-e42bbfaa69d7" class="">9.1.6. Домашка для ученика</h2><p id="2ab568fa-e39f-80f0-82aa-cf41bffbe209" class="">Чтобы урок не остался “теория+код”, даём понятную практику.</p><p id="2ab568fa-e39f-80a2-99db-e34a4b9269eb" class=""><strong>Задание 9.1 (обязательная часть):</strong></p><ol type="1" id="2ab568fa-e39f-8030-90d1-e85a46ef86e3" class="numbered-list" start="1"><li>Выбери модель для эмбеддингов:<ul id="2ab568fa-e39f-80a9-b508-ff7026e6cd2a" class="bulleted-list"><li style="list-style-type:disc">либо <code>sentence-transformers/all-MiniLM-L6-v2</code>,</li></ul><ul id="2ab568fa-e39f-8010-8853-c05548851faa" class="bulleted-list"><li style="list-style-type:disc">либо любую другую sentence-transformer / multilingual модель.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f3-801e-cb5d14bd0b30" class="numbered-list" start="2"><li>Составь свой список из <strong>минимум 12 фраз</strong>, в котором есть:<ul id="2ab568fa-e39f-80f2-a633-cdf5004d58dc" class="bulleted-list"><li style="list-style-type:disc">3–4 фразы про <strong>краши/ошибки</strong>,</li></ul><ul id="2ab568fa-e39f-807d-aa2d-d7a34d47b48b" class="bulleted-list"><li style="list-style-type:disc">3–4 фразы про <strong>подписку/оплату</strong>,</li></ul><ul id="2ab568fa-e39f-8081-b350-f459d3147bb9" class="bulleted-list"><li style="list-style-type:disc">3–4 фразы про <strong>другое</strong> (например, настройки, интерфейс и т.д.).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8003-bea4-f80b13f9cbd9" class="numbered-list" start="3"><li>Напиши скрипт, который:<ul id="2ab568fa-e39f-8082-83cb-dea4bb4c6507" class="bulleted-list"><li style="list-style-type:disc">считает эмбеддинги всех фраз,</li></ul><ul id="2ab568fa-e39f-804c-be65-d66cfe80f19c" class="bulleted-list"><li style="list-style-type:disc">считает косинусную похожесть:<ul id="2ab568fa-e39f-801c-96a0-d4eda705f0e8" class="bulleted-list"><li style="list-style-type:circle">между фразами внутри одной темы,</li></ul><ul id="2ab568fa-e39f-80a0-a064-d655d5abccee" class="bulleted-list"><li style="list-style-type:circle">между фразами из разных тем.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80a4-bb41-db8296a4b6cd" class="numbered-list" start="4"><li>Сделай мини-вывод (можно прямо в ноутбуке текстом):<ul id="2ab568fa-e39f-804c-8235-f3d4ea749bed" class="bulleted-list"><li style="list-style-type:disc">действительно ли фразы одной темы получаются ближе по косинусу,</li></ul><ul id="2ab568fa-e39f-80fa-a429-eaf0560196c3" class="bulleted-list"><li style="list-style-type:disc">были ли “ошибки” (какие пары неожиданно близкие/далёкие).</li></ul></li></ol><p id="2ab568fa-e39f-8033-8995-fe62ff7616e3" class=""><strong>Доп. задание (по желанию, но полезное):</strong></p><ul id="2ab568fa-e39f-80f2-9869-faa01c120534" class="bulleted-list"><li style="list-style-type:disc">Реализуй обе версии:<ol type="1" id="2ab568fa-e39f-808e-925d-e6dbdf0b60f4" class="numbered-list" start="1"><li>через <code>SentenceTransformer</code>,</li></ol><ol type="1" id="2ab568fa-e39f-8037-b38a-f00a71469766" class="numbered-list" start="2"><li>через <code>AutoModel</code> + mean pooling.</li></ol></li></ul><ul id="2ab568fa-e39f-80fa-8a20-d26adef4c1cd" class="bulleted-list"><li style="list-style-type:disc">Сравни:<ul id="2ab568fa-e39f-803b-9efe-d32c9214e70b" class="bulleted-list"><li style="list-style-type:circle">значения cosine similarity для “понятных” пар:<ul id="2ab568fa-e39f-80a2-95c7-f2989a2a07de" class="bulleted-list"><li style="list-style-type:square">смотри, насколько поведение отличается,</li></ul><ul id="2ab568fa-e39f-809e-8cf4-e8420d50a178" class="bulleted-list"><li style="list-style-type:square">и какой вариант кажется более адекватным.</li></ul></li></ul></li></ul><hr id="2ab568fa-e39f-8010-a05e-ef71ff229f92"/><p id="2ab568fa-e39f-802d-9bff-dc7fd8d9c740" class="">Если хочешь, дальше можем:</p><ul id="2ab568fa-e39f-80cc-970c-e075bd2cfcda" class="bulleted-list"><li style="list-style-type:disc">в следующем сообщении так же подробно расписать <strong>урок 9.2</strong> (чанкинг + индекс),</li></ul><ul id="2ab568fa-e39f-8047-a36e-d9685770d303" class="bulleted-list"><li style="list-style-type:disc">или помочь оформить это как готовый ноутбук: шапка, секции, TODO для студентов.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

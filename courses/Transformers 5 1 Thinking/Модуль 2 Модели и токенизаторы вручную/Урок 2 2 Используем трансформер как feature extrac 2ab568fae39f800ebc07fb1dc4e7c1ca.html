@@ -1,0 +1,873 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 2.2. Используем трансформер как feature extractor</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-800e-bc07-fb1dc4e7c1ca" class="page sans"><header><h1 class="page-title">Урок 2.2. Используем трансформер как feature extractor</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8067-812a-eb5df558dc7c" class="">Окей, теперь сделаем из 2.2 тоже полноценный урок. Здесь уже немного «взрослый» уровень: будем использовать трансформер как <strong>feature extractor</strong> и сверху прикручивать свой классификатор.</p><hr id="2ab568fa-e39f-804d-a7b2-c761e9551f1a"/><h2 id="2ab568fa-e39f-8032-9b07-e66e33e6e3c8" class="">0. Что мы делаем в этом уроке</h2><p id="2ab568fa-e39f-80ad-a7bf-feab188e23aa" class="">Цель урока:</p><ul id="2ab568fa-e39f-802a-9218-fea0085cebff" class="bulleted-list"><li style="list-style-type:disc">понять, как взять предобученный трансформер <strong>без головы</strong>,</li></ul><ul id="2ab568fa-e39f-8035-8478-dc39a30215e6" class="bulleted-list"><li style="list-style-type:disc">вытащить из него <strong>эмбеддинги текстов</strong>,</li></ul><ul id="2ab568fa-e39f-800a-98df-ea8b137374ca" class="bulleted-list"><li style="list-style-type:disc">обучить на этих эмбеддингах <strong>свой классификатор</strong> (например, LogisticRegression),</li></ul><ul id="2ab568fa-e39f-80ac-845c-dcbc9bfb283d" class="bulleted-list"><li style="list-style-type:disc">применить его к новым тикетам поддержки.</li></ul><p id="2ab568fa-e39f-8038-9502-cf6b6ca5197c" class="">Контекст:</p><p id="2ab568fa-e39f-801f-954b-f5b335327775" class="">В реальной жизни чаще всего у тебя <strong>нет</strong> готовой модели ровно под твои классы (<code>bug</code>, <code>feature</code>, <code>billing</code>, <code>other</code>), но у тебя есть сильный предобученный трансформер. Логичный шаг — использовать его как «мощный embedder», а сверху ставить свои модели.</p><hr id="2ab568fa-e39f-8050-a124-f937a1cc8e1a"/><h2 id="2ab568fa-e39f-80a8-a91f-e86782b38493" class="">1. Зачем вообще нужен feature extractor</h2><p id="2ab568fa-e39f-80ac-9ca6-eef9c87dc92a" class="">Коротко, когда это полезно:</p><ol type="1" id="2ab568fa-e39f-8090-88bd-cd5ca12a8b42" class="numbered-list" start="1"><li><strong>Нужны свои классы</strong>, которых нет в готовых моделях с Hub:<ul id="2ab568fa-e39f-8070-bf4d-d3669b3c8b84" class="bulleted-list"><li style="list-style-type:disc">тикеты техподдержки с внутренней схемой меток;</li></ul><ul id="2ab568fa-e39f-80ea-a87f-e3b9fa2ac18c" class="bulleted-list"><li style="list-style-type:disc">твои тематики новостей;</li></ul><ul id="2ab568fa-e39f-8090-9314-ecbb33a9acf4" class="bulleted-list"><li style="list-style-type:disc">свои категории отзывов.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808e-9c9c-eb37123d17be" class="numbered-list" start="2"><li><strong>Данных мало</strong>:<ul id="2ab568fa-e39f-8054-97fe-ecb50a7d6332" class="bulleted-list"><li style="list-style-type:disc">полноценный fine-tuning большой модели может быть больно дорог,</li></ul><ul id="2ab568fa-e39f-80e0-8905-ff31e22a4061" class="bulleted-list"><li style="list-style-type:disc">проще «заморозить» трансформер и обучить маленькую голову отдельно.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-800c-a7be-d72bf7adb596" class="numbered-list" start="3"><li><strong>Хочешь быстро поэкспериментировать</strong>:<ul id="2ab568fa-e39f-8049-823b-f3f7a9e82114" class="bulleted-list"><li style="list-style-type:disc">модель даёт устойчивые эмбеддинги;</li></ul><ul id="2ab568fa-e39f-8080-8a2d-f1fc2bfc527c" class="bulleted-list"><li style="list-style-type:disc">можно протестировать разные простые модели поверх (LogReg, SVM, деревья/ансамбли).</li></ul></li></ol><p id="2ab568fa-e39f-8001-a452-f593f8e93b41" class="">Ментальная модель:</p><blockquote id="2ab568fa-e39f-80ad-ada8-f0a11f68b003" class="">трансформер → превращает текст в вектор признаков (embedding)<p id="2ab568fa-e39f-80c1-845c-ca4182812c08" class="">наш классификатор → решает задачу на этих признаках.</p></blockquote><hr id="2ab568fa-e39f-80a3-84af-ce6fe3c4f9bc"/><h2 id="2ab568fa-e39f-809a-9f77-f6a5dddf7b6d" class="">2. Теория: AutoModel vs AutoModelForSequenceClassification</h2><h3 id="2ab568fa-e39f-80d0-806f-c91f3ef4fbc6" class="">2.1. AutoModel</h3><p id="2ab568fa-e39f-8094-a3e0-d63422132570" class=""><code>AutoModel</code> — это «голый» трансформер без головы задачи.</p><ul id="2ab568fa-e39f-8067-beb8-fed4af4bd69b" class="bulleted-list"><li style="list-style-type:disc">На вход: <code>input_ids</code>, <code>attention_mask</code> и т.д.</li></ul><ul id="2ab568fa-e39f-8083-a04b-fe9e7f0bc43d" class="bulleted-list"><li style="list-style-type:disc">На выход:<ul id="2ab568fa-e39f-80f7-8259-d2577f7808d2" class="bulleted-list"><li style="list-style-type:circle"><code>last_hidden_state</code>: <code>[batch_size, seq_len, hidden_size]</code></li></ul><ul id="2ab568fa-e39f-80b4-9750-f34abc4db283" class="bulleted-list"><li style="list-style-type:circle">(опционально) <code>hidden_states</code>, <code>attentions</code>, если просим.</li></ul></li></ul><p id="2ab568fa-e39f-804b-b4dd-e5e4a7750f6e" class=""><code>last_hidden_state[i, j]</code> — вектор для <code>j</code>-го токена <code>i</code>-го текста.</p><h3 id="2ab568fa-e39f-80a4-beaf-ec60f6d4378d" class="">2.2. Как получить один вектор на текст</h3><p id="2ab568fa-e39f-80de-a839-ef93df4b9322" class="">Нам нужен <strong>один эмбеддинг на текст</strong>, а не на каждый токен. Основные варианты:</p><ol type="1" id="2ab568fa-e39f-8083-8b05-e4d2c0e0898d" class="numbered-list" start="1"><li><strong>[CLS]-токен</strong>:<ul id="2ab568fa-e39f-8044-a92c-f196216c00fc" class="bulleted-list"><li style="list-style-type:disc">для BERT-подобных моделей <code>[CLS]</code> (первый токен) служит агрегированным представлением.</li></ul><ul id="2ab568fa-e39f-805d-94ee-eca540315844" class="bulleted-list"><li style="list-style-type:disc">Берём <code>last_hidden_state[:, 0, :]</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8071-a094-e73aeb56ff21" class="numbered-list" start="2"><li><strong>Пулинг по токенам</strong>:<ul id="2ab568fa-e39f-805b-9158-ebc8044df4b5" class="bulleted-list"><li style="list-style-type:disc">среднее по всем не-паддинговым токенам;</li></ul><ul id="2ab568fa-e39f-80ce-b8e5-e0793f31c951" class="bulleted-list"><li style="list-style-type:disc">максимум по токенам;</li></ul><ul id="2ab568fa-e39f-80b4-b022-d1121d83128d" class="bulleted-list"><li style="list-style-type:disc">что-то кастомное.</li></ul></li></ol><p id="2ab568fa-e39f-80bf-97e3-c5b29e5c3682" class="">В этом уроке будем использовать <strong>[CLS]-эмбеддинги</strong>, как самый простой и стандартный вариант.</p><h3 id="2ab568fa-e39f-80ef-9b01-cb5afc53935b" class="">2.3. AutoModelForSequenceClassification</h3><p id="2ab568fa-e39f-808c-a212-e03af4518a6b" class=""><code>AutoModelForSequenceClassification</code>:</p><ul id="2ab568fa-e39f-8074-ab61-c2dab9830bf1" class="bulleted-list"><li style="list-style-type:disc">внутри содержит тот же <code>AutoModel</code>,</li></ul><ul id="2ab568fa-e39f-80f7-a54f-f4a250abc930" class="bulleted-list"><li style="list-style-type:disc">но сверху добавляет:<ul id="2ab568fa-e39f-801f-8937-d75a36836aa3" class="bulleted-list"><li style="list-style-type:circle"><code>Dropout</code> + <code>Linear</code>голову → <code>logits</code>,</li></ul></li></ul><ul id="2ab568fa-e39f-80cb-91d6-febc85a12f22" class="bulleted-list"><li style="list-style-type:disc">и инициализируется под конкретное <code>num_labels</code>.</li></ul><p id="2ab568fa-e39f-80af-8dc3-e01d935195cb" class="">В 2.1 мы работали именно с ним.</p><p id="2ab568fa-e39f-8063-8064-e55d48b44c38" class="">В 2.2 мы берём <strong>AutoModel</strong>, сами достаём эмбеддинги и учим внешнюю голову.</p><hr id="2ab568fa-e39f-8092-a521-db3fa5c043c3"/><h2 id="2ab568fa-e39f-80cc-9f33-d27dfc1c6267" class="">3. Практика, часть 1: вытаскиваем CLS-эмбеддинги</h2><h3 id="2ab568fa-e39f-808d-8d04-deb896f9c01b" class="">3.1. Подготовка</h3><p id="2ab568fa-e39f-804b-8592-ee36992dcfdf" class="">Берём базовую модель, например <code>distilbert-base-uncased</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808d-849f-f6d1ab102a85" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModel
+
+model_id = &quot;distilbert-base-uncased&quot;
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+base_model = AutoModel.from_pretrained(model_id)
+</code></pre><p id="2ab568fa-e39f-80cc-9fe1-c9828c46be57" class=""><em>(Если хочешь русские примеры — можно взять </em><em><code>cointegrated/rubert-tiny</code></em><em> или любой другой русскоязычный чекпоинт, структура та же.)</em></p><h3 id="2ab568fa-e39f-801e-910b-da35948ecf27" class="">3.2. Наши тексты (тикеты)</h3><p id="2ab568fa-e39f-80fd-bcd1-de55442586c8" class="">Сделаем небольшой набор тикетов:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8048-94db-c99590cd7a81" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tickets = [
+    &quot;The app crashes when I try to upload a photo.&quot;,
+    &quot;Can you add dark mode, please?&quot;,
+    &quot;I was charged twice this month.&quot;,
+    &quot;Great app, just wanted to say thanks!&quot;,
+]
+</code></pre><h3 id="2ab568fa-e39f-8012-bbe6-c5cf0d22935a" class="">3.3. Токенизация</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8064-886b-f4445c22122a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">enc = tokenizer(
+    tickets,
+    padding=True,          # выравниваем по длине
+    truncation=True,       # обрезаем слишком длинные
+    return_tensors=&quot;pt&quot;,   # PyTorch тензоры
+)
+
+print(enc.keys())
+print(&quot;input_ids shape:&quot;, enc[&quot;input_ids&quot;].shape)
+print(&quot;attention_mask shape:&quot;, enc[&quot;attention_mask&quot;].shape)
+</code></pre><p id="2ab568fa-e39f-80a3-b32f-d9690d95890e" class="">Ожидаемо:</p><ul id="2ab568fa-e39f-8036-a764-e954a25eac07" class="bulleted-list"><li style="list-style-type:disc"><code>input_ids</code>: <code>[batch_size, seq_len]</code> → <code>[4, seq_len_max]</code>.</li></ul><ul id="2ab568fa-e39f-80f9-aae1-ce8772fc8e51" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code>: <code>[4, seq_len_max]</code>.</li></ul><h3 id="2ab568fa-e39f-807f-8165-c06292c33b21" class="">3.4. Прогон через AutoModel</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8062-a3a4-f0142616f0aa" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">with torch.no_grad():
+    outputs = base_model(**enc)
+
+print(outputs.keys())
+# dict_keys([&#x27;last_hidden_state&#x27;] или ещё &#x27;hidden_states&#x27;, если включали)
+</code></pre><p id="2ab568fa-e39f-8040-bc54-d046c30d64a4" class="">Берём <code>last_hidden_state</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807c-9d59-f871a855fca9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">last_hidden_state = outputs.last_hidden_state
+print(&quot;last_hidden_state shape:&quot;, last_hidden_state.shape)
+</code></pre><p id="2ab568fa-e39f-8091-ad1c-e3bd4ee2b9d6" class="">Форма:</p><ul id="2ab568fa-e39f-8017-9856-f195fa400b8c" class="bulleted-list"><li style="list-style-type:disc"><code>[batch_size, seq_len, hidden_size]</code><p id="2ab568fa-e39f-80d2-9848-fc92206833d2" class="">Например, <code>[4, 20, 768]</code>.</p></li></ul><h3 id="2ab568fa-e39f-808b-9e16-cde376babc95" class="">3.5. Достаём CLS-эмбеддинги</h3><p id="2ab568fa-e39f-8083-b936-d2638d789d16" class="">Предполагаем, что <code>tokenizer</code> добавляет <code>[CLS]</code> первым токеном, и именно его вектор — агрегированное представление:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b3-891e-f6dad0a2b9b4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">cls_embeddings = last_hidden_state[:, 0, :]  # [batch_size, hidden_size]
+print(&quot;cls_embeddings shape:&quot;, cls_embeddings.shape)
+</code></pre><p id="2ab568fa-e39f-80a7-adea-c4e7a5c499a1" class="">Это уже <strong>матрица признаков</strong>:</p><ul id="2ab568fa-e39f-8011-881f-fe33bbe85102" class="bulleted-list"><li style="list-style-type:disc">строки — тексты,</li></ul><ul id="2ab568fa-e39f-808a-8c3f-fa624873b5ac" class="bulleted-list"><li style="list-style-type:disc">столбцы — фичи размерности <code>hidden_size</code> (например, 768).</li></ul><p id="2ab568fa-e39f-8064-b4db-c51b34716c3d" class="">Чтобы использовать в sklearn:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8030-8ce8-cfef91714cbc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">X = cls_embeddings.numpy()
+print(&quot;X shape for sklearn:&quot;, X.shape)
+</code></pre><hr id="2ab568fa-e39f-8099-992b-da14840d6080"/><h2 id="2ab568fa-e39f-804b-9cfe-d6713f8d2b26" class="">4. Практика, часть 2: учим простой классификатор поверх эмбеддингов</h2><p id="2ab568fa-e39f-8093-b4ce-c04002c75e21" class="">Теперь сделаем маленький кастомный классификатор тикетов.</p><h3 id="2ab568fa-e39f-80e1-bef6-dfcf92968a76" class="">4.1. Придумываем классы</h3><p id="2ab568fa-e39f-800c-a76d-c7191f89261b" class="">Допустим:</p><ul id="2ab568fa-e39f-8099-885c-f54006159a5d" class="bulleted-list"><li style="list-style-type:disc"><code>0 = bug</code> — баги/краши;</li></ul><ul id="2ab568fa-e39f-80b4-82a6-c5bf5f92b82b" class="bulleted-list"><li style="list-style-type:disc"><code>1 = feature</code> — запросы фич;</li></ul><ul id="2ab568fa-e39f-80f5-8973-c2806abab04b" class="bulleted-list"><li style="list-style-type:disc"><code>2 = billing</code> — проблема с оплатой;</li></ul><ul id="2ab568fa-e39f-80ae-896c-cdd622b07197" class="bulleted-list"><li style="list-style-type:disc"><code>3 = other</code> — всё остальное (отзывы/благодарности).</li></ul><p id="2ab568fa-e39f-80bc-bde9-df2fda787b09" class="">Присвоим метки нашим 4 тикетам:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806a-b2fb-cd39a4fea0e7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+
+labels = np.array([
+    0,  # &quot;The app crashes...&quot; -&gt; bug
+    1,  # &quot;Can you add dark mode...&quot; -&gt; feature
+    2,  # &quot;I was charged twice...&quot; -&gt; billing
+    3,  # &quot;Great app...&quot; -&gt; other
+])
+</code></pre><p id="2ab568fa-e39f-80eb-b4ad-f7b7e1c51367" class="">Да, это очень маленький датасет, в реальной жизни их должны быть <strong>сотни/тысячи</strong>, но для иллюстрации норм.</p><h3 id="2ab568fa-e39f-8075-a270-e2dc5c0778d4" class="">4.2. Logistic Regression как голова</h3><p id="2ab568fa-e39f-80f9-8523-e082bdf135ee" class="">Поставим sklearn:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c6-9448-d578bc4df903" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install scikit-learn
+</code></pre><p id="2ab568fa-e39f-80cb-a11c-c51af0e60f51" class="">И дальше в коде:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804f-af69-c9b6dd8a642b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sklearn.linear_model import LogisticRegression
+
+X = cls_embeddings.numpy()  # [4, hidden_size]
+y = labels                  # [4]
+
+clf = LogisticRegression(max_iter=1000)
+clf.fit(X, y)
+</code></pre><p id="2ab568fa-e39f-808b-bfa2-d78c517ae117" class="">Тут важно объяснить:</p><ul id="2ab568fa-e39f-800b-b908-e6c2b5edeb91" class="bulleted-list"><li style="list-style-type:disc">трансформер <strong>заморожен</strong> (мы не обучаем его),</li></ul><ul id="2ab568fa-e39f-80b1-8f37-d9352c1761be" class="bulleted-list"><li style="list-style-type:disc">LogisticRegression учится на уже готовых эмбеддингах,</li></ul><ul id="2ab568fa-e39f-8019-97e6-e5874ee57fb8" class="bulleted-list"><li style="list-style-type:disc">в реальном проекте ты бы делал train/val split и нормальный пайплайн.</li></ul><hr id="2ab568fa-e39f-80ac-bfbf-c4ca65a21913"/><h2 id="2ab568fa-e39f-80c3-b4d9-d3485f4cabc8" class="">5. Практика, часть 3: проверяем на новых тикетах</h2><p id="2ab568fa-e39f-8041-980c-cf20de4fd223" class="">Создадим новые тикеты, которые модель <strong>не видела при обучении головы</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805c-8a05-cf8cba7c0d2f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">new_tickets = [
+    &quot;The app crashes on launch.&quot;,
+    &quot;Please add the option to change language.&quot;,
+    &quot;I don&#x27;t understand this charge on my credit card.&quot;,
+    &quot;This is the best productivity app I&#x27;ve ever used!&quot;,
+]
+</code></pre><h3 id="2ab568fa-e39f-80f7-ab41-c1bb0f000f83" class="">5.1. Вытаскиваем CLS-эмбеддинги для новых текстов</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8040-9be2-e4b006130ac1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">enc_new = tokenizer(
+    new_tickets,
+    padding=True,
+    truncation=True,
+    return_tensors=&quot;pt&quot;,
+)
+
+with torch.no_grad():
+    outputs_new = base_model(**enc_new)
+
+cls_new = outputs_new.last_hidden_state[:, 0, :]  # [batch_new, hidden_size]
+X_new = cls_new.numpy()
+</code></pre><h3 id="2ab568fa-e39f-8066-ad3e-dbfb9bd711df" class="">5.2. Предсказываем классы</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8055-a4ae-ca7a6a6cae92" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">preds = clf.predict(X_new)
+probs = clf.predict_proba(X_new)  # вероятности по классам
+
+id2label_custom = {0: &quot;bug&quot;, 1: &quot;feature&quot;, 2: &quot;billing&quot;, 3: &quot;other&quot;}
+
+for text, pred, prob_vec in zip(new_tickets, preds, probs):
+    label = id2label_custom[pred]
+    top_prob = max(prob_vec)
+    print(&quot;TEXT:&quot;, text)
+    print(f&quot;PRED: {label} (conf={top_prob:.3f})&quot;)
+    print(&quot;CLASS PROBS:&quot;)
+    for class_id, p in enumerate(prob_vec):
+        print(f&quot;  {id2label_custom[class_id]}: {p:.3f}&quot;)
+    print(&quot;-&quot; * 60)
+</code></pre><p id="2ab568fa-e39f-8079-95f0-ee0076ce1916" class="">Что важно показать ученикам:</p><ul id="2ab568fa-e39f-8013-9581-ddaca406216c" class="bulleted-list"><li style="list-style-type:disc">мы <strong>полностью контролируем</strong> схему классов;</li></ul><ul id="2ab568fa-e39f-8036-94fb-ca60dbfcbdf6" class="bulleted-list"><li style="list-style-type:disc">модель трансформера не «знает» про <code>bug/feature/billing</code> — она просто даёт ембеддинги;</li></ul><ul id="2ab568fa-e39f-8043-bb13-f12404fe2d7b" class="bulleted-list"><li style="list-style-type:disc">наша голова на этих эмбеддингах учится отличать категории.</li></ul><hr id="2ab568fa-e39f-80dc-8f2d-c469db78f991"/><h2 id="2ab568fa-e39f-8012-91d9-c445dbb4e8f4" class="">6. Оборачиваем всё в функции (как в реальном проекте)</h2><p id="2ab568fa-e39f-80d8-872f-f2f098d2833e" class="">В реальном коде так писать не будут, конечно, всё будет аккуратно обёрнуто. Покажем минимально адекватный вариант.</p><h3 id="2ab568fa-e39f-806d-9b62-f32cff235f8d" class="">6.1. Функция для получения CLS-эмбеддингов</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801f-ad5b-d64111f8f493" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def get_cls_embeddings(texts, tokenizer, model, device=&quot;cpu&quot;, batch_size=8):
+    &quot;&quot;&quot;
+    texts: list[str]
+    return: np.ndarray [len(texts), hidden_size]
+    &quot;&quot;&quot;
+    import numpy as np
+
+    all_embeddings = []
+
+    model = model.to(device)
+    model.eval()
+
+    # простой batching
+    for i in range(0, len(texts), batch_size):
+        batch_texts = texts[i:i+batch_size]
+        enc = tokenizer(
+            batch_texts,
+            padding=True,
+            truncation=True,
+            return_tensors=&quot;pt&quot;,
+        ).to(device)
+
+        with torch.no_grad():
+            outputs = model(**enc)
+        cls_emb = outputs.last_hidden_state[:, 0, :]  # [batch, hidden_size]
+        all_embeddings.append(cls_emb.cpu().numpy())
+
+    return np.vstack(all_embeddings)
+</code></pre><h3 id="2ab568fa-e39f-80c4-83cd-f3bf0e74ec18" class="">6.2. Тренируем классификатор в виде отдельной функции</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d4-9b2c-eed5fe3432cb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sklearn.linear_model import LogisticRegression
+
+def train_ticket_classifier(texts, labels, tokenizer, base_model, device=&quot;cpu&quot;):
+    X = get_cls_embeddings(texts, tokenizer, base_model, device=device)
+    y = np.array(labels)
+
+    clf = LogisticRegression(max_iter=1000)
+    clf.fit(X, y)
+    return clf
+</code></pre><h3 id="2ab568fa-e39f-8067-8409-c821fe3502ba" class="">6.3. Функция для предсказания</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f5-a850-ca826e7cc0d6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def predict_ticket_classes(texts, tokenizer, base_model, clf, id2label, device=&quot;cpu&quot;):
+    X = get_cls_embeddings(texts, tokenizer, base_model, device=device)
+    preds = clf.predict(X)
+    probs = clf.predict_proba(X)
+
+    results = []
+    for text, pred, prob_vec in zip(texts, preds, probs):
+        label = id2label[pred]
+        result = {
+            &quot;text&quot;: text,
+            &quot;label&quot;: label,
+            &quot;probs&quot;: {
+                id2label[i]: float(p) for i, p in enumerate(prob_vec)
+            }
+        }
+        results.append(result)
+    return results
+</code></pre><h3 id="2ab568fa-e39f-8033-a17e-eb7c1683ae9c" class="">6.4. Используем всё вместе</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809b-9282-d2eed2bbcdac" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># Обучение
+train_texts = tickets
+train_labels = labels  # 0..3
+
+id2label_custom = {0: &quot;bug&quot;, 1: &quot;feature&quot;, 2: &quot;billing&quot;, 3: &quot;other&quot;}
+
+clf = train_ticket_classifier(
+    train_texts,
+    train_labels,
+    tokenizer,
+    base_model,
+    device=&quot;cpu&quot;,  # можно &quot;cuda&quot;, если есть
+)
+
+# Предсказание
+test_texts = new_tickets
+
+results = predict_ticket_classes(
+    test_texts,
+    tokenizer,
+    base_model,
+    clf,
+    id2label=id2label_custom,
+    device=&quot;cpu&quot;,
+)
+
+for r in results:
+    print(&quot;TEXT:&quot;, r[&quot;text&quot;])
+    print(&quot;PRED:&quot;, r[&quot;label&quot;])
+    print(&quot;PROBS:&quot;, r[&quot;probs&quot;])
+    print(&quot;-&quot; * 50)
+</code></pre><p id="2ab568fa-e39f-8002-be9b-cde63827ac42" class="">Это уже «нормальный» мини-пайплайн, который можно положить в модуль и переиспользовать.</p><hr id="2ab568fa-e39f-802e-a337-c3ab24a71df1"/><h2 id="2ab568fa-e39f-8058-a4ab-eb0ca826bffc" class="">7. Обсуждаем ограничения и подводные камни</h2><p id="2ab568fa-e39f-8057-abf2-f4113ccf1064" class="">Важно честно сказать ученикам, что:</p><ol type="1" id="2ab568fa-e39f-8045-8a94-e9f100ad4d01" class="numbered-list" start="1"><li><strong>Слишком мало данных → переобучение.</strong><ul id="2ab568fa-e39f-8019-90ae-caf2e17bd0a4" class="bulleted-list"><li style="list-style-type:disc">Наш пример с 4 тикетами — иллюстрация.</li></ul><ul id="2ab568fa-e39f-80de-b621-e91a823a65dc" class="bulleted-list"><li style="list-style-type:disc">В реальности нужен нормальный размер датасета.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808a-bf0f-dd6ff99dda36" class="numbered-list" start="2"><li><strong>Трансформер не дообучается.</strong><ul id="2ab568fa-e39f-8020-acd5-d4d121288a5d" class="bulleted-list"><li style="list-style-type:disc">Мы не обновляем его веса.</li></ul><ul id="2ab568fa-e39f-8036-9128-fa55a145b830" class="bulleted-list"><li style="list-style-type:disc">Если распределение данных сильно отличается, иногда выгоднее делать полноценный fine-tuning (будет дальше по курсу).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8018-9ffc-ec52076f29dc" class="numbered-list" start="3"><li><strong>Нормализация признаков.</strong><ul id="2ab568fa-e39f-8043-bdbc-d957f65f5678" class="bulleted-list"><li style="list-style-type:disc">Для некоторых моделей (SVM, линейных) может помочь <code>StandardScaler</code>.</li></ul><ul id="2ab568fa-e39f-801e-b41f-efa53b861ba8" class="bulleted-list"><li style="list-style-type:disc">Можно добавить этап препроцессинга признаков (но не обязательно для начала).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8081-9ca1-d2f06899b109" class="numbered-list" start="4"><li><strong>Скорость.</strong><ul id="2ab568fa-e39f-801f-83a2-cd0de14b4e7a" class="bulleted-list"><li style="list-style-type:disc">Вытаскивать эмбеддинги трансформера — всё ещё дорого.</li></ul><ul id="2ab568fa-e39f-8053-9021-f08f59387774" class="bulleted-list"><li style="list-style-type:disc">В проде часто:<ul id="2ab568fa-e39f-8027-985d-ce1ea7fd9630" class="bulleted-list"><li style="list-style-type:circle">кэшируют эмбеддинги для часто повторяющихся текстов,</li></ul><ul id="2ab568fa-e39f-8020-88cd-f37ace97f184" class="bulleted-list"><li style="list-style-type:circle">используют более маленькие модели (distil/mini).</li></ul></li></ul></li></ol><hr id="2ab568fa-e39f-80c1-b69d-de8d90bd42b7"/><h2 id="2ab568fa-e39f-808d-b92b-f8725fd49f89" class="">8. Домашка по уроку 2.2</h2><p id="2ab568fa-e39f-8080-85d8-eb313f4d29b6" class="">Можно дать в двух уровнях сложности.</p><h3 id="2ab568fa-e39f-8038-a1ee-fa23626383ea" class="">Обязательная часть</h3><ol type="1" id="2ab568fa-e39f-803d-88ef-f169ba00783c" class="numbered-list" start="1"><li>Выбрать любую базовую модель (<code>bert-base-...</code>, <code>distilbert-...</code>, <code>rubert-...</code>).</li></ol><ol type="1" id="2ab568fa-e39f-8079-9281-e31abfc8c15d" class="numbered-list" start="2"><li>Собрать маленький набор текстов (10–30 штук) с <strong>собственными классами</strong>, например:<ul id="2ab568fa-e39f-800c-9686-eaeb5ad0bb4a" class="bulleted-list"><li style="list-style-type:disc">тип тикета (<code>bug</code>, <code>feature</code>, <code>billing</code>, <code>other</code>);</li></ul><ul id="2ab568fa-e39f-80d0-b472-db08c421a899" class="bulleted-list"><li style="list-style-type:disc">тематика новости (<code>politics</code>, <code>tech</code>, <code>sports</code>, <code>entertainment</code>);</li></ul><ul id="2ab568fa-e39f-80ff-84ce-dfdfa1028ca3" class="bulleted-list"><li style="list-style-type:disc">тип отзыва (<code>positive</code>, <code>neutral</code>, <code>negative</code>, <code>spam</code>), если хочется.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d2-b60c-eeaaa41444a2" class="numbered-list" start="3"><li>Сделать:<ul id="2ab568fa-e39f-80c3-86aa-c480be22bafd" class="bulleted-list"><li style="list-style-type:disc">извлечение CLS-эмбеддингов через <code>AutoModel</code>,</li></ul><ul id="2ab568fa-e39f-807d-919e-dfbe26ffffaa" class="bulleted-list"><li style="list-style-type:disc">обучение LogisticRegression (или другой модели) на этих эмбеддингах,</li></ul><ul id="2ab568fa-e39f-80c1-ab87-c312dc371014" class="bulleted-list"><li style="list-style-type:disc">тест на новых примерах, которых не было в обучении.</li></ul></li></ol><h3 id="2ab568fa-e39f-80f6-8c12-dddc9aef1eb0" class="">Дополнительная часть (для сладких голов)</h3><ol type="1" id="2ab568fa-e39f-80c5-91c3-f5816352c2da" class="numbered-list" start="1"><li>Разбить данные на train/val (например, 80/20).</li></ol><ol type="1" id="2ab568fa-e39f-8033-a373-da6c4eff6f34" class="numbered-list" start="2"><li>Посчитать accuracy/F1 на валидации.</li></ol><ol type="1" id="2ab568fa-e39f-80e2-86e8-c0b122340127" class="numbered-list" start="3"><li>Попробовать:<ul id="2ab568fa-e39f-807e-809d-c87a43d5df43" class="bulleted-list"><li style="list-style-type:disc">поменять модель (например, взять русскоязычную),</li></ul><ul id="2ab568fa-e39f-8004-89d1-e46a185c4eff" class="bulleted-list"><li style="list-style-type:disc">сделать <strong>mean-pooling</strong> вместо CLS:<ul id="2ab568fa-e39f-801a-9567-d2591c0e5926" class="bulleted-list"><li style="list-style-type:circle">усреднить <code>last_hidden_state</code> по токенам с mask==1,</li></ul></li></ul><ul id="2ab568fa-e39f-8059-9168-dd730085abd7" class="bulleted-list"><li style="list-style-type:disc">сравнить качество.</li></ul></li></ol><hr id="2ab568fa-e39f-800e-8ec9-c6da83f26b8e"/><p id="2ab568fa-e39f-8096-ad71-e2f90b498bed" class="">Если хочешь, дальше могу так же развернуть <strong>урок 2.3</strong> (про config, <code>label2id/id2label</code> и инициализацию своей головы) — его логично ставить следом: сначала мы используем трансформер как feature extractor, а затем учимся «официально» создавать свои модели под свои классы.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

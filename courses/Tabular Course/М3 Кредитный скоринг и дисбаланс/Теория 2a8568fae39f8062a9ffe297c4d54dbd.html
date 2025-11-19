@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Теория</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8062-a9ff-e297c4d54dbd" class="page sans"><header><h1 class="page-title">Теория</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-80cb-95e1-fee3bb3fd22d" class="">ниже — «полная теория» для М3. Это опорный конспект: постановка, утечки/смещения, метрики, дисбаланс, скоркарды (WOE/IV), калибровка/порог, reject inference, стабильность (OOT/PSI), монотонности, и быстрый чек-лист под 5-часовой спринт.</p><h2 id="2a8568fa-e39f-805c-a37a-d6aba2a546e2" class="">1) Постановка задачи и таргет</h2><p id="2a8568fa-e39f-8059-a44b-d8a1769e96aa" class=""><strong>Цель:</strong> оценить <strong>вероятность дефолта (PD)</strong> заявителя на горизонте (H) (обычно 6–12 мес) по информации <strong>на момент решения</strong>.</p><p id="2a8568fa-e39f-80fb-be76-f5b60ce66a17" class=""><strong>Таргет (двойка):</strong></p><p id="2a8568fa-e39f-802e-b409-f7bc4c278554" class="">(y=1) ⇔ наступило событие <strong>default</strong> (напр., <strong>90+ DPD</strong> в течение (H) месяцев от активации); (y=0) — иначе. Важно задать:</p><ul id="2a8568fa-e39f-80b0-b7c7-c6ba5b037ee8" class="bulleted-list"><li style="list-style-type:disc"><strong>Observation window</strong> (входные данные до (t_0), даты решения);</li></ul><ul id="2a8568fa-e39f-8031-b15f-c244ab0ca514" class="bulleted-list"><li style="list-style-type:disc"><strong>Performance window</strong> (H) (наблюдаем дефолт после (t_0));</li></ul><ul id="2a8568fa-e39f-8025-82ed-d8c731c9bcb9" class="bulleted-list"><li style="list-style-type:disc"><strong>Censoring</strong>: заявки ближе к концу среза не успевают прожить (H) → исключать/взвешивать.</li></ul><p id="2a8568fa-e39f-8053-89f9-c57a704b35c7" class=""><strong>Группы:</strong> один <strong>customer_id</strong> не должен пересекать train/valid. Для повторных заявок: либо «первая», либо time-aware CV.</p><hr id="2a8568fa-e39f-80e2-9fb2-eac98f6bb5cf"/><h2 id="2a8568fa-e39f-8032-8511-dd7ecd67688c" class="">2) Анти-утечки (главное)</h2><p id="2a8568fa-e39f-80ca-b937-fbfbe44dc882" class="">Запрещены фичи, известные <strong>после</strong> (t_0): статусы погашения, суммы взысканий, апдейты бюро после заявки, признаки «получил/не получил кредит».</p><p id="2a8568fa-e39f-80bc-817e-ddd6426e2086" class=""><strong>Time/Purged CV:</strong> валидные окна отстают по времени (embargo ≥ макс-лаг/окно).</p><p id="2a8568fa-e39f-801e-9cb5-db45e74c32a1" class=""><strong>GroupKFold:</strong> разделение по клиенту/домохозяйству/работодателю.</p><p id="2a8568fa-e39f-80ed-bce3-fa55368b8d7e" class=""><strong>Feature fit</strong> (нормировки, таргет/WOE) — <strong>только OOF/ordered/time-aware</strong>.</p><hr id="2a8568fa-e39f-800b-85ae-d54801f86b76"/><h2 id="2a8568fa-e39f-8034-9df6-cf175d5fd71c" class="">3) Смещения данных (selection bias)</h2><p id="2a8568fa-e39f-8035-884c-e59d12b3b8f4" class=""><strong>Accepted-only bias:</strong> в исторических данных известны исходы только по <strong>одобренным</strong>; отклонённые не наблюдаем → выборка не репрезентативна.</p><p id="2a8568fa-e39f-801b-b999-c124c2e64172" class=""><strong>Reject inference</strong> (см. §12): корректируем смещение оценивая «вероятность одобрения» и/или «дорисовывая» таргеты для отклонённых. На спринте — минимум: <strong>оценка переносимости</strong> на OOT без RI, аккуратный cut-off по бизнес-констрейнтам.</p><hr id="2a8568fa-e39f-802b-b785-f60e9082f830"/><h2 id="2a8568fa-e39f-80f6-8bcd-ffc3507e389c" class="">4) Метрики качества</h2><ul id="2a8568fa-e39f-8085-812f-cd0538a83da0" class="bulleted-list"><li style="list-style-type:disc"><strong>AUC ROC</strong>, <strong>KS</strong> (макс. разность CDF «good/bad» по скору), <strong>Gini = 2·AUC−1</strong> — ранжирование.</li></ul><ul id="2a8568fa-e39f-801d-b247-f0583d2964e0" class="bulleted-list"><li style="list-style-type:disc"><strong>PR-AUC</strong> — информативно при <strong>низком bad-rate</strong>.</li></ul><ul id="2a8568fa-e39f-80ea-9072-e33c58d5723b" class="bulleted-list"><li style="list-style-type:disc"><strong>Brier/ECE</strong> — калибровка вероятностей.</li></ul><ul id="2a8568fa-e39f-8026-a898-d52980b4a804" class="bulleted-list"><li style="list-style-type:disc"><strong>Лифт/Гейнс по децилям</strong> — бизнес-читаемо.</li></ul><ul id="2a8568fa-e39f-806e-b1df-d3f55b7a142b" class="bulleted-list"><li style="list-style-type:disc"><strong>Экономика</strong>: (\mathbb{E}[\text{loss}] = \text{PD}\times \text{LGD}\times \text{EAD}). Для отбора порога — матрица издержек.</li></ul><p id="2a8568fa-e39f-8000-831c-d517d30328f9" class=""><strong>Регуляторный стандарт:</strong> фиксируем <strong>OOT-сплит</strong> (out-of-time) на отдельном периоде; мониторим <strong>PSI</strong> (см. §11).</p><hr id="2a8568fa-e39f-8043-af96-ed1f583b232e"/><h2 id="2a8568fa-e39f-80a6-a47e-fadd14585405" class="">5) Дисбаланс классов (bad-rate ≪ 1)</h2><h3 id="2a8568fa-e39f-8047-9526-cbc89208394f" class="">5.1 Веса vs ресемплинг</h3><ul id="2a8568fa-e39f-808a-bc8e-dace5bba8aeb" class="bulleted-list"><li style="list-style-type:disc"><strong>Class weights</strong> в лоссе (LGBM/XGB/Cat: <code>scale_pos_weight≈Nneg/Npos</code>, <code>auto_class_weights=Balanced</code>). Сохраняет калибровку.</li></ul><ul id="2a8568fa-e39f-80e1-8857-e8682627e760" class="bulleted-list"><li style="list-style-type:disc"><strong>Undersampling</strong> негатива — прост, теряем информацию.</li></ul><ul id="2a8568fa-e39f-804f-a085-f9509a16bc5c" class="bulleted-list"><li style="list-style-type:disc"><strong>Oversampling</strong>/<strong>SMOTE</strong> — осторожно: переобучение, ломает калибровку деревьев.<p id="2a8568fa-e39f-8066-b238-f6a4c65e0869" class="">Рекомендация: <strong>сначала веса</strong>, оценка по <strong>исходному распределению</strong>; ресемплинг — как эксп. сравнение.</p></li></ul><h3 id="2a8568fa-e39f-80d7-bb06-ff9af944f0a5" class="">5.2 Лоссы под дисбаланс</h3><ul id="2a8568fa-e39f-8006-855e-ed9c937ac44d" class="bulleted-list"><li style="list-style-type:disc"><strong>Logloss</strong> + class weights — база.</li></ul><ul id="2a8568fa-e39f-807d-81ab-cc13d946b053" class="bulleted-list"><li style="list-style-type:disc"><strong>Focal loss</strong>: (-\alpha(1-p)^\gamma y\log p - (1-\alpha)p^\gamma (1-y)\log(1-p)) — фокус на трудных примерах.</li></ul><ul id="2a8568fa-e39f-80d2-906f-cdaadd4f8e83" class="bulleted-list"><li style="list-style-type:disc">Для деревьев — через кастомную цель или имитацию весами.</li></ul><hr id="2a8568fa-e39f-80be-9e31-e70210ab7df6"/><h2 id="2a8568fa-e39f-800b-a127-fd7eabacdd3c" class="">6) Модели и ограничения</h2><ul id="2a8568fa-e39f-8029-ab23-c399e5d8428a" class="bulleted-list"><li style="list-style-type:disc"><strong>Логистическая регрессия (scorecard-классика)</strong>: интерпретируемо, легко калибровать, даёт «reason codes»; любит <strong>WOE</strong>/биннинг и монотонные связи.</li></ul><ul id="2a8568fa-e39f-8037-ac18-fd00dd392f47" class="bulleted-list"><li style="list-style-type:disc"><strong>GBDT (Cat/LGBM/XGB)</strong>: сильнее по AUC/KS, гибкие; для регулятора — <strong>монотонные constraints</strong> и reason-коды (SHAP + биннинг) усиливают объяснимость.</li></ul><ul id="2a8568fa-e39f-80b6-8558-cae892a1df51" class="bulleted-list"><li style="list-style-type:disc"><strong>Fair/Compliance:</strong> не использовать защищённые признаки; делать slice-оценки (см. §11) — но это отдельная тема.</li></ul><hr id="2a8568fa-e39f-8048-9390-e74b2cc929fa"/><h2 id="2a8568fa-e39f-8019-8e2a-f89fda5492dd" class="">7) Скоркард: биннинг, WOE, IV</h2><h3 id="2a8568fa-e39f-8043-877b-f029b0121dca" class="">7.1 Биннинг и WOE</h3><ul id="2a8568fa-e39f-80aa-9685-c052b038dc2b" class="bulleted-list"><li style="list-style-type:disc">Разбиваем числовой признак на бины (квантиль/ChiMerge/MDL).</li></ul><ul id="2a8568fa-e39f-809a-9c16-e3a1e6b3dd11" class="bulleted-list"><li style="list-style-type:disc"><strong>WOE</strong> для бина (b):<p id="2a8568fa-e39f-80b5-b76d-f0ee9478ce68" class="">[</p><p id="2a8568fa-e39f-804b-af78-f7e186d76e24" class="">\mathrm{WOE}_b=\ln\frac{\text{Bad}<em>b/\text{Bad}</em>{\text{all}}}{\text{Good}<em>b/\text{Good}</em>{\text{all}}}</p><p id="2a8568fa-e39f-8016-b842-c500e6278d83" class="">]</p><p id="2a8568fa-e39f-8036-88d8-d1d3717d1031" class="">(плюс сглаживание (\epsilon) к счётчикам).</p></li></ul><ul id="2a8568fa-e39f-8080-b454-f0ba4c60b03d" class="bulleted-list"><li style="list-style-type:disc">Пропуски — <strong>отдельный бин</strong>.</li></ul><ul id="2a8568fa-e39f-808c-8b77-c93ae5d37484" class="bulleted-list"><li style="list-style-type:disc">Добиваемся <strong>монотонной</strong> зависимости WOE по смысловой оси (дообъединяем бины, isotonic-merge).</li></ul><h3 id="2a8568fa-e39f-809f-8404-e5270428c9b4" class="">7.2 Information Value (IV)</h3><p id="2a8568fa-e39f-801a-b420-ff19dbc4bee0" class="">[</p><p id="2a8568fa-e39f-8017-9b19-f8024ad521dc" class="">\mathrm{IV} = \sum_b (\text{DistrBad}_b - \text{DistrGood}_b)\cdot \mathrm{WOE}_b</p><p id="2a8568fa-e39f-805b-9638-eeb481e5ff25" class="">]</p><p id="2a8568fa-e39f-8051-9865-f1d0f2e8f7a9" class="">Эвристика: &lt;0.02 — слабый; 0.02–0.1 — умеренный; 0.1–0.3 — хороший; &gt;0.3 — сильный (иногда подозрительно сильный).</p><p id="2a8568fa-e39f-8040-85f4-f887552f3a23" class=""><strong>Важное:</strong> IV — <strong>до-модельная</strong> эвристика, не заменяет OOF-валидацию.</p><h3 id="2a8568fa-e39f-804a-b2d2-fee0036ed225" class="">7.3 Логистическая на WOE</h3><p id="2a8568fa-e39f-80f6-9669-fca280261e9b" class="">Формально:</p><p id="2a8568fa-e39f-80c9-8797-f9b216fcb895" class="">[</p><p id="2a8568fa-e39f-80f4-bd37-fadad71a654d" class="">\log\frac{p}{1-p} = \beta_0 + \sum_j \beta_j ,\mathrm{WOE}_j(x)</p><p id="2a8568fa-e39f-80d5-9ed4-e5cf138733d1" class="">]</p><p id="2a8568fa-e39f-8042-9325-e569b587c825" class="">даёт стабильную монотонность и «reason codes» (вклад бина). L1/L2 — для отбора.</p><hr id="2a8568fa-e39f-8064-a317-c639aa835532"/><h2 id="2a8568fa-e39f-8009-8e5a-d1b5f9993eef" class="">8) Признаки кредитного риска (без утечки)</h2><ul id="2a8568fa-e39f-8090-b135-f75a15bf3970" class="bulleted-list"><li style="list-style-type:disc"><strong>Бюро/история:</strong> количество/доля просрочек (30/60/90) за окна (12/24 мес), «время с последней просрочки», <strong>inquiries</strong> за 3/6/12 мес.</li></ul><ul id="2a8568fa-e39f-806c-8ffc-f85efec2b449" class="bulleted-list"><li style="list-style-type:disc"><strong>Дебт-бурден:</strong> <strong>utilization</strong> (баланс/лимит), DTI (debt-to-income), число активных счетов.</li></ul><ul id="2a8568fa-e39f-80c2-986c-d247ae2b06cd" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность:</strong> стаж на работе, адрес/телефон срок, «частота смен».</li></ul><ul id="2a8568fa-e39f-80f1-93a8-d879e21ce5ef" class="bulleted-list"><li style="list-style-type:disc"><strong>Поведение по счёту (для behavior-скоринга):</strong> payment-ratio, min-pay history, overlimit flags — <strong>только до (t_0)</strong>.</li></ul><ul id="2a8568fa-e39f-805b-b71e-fa0caac0d955" class="bulleted-list"><li style="list-style-type:disc"><strong>Иерархии/бэкофф:</strong> индикаторы отрасли работодателя → сектор → регион.<p id="2a8568fa-e39f-80d5-886b-e7675ef09432" class="">Все агрегаты <strong>time-aware</strong>, окна <strong>не пересекают валид</strong>.</p></li></ul><hr id="2a8568fa-e39f-8026-8aad-df2ae9855d51"/><h2 id="2a8568fa-e39f-8062-9af2-eed49d4b0a0d" class="">9) Калибровка и «score-to-odds»</h2><p id="2a8568fa-e39f-80e2-9b36-c906ea4be2d7" class=""><strong>Калибровка</strong> (на OOF): Platt (логистическая) / Isotonic → снижает смещение PD.</p><p id="2a8568fa-e39f-801e-b68c-ed34cdf9444e" class=""><strong>Scorecard-скейл</strong>:</p><p id="2a8568fa-e39f-807c-8b2f-f56a248aa5f3" class="">[</p><p id="2a8568fa-e39f-80a5-b806-fcc0a3a0367e" class="">\text{Score} = \text{Offset} + \text{Factor}\cdot \ln\frac{1-p}{p}, \quad</p><p id="2a8568fa-e39f-80db-9f47-f694ffe4cf52" class="">\text{Factor} = \frac{\text{PDO}}{\ln 2}</p><p id="2a8568fa-e39f-80c3-91ef-c66eb50ab273" class="">]</p><p id="2a8568fa-e39f-80a9-8175-c3e549f47f91" class="">где <strong>PDO</strong> — прирост очков при <strong>удвоении odds</strong> (напр., PDO=20). Offset задаём из «базовых odds» (например, 600 очков при odds=50:1).</p><p id="2a8568fa-e39f-8059-ab80-e7af46be1229" class="">Калиброванный PD (\rightarrow) <strong>cut-off</strong> по бизнес-ограничениям (целевой PD портфеля, доля одобрений).</p><hr id="2a8568fa-e39f-8053-8358-f840914276bc"/><h2 id="2a8568fa-e39f-800d-a206-e6925e6fdbf0" class="">10) Порог и экономический выбор</h2><p id="2a8568fa-e39f-8082-9a3d-e0588a112440" class="">Пусть прибыль от «good-approved» = (G), потери от «bad-approved» = (C). Для кандидата со скором (p=\text{PD}):</p><p id="2a8568fa-e39f-8011-bfff-c6a62609f57e" class="">[</p><p id="2a8568fa-e39f-805f-9095-f2bc10b74a93" class="">\mathbb{E}[\text{profit}] = (1-p)\cdot G - p\cdot C</p><p id="2a8568fa-e39f-8020-b0a9-d779dd664d41" class="">]</p><p id="2a8568fa-e39f-803a-b795-f41ebe32da8d" class="">Одобрим если ( \mathbb{E}[\text{profit}]&gt;0 \Rightarrow p &lt; \frac{G}{G+C}).</p><p id="2a8568fa-e39f-8029-8885-f36d808a1fd8" class="">На практике:</p><ul id="2a8568fa-e39f-80a2-8e93-caf0effb8e63" class="bulleted-list"><li style="list-style-type:disc"><strong>Constraint-based</strong>: выбрать порог, чтобы <strong>доля одобрений</strong> и <strong>средний PD</strong> в принятом слое соответствовали целям.</li></ul><ul id="2a8568fa-e39f-807a-ab6c-c54c46830414" class="bulleted-list"><li style="list-style-type:disc"><strong>Decile-анализ</strong>: таблица LR (loss ratio) по бинам — проверка здравости cut-off.</li></ul><hr id="2a8568fa-e39f-80bc-baec-ccc4f95a415f"/><h2 id="2a8568fa-e39f-80b6-87ce-e194fb8b2984" class="">11) Стабильность и мониторинг</h2><ul id="2a8568fa-e39f-80bd-9c1c-e9b682ff6cfc" class="bulleted-list"><li style="list-style-type:disc"><strong>OOT (out-of-time) валидация</strong> — главный тест.</li></ul><ul id="2a8568fa-e39f-808f-8a04-cd39662de12d" class="bulleted-list"><li style="list-style-type:disc"><strong>PSI</strong> по скору/ключевым фичам (сравнение train vs OOT). Правила: &lt;0.1 — норм, 0.1–0.25 — внимание, &gt;0.25 — сдвиг.</li></ul><ul id="2a8568fa-e39f-802e-8df4-f6598e1c6f48" class="bulleted-list"><li style="list-style-type:disc"><strong>Slice-оценки</strong>: возрастные группы, регионы, продукты, каналы → контролируем AUC/KS/PD drift.</li></ul><ul id="2a8568fa-e39f-80a9-9ce6-f57a723dd28b" class="bulleted-list"><li style="list-style-type:disc"><strong>KS drift</strong>: сравнить KS в dev vs OOT; падение → переобучение/смещение.</li></ul><ul id="2a8568fa-e39f-803a-b171-fe04b9122ff1" class="bulleted-list"><li style="list-style-type:disc"><strong>Back-testing PD</strong>: калибровка по децилям — факт против ожидаемого.</li></ul><hr id="2a8568fa-e39f-80af-bef5-d902d9108078"/><h2 id="2a8568fa-e39f-809f-9f78-f56a196790a3" class="">12) Reject Inference (когда и как)</h2><p id="2a8568fa-e39f-809b-9749-e7133795c353" class="">Нужно, если want: <strong>портфельная PD</strong> после cut-off и устойчивость <strong>меняются</strong> из-за политики одобрения.</p><ul id="2a8568fa-e39f-8080-8932-feacd7722210" class="bulleted-list"><li style="list-style-type:disc"><strong>Propensity weighting</strong>: модель (q(x)=\Pr(\text{approved}\mid x)) → веса (w=1/q(x)) при обучении PD.</li></ul><ul id="2a8568fa-e39f-801f-b269-effbce3543f0" class="bulleted-list"><li style="list-style-type:disc"><strong>Parceling</strong>: разметить rejected, присвоив им (y) по их скору/децилю (консервативный сценарий).</li></ul><ul id="2a8568fa-e39f-80d7-86b2-dd657ec38795" class="bulleted-list"><li style="list-style-type:disc"><strong>EM/Heckman-подходы</strong>: совместное моделирование «одобрение↔исход», дороже.<p id="2a8568fa-e39f-8097-aeb4-c577ef32410d" class="">Риски: внесение <strong>моделирующего допущения</strong>. В спринте — как минимум <strong>оценить</strong> влияние (с/без RI) на OOT.</p></li></ul><hr id="2a8568fa-e39f-80ff-893a-d3f5dbb84af6"/><h2 id="2a8568fa-e39f-80e1-8ba9-f5b9f801b6dd" class="">13) Монолитные деревья vs скоркард</h2><ul id="2a8568fa-e39f-808d-b697-ee3e1c63192b" class="bulleted-list"><li style="list-style-type:disc"><strong>Скоркард</strong>: +интерпретируемость, +контроль монотонности, +стабильность; − потолок AUC.</li></ul><ul id="2a8568fa-e39f-8019-977d-f615def50df8" class="bulleted-list"><li style="list-style-type:disc"><strong>GBDT</strong>: +качество, +нелинейности/взаимодействия; вводим <strong>монотонные constraints</strong> (LGBM/XGB), <strong>глубину ≤6–8</strong>, <code>min_data_in_leaf↑</code>, <code>lambda_l2↑</code> → меньше дрожи.<p id="2a8568fa-e39f-80a2-9a38-e453c9113aec" class="">Компромисс: <strong>дерево-база</strong> + табличка «reason-codes» через биннинг/SHAP-группы.</p></li></ul><hr id="2a8568fa-e39f-8067-bf16-fa2c91cb3729"/><h2 id="2a8568fa-e39f-80e1-b5a0-c5b713c6c1f6" class="">14) Фейрнес и регуляторика (кратко)</h2><ul id="2a8568fa-e39f-80d4-8027-e7d2b68ffd72" class="bulleted-list"><li style="list-style-type:disc">Исключать защищённые признаки; делать <strong>disparate impact</strong>/slice-метрики; хранить <strong>reason codes</strong> (топ-вклады фичи в отказ).</li></ul><ul id="2a8568fa-e39f-806a-86d6-fcb1a8201b58" class="bulleted-list"><li style="list-style-type:disc"><strong>Документировать</strong>: постановку таргета, окна, сплиты, PSI/KS/калибровку, выбор порога/политики.</li></ul><hr id="2a8568fa-e39f-80a2-b0c7-cc1abfa42932"/><h2 id="2a8568fa-e39f-80d9-bbf1-ec8aa4f51d3d" class="">15) Типовые пайпы (когда что)</h2><ul id="2a8568fa-e39f-80c1-9399-fe0e2ee83311" class="bulleted-list"><li style="list-style-type:disc"><strong>Низкий bad-rate (&lt;3%), быстрый запуск:</strong> Cat/LGBM с <code>scale_pos_weight</code>, калибровка, decile-лифт, cut-off по PD-целям.</li></ul><ul id="2a8568fa-e39f-8025-bf3a-f3b3e761c9de" class="bulleted-list"><li style="list-style-type:disc"><strong>Регуляторная интерпретация:</strong> скоркард: биннинг→WOE/IV→логистическая→score-to-odds; монотонности и reason-codes.</li></ul><ul id="2a8568fa-e39f-80ab-b7f8-e6f1a7048414" class="bulleted-list"><li style="list-style-type:disc"><strong>Behavior-скоринг (портфель):</strong> time-aware окна, лаги платежей, осторожно с «будущими» фичами; OOT по месяцам.</li></ul><ul id="2a8568fa-e39f-8055-8a6a-d22828834cb5" class="bulleted-list"><li style="list-style-type:disc"><strong>Мультипродукт:</strong> отдельные модели или мультиклассовый слой «product» как фича (без утечки).</li></ul><hr id="2a8568fa-e39f-80d3-b3b1-df25972913d3"/><h2 id="2a8568fa-e39f-8017-bd40-feb42314f632" class="">16) Частые ошибки</h2><ul id="2a8568fa-e39f-807e-adef-dec80521157b" class="bulleted-list"><li style="list-style-type:disc">Микс customer_id между train/valid; <strong>leakage</strong> из post-decision полей.</li></ul><ul id="2a8568fa-e39f-80af-92f9-e0f121952a12" class="bulleted-list"><li style="list-style-type:disc">TE/WOE посчитаны «на всём train» и применены там же.</li></ul><ul id="2a8568fa-e39f-80e1-b1ba-d5acbc37c793" class="bulleted-list"><li style="list-style-type:disc">Оценка на ресемплированном дистрибутиве (некорректные метрики).</li></ul><ul id="2a8568fa-e39f-8081-ac9b-dc0086298ac8" class="bulleted-list"><li style="list-style-type:disc">Cut-off выбран «по AUC» без экономики/ограничений портфеля.</li></ul><ul id="2a8568fa-e39f-808d-8c3e-ce093de89fad" class="bulleted-list"><li style="list-style-type:disc">Нет OOT; нет PSI/decile back-test; порог «плавает» по времени.</li></ul><hr id="2a8568fa-e39f-800c-91b5-c890e3338435"/><h2 id="2a8568fa-e39f-802b-b65f-e84c8dcecedf" class="">17) Формулы и полезные куски</h2><ul id="2a8568fa-e39f-8041-a141-cc09c8d7a82e" class="bulleted-list"><li style="list-style-type:disc"><strong>KS:</strong> (\max_t (\mathrm{TPR}(t)-\mathrm{FPR}(t))).</li></ul><ul id="2a8568fa-e39f-8084-bd20-dcefa194b072" class="bulleted-list"><li style="list-style-type:disc"><strong>Gini:</strong> (2\cdot\mathrm{AUC}-1).</li></ul><ul id="2a8568fa-e39f-806b-893b-c56b17ec99b0" class="bulleted-list"><li style="list-style-type:disc"><strong>WOE smoothing:</strong> (\ln\frac{(\text{Bad}_b+\epsilon)/(\text{Bad}+\epsilon B)}{(\text{Good}_b+\epsilon)/(\text{Good}+\epsilon B)}).</li></ul><ul id="2a8568fa-e39f-804f-9426-e13a31fda03d" class="bulleted-list"><li style="list-style-type:disc"><strong>Score scale:</strong> ( \text{Score}=A - B\cdot \ln\frac{p}{1-p}), (B=\frac{\text{PDO}}{\ln 2}).</li></ul><ul id="2a8568fa-e39f-8085-8480-e0824ca28017" class="bulleted-list"><li style="list-style-type:disc"><strong>Focal:</strong> см. §5.2.</li></ul><hr id="2a8568fa-e39f-80f6-aa78-c5315e70b264"/><h2 id="2a8568fa-e39f-8074-b8e8-e758e453a1c0" class="">18) Боевой чек-лист (5-часовой спринт)</h2><p id="2a8568fa-e39f-808e-9ab0-ca623f6e502a" class=""><strong>0) Сетка валидации</strong></p><ul id="2a8568fa-e39f-806a-a9cf-d5eaec4773d2" class="bulleted-list"><li style="list-style-type:disc">Зафиксировать <strong>OOT</strong> (последние месяцы) + <strong>GroupKFold(customer)</strong> в dev, <strong>embargo</strong> по времени.</li></ul><p id="2a8568fa-e39f-8050-87bb-e35dfe4402e7" class=""><strong>1) База</strong></p><ul id="2a8568fa-e39f-8035-9941-f5cef0d6588d" class="bulleted-list"><li style="list-style-type:disc">LGBM/Cat с <code>scale_pos_weight</code> (≈neg/pos), простое фич-ядро (история просрочек, utilization, inquiries, стаж).</li></ul><ul id="2a8568fa-e39f-80bd-b79c-e1b6a53f94f6" class="bulleted-list"><li style="list-style-type:disc">Метрики: AUC/KS, PR-AUC; отчёт по децилям (лифт, PD).</li></ul><p id="2a8568fa-e39f-802e-9b89-df072dddcf26" class=""><strong>2) Интерпретация/устойчивость</strong></p><ul id="2a8568fa-e39f-8025-aa0a-d2e1e7727021" class="bulleted-list"><li style="list-style-type:disc">Биннинг ключевых фич → WOE sanity (монотонность).</li></ul><ul id="2a8568fa-e39f-8016-8f2b-d73ba03bde4c" class="bulleted-list"><li style="list-style-type:disc">Пермутационная важность по фолдам; OOT-чек.</li></ul><p id="2a8568fa-e39f-8024-9d42-f625164c7f56" class=""><strong>3) Калибровка и cut-off</strong></p><ul id="2a8568fa-e39f-8086-ba61-c37cb1d758cd" class="bulleted-list"><li style="list-style-type:disc">Platt/Isotonic на OOF; декомпозиция экономики → порог под целевые PD/долю одобрений.</li></ul><ul id="2a8568fa-e39f-8050-a925-ea5ebbb16f99" class="bulleted-list"><li style="list-style-type:disc">Таблица decile LR до/после cut-off.</li></ul><p id="2a8568fa-e39f-806c-875e-c07d120f354a" class=""><strong>4) Стабильность</strong></p><ul id="2a8568fa-e39f-800f-a281-c03d3431d0a8" class="bulleted-list"><li style="list-style-type:disc">PSI по скору и топ-фичам (train vs OOT).</li></ul><ul id="2a8568fa-e39f-80f6-a10a-cc83cfe2e6f2" class="bulleted-list"><li style="list-style-type:disc">Slice-оценки (канал, регион, возраст).</li></ul><p id="2a8568fa-e39f-8087-99d6-d952a76c339c" class=""><strong>5) Документация</strong></p><ul id="2a8568fa-e39f-80bb-989b-e1cb79095ea3" class="bulleted-list"><li style="list-style-type:disc">Таргет/окна, сплиты; <code>scale_pos_weight</code>; калибровка; cut-off; PSI/KS/лифт; риски.</li></ul><p id="2a8568fa-e39f-80f7-8b63-d661ae5270f2" class="">(Опционально) <strong>RI-лайт</strong>: propensity-веса для accepted-only и сравнить OOT.</p><hr id="2a8568fa-e39f-801c-9d1c-c3d1a0ad1ba3"/><h2 id="2a8568fa-e39f-80d2-96a2-fe7f8a7a2e26" class="">19) Что зафиксировать в отчёте</h2><ul id="2a8568fa-e39f-800c-b8b6-f18f75940807" class="bulleted-list"><li style="list-style-type:disc">Постановка PD@H, окна, правила default.</li></ul><ul id="2a8568fa-e39f-807b-8345-e6b9606bb384" class="bulleted-list"><li style="list-style-type:disc">CV: Group/Time/Purged, OOT-период.</li></ul><ul id="2a8568fa-e39f-8086-a2bb-e3b284d304ae" class="bulleted-list"><li style="list-style-type:disc">Дисбаланс: bad-rate, веса/ресемплинг.</li></ul><ul id="2a8568fa-e39f-8055-ab4c-caef3703d135" class="bulleted-list"><li style="list-style-type:disc">Модель и фич-ядро (без утечек).</li></ul><ul id="2a8568fa-e39f-8098-bd16-d5d2ad9c47ed" class="bulleted-list"><li style="list-style-type:disc">AUC/KS/PR-AUC (dev, OOT), калибровка (Brier/ECE), decile-backtest.</li></ul><ul id="2a8568fa-e39f-80d0-ac4b-d69bd1d3b301" class="bulleted-list"><li style="list-style-type:disc">Cut-off и экономика; PSI/slice-метрики; (если было) RI-сценарий.</li></ul><ul id="2a8568fa-e39f-809c-a662-ce520e72447c" class="bulleted-list"><li style="list-style-type:disc">Reason-codes/монотонности и ограничения.</li></ul><hr id="2a8568fa-e39f-805f-9a4f-e83b7f4a811a"/><p id="2a8568fa-e39f-805a-b29b-fc46b59bc3da" class="">Хочешь — добавлю два готовых «кирпича» под твой пайп:</p><ol type="1" id="2a8568fa-e39f-8095-a2cd-e2b31b28fd73" class="numbered-list" start="1"><li>безопасный <strong>WOE-биннер</strong> (квантиль→монотон-мердж, OOF-расчёт, reason-codes),</li></ol><ol type="1" id="2a8568fa-e39f-802c-8638-c5c8724f4d6b" class="numbered-list" start="2"><li><strong>cut-off-оптимайзер</strong> с матрицей издержек/целями по PD и доле одобрений.</li></ol></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

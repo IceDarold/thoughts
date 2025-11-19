@@ -1,0 +1,1004 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 6. Causal LM и чат-бот для саппорта</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8017-bd5e-ef6608b13f35" class="page sans"><header><h1 class="page-title">Модуль 6. Causal LM и чат-бот для саппорта</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80c8-9df8-d952a0e6dc44" class="">Окей, пора завозить <strong>каузалки и чат-бота «своими руками»</strong> 😎</p><p id="2ab568fa-e39f-806f-975c-f30a5f528398" class="">Модуль 6 — это про <code>AutoModelForCausalLM</code>, промпты, chat templates и простой SFT.</p><hr id="2ab568fa-e39f-8030-b8e2-cbc813a519e2"/><p id="2ab568fa-e39f-80c2-aba6-c0b7fbee46a4" class=""><strong>Глобальный кейс:</strong></p><blockquote id="2ab568fa-e39f-80d7-9bfa-c2a5789c3719" class="">Раньше мы:<ul id="2ab568fa-e39f-8043-b907-fe2d15b8c76e" class="bulleted-list"><li style="list-style-type:disc">классифицировали тикеты (М2–4),</li></ul><ul id="2ab568fa-e39f-80f5-9763-fb843b2dda7d" class="bulleted-list"><li style="list-style-type:disc">суммировали диалоги и делали черновики ответов (М5).</li></ul><p id="2ab568fa-e39f-801d-ae82-f9f0fc937cd3" class="">Теперь хотим: <strong>полноценного чат-бота поддержки</strong>, который:</p><ul id="2ab568fa-e39f-8029-82e1-d7f8e142d10a" class="bulleted-list"><li style="list-style-type:disc">отвечает на вопросы в стиле живого ассистента,<p id="2ab568fa-e39f-80b6-9b5c-f3b76d697b8c" class="">используя прошлый контекст диалога,</p></li></ul><ul id="2ab568fa-e39f-8065-bf46-eff5b913d44a" class="bulleted-list"><li style="list-style-type:disc">обучен на наших диалогах саппорта.</li></ul></blockquote><p id="2ab568fa-e39f-80a4-8e2d-e016f31daa3b" class="">Работать будем с:</p><ul id="2ab568fa-e39f-80db-b28d-fc7277486fa5" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForCausalLM</code> (например, GPT-2 / ruGPT / любой мелкий open-source LLM),</li></ul><ul id="2ab568fa-e39f-80d9-962b-c37a16ae2e35" class="bulleted-list"><li style="list-style-type:disc"><code>generate()</code> для диалогов,</li></ul><ul id="2ab568fa-e39f-80f5-a259-d1a5e9d2ab37" class="bulleted-list"><li style="list-style-type:disc">форматом переписок + простым SFT.</li></ul><p id="2ab568fa-e39f-801e-b0f0-ff0b4e488335" class="">Сделаем 4 урока:</p><ol type="1" id="2ab568fa-e39f-8015-a925-d4e68237a4ed" class="numbered-list" start="1"><li>6.1 — базовый Causal LM: <code>AutoModelForCausalLM</code> + generate.<figure id="2ab568fa-e39f-8035-b6db-d9a9e15e34c4" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%206%20Causal%20LM%20%D0%B8%20%D1%87%D0%B0%D1%82-%D0%B1%D0%BE%D1%82%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82%D0%B0/%D0%A3%D1%80%D0%BE%D0%BA%206%201%20%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%20Causal%20LM%20%D0%BA%D0%B0%D0%BA%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C%20%D0%B4%D0%BE%D0%BF%D0%B8%D1%81%D1%8B%D0%B2%D0%B0%D0%B5%202ab568fae39f8035b6dbd9a9e15e34c4.html">Урок 6.1. Введение в Causal LM: как модель дописывает текст</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-808a-80f1-c336e46f19fd" class="numbered-list" start="2"><li>6.2 — формат чатов: промпты, роли, chat templates (<code>apply_chat_template</code>).<figure id="2ab568fa-e39f-8077-8937-c1c128eb5401" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%206%20Causal%20LM%20%D0%B8%20%D1%87%D0%B0%D1%82-%D0%B1%D0%BE%D1%82%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82%D0%B0/%D0%A3%D1%80%D0%BE%D0%BA%206%202%20%D0%A4%D0%BE%D1%80%D0%BC%D0%B0%D1%82%20%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%D0%B3%D0%B0%20%D0%B8%20chat%20templates%20%D0%B4%D0%BB%D1%8F%20Causa%202ab568fae39f80778937c1c128eb5401.html">Урок 6.2. Формат диалога и chat templates для Causal LM</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-8083-b0f7-d3fe56edf0ea" class="numbered-list" start="3"><li>6.3 — SFT: дообучение Causal LM на своих диалогах саппорта.<figure id="2ab568fa-e39f-80cc-99c2-e3d1010321fa" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%206%20Causal%20LM%20%D0%B8%20%D1%87%D0%B0%D1%82-%D0%B1%D0%BE%D1%82%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82%D0%B0/%D0%A3%D1%80%D0%BE%D0%BA%206%203%20Supervised%20Fine-Tuning%20Causal%20LM%20%D0%BD%D0%B0%20%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%202ab568fae39f80cc99c2e3d1010321fa.html">Урок 6.3. Supervised Fine-Tuning Causal LM на диалогах саппорта</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-807c-af0c-d5a702a44810" class="numbered-list" start="4"><li>6.4 — Мини-проект: чат-бот саппорта с историей диалога.<figure id="2ab568fa-e39f-802c-ad16-eadf44c4633d" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%206%20Causal%20LM%20%D0%B8%20%D1%87%D0%B0%D1%82-%D0%B1%D0%BE%D1%82%20%D0%B4%D0%BB%D1%8F%20%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82%D0%B0/%D0%A3%D1%80%D0%BE%D0%BA%206%204%20%D0%9C%D0%B8%D0%BD%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%20%D1%87%D0%B0%D1%82-%D0%B1%D0%BE%D1%82%20%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82%D0%B0%20%D0%BD%D0%B0%20%D1%81%D0%B2%D0%BE%D0%B5%D0%B9%20Cau%202ab568fae39f802cad16eadf44c4633d.html">Урок 6.4. Мини-проект: чат-бот саппорта на своей Causal LM</a></figure></li></ol><hr id="2ab568fa-e39f-80e2-abeb-c678f2cf7c0d"/><h2 id="2ab568fa-e39f-80f2-8214-ccf5ff63d5a9" class="">Урок 6.1. Вводный Causal LM: дописываем текст, а не “переводим”</h2><p id="2ab568fa-e39f-8033-9407-f9f96ff3910f" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80fa-b6f4-f9e0725eed69" class="">Показать, чем causal LM отличается от seq2seq, и научить:</p><ul id="2ab568fa-e39f-8023-83a6-d0d314179651" class="bulleted-list"><li style="list-style-type:disc">грузить <code>AutoModelForCausalLM</code>,</li></ul><ul id="2ab568fa-e39f-80e7-94bd-e45d1ec88c36" class="bulleted-list"><li style="list-style-type:disc">токенизировать промпт,</li></ul><ul id="2ab568fa-e39f-804f-ad4a-df10cb2eaed8" class="bulleted-list"><li style="list-style-type:disc">использовать <code>.generate()</code> для дописывания.</li></ul><h3 id="2ab568fa-e39f-8057-81b1-c77a1f6bfb14" class="">6.1.1. Кейс</h3><blockquote id="2ab568fa-e39f-80e1-a1cf-d3998266f7c0" class="">Нам нужно: по описанию проблемы дописать «ответ саппорта» в одном текстовом блоке, без формального разделения input/output.</blockquote><p id="2ab568fa-e39f-8077-8bf4-d504a052f43f" class="">Например:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ca-8baf-f8dcc5fa7e41" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">User: ...
+Support:
+</code></pre><p id="2ab568fa-e39f-80d8-b662-e19d5da5c061" class="">и модель дописывает дальше.</p><h3 id="2ab568fa-e39f-8081-b858-edaf1f92dc5d" class="">6.1.2. Теория: чем Causal LM отличается от Seq2Seq</h3><p id="2ab568fa-e39f-809d-9243-d6b329e582ac" class="">Коротко:</p><ul id="2ab568fa-e39f-809e-9317-d1ecf027cf9a" class="bulleted-list"><li style="list-style-type:disc"><strong>Seq2Seq</strong>:<ul id="2ab568fa-e39f-800b-9ba4-e23d4cf4b19f" class="bulleted-list"><li style="list-style-type:circle">есть <em>encoder</em> (читает input),</li></ul><ul id="2ab568fa-e39f-80dd-95b2-e191ed005c33" class="bulleted-list"><li style="list-style-type:circle">есть <em>decoder</em> (генерит output, глядя на encoder).</li></ul><ul id="2ab568fa-e39f-8092-bb38-f5ded598a315" class="bulleted-list"><li style="list-style-type:circle">Input и output – отдельные последовательности.</li></ul></li></ul><ul id="2ab568fa-e39f-8075-87d9-fba8e3d4dbdf" class="bulleted-list"><li style="list-style-type:disc"><strong>Causal LM</strong>:<ul id="2ab568fa-e39f-806a-95cf-c61fb2ff6902" class="bulleted-list"><li style="list-style-type:circle">один стек (decoder),</li></ul><ul id="2ab568fa-e39f-800c-bd71-cbcdaa7e083b" class="bulleted-list"><li style="list-style-type:circle">учится предсказывать <strong>следующий токен</strong> по всему предыдущему,</li></ul><ul id="2ab568fa-e39f-8061-9ea1-ce4b4f76330c" class="bulleted-list"><li style="list-style-type:circle">input + output живут в <strong>одной строке</strong>:<ul id="2ab568fa-e39f-8089-b645-e1fcf80a7807" class="bulleted-list"><li style="list-style-type:square"><code>&quot;User: ...\nSupport: ...&quot;</code>,</li></ul><ul id="2ab568fa-e39f-80a7-a9b4-ed06b8a31c5a" class="bulleted-list"><li style="list-style-type:square">модель училась видеть, что после <code>&quot;Support:&quot;</code> идут ответы.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-807f-beea-d358655d32b2" class="">По API:</p><ul id="2ab568fa-e39f-8042-b081-d9de8b632744" class="bulleted-list"><li style="list-style-type:disc">Seq2Seq → <code>AutoModelForSeq2SeqLM</code>.</li></ul><ul id="2ab568fa-e39f-80f6-bfc5-e1550d9950ff" class="bulleted-list"><li style="list-style-type:disc">Causal LM → <code>AutoModelForCausalLM</code>.</li></ul><h3 id="2ab568fa-e39f-8026-af71-ea70a3979528" class="">6.1.3. Код: базовый пример с GPT2</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d6-bd46-e4d72f6d0535" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;gpt2&quot;  # для русского можно взять другую модель
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+prompt = &quot;User: The app started crashing after the last update.\nSupport:&quot;
+
+inputs = tokenizer(
+    prompt,
+    return_tensors=&quot;pt&quot;,
+)
+
+with torch.no_grad():
+    output_ids = model.generate(
+        **inputs,
+        max_new_tokens=60,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+        repetition_penalty=1.1,
+        eos_token_id=tokenizer.eos_token_id,
+    )
+
+generated = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+print(generated)
+</code></pre><p id="2ab568fa-e39f-8019-b50c-d627158737dc" class="">Объясняем:</p><ul id="2ab568fa-e39f-805d-a84c-dc0f36afaf99" class="bulleted-list"><li style="list-style-type:disc">Вход = уже часть диалога + “Support:”.</li></ul><ul id="2ab568fa-e39f-8045-b654-dc7ee1d1f35e" class="bulleted-list"><li style="list-style-type:disc">Модель <strong>просто дописывает</strong> строку.</li></ul><ul id="2ab568fa-e39f-801c-a26f-c12b095739f4" class="bulleted-list"><li style="list-style-type:disc"><code>do_sample=True</code>, <code>top_p</code>, <code>temperature</code>, <code>repetition_penalty</code> — контролируем разнообразие/заикания.</li></ul><h3 id="2ab568fa-e39f-8055-8add-e0b70785fe97" class="">6.1.4. Обрезка только хвоста (ответ саппорта)</h3><p id="2ab568fa-e39f-807b-8c6d-f03a6aeff4b9" class="">Часто хотим только то, что дописала модель после промпта:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808b-b920-d3e2753bb193" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">input_len = inputs[&quot;input_ids&quot;].shape[1]
+generated_ids = output_ids[0][input_len:]  # только новые токены
+
+reply = tokenizer.decode(generated_ids, skip_special_tokens=True)
+print(&quot;REPLY:&quot;, reply)
+</code></pre><h3 id="2ab568fa-e39f-80ca-b32f-cb2e1f11c54a" class="">6.1.5. Домашка 6.1</h3><ol type="1" id="2ab568fa-e39f-80fc-84b4-cbe1412d50a8" class="numbered-list" start="1"><li>Взять 5–10 текстов вида:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ff-a41d-d7a3d6c20946" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">User: &lt;описание проблемы&gt;
+Support:
+</code></pre></li></ol><ol type="1" id="2ab568fa-e39f-80e9-b9ef-c50aeed363a3" class="numbered-list" start="2"><li>Прогнать через <code>AutoModelForCausalLM</code>:<ul id="2ab568fa-e39f-8035-877f-d7f16a51de9e" class="bulleted-list"><li style="list-style-type:disc">с greedy (<code>do_sample=False</code>),</li></ul><ul id="2ab568fa-e39f-80eb-8879-f030ff4b7eba" class="bulleted-list"><li style="list-style-type:disc">с sampling (<code>do_sample=True</code>, разный <code>top_p</code> / <code>temperature</code>).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-800f-8966-e0f65d85a58f" class="numbered-list" start="3"><li>Сравнить:<ul id="2ab568fa-e39f-806c-8489-f1e3a54041ee" class="bulleted-list"><li style="list-style-type:disc">как меняется стиль/вариативность ответов,</li></ul><ul id="2ab568fa-e39f-8093-88c3-f5bdd30dc9bc" class="bulleted-list"><li style="list-style-type:disc">где модель даёт более “осмысленные” ответы.</li></ul></li></ol><hr id="2ab568fa-e39f-8062-bb6c-d6ca9414a666"/><h2 id="2ab568fa-e39f-8055-a790-f832024b699b" class="">Урок 6.2. Формат диалога и chat templates</h2><p id="2ab568fa-e39f-8025-83e1-ee5484304886" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-803a-b4a0-dd891999bf95" class="">Научить:</p><ul id="2ab568fa-e39f-80c1-a030-d237a6c074bd" class="bulleted-list"><li style="list-style-type:disc">аккуратно кодировать историю диалога в один промпт,</li></ul><ul id="2ab568fa-e39f-8017-a806-f5d0385d2958" class="bulleted-list"><li style="list-style-type:disc">работать с <code>apply_chat_template</code> для моделей, у которых есть чат-шаблоны,</li></ul><ul id="2ab568fa-e39f-8091-b780-d1359751c92b" class="bulleted-list"><li style="list-style-type:disc">собирать простой чат-луп.</li></ul><h3 id="2ab568fa-e39f-80b0-8f27-ed542aeab6c1" class="">6.2.1. Кейс</h3><blockquote id="2ab568fa-e39f-8025-bf29-e19883be9463" class="">У нас не один вопрос-ответ, а целый диалог:<ul id="2ab568fa-e39f-80f5-a770-ff8593c55a78" class="bulleted-list"><li style="list-style-type:disc">несколько реплик пользователя,</li></ul><ul id="2ab568fa-e39f-8082-ab95-d142c6814909" class="bulleted-list"><li style="list-style-type:disc">несколько ответов саппорта,</li></ul><ul id="2ab568fa-e39f-809b-ad8b-eb069a8a546b" class="bulleted-list"><li style="list-style-type:disc">нужно учитывать контекст: “как тебя зовут”, “о каком планe речь”, т.д.</li></ul></blockquote><h3 id="2ab568fa-e39f-80da-a33b-f9410c8cd271" class="">6.2.2. Ручной формат диалога</h3><p id="2ab568fa-e39f-8066-835f-faa1a7c42c1a" class="">Классический “старый” способ — просто текст с ролями:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8024-b04a-f00b8443b43c" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: You are a helpful support assistant for a mobile app.
+User: Hi, my app keeps crashing.
+Support: I&#x27;m sorry about that! Could you tell me your device model?
+User: iPhone 13 with iOS 17.1.
+Support:
+</code></pre><p id="2ab568fa-e39f-8081-8ddd-c7da7f4c5eef" class="">Можно собрать так:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8011-8076-f1129b502a2e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_prompt(messages):
+    # messages: список словарей {&quot;role&quot;: ..., &quot;content&quot;: ...}
+    lines = []
+    for msg in messages:
+        if msg[&quot;role&quot;] == &quot;system&quot;:
+            lines.append(f&quot;System: {msg[&#x27;content&#x27;]}&quot;)
+        elif msg[&quot;role&quot;] == &quot;user&quot;:
+            lines.append(f&quot;User: {msg[&#x27;content&#x27;]}&quot;)
+        else:
+            lines.append(f&quot;Support: {msg[&#x27;content&#x27;]}&quot;)
+    return &quot;\n&quot;.join(lines) + &quot;\nSupport:&quot;
+</code></pre><p id="2ab568fa-e39f-809f-8e07-f366a5360276" class="">Дальше — как в 6.1, просто этот prompt отдаём в Causal LM.</p><h3 id="2ab568fa-e39f-809e-9b70-eb271fb4dbae" class="">6.2.3. Chat templates (<code>tokenizer.apply_chat_template</code>)</h3><p id="2ab568fa-e39f-8054-807f-fb5a11599a69" class="">У многих современных моделей (LLaMA-подобные, Mistral-подобные) в <code>tokenizer</code> есть <strong>chat template</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8075-8140-ecf4a1f19a29" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer
+
+model_name = &quot;meta-llama/Llama-3-8B-Instruct&quot;  # просто пример
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+messages = [
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, my app crashes when I open the gallery.&quot;},
+]
+
+prompt = tokenizer.apply_chat_template(
+    messages,
+    tokenize=False,
+    add_generation_prompt=True,  # добавит «assistant:» в конце
+)
+print(prompt)
+</code></pre><p id="2ab568fa-e39f-80a9-a321-ca6688bac66e" class="">Потом всё как обычно:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d5-935a-fc01bcb22c3b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;)
+
+# model = AutoModelForCausalLM.from_pretrained(model_name)  # модель должна быть chat-инструкционной
+
+with torch.no_grad():
+    output_ids = model.generate(
+        **inputs,
+        max_new_tokens=128,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+        eos_token_id=tokenizer.eos_token_id,
+    )
+
+generated_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+print(generated_text)
+</code></pre><p id="2ab568fa-e39f-80f2-aa72-c1a8a3eafeb2" class="">Плюс:</p><ul id="2ab568fa-e39f-80ea-8a0b-cb0a9e4a8332" class="bulleted-list"><li style="list-style-type:disc">chat template <strong>кодирует</strong> служебные токены/формат (BOS, role-токены),</li></ul><ul id="2ab568fa-e39f-80bc-bd7a-f746d68f399f" class="bulleted-list"><li style="list-style-type:disc">нам не надо самому придумывать, как писать <code>&quot;&lt;|assistant|&gt;&quot;</code>.</li></ul><h3 id="2ab568fa-e39f-80b0-adf4-f970ad3e1535" class="">6.2.4. Простой чат-луп</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8091-84cb-d735d2ef8bd5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def chat_loop(model, tokenizer, system_prompt: str):
+    messages = [{&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: system_prompt}]
+
+    while True:
+        user_input = input(&quot;User: &quot;)
+        if not user_input or user_input.lower() in [&quot;exit&quot;, &quot;quit&quot;]:
+            break
+
+        messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input})
+
+        prompt = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;)
+
+        import torch
+        with torch.no_grad():
+            output_ids = model.generate(
+                **inputs,
+                max_new_tokens=128,
+                do_sample=True,
+                top_p=0.9,
+                temperature=0.7,
+                eos_token_id=tokenizer.eos_token_id,
+            )
+
+        full_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+        # *** На практике надо аккуратно извлекать только последнюю реплику ассистента. ***
+        # Для простоты:
+        reply = full_text.split(&quot;Support:&quot;)[-1].strip()
+        print(&quot;Support:&quot;, reply)
+
+        messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: reply})
+</code></pre><h3 id="2ab568fa-e39f-80ad-9c28-e5134cafe02b" class="">6.2.5. Домашка 6.2</h3><ol type="1" id="2ab568fa-e39f-8089-86bf-fa3518ed3ec3" class="numbered-list" start="1"><li>Реализовать функцию <code>build_prompt(messages)</code> для <strong>каузальной</strong> модели (без chat template), которая:<ul id="2ab568fa-e39f-80c8-9a98-ea5fb68ac2fa" class="bulleted-list"><li style="list-style-type:disc">умеет кодировать system/user/support роли,</li></ul><ul id="2ab568fa-e39f-808c-9909-ed84027be4c7" class="bulleted-list"><li style="list-style-type:disc">добавляет в конце <code>&quot;Support:&quot;</code> для генерации.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8086-b261-c0eff4c24c91" class="numbered-list" start="2"><li>Реализовать простой чат-луп:<ul id="2ab568fa-e39f-80ba-9b9b-da033692aab5" class="bulleted-list"><li style="list-style-type:disc">пользователь вводит вопрос,</li></ul><ul id="2ab568fa-e39f-807e-9d76-fe5807b1a3b3" class="bulleted-list"><li style="list-style-type:disc">бот отвечает,</li></ul><ul id="2ab568fa-e39f-80da-8230-dfcb9b24b457" class="bulleted-list"><li style="list-style-type:disc">контекст накапливается,</li></ul><ul id="2ab568fa-e39f-805a-8403-d28628982b90" class="bulleted-list"><li style="list-style-type:disc">можно выйти по <code>exit/quit</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80ee-aeeb-fdce20ebac46" class="numbered-list" start="3"><li>Попробовать:<ul id="2ab568fa-e39f-80dc-a647-d1108f732f06" class="bulleted-list"><li style="list-style-type:disc">ограничить диалог последними N репликами,</li></ul><ul id="2ab568fa-e39f-805a-b7fb-cd7ed7d23255" class="bulleted-list"><li style="list-style-type:disc">чтобы не превышать контекст окна.</li></ul></li></ol><hr id="2ab568fa-e39f-80c7-94a6-c5f5faea3191"/><h2 id="2ab568fa-e39f-804b-b481-f5f5e132a687" class="">Урок 6.3. SFT: дообучение Causal LM на своих диалогах</h2><p id="2ab568fa-e39f-8029-bc0f-cc794ea8c931" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8008-8b6b-d93c8385b497" class="">Показать <strong>supervised fine-tuning</strong>:</p><ul id="2ab568fa-e39f-8015-841e-dee4414df375" class="bulleted-list"><li style="list-style-type:disc">берём предобученную каузалку,</li></ul><ul id="2ab568fa-e39f-8038-9402-c23ad7fea20e" class="bulleted-list"><li style="list-style-type:disc">делаем датасет диалогов,</li></ul><ul id="2ab568fa-e39f-8031-8b45-e9ebb3d1f8cb" class="bulleted-list"><li style="list-style-type:disc">учим модель <strong>“продолжать” диалог в стиле саппорта</strong>.</li></ul><p id="2ab568fa-e39f-8070-891f-d7ebb12c94d3" class="">Без RLHF, чисто SFT.</p><h3 id="2ab568fa-e39f-8030-a7e1-f164999088ad" class="">6.3.1. Кейс</h3><blockquote id="2ab568fa-e39f-80dd-9aef-c911c0451cb0" class="">У нас есть файл support_dialogs.jsonl с диалогами:</blockquote><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c0-9d87-ed18c4df02cb" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{&quot;messages&quot;: [
+  {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant.&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, the app crashes when I open the gallery.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Sorry to hear that! Could you tell me your device and OS version?&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;iPhone 13 with iOS 17.1.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Thank you. We are aware of this issue on iOS 17.1 and working on a fix.&quot;}
+]}
+...
+</code></pre><p id="2ab568fa-e39f-805c-8ef4-ed1c653a29c6" class="">Наша цель: обучить модель “видеть” такой формат и генерировать ответы ассистента.</p><h3 id="2ab568fa-e39f-8051-a8c2-f7f207382f6b" class="">6.3.2. Два способа разметки</h3><ol type="1" id="2ab568fa-e39f-80a6-afc7-fac8291034dc" class="numbered-list" start="1"><li><strong>Простой текстовый формат</strong>:<ul id="2ab568fa-e39f-8067-87fe-dce0b86a8e8a" class="bulleted-list"><li style="list-style-type:disc">превратить все <code>messages</code> в одну строку с ролями,</li></ul><ul id="2ab568fa-e39f-8043-b325-f2d659e19d4e" class="bulleted-list"><li style="list-style-type:disc">учить модель предсказывать <strong>все токены</strong>, включая user/system (классическая LM).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80ee-9f24-d7b754da7fd9" class="numbered-list" start="2"><li><strong>Instruction SFT</strong>:<ul id="2ab568fa-e39f-80e1-bdfc-dded119a47ea" class="bulleted-list"><li style="list-style-type:disc">сделать input = до последней реплики пользователя,</li></ul><ul id="2ab568fa-e39f-8056-8a0f-d5c5f8cfa265" class="bulleted-list"><li style="list-style-type:disc">target = последняя реплика ассистента.</li></ul></li></ol><p id="2ab568fa-e39f-8058-8d58-fd3ed7aa1f8e" class="">Чтобы не слишком усложнять, в модуле 6 можно взять <strong>вариант 1</strong>: просто LM по диалогам.</p><h3 id="2ab568fa-e39f-80f9-bf03-cfa4da6653f3" class="">6.3.3. Загрузка jsonl в datasets</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8054-b733-d057b53cde9b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset
+
+data = load_dataset(&quot;json&quot;, data_files=&quot;support_dialogs.jsonl&quot;)
+dataset = data[&quot;train&quot;]
+print(dataset[0])
+</code></pre><p id="2ab568fa-e39f-80f8-9830-d820dc75989f" class="">Предположим, поле <code>messages</code> как выше.</p><p id="2ab568fa-e39f-8045-9796-d76fe5595cea" class="">Напишем функцию, которая превращает messages → один текст:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8036-b8f5-db1e83321154" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def messages_to_text(messages):
+    lines = []
+    for msg in messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        else:
+            lines.append(f&quot;Support: {content}&quot;)
+    return &quot;\n&quot;.join(lines)
+</code></pre><h3 id="2ab568fa-e39f-802e-b491-c7dda9218eed" class="">6.3.4. Токенизация для LM (labels = input_ids с сдвигом внутри модели)</h3><p id="2ab568fa-e39f-80d8-a80c-c8d84a932f43" class="">Будем использовать <code>DataCollatorForLanguageModeling</code> и обычный <code>Trainer</code>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a0-87fe-f5b6580b1372" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer
+
+model_name = &quot;gpt2&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token  # для удобства паддинга
+</code></pre><p id="2ab568fa-e39f-803e-ac9a-fac57116da39" class=""><code>preprocess_function</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e9-b69a-cfd71547dd30" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">max_length = 512
+
+def preprocess_function(batch):
+    texts = [messages_to_text(m) for m in batch[&quot;messages&quot;]]
+    tokenized = tokenizer(
+        texts,
+        truncation=True,
+        max_length=max_length,
+    )
+    return tokenized
+
+tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=dataset.column_names,
+)
+</code></pre><p id="2ab568fa-e39f-801f-8e41-f7497123602c" class=""><code>DataCollatorForLanguageModeling</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805d-af7e-c387889409b7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForLanguageModeling
+
+data_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer,
+    mlm=False,  # это causal LM, не MLM
+)
+</code></pre><h3 id="2ab568fa-e39f-802d-8b0e-ecd76fb79314" class="">6.3.5. Trainer для Causal LM</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802f-8933-ff956f5b0268" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import (
+    AutoModelForCausalLM,
+    TrainingArguments,
+    Trainer,
+)
+
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+split = tokenized_dataset.train_test_split(test_size=0.1, seed=42)
+train_ds = split[&quot;train&quot;]
+eval_ds = split[&quot;test&quot;]
+
+training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/support_causal_sft&quot;,
+    evaluation_strategy=&quot;steps&quot;,
+    eval_steps=500,
+    save_steps=500,
+    save_total_limit=2,
+    learning_rate=5e-5,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    num_train_epochs=3,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
+    logging_steps=50,
+    report_to=[&quot;none&quot;],
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_ds,
+    eval_dataset=eval_ds,
+    data_collator=data_collator,
+)
+
+trainer.train()
+
+trainer.save_model(&quot;models/support_causal_sft&quot;)
+tokenizer.save_pretrained(&quot;models/support_causal_sft&quot;)
+</code></pre><p id="2ab568fa-e39f-806b-89c7-dd5a43de57e3" class=""><strong>Что объясняем:</strong></p><ul id="2ab568fa-e39f-807f-b50c-ccf3312f99de" class="bulleted-list"><li style="list-style-type:disc"><code>DataCollatorForLanguageModeling</code> сам:<ul id="2ab568fa-e39f-8077-9909-fbf6f94b0ca1" class="bulleted-list"><li style="list-style-type:circle">паддит,</li></ul><ul id="2ab568fa-e39f-8019-82d8-c0eb3e4198c9" class="bulleted-list"><li style="list-style-type:circle">создаёт <code>labels</code> так, чтобы модель училась предсказывать следующий токен по предыдущим.</li></ul></li></ul><ul id="2ab568fa-e39f-80e3-a5d7-f9dc766d69cc" class="bulleted-list"><li style="list-style-type:disc">Лосс = средний cross-entropy по всем токенам.</li></ul><h3 id="2ab568fa-e39f-80a2-b59d-ff108c46a83c" class="">6.3.6. Домашка 6.3</h3><ol type="1" id="2ab568fa-e39f-80ba-8bfe-cd9eb8a8add6" class="numbered-list" start="1"><li>Подготовить <code>support_dialogs.jsonl</code> (минимум 20 диалогов).</li></ol><ol type="1" id="2ab568fa-e39f-8019-b475-f2f4d77b86d7" class="numbered-list" start="2"><li>Написать <code>messages_to_text(messages)</code> с выбранным форматом ролей.</li></ol><ol type="1" id="2ab568fa-e39f-804e-87e6-c3b0221c01ea" class="numbered-list" start="3"><li>Запустить SFT:<ul id="2ab568fa-e39f-80ef-876f-d950345dff4b" class="bulleted-list"><li style="list-style-type:disc">хотя бы 1–2 эпохи,</li></ul><ul id="2ab568fa-e39f-80cc-8e97-d6f986d30d6f" class="bulleted-list"><li style="list-style-type:disc">посмотреть, как падает loss.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8014-9fd9-ecfc1dc516ba" class="numbered-list" start="4"><li>После обучения:<ul id="2ab568fa-e39f-8054-8f38-f86c8d7f8ce6" class="bulleted-list"><li style="list-style-type:disc">взять один из диалогов без последнего ответа ассистента,</li></ul><ul id="2ab568fa-e39f-80eb-adb4-c40454cbb75d" class="bulleted-list"><li style="list-style-type:disc">сгенерировать ответ с новой моделью (сравнить со старой).</li></ul></li></ol><hr id="2ab568fa-e39f-802f-b49c-e3154b4a57df"/><h2 id="2ab568fa-e39f-80bb-a19c-e72e52a9f95e" class="">Урок 6.4. Мини-проект: чат-бот саппорта на своей Causal LM</h2><p id="2ab568fa-e39f-80da-b7ef-c8eb56f1e141" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-801b-bc2b-c77850b2246c" class="">Склеить всё:</p><ul id="2ab568fa-e39f-8013-b14d-c5a6a7fc7f05" class="bulleted-list"><li style="list-style-type:disc">загрузить обученную модель из 6.3,</li></ul><ul id="2ab568fa-e39f-8005-9a08-f89ca8b9a273" class="bulleted-list"><li style="list-style-type:disc">сделать chat-луп с контекстом,</li></ul><ul id="2ab568fa-e39f-8008-a732-f63ac3a2d5aa" class="bulleted-list"><li style="list-style-type:disc">добавить базовую “инфраструктуру” (обрезка истории, макс. длина, stop-критерии).</li></ul><h3 id="2ab568fa-e39f-800d-b966-df420809aaf2" class="">6.4.1. Структура проекта: <code>support_bot.py</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805d-9f13-c901b18b2de7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+MODEL_DIR = &quot;models/support_causal_sft&quot;  # обученная модель из урока 6.3
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
+model = AutoModelForCausalLM.from_pretrained(MODEL_DIR)
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+
+device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+model.to(device)
+
+
+def build_dialog_prompt(messages, max_turns=6):
+    # берем только последние max_turns пользователь+ассистент
+    # messages: [{&quot;role&quot;: &quot;...&quot;, &quot;content&quot;: &quot;...&quot;}]
+    if len(messages) &gt; max_turns + 1:  # + system
+        # сохраняем system + последние max_turns
+        system = [m for m in messages if m[&quot;role&quot;] == &quot;system&quot;][:1]
+        others = [m for m in messages if m[&quot;role&quot;] != &quot;system&quot;][-max_turns:]
+        use_messages = system + others
+    else:
+        use_messages = messages
+
+    lines = []
+    for msg in use_messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        else:
+            lines.append(f&quot;Support: {content}&quot;)
+    # добавляем приглашение к ответу
+    prompt = &quot;\n&quot;.join(lines) + &quot;\nSupport:&quot;
+    return prompt
+
+
+def generate_reply(messages, max_new_tokens=128):
+    prompt = build_dialog_prompt(messages)
+    inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;, truncation=True, max_length=512).to(device)
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+
+    # берём только новую часть
+    input_len = inputs[&quot;input_ids&quot;].shape[1]
+    new_tokens = output_ids[0][input_len:]
+    reply_text = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+    # иногда модель может продолжить &quot;User:&quot; — нужно обрезать по этому маркеру, если используете его
+    if &quot;User:&quot; in reply_text:
+        reply_text = reply_text.split(&quot;User:&quot;)[0].strip()
+
+    return reply_text
+
+
+def chat():
+    messages = [
+        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a polite and concise support assistant for a mobile app.&quot;}
+    ]
+
+    while True:
+        user_input = input(&quot;User: &quot;)
+        if not user_input or user_input.lower() in {&quot;exit&quot;, &quot;quit&quot;}:
+            break
+
+        messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input})
+        reply = generate_reply(messages)
+        print(&quot;Support:&quot;, reply)
+        messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: reply})
+
+
+if __name__ == &quot;__main__&quot;:
+    chat()
+</code></pre><h3 id="2ab568fa-e39f-800d-868f-ecc6e525682f" class="">6.4.2. Важные моменты, которые обсуждаем</h3><ul id="2ab568fa-e39f-80de-a472-d12f5ea6c239" class="bulleted-list"><li style="list-style-type:disc"><strong>Контекстное окно</strong>:<ul id="2ab568fa-e39f-80ed-ad07-fd9ae5ae013d" class="bulleted-list"><li style="list-style-type:circle">мы режем историю до последних N реплик,</li></ul><ul id="2ab568fa-e39f-8089-884d-fbd914979eec" class="bulleted-list"><li style="list-style-type:circle">иначе sequence становится слишком длинным, и модель либо обрежет, либо будет дорогой.</li></ul></li></ul><ul id="2ab568fa-e39f-800f-8060-d7c783044b57" class="bulleted-list"><li style="list-style-type:disc"><strong>Stop-критерии</strong>:<ul id="2ab568fa-e39f-807f-ab0d-d07e037e0392" class="bulleted-list"><li style="list-style-type:circle">примитивно: <code>eos_token_id</code>,</li></ul><ul id="2ab568fa-e39f-8013-a9b6-d520b37adb43" class="bulleted-list"><li style="list-style-type:circle">можно добавить кастомный <code>StoppingCriteria</code> (но это уже продвинутый уровень; можно просто упомянуть).</li></ul></li></ul><ul id="2ab568fa-e39f-80b4-80be-fee6f7addba0" class="bulleted-list"><li style="list-style-type:disc"><strong>Безопасность и галлюцинации</strong>:<ul id="2ab568fa-e39f-80e4-9020-d998253cf1dd" class="bulleted-list"><li style="list-style-type:circle">модель <strong>не знает</strong> правды, она просто продолжает текст,</li></ul><ul id="2ab568fa-e39f-8060-8112-cb2b891e4f91" class="bulleted-list"><li style="list-style-type:circle">в реальном саппорте всё равно должен быть человек, который проверяет ответы;</li></ul><ul id="2ab568fa-e39f-80ac-bf89-f14f365565b5" class="bulleted-list"><li style="list-style-type:circle">здесь мы это не автоматизируем, но важно это проговорить.</li></ul></li></ul><h3 id="2ab568fa-e39f-803d-8673-cf80b17941b9" class="">6.4.3. Домашка 6.4 (итоговая по модулю)</h3><ol type="1" id="2ab568fa-e39f-8003-a97b-e644051667b6" class="numbered-list" start="1"><li>Подключить обученную модель SFT и чат-луп у себя.</li></ol><ol type="1" id="2ab568fa-e39f-805b-be5e-c5047ad4ac7d" class="numbered-list" start="2"><li>Придумать 5–10 типовых сценариев для бота:<ul id="2ab568fa-e39f-8071-9bfd-c95cd808947f" class="bulleted-list"><li style="list-style-type:disc">проблемы с оплатой,</li></ul><ul id="2ab568fa-e39f-8085-a820-d24010140e3f" class="bulleted-list"><li style="list-style-type:disc">проблемы с логином,</li></ul><ul id="2ab568fa-e39f-80df-8124-ec06365defcc" class="bulleted-list"><li style="list-style-type:disc">баги после обновления.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f9-8154-f8132255f7fa" class="numbered-list" start="3"><li>Прогнать их через бота:<ul id="2ab568fa-e39f-8078-ba00-c39d31872a3c" class="bulleted-list"><li style="list-style-type:disc">посмотреть, насколько ответы похожи на стиль датасета,</li></ul><ul id="2ab568fa-e39f-8027-af5a-d0191eb86de2" class="bulleted-list"><li style="list-style-type:disc">записать пару диалогов “до/после” обучения (старой vs новой моделью).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8077-9f33-c219f13c65fc" class="numbered-list" start="4"><li>(Опционально): добавить:<ul id="2ab568fa-e39f-8005-a32e-f2a449977aa5" class="bulleted-list"><li style="list-style-type:disc">ограничение по длине ответа (обрезка после <code>\n</code>),</li></ul><ul id="2ab568fa-e39f-80c3-be5d-ec61d72aadf9" class="bulleted-list"><li style="list-style-type:disc">простой fallback: если ответ бессмысленный/слишком короткий → вывести шаблон “передать оператору”.</li></ul></li></ol><hr id="2ab568fa-e39f-8019-9e5d-f12f005b557c"/><h2 id="2ab568fa-e39f-80f1-a61e-d5f1902bf3a0" class="">Что ученик умеет после модуля 6</h2><p id="2ab568fa-e39f-8024-9b40-c89240a7d3a0" class="">На этом этапе человек:</p><ul id="2ab568fa-e39f-80a1-be96-d765a7e06d20" class="bulleted-list"><li style="list-style-type:disc">понимает разницу между Seq2Seq и Causal LM,</li></ul><ul id="2ab568fa-e39f-8050-a0ca-d0a20ed05b8f" class="bulleted-list"><li style="list-style-type:disc">умеет использовать <code>AutoModelForCausalLM</code> + <code>generate</code> для дописывания текста,</li></ul><ul id="2ab568fa-e39f-802b-9172-e4b6688b6936" class="bulleted-list"><li style="list-style-type:disc">знает, как кодировать диалог в один промпт (ручной формат или chat template),</li></ul><ul id="2ab568fa-e39f-8059-942b-e83685d3cb3c" class="bulleted-list"><li style="list-style-type:disc">умеет делать SFT Causal LM на своих диалогах через <code>Trainer + DataCollatorForLanguageModeling</code>,</li></ul><ul id="2ab568fa-e39f-8056-80e1-db06234a65ce" class="bulleted-list"><li style="list-style-type:disc">собрал <strong>микро-чат-бота саппорта</strong> на своей дообученной модели.</li></ul><p id="2ab568fa-e39f-80bc-b750-fe13a94f293b" class="">Дальше логично:</p><ul id="2ab568fa-e39f-80fb-8057-f7d4afd2e161" class="bulleted-list"><li style="list-style-type:disc">Модуль 7 — оптимизация и ускорение: <code>accelerate</code>, mixed precision, device_map, quantization.</li></ul><ul id="2ab568fa-e39f-8011-bd41-e8bade638377" class="bulleted-list"><li style="list-style-type:disc">Модуль 8 — PEFT/LoRA для дешёвого дообучения больших LLM.</li></ul><p id="2ab568fa-e39f-8054-b70a-d21ee469ee8c" class="">Если хочешь, дальше могу расписать модуль 7 (оптимизация/ускорение и работа с большими моделями) в том же стиле — с конкретным кейсом и кодом.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

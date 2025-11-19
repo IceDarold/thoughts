@@ -1,0 +1,990 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 3.3. DataCollator и формирование батчей</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80ce-b1e8-c4e94383b588" class="page sans"><header><h1 class="page-title">Урок 3.3. DataCollator и формирование батчей</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-809b-9cc5-c82c2fac8351" class="">Поехали дальше, собираем батчи как взрослые 🧱</p><p id="2ab568fa-e39f-80b2-96f7-eb4429fec682" class="">Сейчас сделаем из урока 3.3 полноценный блок: после него у тебя будет:</p><ul id="2ab568fa-e39f-8059-84a3-f5c788620cf2" class="bulleted-list"><li style="list-style-type:disc"><code><strong>DataCollatorWithPadding</strong></code>, который сам паддит последовательности в батче,</li></ul><ul id="2ab568fa-e39f-80a3-89dc-d31e4a2db715" class="bulleted-list"><li style="list-style-type:disc"><code><strong>DataLoader</strong></code>, возвращающий аккуратные тензоры,</li></ul><ul id="2ab568fa-e39f-8022-a4ce-f283e9054018" class="bulleted-list"><li style="list-style-type:disc">понимание, что именно видит модель на входе.</li></ul><hr id="2ab568fa-e39f-804c-a66b-ca4db6dbc8af"/><h2 id="2ab568fa-e39f-808c-8451-d71bc08f7f63" class="">0. Что у нас уже есть</h2><p id="2ab568fa-e39f-80ca-a448-dab2c682d3ec" class="">С предыдущего урока (3.2) у нас:</p><ul id="2ab568fa-e39f-8056-84cc-d96f8228ee2d" class="bulleted-list"><li style="list-style-type:disc"><code>DatasetDict</code> с токенизированными данными:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a2-814a-f6fcdcdfb316" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">DatasetDict({
+  train: Dataset({
+      features: [&#x27;input_ids&#x27;, &#x27;attention_mask&#x27;, &#x27;labels&#x27;],
+      num_rows: N_train
+  })
+  validation: Dataset({
+      features: [&#x27;input_ids&#x27;, &#x27;attention_mask&#x27;, &#x27;labels&#x27;],
+      num_rows: N_val
+  })
+})
+</code></pre><p id="2ab568fa-e39f-808c-974f-d1e984e73ac9" class="">Каждый элемент <code>tokenized_dataset[&quot;train&quot;][i]</code> — это словарь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bf-9ab1-c5240b6497fe" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;input_ids&quot;:      [101, 1996, 3671, 16354, ...],
+  &quot;attention_mask&quot;: [1,   1,   1,    1,    ...],
+  &quot;labels&quot;:         1
+}
+</code></pre><p id="2ab568fa-e39f-8026-b1f4-d71cea01183a" class=""><strong>Важно:</strong> мы НЕ делали <code>padding=&quot;max_length&quot;</code> в токенизаторе — длина <code>input_ids</code> у разных примеров разная.</p><p id="2ab568fa-e39f-8077-8f49-d7f4140a3b93" class="">Теперь нужно собрать <strong>батчи</strong>, чтобы:</p><ul id="2ab568fa-e39f-8085-855b-c3d3d716b7f8" class="bulleted-list"><li style="list-style-type:disc">все последовательности внутри батча были одинаковой длины (через паддинг),</li></ul><ul id="2ab568fa-e39f-8007-b67f-c0c9a292e8d9" class="bulleted-list"><li style="list-style-type:disc">у нас получились <strong>PyTorch-тензоры</strong>, а не списки,</li></ul><ul id="2ab568fa-e39f-8087-be57-d25ad91f066c" class="bulleted-list"><li style="list-style-type:disc">модель спокойно ела эти батчи.</li></ul><hr id="2ab568fa-e39f-802d-9f46-efb3df68a01c"/><h2 id="2ab568fa-e39f-80bf-98d8-e9198f40fab1" class="">1. Теория: зачем вообще нужен collator</h2><h3 id="2ab568fa-e39f-80f4-aa4e-d16a5072c0ac" class="">1.1. Проблема разных длин</h3><p id="2ab568fa-e39f-80c2-a481-c0484e95f450" class="">Для модели формат входа обычно такой:</p><ul id="2ab568fa-e39f-8024-b42a-f3503b374d9c" class="bulleted-list"><li style="list-style-type:disc"><code>input_ids</code>: тензор формы <code>[batch_size, seq_len]</code></li></ul><ul id="2ab568fa-e39f-808f-a09a-fe2eeff9a560" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code>: тензор <code>[batch_size, seq_len]</code></li></ul><ul id="2ab568fa-e39f-80a5-92d1-eb477ccaedf7" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code>: для классификации — <code>[batch_size]</code></li></ul><p id="2ab568fa-e39f-8056-8825-d363f8ef4cff" class="">Но у нас пока <strong>списки разной длины</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809a-b8de-cd4ea63e22a3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">len(example1[&quot;input_ids&quot;]) == 15
+len(example2[&quot;input_ids&quot;]) == 30
+len(example3[&quot;input_ids&quot;]) == 22
+...
+</code></pre><p id="2ab568fa-e39f-80d9-8d50-d2ccee200abf" class="">Склеить их в один тензор “простым” <code>torch.tensor([...])</code> нельзя — PyTorch потребует равные длины.</p><h3 id="2ab568fa-e39f-8088-9310-f1a1eecb45a3" class="">1.2. Кто решает проблему</h3><p id="2ab568fa-e39f-80a3-98de-f4f3232cc251" class="">Есть два основных варианта:</p><ol type="1" id="2ab568fa-e39f-8018-a976-d17909bf28a5" class="numbered-list" start="1"><li><strong>Паддить на этапе препроцессинга</strong> (в <code>map</code>):<ul id="2ab568fa-e39f-80da-979d-c08510b1625d" class="bulleted-list"><li style="list-style-type:disc">ставим <code>padding=&quot;max_length&quot;</code> и <code>max_length=...</code>,</li></ul><ul id="2ab568fa-e39f-808b-9a26-c113c52f5e63" class="bulleted-list"><li style="list-style-type:disc">все последовательности у всех примеров одинаковые,</li></ul><ul id="2ab568fa-e39f-801a-8499-f3e8eb996609" class="bulleted-list"><li style="list-style-type:disc">но: много &quot;пустых&quot; токенов, если тексты сильно разной длины → неэффективно.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c3-9410-fe3b938c9e46" class="numbered-list" start="2"><li><strong>Паддить динамически на этапе формирования батча</strong>:<ul id="2ab568fa-e39f-80c7-b806-edf1242adc90" class="bulleted-list"><li style="list-style-type:disc">хранить сырой токенизированный текст без паддинга,</li></ul><ul id="2ab568fa-e39f-80c1-bb51-d53bcfc7bbbb" class="bulleted-list"><li style="list-style-type:disc">при сборке батча выравнивать длину по <strong>максимуму внутри батча</strong>,</li></ul><ul id="2ab568fa-e39f-8032-b7e2-fd0481ba69ea" class="bulleted-list"><li style="list-style-type:disc">делает это <strong>DataCollator</strong>.</li></ul></li></ol><p id="2ab568fa-e39f-80c2-b52f-f188e4562fd8" class="">Мы идём по пути №2 с <code>DataCollatorWithPadding</code> — это стандартный вариант от HF для классификации/заголовочных задач.</p><hr id="2ab568fa-e39f-80ff-a070-e3de7466cc9b"/><h2 id="2ab568fa-e39f-801f-abce-cf68ba7eb09c" class="">2. Что такое DataCollatorWithPadding</h2><p id="2ab568fa-e39f-80f4-bd5d-e17a0c5082cc" class=""><strong>Data collator</strong> — это просто <strong>функция </strong><code><strong>collate_fn</strong></code><strong> для DataLoader’а</strong>, которая:</p><ol type="1" id="2ab568fa-e39f-80aa-b5b8-dc69f44b4741" class="numbered-list" start="1"><li>принимает список примеров:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e4-81ab-edea2de9972b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[
+  {&quot;input_ids&quot;: [...], &quot;attention_mask&quot;: [...], &quot;labels&quot;: 1},
+  {&quot;input_ids&quot;: [...], &quot;attention_mask&quot;: [...], &quot;labels&quot;: 0},
+  ...
+]
+</code></pre></li></ol><ol type="1" id="2ab568fa-e39f-807e-a278-dc2918ff0f34" class="numbered-list" start="2"><li>использует токенизатор, чтобы:<ul id="2ab568fa-e39f-8029-b465-d61d015eb3de" class="bulleted-list"><li style="list-style-type:disc">найти максимальную длину последовательности в батче,</li></ul><ul id="2ab568fa-e39f-80ea-9e6a-db757649db7a" class="bulleted-list"><li style="list-style-type:disc">допаддить <code>input_ids</code> и <code>attention_mask</code> до этой длины,</li></ul><ul id="2ab568fa-e39f-80bd-896c-f400cf7adb7f" class="bulleted-list"><li style="list-style-type:disc">превратить всё в PyTorch-тензоры,</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f0-8564-d51fdda85178" class="numbered-list" start="3"><li>возвращает словарь:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8098-a893-fe64659b54fc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;input_ids&quot;:      tensor([batch_size, max_seq_len_in_batch]),
+  &quot;attention_mask&quot;: tensor([batch_size, max_seq_len_in_batch]),
+  &quot;labels&quot;:         tensor([batch_size]),
+}
+</code></pre></li></ol><p id="2ab568fa-e39f-8060-b106-e3f423aecdf5" class="">В HF это реализовано классом <code>DataCollatorWithPadding</code>.</p><hr id="2ab568fa-e39f-806b-9fa2-dc1a5e19dd1e"/><h2 id="2ab568fa-e39f-803f-8b80-efa9d98e39ce" class="">3. Создаём DataCollator и смотрим, что он делает</h2><h3 id="2ab568fa-e39f-8096-98a8-fd03267a35ab" class="">3.1. Подключаем всё необходимое</h3><p id="2ab568fa-e39f-8027-a6e3-ce270555e0e0" class="">Предположим, у нас уже есть:</p><ul id="2ab568fa-e39f-80bb-9f83-cf532a920662" class="bulleted-list"><li style="list-style-type:disc"><code>tokenized_dataset</code> (из урока 3.2),</li></ul><ul id="2ab568fa-e39f-8011-9847-ffe755f7b1be" class="bulleted-list"><li style="list-style-type:disc"><code>tokenizer</code>.</li></ul><p id="2ab568fa-e39f-8055-bab4-d01b0eb5d875" class="">Повторим минимально контекст:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8081-beba-e2b31bb55ecc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset, DatasetDict
+from transformers import AutoTokenizer
+
+# Загружаем и сплитим, как в 3.2
+raw = load_dataset(&quot;csv&quot;, data_files=&quot;tickets.csv&quot;)[&quot;train&quot;]
+split = raw.train_test_split(test_size=0.1, seed=42)
+dataset = DatasetDict(
+    {
+        &quot;train&quot;: split[&quot;train&quot;],
+        &quot;validation&quot;: split[&quot;test&quot;],
+    }
+)
+
+# Строим label2id/id2label
+unique_labels = sorted(set(dataset[&quot;train&quot;][&quot;label&quot;]))
+label_list = unique_labels
+label2id = {label: i for i, label in enumerate(label_list)}
+id2label = {i: label for label, i in label2id.items()}
+
+# Токенизатор
+model_name = &quot;distilbert-base-uncased&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+def preprocess_function(batch):
+    texts = batch[&quot;text&quot;]
+    tokenized = tokenizer(
+        texts,
+        truncation=True,
+        max_length=128,
+    )
+    tokenized[&quot;labels&quot;] = [label2id[l] for l in batch[&quot;label&quot;]]
+    return tokenized
+
+tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=[&quot;text&quot;, &quot;label&quot;],
+)
+</code></pre><p id="2ab568fa-e39f-805b-9dde-ca3fefb2e679" class="">Теперь самое интересное.</p><h3 id="2ab568fa-e39f-80cd-ad15-e222057f51c9" class="">3.2. Создаём DataCollatorWithPadding</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807d-b176-c67cb00626a8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorWithPadding
+
+data_collator = DataCollatorWithPadding(
+    tokenizer=tokenizer,
+    return_tensors=&quot;pt&quot;,  # сразу PyTorch тензоры
+)
+</code></pre><ul id="2ab568fa-e39f-8024-956c-c9f873335568" class="bulleted-list"><li style="list-style-type:disc"><code>tokenizer</code> — нужен, чтобы правильно паддить (<code>pad_token_id</code>, <code>padding_side</code>, и т.п.).</li></ul><ul id="2ab568fa-e39f-8051-a89a-ee8cdaa48c40" class="bulleted-list"><li style="list-style-type:disc"><code>return_tensors=&quot;pt&quot;</code> — указываем, что работаем с PyTorch (а не tf/jax).</li></ul><h3 id="2ab568fa-e39f-80ed-8ef2-ebee93f1d7d8" class="">3.3. Кормим collator несколько примеров вручную</h3><p id="2ab568fa-e39f-801f-a96d-c5f41b9a9733" class="">Возьмём пару элементов из train:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8029-b10f-e4dcef71a851" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">samples = [tokenized_dataset[&quot;train&quot;][i] for i in range(3)]
+
+print(&quot;=== Raw samples ===&quot;)
+for s in samples:
+    print(
+        &quot;len(input_ids) =&quot;, len(s[&quot;input_ids&quot;]),
+        &quot;| label =&quot;, s[&quot;labels&quot;]
+    )
+</code></pre><p id="2ab568fa-e39f-8008-9974-d3fb979944ff" class="">Пример вывода:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805e-9836-e629f394772f" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">len(input_ids) = 12 | label = 1
+len(input_ids) = 25 | label = 0
+len(input_ids) = 18 | label = 2
+</code></pre><p id="2ab568fa-e39f-807c-b401-e04a61022f16" class="">Теперь применим collator:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d2-af52-d7be33b737b4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">batch = data_collator(samples)
+
+print(&quot;\n=== Batched (after collator) ===&quot;)
+for k, v in batch.items():
+    print(k, v.shape, v.dtype)
+</code></pre><p id="2ab568fa-e39f-8021-a0b9-f7332a08d387" class="">Ожидаемый вывод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80fe-a34b-f0d6a2ddf9a0" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">input_ids torch.Size([3, 25]) torch.int64
+attention_mask torch.Size([3, 25]) torch.int64
+labels torch.Size([3]) torch.int64
+</code></pre><p id="2ab568fa-e39f-8097-9b24-e911e4e63290" class="">Объяснение:</p><ul id="2ab568fa-e39f-807f-acb7-eb92fd2e317c" class="bulleted-list"><li style="list-style-type:disc"><code>25</code> — это максимальная длина <code>input_ids</code> среди этих трёх примеров;</li></ul><ul id="2ab568fa-e39f-80bc-8c71-cfb54c7ec56d" class="bulleted-list"><li style="list-style-type:disc">все более короткие были допаддены токеном <code>pad_token_id</code>,</li></ul><ul id="2ab568fa-e39f-8017-92bc-dd3f1ba56ee3" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code> = 1 для реальных токенов, 0 для паддинга,</li></ul><ul id="2ab568fa-e39f-8015-8298-c4c0d757b171" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code> спокойно сложились в вектор <code>[3]</code>, т.к. это просто числа (не последовательности).</li></ul><hr id="2ab568fa-e39f-8031-9904-caf78c2f6cd7"/><h2 id="2ab568fa-e39f-80c3-bb33-c8f22cc34164" class="">4. DataLoader: собираем батчи автоматически</h2><h3 id="2ab568fa-e39f-8079-9030-ea01db8cb0ce" class="">4.1. Зачем DataLoader</h3><p id="2ab568fa-e39f-80d3-8b21-caf990594d3d" class="">Для обучения/валидации нам нужен источник батчей:</p><ul id="2ab568fa-e39f-8049-858b-f60af77a2cdb" class="bulleted-list"><li style="list-style-type:disc">итерироваться по него в цикле обучения,</li></ul><ul id="2ab568fa-e39f-80d8-a1a3-ca7a1d593bd3" class="bulleted-list"><li style="list-style-type:disc">или передать его в Trainer (там батчи внутри).</li></ul><p id="2ab568fa-e39f-80a2-aedc-f5291532987f" class=""><code>torch.utils.data.DataLoader</code> умеет:</p><ul id="2ab568fa-e39f-80b1-b1e5-e889cc6e430a" class="bulleted-list"><li style="list-style-type:disc">итерироваться по <code>Dataset</code>,</li></ul><ul id="2ab568fa-e39f-8066-b867-e37a35f6f625" class="bulleted-list"><li style="list-style-type:disc">батчить элементы,</li></ul><ul id="2ab568fa-e39f-801e-9ee6-e134a8cf1a6b" class="bulleted-list"><li style="list-style-type:disc">вызывать <code>collate_fn</code> для каждого батча,</li></ul><ul id="2ab568fa-e39f-80b2-8ee3-fbe51a17cada" class="bulleted-list"><li style="list-style-type:disc">перетасовывать (<code>shuffle=True</code>).</li></ul><h3 id="2ab568fa-e39f-809b-9e76-d910bf5fb34d" class="">4.2. Подключаем DataLoader</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c0-a751-d560fadb8f6f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from torch.utils.data import DataLoader
+
+train_dataloader = DataLoader(
+    tokenized_dataset[&quot;train&quot;],
+    batch_size=8,
+    shuffle=True,
+    collate_fn=data_collator,  # вот тут collator и используется
+)
+
+val_dataloader = DataLoader(
+    tokenized_dataset[&quot;validation&quot;],
+    batch_size=8,
+    shuffle=False,
+    collate_fn=data_collator,
+)
+</code></pre><p id="2ab568fa-e39f-80d9-9dbe-ce4f2857692a" class="">Теперь первый батч выглядит так:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8098-b30d-c593f9a7dcda" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">batch = next(iter(train_dataloader))
+
+print(&quot;=== One batch from train_dataloader ===&quot;)
+for k, v in batch.items():
+    print(k, v.shape, v.dtype)
+</code></pre><p id="2ab568fa-e39f-80bf-a77a-df22363869ac" class="">Пример вывода:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8097-90a3-eb9addbcc28a" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">input_ids torch.Size([8, 47]) torch.int64
+attention_mask torch.Size([8, 47]) torch.int64
+labels torch.Size([8]) torch.int64
+</code></pre><p id="2ab568fa-e39f-806b-838e-cef6c7108354" class="">То есть:</p><ul id="2ab568fa-e39f-80e1-a0ee-ea137e66e56f" class="bulleted-list"><li style="list-style-type:disc">партия из 8 примеров,</li></ul><ul id="2ab568fa-e39f-80cf-83ce-f88783930d1f" class="bulleted-list"><li style="list-style-type:disc">максимальная длина последовательности в этом батче — 47,</li></ul><ul id="2ab568fa-e39f-8035-8f94-c02ca59b80aa" class="bulleted-list"><li style="list-style-type:disc"><code>DataCollatorWithPadding</code> сам всё паддит, нам не нужно делать это вручную.</li></ul><hr id="2ab568fa-e39f-8078-bc5c-c920b395f7ff"/><h2 id="2ab568fa-e39f-80d3-b0ba-e3eeec2955d4" class="">5. Мини-проверка: скармливаем батч модели</h2><p id="2ab568fa-e39f-8044-909a-e384a41c2f91" class="">Это уже чуть залезает в модуль 4, но полезно показать, что <strong>формат входа верный</strong>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8060-8a0f-d0ee85f2e4a0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoModelForSequenceClassification
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    model_name,
+    num_labels=len(label2id),
+    id2label=id2label,
+    label2id=label2id,
+)
+
+batch = next(iter(train_dataloader))
+
+with torch.no_grad():
+    outputs = model(
+        input_ids=batch[&quot;input_ids&quot;],
+        attention_mask=batch[&quot;attention_mask&quot;],
+        labels=batch[&quot;labels&quot;],
+    )
+
+print(&quot;Loss:&quot;, outputs.loss.item())
+print(&quot;Logits shape:&quot;, outputs.logits.shape)  # [batch_size, num_labels]
+</code></pre><p id="2ab568fa-e39f-805f-bf9d-da56ce721b80" class="">Смысл:</p><ul id="2ab568fa-e39f-80d1-98c4-c8df96b90fca" class="bulleted-list"><li style="list-style-type:disc">Если это успешно отработало — значит:<ul id="2ab568fa-e39f-80e0-af48-cacc9d8b40e7" class="bulleted-list"><li style="list-style-type:circle">батч корректный,</li></ul><ul id="2ab568fa-e39f-8011-a663-c3d7b72f190c" class="bulleted-list"><li style="list-style-type:circle">размерности совпадают,</li></ul><ul id="2ab568fa-e39f-8065-ad9d-f56062a9fa40" class="bulleted-list"><li style="list-style-type:circle"><code>labels</code> ожидаемой формы.</li></ul></li></ul><p id="2ab568fa-e39f-8040-a1fb-fbc193507f11" class="">В реальной жизни в модуле 4 сюда придёт <code>Trainer</code>, но сейчас важно показать, что <strong>data-пайплайн уже полностью готов</strong>.</p><hr id="2ab568fa-e39f-8003-901c-c3d8bb1d5927"/><h2 id="2ab568fa-e39f-8001-bea1-d537f82d45a6" class="">6. Другие collator’ы (быстро, чтобы не утонуть)</h2><p id="2ab568fa-e39f-8089-aa0c-d45231cee340" class="">Это скорее “тизер” на будущее.</p><h3 id="2ab568fa-e39f-8025-9861-c45c7bd9e4a8" class="">6.1. DataCollatorForLanguageModeling</h3><p id="2ab568fa-e39f-8074-93d0-de847bf46b71" class="">Для задач MLM (masked language modeling), когда:</p><ul id="2ab568fa-e39f-8032-87aa-fac3bb1c16f2" class="bulleted-list"><li style="list-style-type:disc">вход = текст,</li></ul><ul id="2ab568fa-e39f-8019-8408-eeb7d78c5777" class="bulleted-list"><li style="list-style-type:disc">выход = тот же текст, но часть токенов замаскирована,</li></ul><ul id="2ab568fa-e39f-8098-84a4-f1e8995f6260" class="bulleted-list"><li style="list-style-type:disc">collator сам маскирует слова и создаёт таргеты для LM.</li></ul><p id="2ab568fa-e39f-805c-b119-c450e450cf7e" class="">Пример (пока можно просто показать код без глубокого разбора):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801f-a821-c36d4310507f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForLanguageModeling
+
+mlm_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer,
+    mlm=True,
+    mlm_probability=0.15,
+)
+</code></pre><h3 id="2ab568fa-e39f-800c-934e-ffd6795269b4" class="">6.2. DataCollatorForSeq2Seq</h3><p id="2ab568fa-e39f-80a7-aac4-da5fe646ea26" class="">Для seq2seq задач (перевод, суммаризация и т.п):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cc-9d98-f965c0495a7b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForSeq2Seq
+
+from transformers import AutoModelForSeq2SeqLM
+
+seq2seq_model = AutoModelForSeq2SeqLM.from_pretrained(&quot;t5-small&quot;)
+seq2seq_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    model=seq2seq_model,
+)
+</code></pre><p id="2ab568fa-e39f-8031-b102-e26a7735dd41" class="">Сейчас нам достаточно знать, что <strong>для разных типов задач есть “умные” collator’ы</strong>.</p><p id="2ab568fa-e39f-805e-b20e-cd4e7e5d51b5" class="">Но для нашего кейса классификации тикетов <code>DataCollatorWithPadding</code> полностью хватает.</p><hr id="2ab568fa-e39f-806d-8d25-e3813425f404"/><h2 id="2ab568fa-e39f-809c-bbf5-d158ac579e74" class="">7. Итоговый скрипт урока 3.3</h2><p id="2ab568fa-e39f-8093-8c8c-ea9c2565816e" class="">Соберём всё в файл <code>lesson_3_3_collator_and_dataloader.py</code>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8000-88f7-ded28bb7f304" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import Counter
+
+from datasets import load_dataset, DatasetDict
+from transformers import AutoTokenizer, DataCollatorWithPadding, AutoModelForSequenceClassification
+from torch.utils.data import DataLoader
+import torch
+
+
+def main():
+    # === 1. Загружаем и сплитим CSV ===
+    raw = load_dataset(&quot;csv&quot;, data_files=&quot;tickets.csv&quot;)[&quot;train&quot;]
+
+    split = raw.train_test_split(test_size=0.1, seed=42)
+    dataset = DatasetDict(
+        {
+            &quot;train&quot;: split[&quot;train&quot;],
+            &quot;validation&quot;: split[&quot;test&quot;],
+        }
+    )
+
+    print(&quot;=== Raw DatasetDict ===&quot;)
+    print(dataset)
+
+    # === 2. Строим label_list, label2id, id2label ===
+    unique_labels = sorted(set(dataset[&quot;train&quot;][&quot;label&quot;]))
+    label_list = unique_labels
+    label2id = {label: i for i, label in enumerate(label_list)}
+    id2label = {i: label for label, i in label2id.items()}
+
+    print(&quot;\n=== Labels ===&quot;)
+    print(&quot;label_list:&quot;, label_list)
+    print(&quot;label2id:&quot;, label2id)
+
+    print(&quot;\n=== Label distribution (train) ===&quot;)
+    print(Counter(dataset[&quot;train&quot;][&quot;label&quot;]))
+
+    # === 3. Токенизатор ===
+    model_name = &quot;distilbert-base-uncased&quot;
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    # === 4. Функция препроцессинга ===
+    def preprocess_function(batch):
+        texts = batch[&quot;text&quot;]
+
+        tokenized = tokenizer(
+            texts,
+            truncation=True,
+            max_length=128,
+            # padding=False, паддинг сделаем collator&#x27;ом
+        )
+
+        labels = [label2id[l] for l in batch[&quot;label&quot;]]
+        tokenized[&quot;labels&quot;] = labels
+
+        return tokenized
+
+    # === 5. Токенизируем dataset через map ===
+    tokenized_dataset = dataset.map(
+        preprocess_function,
+        batched=True,
+        remove_columns=[&quot;text&quot;, &quot;label&quot;],
+    )
+
+    print(&quot;\n=== Tokenized DatasetDict ===&quot;)
+    print(tokenized_dataset)
+
+    # === 6. DataCollatorWithPadding ===
+    data_collator = DataCollatorWithPadding(
+        tokenizer=tokenizer,
+        return_tensors=&quot;pt&quot;,
+    )
+
+    # Проверим, что collator делает
+    samples = [tokenized_dataset[&quot;train&quot;][i] for i in range(3)]
+
+    print(&quot;\n=== Raw samples (different lengths) ===&quot;)
+    for s in samples:
+        print(
+            &quot;len(input_ids)=&quot;,
+            len(s[&quot;input_ids&quot;]),
+            &quot;| label=&quot;,
+            s[&quot;labels&quot;],
+        )
+
+    batch = data_collator(samples)
+
+    print(&quot;\n=== After collator (batched) ===&quot;)
+    for k, v in batch.items():
+        print(k, v.shape, v.dtype)
+
+    # === 7. DataLoader для train/validation ===
+    train_dataloader = DataLoader(
+        tokenized_dataset[&quot;train&quot;],
+        batch_size=8,
+        shuffle=True,
+        collate_fn=data_collator,
+    )
+
+    val_dataloader = DataLoader(
+        tokenized_dataset[&quot;validation&quot;],
+        batch_size=8,
+        shuffle=False,
+        collate_fn=data_collator,
+    )
+
+    first_batch = next(iter(train_dataloader))
+    print(&quot;\n=== One batch from train_dataloader ===&quot;)
+    for k, v in first_batch.items():
+        print(k, v.shape, v.dtype)
+
+    # === 8. (Мини-проверка) Прогоняем батч через модель ===
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=len(label2id),
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    with torch.no_grad():
+        outputs = model(
+            input_ids=first_batch[&quot;input_ids&quot;],
+            attention_mask=first_batch[&quot;attention_mask&quot;],
+            labels=first_batch[&quot;labels&quot;],
+        )
+
+    print(&quot;\n=== Model outputs ===&quot;)
+    print(&quot;Loss:&quot;, outputs.loss.item())
+    print(&quot;Logits shape:&quot;, outputs.logits.shape)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-8059-a07d-f80b8bf24519" class="">После такого урока студент видит:</p><ul id="2ab568fa-e39f-8046-acfb-f6271f02ae23" class="bulleted-list"><li style="list-style-type:disc">как из сырых списков получается аккуратный батч тензоров,</li></ul><ul id="2ab568fa-e39f-80ad-b682-c308b9a47e4b" class="bulleted-list"><li style="list-style-type:disc">как токенизатор + collator совместно решают задачу паддинга,</li></ul><ul id="2ab568fa-e39f-8024-88e2-c87c9228f405" class="bulleted-list"><li style="list-style-type:disc">как этот батч уже <strong>готов</strong> для обучения/валидации модели.</li></ul><hr id="2ab568fa-e39f-80c3-b0ed-f6b4b314d170"/><h2 id="2ab568fa-e39f-806a-912a-eecbb43c57aa" class="">8. Домашка к уроку 3.3</h2><p id="2ab568fa-e39f-8069-b7d1-f239d3ae60ae" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-803e-9bd7-cb6c4fbd84e6" class="numbered-list" start="1"><li>Для своего токенизированного датасета (из 3.2):<ul id="2ab568fa-e39f-80bb-af62-e815543bae72" class="bulleted-list"><li style="list-style-type:disc">создать <code>DataCollatorWithPadding</code>,</li></ul><ul id="2ab568fa-e39f-80e0-a2e5-c08322892454" class="bulleted-list"><li style="list-style-type:disc">собрать <code>DataLoader</code> для train и validation (batch_size можно взять 4 или 8),</li></ul><ul id="2ab568fa-e39f-80c9-89c8-cf0198283ff4" class="bulleted-list"><li style="list-style-type:disc">вывести:<ul id="2ab568fa-e39f-8066-8a91-f032384543a7" class="bulleted-list"><li style="list-style-type:circle">форму <code>input_ids</code>, <code>attention_mask</code>, <code>labels</code> для одного батча,</li></ul><ul id="2ab568fa-e39f-80f5-8faa-d77d1dd9eef9" class="bulleted-list"><li style="list-style-type:circle"><strong>максимальную длину</strong> <code>input_ids</code> в этом батче.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-801f-b7f5-fe6aed90b8a3" class="numbered-list" start="2"><li>Сравнить:<ul id="2ab568fa-e39f-80bf-8293-cbba899f574d" class="bulleted-list"><li style="list-style-type:disc">длины <code>input_ids</code> у отдельных примеров до collator’а,</li></ul><ul id="2ab568fa-e39f-8070-a63f-c30ea2e77348" class="bulleted-list"><li style="list-style-type:disc">и <code>seq_len</code> в батче после collator’а.</li></ul></li></ol><p id="2ab568fa-e39f-8007-b6a2-e219ffcd69a5" class=""><strong>Дополнительно (по желанию):</strong></p><ol type="1" id="2ab568fa-e39f-801e-8ac3-c67e35650c94" class="numbered-list" start="1"><li>Сделать два варианта пайплайна:<ul id="2ab568fa-e39f-8090-8f1c-f6ceec2ec443" class="bulleted-list"><li style="list-style-type:disc">Вариант A: токенизация с <code>padding=&quot;max_length&quot;</code> и <code>max_length=128</code>, без <code>DataCollatorWithPadding</code> (использовать <code>collate_fn=lambda x: {k: torch.tensor([d[k] for d in x]) ...}</code> или вообще без collator’а).</li></ul><ul id="2ab568fa-e39f-801e-a4af-c9214e79ee92" class="bulleted-list"><li style="list-style-type:disc">Вариант B: токенизация <strong>без</strong> паддинга, но с <code>DataCollatorWithPadding</code>.</li></ul><p id="2ab568fa-e39f-80a0-8eb5-e2528119c978" class="">И ответить на вопросы:</p><ul id="2ab568fa-e39f-8023-bc80-c2427011f126" class="bulleted-list"><li style="list-style-type:disc">где больше “пустых” токенов (паддинга)?</li></ul><ul id="2ab568fa-e39f-80cd-8af6-e18529562898" class="bulleted-list"><li style="list-style-type:disc">какой вариант потенциально эффективнее по памяти/скорости на больших датасетах?</li></ul></li></ol><hr id="2ab568fa-e39f-8042-9b95-d9d229f53ed3"/><p id="2ab568fa-e39f-805e-bfb1-e98d59cc6210" class="">Если хочешь, дальше можем так же разложить <strong>урок 3.4</strong>: собрать из <code>data_pipeline.py</code> уже полноценный модуль, который отдаёт <code>tokenized_dataset</code>, <code>data_collator</code>, <code>tokenizer</code>, <code>label2id/id2label</code>, и он сразу готов под <code>Trainer</code> в модуле 4.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

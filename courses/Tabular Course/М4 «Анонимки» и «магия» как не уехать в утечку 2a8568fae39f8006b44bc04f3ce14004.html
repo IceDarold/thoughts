@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М4. «Анонимки» и «магия»: как не уехать в утечку</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8006-b44b-c04f3ce14004" class="page sans"><header><h1 class="page-title">М4. «Анонимки» и «магия»: как не уехать в утечку</h1><p class="page-description"></p></header><div class="page-body"><figure id="2a8568fa-e39f-80e3-8ec1-e102d04836d6" class="link-to-page"><a href="%D0%9C4%20%C2%AB%D0%90%D0%BD%D0%BE%D0%BD%D0%B8%D0%BC%D0%BA%D0%B8%C2%BB%20%D0%B8%20%C2%AB%D0%BC%D0%B0%D0%B3%D0%B8%D1%8F%C2%BB%20%D0%BA%D0%B0%D0%BA%20%D0%BD%D0%B5%20%D1%83%D0%B5%D1%85%D0%B0%D1%82%D1%8C%20%D0%B2%20%D1%83%D1%82%D0%B5%D1%87%D0%BA%D1%83/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F%202a8568fae39f80e38ec1e102d04836d6.html">Теория</a></figure><p id="2a8568fa-e39f-8065-af38-f37164a3e8a9" class="">ниже — подробный Модуль 4. Фокус: <strong>анонимные фичи и “магия” без утечек</strong>. Учимся выжимать сигнал из безымянных колонок (var_<em>, f</em>, v*) и нестабильных паттернов — так, чтобы CV оставался честным и переносимым.</p><h2 id="2a8568fa-e39f-801f-8c10-d53d999ee7f2" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-8005-ab9b-dbafb56130b3" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>pipeline для анонимных таблиц</strong>: от бейзлайна до плотностных/проекционных/рядовых (row-wise) признаков.</li></ul><ul id="2a8568fa-e39f-80eb-9376-d56b3e8f34aa" class="bulleted-list"><li style="list-style-type:disc">Освоить <strong>лестницу риска фичей</strong> (safe → risky) и уметь проверять переносимость (OOF-стабильность, AV-дрифт).</li></ul><ul id="2a8568fa-e39f-80c1-ab25-e8ec03eca931" class="bulleted-list"><li style="list-style-type:disc">Отработать <strong>контроль утечек</strong> при «волшебных» приёмах (псевдометки, соседства, кластеризация, поиск «сигнатур»).</li></ul><ul id="2a8568fa-e39f-80f2-af37-d50ef81985b2" class="bulleted-list"><li style="list-style-type:disc">Собрать <strong>лёгкий ансамбль</strong> с безопасным пост-процессингом.</li></ul><p id="2a8568fa-e39f-80ec-a972-e7a7db088b86" class=""><strong>Выход:</strong> репо с модулями <code>rowstats.py</code>, <code>projections.py</code> (PCA/ICA/FA), <code>density.py</code> (KDE/KNN-dist), <code>neighbors.py</code> (KNN/FAISS), <code>plabels.py</code> (pseudo-labeling), чек-лист утечек.</p><hr id="2a8568fa-e39f-80db-925e-e2f30c085680"/><h2 id="2a8568fa-e39f-80d1-a34c-d96930c677e4" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-8005-a2ea-cb450de3e0be" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-80b9-b08f-d2134114bc28" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 3–4 часа</strong> (анонимный датасет).</li></ul><ul id="2a8568fa-e39f-805a-b14d-e55242d412de" class="bulleted-list"><li style="list-style-type:disc">Мини-защита: «что добавило качество и почему это не утечка».</li></ul><hr id="2a8568fa-e39f-80ac-bef6-fa995a706fde"/><h2 id="2a8568fa-e39f-80d6-893b-e7bf56ed94dd" class="">3) Карта решений для «анонимок» (≤10 минут)</h2><ol type="1" id="2a8568fa-e39f-8042-a204-d30a215a4c08" class="numbered-list" start="1"><li><strong>Тип данных:</strong> сплошные числовые var_*? есть явное время? группы? пропуски/спарсность?</li></ol><ol type="1" id="2a8568fa-e39f-8046-a36a-ea77b76ff8ee" class="numbered-list" start="2"><li><strong>Быстрый план фич:</strong><ul id="2a8568fa-e39f-8021-80ac-f7bf958b3536" class="bulleted-list"><li style="list-style-type:disc"><strong>Safe-ядро</strong> (всегда): row-wise статистики, нормализации, power-преобразования, корр-кластеры + агрегаты.</li></ul><ul id="2a8568fa-e39f-8090-b149-cef5a193247e" class="bulleted-list"><li style="list-style-type:disc"><strong>Средний риск:</strong> проекции (PCA/ICA/FA), KMeans/GM кластер-скоры, расстояния до центров.</li></ul><ul id="2a8568fa-e39f-80e7-8d3f-ebe5cdfbe899" class="bulleted-list"><li style="list-style-type:disc"><strong>Повышенный риск:</strong> KNN-дистанции/плотности, псевдометки, «сигнатуры ID», частоты встречаемости конкретных значений.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-80bf-a0c7-e6b2f0f5c0a4" class="numbered-list" start="3"><li><strong>Валидирование:</strong> KFold/Stratified (IID) <strong>или</strong> Group/Time/Purged — по структуре; всё — <strong>OOF-first</strong>.</li></ol><hr id="2a8568fa-e39f-806f-8506-ee6a06723ae8"/><h2 id="2a8568fa-e39f-8017-9fb3-eb95a6222c34" class="">4) Лестница риска фичей (и зачем)</h2><ul id="2a8568fa-e39f-80cc-9d6d-ec519b5818af" class="bulleted-list"><li style="list-style-type:disc"><strong>Уровень S (Safe):</strong><ul id="2a8568fa-e39f-8057-85d9-d143d234ff55" class="bulleted-list"><li style="list-style-type:circle">Row-wise: <code>row_sum/mean/std/skew/kurt</code>, <code>n_zeros</code>, <code>n_pos</code>, <code>n_neg</code>, <code>n_missing</code>, <code>q05/q50/q95</code>, <code>topK_sum</code> (сумма K наибольших).</li></ul><ul id="2a8568fa-e39f-8029-9d05-c1fe0268996e" class="bulleted-list"><li style="list-style-type:circle">Пер-признак: <strong>Yeo-Johnson/Box-Cox</strong>, <strong>RankGauss</strong>, стандарт-скейлинг по train-fold.</li></ul><ul id="2a8568fa-e39f-8046-ad2a-c56d20fcbcb9" class="bulleted-list"><li style="list-style-type:circle">Корр-кластеры: кластеризация фич по |corr| → per-cluster <code>mean/std/max/min</code> <strong>по строке</strong>.</li></ul></li></ul><ul id="2a8568fa-e39f-8019-b806-cef8b9fad53e" class="bulleted-list"><li style="list-style-type:disc"><strong>Уровень M (Medium):</strong><ul id="2a8568fa-e39f-80a2-97eb-f91295bc8ea2" class="bulleted-list"><li style="list-style-type:circle">Проекции: <strong>PCA/ICA/FA</strong> (fit на train-fold, transform на val/test), иногда <strong>RandomProjection</strong>.</li></ul><ul id="2a8568fa-e39f-80f7-9b6f-cae1f5c33f1b" class="bulleted-list"><li style="list-style-type:circle">Кластеры по строкам (KMeans/GMM) → расстояния/принадлежности (softmax).</li></ul><ul id="2a8568fa-e39f-80aa-89db-c040a0241814" class="bulleted-list"><li style="list-style-type:circle">Денойзинг: сглаживание экстремальных значений <code>clip per-feature</code> (перцентильные клипы).</li></ul></li></ul><ul id="2a8568fa-e39f-80fd-94ba-c40f0fbe291b" class="bulleted-list"><li style="list-style-type:disc"><strong>Уровень R (Risky):</strong><ul id="2a8568fa-e39f-80c5-b3dc-c00b49a7aee1" class="bulleted-list"><li style="list-style-type:circle"><strong>KNN-dist/KDE-density</strong>: расстояние до ближайших соседей, локальная плотность (высокий риск “узнавания” test).</li></ul><ul id="2a8568fa-e39f-8088-b15a-e747dea2e8d1" class="bulleted-list"><li style="list-style-type:circle"><strong>Pseudo-labels</strong>: обучение на части test с высокими предсказаниями (только при стабильном CV).</li></ul><ul id="2a8568fa-e39f-804a-8642-ca3dc604815c" class="bulleted-list"><li style="list-style-type:circle"><strong>Signature/duplicate-hunt</strong>: счётчики повторов строк/подмасок признаков (легко переобучить LB).</li></ul><ul id="2a8568fa-e39f-801e-8c12-daf3b3e6d9a7" class="bulleted-list"><li style="list-style-type:circle"><strong>Value-frequency</strong> для конкретных var_* (может подгонять под split).</li></ul></li></ul><blockquote id="2a8568fa-e39f-80c0-828d-fecd026360c4" class="">Правило: двигаться снизу вверх. Любой шаг на M/R — только после док-оценки переносимости (см. §8).</blockquote><hr id="2a8568fa-e39f-8016-be6b-c0542dac35d7"/><h2 id="2a8568fa-e39f-8044-87be-f67345534fbf" class="">5) Safe-ядро: подробности и рецепты</h2><p id="2a8568fa-e39f-8032-a4ac-ea7addec28a9" class=""><strong>Row-wise пакет (быстрый):</strong></p><ul id="2a8568fa-e39f-8064-8cfd-fe2d58952cf2" class="bulleted-list"><li style="list-style-type:disc"><code>row_sum</code>, <code>row_mean</code>, <code>row_std</code>, <code>row_max</code>, <code>row_min</code>, <code>row_ptp</code> (размах), <code>row_skew/kurt</code> (robust: Fisher).</li></ul><ul id="2a8568fa-e39f-80af-959e-d376e29576c0" class="bulleted-list"><li style="list-style-type:disc">Бинарные счётчики: <code>n_zeros</code>, <code>n_missing</code>, <code>n_pos (&gt;0)</code>, <code>n_neg</code>, <code>n_big(|x|&gt;t)</code> для набора порогов t.</li></ul><ul id="2a8568fa-e39f-80b5-ad96-c6cc73ccd12a" class="bulleted-list"><li style="list-style-type:disc">Топ-K: <code>sum_top3</code>, <code>sum_top5</code>, <code>max_minus_mean_topK</code>.</li></ul><ul id="2a8568fa-e39f-8008-8fb2-df3d0d3080cf" class="bulleted-list"><li style="list-style-type:disc">Нормализации: RankGauss per-feature <strong>внутри фолда</strong>; Yeo-Johnson, стандартизация по fold.</li></ul><p id="2a8568fa-e39f-804e-b5be-ec15f12114d8" class=""><strong>Корр-кластеры:</strong></p><ul id="2a8568fa-e39f-805f-b33c-e4f447a69a41" class="bulleted-list"><li style="list-style-type:disc">Готовим матрицу |Spearman| по фичам → агломеративная/спектральная кластеризация → <strong>по каждой строке</strong> агрегаты внутри кластера: <code>mean/std/max/min</code>; количество кластеров как гипер-параметр.</li></ul><p id="2a8568fa-e39f-803e-afa4-d472d07070c1" class=""><strong>Фич-селекция (безопасная):</strong></p><ul id="2a8568fa-e39f-8027-92ea-dcf79cf748b8" class="bulleted-list"><li style="list-style-type:disc"><strong>Null-importances</strong> (shuffle target) для грубой отсечки мусора.</li></ul><ul id="2a8568fa-e39f-8043-8095-e066b063f933" class="bulleted-list"><li style="list-style-type:disc">Перестановочная важность на OOF; отбор «стабильных» фич по seed/repeat.</li></ul><hr id="2a8568fa-e39f-8019-b410-f13ab28b587f"/><h2 id="2a8568fa-e39f-80c5-8d90-ccf7241cd47c" class="">6) Проекции и кластера: аккуратно</h2><ul id="2a8568fa-e39f-802b-8a1a-fd113d4a0e7c" class="bulleted-list"><li style="list-style-type:disc"><strong>PCA/ICA/FA</strong>:<ul id="2a8568fa-e39f-8089-a416-e083309eddc7" class="bulleted-list"><li style="list-style-type:circle">fit на train-fold (или на train целиком, но <strong>без test</strong>), компоненты как новые признаки;</li></ul><ul id="2a8568fa-e39f-80dd-b841-d02c2ba252ce" class="bulleted-list"><li style="list-style-type:circle">выбирать n_components по доле объяснённой дисперсии (PCA) или по OOF-метрике.</li></ul></li></ul><ul id="2a8568fa-e39f-80a2-99f2-fcdf97fab3b0" class="bulleted-list"><li style="list-style-type:disc"><strong>KMeans/GMM</strong> по строкам:<ul id="2a8568fa-e39f-802f-b77d-d7c50211c41f" class="bulleted-list"><li style="list-style-type:circle">fit на train, получать: (a) расстояния до центроидов, (b) принадлежности (soft).</li></ul><ul id="2a8568fa-e39f-8089-bc6e-c0175c6fafe0" class="bulleted-list"><li style="list-style-type:circle">контроль «дрейфа центров»: AV до/после; при сильном дрейфе — лучше не использовать.</li></ul></li></ul><hr id="2a8568fa-e39f-8006-94df-c008333cbef7"/><h2 id="2a8568fa-e39f-80a4-90fa-e87ad1b1708f" class="">7) Плотность и соседства (повышенный риск)</h2><ul id="2a8568fa-e39f-8044-9887-d4ad82fa76b8" class="bulleted-list"><li style="list-style-type:disc"><strong>KNN-dist</strong>: средняя/минимальная дистанция до K соседей в train-fold; вариант — <code>LocalOutlierFactor</code> (score).</li></ul><ul id="2a8568fa-e39f-8018-9b67-f2e25b4a0a32" class="bulleted-list"><li style="list-style-type:disc"><strong>KDE-score</strong>: оценка плотности точки по ядрам (Gaussian); работает, но чувствительно к масштабам/дрейфу.</li></ul><ul id="2a8568fa-e39f-80e9-bea8-d6f1679ccf12" class="bulleted-list"><li style="list-style-type:disc"><strong>FAISS-индексы</strong> (опц.): для ускорения высокомерных KNN.</li></ul><ul id="2a8568fa-e39f-80dd-9f21-fc4d1a46e91c" class="bulleted-list"><li style="list-style-type:disc">Защита: строгий <strong>OOF-fit</strong>, контроль AV-дрейфа, drop при деградации корреляции CV↔LB.</li></ul><hr id="2a8568fa-e39f-80bd-8ecb-c1c2e99421bb"/><h2 id="2a8568fa-e39f-80d5-a29a-e3fd5199ecae" class="">8) Контроль переносимости (обязательный протокол)</h2><ol type="1" id="2a8568fa-e39f-806b-a9f8-dadacbe8c761" class="numbered-list" start="1"><li><strong>OOF-стабильность:</strong><ul id="2a8568fa-e39f-8015-ad89-e70571bb6255" class="bulleted-list"><li style="list-style-type:disc">std метрики по фолдам, корреляция предсказаний между фолдами, gain на добавленной группе фич.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-806d-8d2f-d0eb8f03288e" class="numbered-list" start="2"><li><strong>Adversarial validation (AV):</strong><ul id="2a8568fa-e39f-8090-a282-d67e6c59039b" class="bulleted-list"><li style="list-style-type:disc">AUC(AV) до/после пачки фич; если выросла способность отличать train/test — подозреваем подгон.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-800c-a5cf-efee4cff5d01" class="numbered-list" start="3"><li><strong>Hold-out альтернативный:</strong><ul id="2a8568fa-e39f-80b6-af59-cbe9d163e9e4" class="bulleted-list"><li style="list-style-type:disc">второй сплит (другой seed/Group/Time), проверяем, что эффект сохраняется.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-80d4-9e84-f6ca627ea35e" class="numbered-list" start="4"><li><strong>Таблица риска:</strong><ul id="2a8568fa-e39f-80bd-85bc-e1c2d7b2c739" class="bulleted-list"><li style="list-style-type:disc">каждая фича/пачка помечена <code>S/M/R</code> + комментарий «почему безопасно/почему оставляем».</li></ul></li></ol><hr id="2a8568fa-e39f-80ff-ac44-ef655ab72989"/><h2 id="2a8568fa-e39f-809c-9845-fd8f3063d9ec" class="">9) Псевдометки (когда можно)</h2><ul id="2a8568fa-e39f-80ec-9a1a-f75dfed189de" class="bulleted-list"><li style="list-style-type:disc">Условия: (а) <strong>высокая корреляция CV↔LB</strong> на нескольких сабмитах; (б) <strong>низкий дрифт</strong> (AV ≤ 0.6); (в) модель <strong>не переоценивает</strong> редкие зоны.</li></ul><ul id="2a8568fa-e39f-8093-bfad-cbf1c02cd0ac" class="bulleted-list"><li style="list-style-type:disc">Процедура:<ol type="1" id="2a8568fa-e39f-80c6-959d-d4648a948d18" class="numbered-list" start="1"><li>обучаем модель → предсказываем test → берём top-p% уверенных как псевдо-train (с весом w≪1);</li></ol><ol type="1" id="2a8568fa-e39f-8027-9534-df57ad00da4f" class="numbered-list" start="2"><li>переобучаем;</li></ol><ol type="1" id="2a8568fa-e39f-8033-a946-d119ec45d545" class="numbered-list" start="3"><li>проверяем OOF-улучшение <strong>и</strong> вторичный сплит.</li></ol></li></ul><ul id="2a8568fa-e39f-8093-912f-eeba2e8ae924" class="bulleted-list"><li style="list-style-type:disc">Если CV улучшается, а LB нет → отмена (признак утечки/подгона).</li></ul><hr id="2a8568fa-e39f-8043-9d7a-f32636768555"/><h2 id="2a8568fa-e39f-80f9-b1fc-e170141e8740" class="">10) Мини-практикум A (60–90 мин): safe-ядро</h2><p id="2a8568fa-e39f-806f-8543-f26ad5362802" class=""><strong>Цель:</strong> быстрое и переносимое улучшение на анонимном датасете.</p><p id="2a8568fa-e39f-804f-9849-ca6273db699a" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8054-87b9-cc769c6f8e8a" class="numbered-list" start="1"><li>Бейзлайн (Cat/LGBM) + <strong>row-wise пакет</strong> + RankGauss.</li></ol><ol type="1" id="2a8568fa-e39f-8097-bfe4-fa6390d688e9" class="numbered-list" start="2"><li>Корр-кластеры (3–10 кластеров) → per-row агрегаты.</li></ol><ol type="1" id="2a8568fa-e39f-8046-af71-fcb45c5f26dc" class="numbered-list" start="3"><li>Null-importances → отбор.</li></ol><ol type="1" id="2a8568fa-e39f-8023-b383-cc96df6214b0" class="numbered-list" start="4"><li>Проверка OOF-стабильности и AV; сабмит_1/2.</li></ol><p id="2a8568fa-e39f-80a8-b61b-c8255849a990" class=""><strong>Артефакты:</strong> <code>rowstats.py</code>, <code>clusters.yaml</code>, OOF-лог, отчёт «до/после».</p><hr id="2a8568fa-e39f-808a-abfa-dccfd26a2443"/><h2 id="2a8568fa-e39f-8058-a0fb-e2f59e58053c" class="">11) Мини-практикум B (60–90 мин): проекции/кластера</h2><p id="2a8568fa-e39f-80ef-85ee-dd8287c68ae9" class=""><strong>Цель:</strong> прирост без утечек.</p><p id="2a8568fa-e39f-80cb-97a1-f212ec233480" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-808b-a538-f68c39bf75b0" class="numbered-list" start="1"><li>PCA (n=16/32/64) → сравнить ΔOOF, выбрать n.</li></ol><ol type="1" id="2a8568fa-e39f-806b-80a0-e318b07ec38a" class="numbered-list" start="2"><li>KMeans (k=8/16/32) → расстояния/soft-scores → ΔOOF.</li></ol><ol type="1" id="2a8568fa-e39f-8000-b8a4-c2a2ea01cb66" class="numbered-list" start="3"><li>Альтернативный сплит → проверка переносимости.</li></ol><ol type="1" id="2a8568fa-e39f-80a5-9b21-c17ef3d59586" class="numbered-list" start="4"><li>Сабмит_финал (с/без кластера — по стабильности).</li></ol><hr id="2a8568fa-e39f-80b4-9266-c78c5592edb6"/><h2 id="2a8568fa-e39f-806f-9bd6-c4fb31a75e5c" class="">12) Мини-практикум C (45–60 мин): плотность/соседи (R-уровень)</h2><p id="2a8568fa-e39f-8092-b439-dfea4169f289" class=""><strong>Цель:</strong> попробовать KNN/KDE и понять риски.</p><p id="2a8568fa-e39f-80a0-ba0f-d74da5036c49" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-808b-b8c8-d60bca25ee95" class="numbered-list" start="1"><li>KNN-dist(K=10/50), KDE(σ по медоид-эвристике).</li></ol><ol type="1" id="2a8568fa-e39f-8032-85dd-f3e0c455f3ed" class="numbered-list" start="2"><li>Сравнить AV до/после; если AUC(AV) растёт — дропаeм.</li></ol><ol type="1" id="2a8568fa-e39f-8095-84a4-c76d7b07afb5" class="numbered-list" start="3"><li>Если CV стабильна на двух сплитах — оставить с маленьким весом в ансамбле.</li></ol><hr id="2a8568fa-e39f-8004-9048-c99db1b348dd"/><h2 id="2a8568fa-e39f-80c5-90f3-f8f47fa04cce" class="">13) Самостоятельный мини-спринт (3–4 часа)</h2><ul id="2a8568fa-e39f-8020-b651-d079a57a03ec" class="bulleted-list"><li style="list-style-type:disc">Датасет: «вар_*» без имён, 200–400 фич.</li></ul><ul id="2a8568fa-e39f-803e-867d-f517e02f9489" class="bulleted-list"><li style="list-style-type:disc">Требования:<ul id="2a8568fa-e39f-808b-88a8-f675daf49af2" class="bulleted-list"><li style="list-style-type:circle">Реализовать <strong>safe-ядро</strong> + один блок из M-уровня; R-уровень — опционально.</li></ul><ul id="2a8568fa-e39f-80b9-9337-d67e64fca7fc" class="bulleted-list"><li style="list-style-type:circle">Две CV-схемы (разные сиды/Group при наличии), AV-отчёт, ≥2 сабмита.</li></ul><ul id="2a8568fa-e39f-8056-b36e-fc85e2b6f31c" class="bulleted-list"><li style="list-style-type:circle">Таблица риска фич (S/M/R) и итоговая рекомендация «что оставить в финале».</li></ul></li></ul><hr id="2a8568fa-e39f-800f-849d-eee4f5e3dccf"/><h2 id="2a8568fa-e39f-807b-a771-c2a40e32db6f" class="">14) Чек-лист утечек (версия М4)</h2><ul id="2a8568fa-e39f-809b-90d4-e48bd2108519" class="bulleted-list"><li style="list-style-type:disc">Любые нормализации/проекции/кластера — <strong>fit только на train (или fold-train)</strong>.</li></ul><ul id="2a8568fa-e39f-8039-b21b-db2a1f2a014b" class="bulleted-list"><li style="list-style-type:disc">KNN/KDE — <strong>исключительно OOF</strong>; нельзя строить индекс по train+valid (и тем более test).</li></ul><ul id="2a8568fa-e39f-8074-935d-ff9adda9e9db" class="bulleted-list"><li style="list-style-type:disc">Value-frequency/повтор-счётчики — запрещены, если есть шанс «узнавания» test-рядов.</li></ul><ul id="2a8568fa-e39f-80bb-9ab3-e3f6eabab329" class="bulleted-list"><li style="list-style-type:disc">Псевдометки — <strong>только</strong> после доказанной переносимости и маленькими долями.</li></ul><ul id="2a8568fa-e39f-80d3-ab97-eb3023c920fe" class="bulleted-list"><li style="list-style-type:disc">Любая «магическая» фича → проверка на альтернативном сплите и AV.</li></ul><hr id="2a8568fa-e39f-8085-8b69-cb145e38f3d6"/><h2 id="2a8568fa-e39f-808c-a101-f676e387ead7" class="">15) Оценивание</h2><ul id="2a8568fa-e39f-801c-8ac7-dc24687f983e" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: ни одной утечки; честный fit/transform, OOF-дисциплина.</li></ul><ul id="2a8568fa-e39f-8014-a97d-ec154d22b112" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: устойчивый ΔOOF (и/или ΔLB), низкий std по фолдам.</li></ul><ul id="2a8568fa-e39f-8078-bbbb-e0540a54c956" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: модульность (<code>rowstats/projections/density/neighbors</code>), кэш I/O, время.</li></ul><ul id="2a8568fa-e39f-8052-ad5e-d31824b68ce2" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: таблица риска, AV-анализ, решение «оставляем/убираем».</li></ul><hr id="2a8568fa-e39f-80db-92a1-f3d225d87737"/><h2 id="2a8568fa-e39f-80c3-8424-c1aec588ac6f" class="">16) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-80cd-b14a-dcc23b237cf6" class="bulleted-list"><li style="list-style-type:disc"><code>rowstats.py</code> (все рядовые признаки, топ-K, бинарные счётчики, квантильные фичи).</li></ul><ul id="2a8568fa-e39f-80f6-967a-c412ba997b1f" class="bulleted-list"><li style="list-style-type:disc"><code>projections.py</code> (PCA/ICA/FA, RankGauss/Yeo-Johnson, стандартизация с fold-fit).</li></ul><ul id="2a8568fa-e39f-80b8-b85f-c0e4a8c7097d" class="bulleted-list"><li style="list-style-type:disc"><code>density.py</code> (KDE-скор, robust σ-оценки), <code>neighbors.py</code> (KNN-dist, LOF, FAISS-обёртка).</li></ul><ul id="2a8568fa-e39f-80c3-b213-fca40c16d647" class="bulleted-list"><li style="list-style-type:disc"><code>clusters.py</code> (corr-кластеры по фичам + per-row агрегаты), <code>plabels.py</code> (псевдометки с весами).</li></ul><ul id="2a8568fa-e39f-8045-9116-d7138d3e44d4" class="bulleted-list"><li style="list-style-type:disc">Чек-лист «магии» и шаблон AV-отчёта.</li></ul><hr id="2a8568fa-e39f-804e-81d0-fbba011ef909"/><h2 id="2a8568fa-e39f-80d2-a573-c3e2b2d295a7" class="">17) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-8051-8e3f-d8b1a6b487ee" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин:</strong> бейзлайн + safe-ядро (row-wise, RankGauss) → сабмит_1.</li></ul><ul id="2a8568fa-e39f-808a-9e64-d65d69a7d5dd" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин:</strong> корр-кластеры + отбор → сабмит_2.</li></ul><ul id="2a8568fa-e39f-8030-9c89-e6aa5d79c746" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> PCA/ICA и/или KMeans-скоры → проверка альтернативного сплита.</li></ul><ul id="2a8568fa-e39f-809d-9205-c92355a1f489" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> (опц.) KNN/KDE маленькой дозой, AV-чек; <strong>паник-кнопка</strong> — убрать R-уровень.</li></ul><ul id="2a8568fa-e39f-803e-a85b-f05d937a743f" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> лёгкий ансамбль, финальный сабмит + паспорт решения.</li></ul><p id="2a8568fa-e39f-8091-a981-cab21b58b5ad" class="">Если хочешь — могу сразу накинуть готовые каркасы модулей (<code>rowstats/projections/density/neighbors</code>) под твой репозиторий и твой CLI, чтобы ребята просто подключили и погнали.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

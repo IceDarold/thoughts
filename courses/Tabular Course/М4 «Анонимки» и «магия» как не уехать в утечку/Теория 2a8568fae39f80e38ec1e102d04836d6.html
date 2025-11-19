@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Теория</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80e3-8ec1-e102d04836d6" class="page sans"><header><h1 class="page-title">Теория</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8098-9f17-ce3110defb87" class="">ниже — «полная теория» для М4. Фокус: <strong>анонимные датасеты («анонимки») и “магия”</strong> — как не сползти в утечку и не переобучиться на структуру файла/сплита. Это опорный конспект с практическими правилами, тестами на утечки, безопасными паттернами признаков и чек-листами под 5-часовой спринт.</p><h2 id="2a8568fa-e39f-8048-a57a-f12e215d3605" class="">1) Что такое «анонимки» и «магия»</h2><ul id="2a8568fa-e39f-80af-a865-c3dd1dfbe472" class="bulleted-list"><li style="list-style-type:disc"><strong>Анонимки</strong> — соревнования/наборы, где признаки и/или связи скрыты (X0…Xn, без семантики), иногда с “неестественным” сплитом (сортировка, блоки, дубликаты, псевдовремя).</li></ul><ul id="2a8568fa-e39f-80ff-99ae-c426fd64bb88" class="bulleted-list"><li style="list-style-type:disc"><strong>Магия</strong> — «чудесные» фичи, которые дают большой прирост без понятной причинной связи (часто это:<ul id="2a8568fa-e39f-807d-bf27-ec2414540d53" class="bulleted-list"><li style="list-style-type:circle">скрытая утечка (look-ahead),</li></ul><ul id="2a8568fa-e39f-8045-a4a6-f6ad3f8d8584" class="bulleted-list"><li style="list-style-type:circle">структурная корреляция с таргетом через порядок строк/идентификаторы/шаблон пропусков,</li></ul><ul id="2a8568fa-e39f-80c4-9458-f2bdf1d7b964" class="bulleted-list"><li style="list-style-type:circle">трансдуктивные трюки (использование распределения теста при обучении), дающие CV→LB разрыв).</li></ul></li></ul><p id="2a8568fa-e39f-8024-b122-d93805fb8df9" class=""><strong>Проблема:</strong> CV становится обманчивой; приват-LB/прод — сдувается.</p><hr id="2a8568fa-e39f-8019-83e2-e8389ecc7c7e"/><h2 id="2a8568fa-e39f-803b-b0db-f29df0767093" class="">2) Таксономия утечек (куда чаще всего «едут»)</h2><p id="2a8568fa-e39f-808c-989b-c05134822086" class=""><strong>(A) Таргет-утечка (прямая/замаскированная):</strong></p><ul id="2a8568fa-e39f-80c4-a26f-da7b79477748" class="bulleted-list"><li style="list-style-type:disc">Сырые или производные признаки, зависящие от будущего события/агрегирующие по окну, пересекающему валидацию.</li></ul><ul id="2a8568fa-e39f-80a8-a32d-c6026687d76f" class="bulleted-list"><li style="list-style-type:disc">«LOO/TE» без OOF: таргет-энкодинг посчитан на всём train и использован на нём же.</li></ul><p id="2a8568fa-e39f-8044-a139-f30f5366d5ab" class=""><strong>(B) Временная утечка:</strong></p><ul id="2a8568fa-e39f-80b1-ad7c-ec549479c5e3" class="bulleted-list"><li style="list-style-type:disc">Использование будущих наблюдений при построении фич (rolling/expanding без gap).</li></ul><ul id="2a8568fa-e39f-8090-bdb4-ddae360dcfa9" class="bulleted-list"><li style="list-style-type:disc">Переменные, монотонные по времени (индекс/ID/позиция в файле) → модель видит «календарь».</li></ul><p id="2a8568fa-e39f-8026-b7cb-c38914eb0ee6" class=""><strong>(C) Сплит/фолд-утечка:</strong></p><ul id="2a8568fa-e39f-80df-a0f6-d4a863823af1" class="bulleted-list"><li style="list-style-type:disc">Один и тот же субъект/кейс попадает и в train, и в val (Group нарушен).</li></ul><ul id="2a8568fa-e39f-80e8-bb1b-f21bfc9b0e2f" class="bulleted-list"><li style="list-style-type:disc">Препроцессоры/скейлеры/кластеризаторы обучены на <strong>train+val</strong> (или train+test), а не только на train-части фолда.</li></ul><p id="2a8568fa-e39f-8034-a359-d88fd28ab896" class=""><strong>(D) Трансдуктивная утечка:</strong></p><ul id="2a8568fa-e39f-8023-9cee-d3b6a18b25f5" class="bulleted-list"><li style="list-style-type:disc">Подгонка параметров/бинов/кластеров на <strong>всем X (train+test)</strong> и затем оценка на валиде, где валид уже «подсмотрен» через тестоподобное преобразование.<ul id="2a8568fa-e39f-8084-9233-eaa79c58b383" class="bulleted-list"><li style="list-style-type:circle">На Kaggle трансдукция допустима <strong>только для финального инференса</strong> (без таргета), но в <strong>CV её нужно имитировать корректно</strong> (см. §6.3).</li></ul></li></ul><p id="2a8568fa-e39f-8000-a435-e5a1d643f1e3" class=""><strong>(E) Структурная утечка:</strong></p><ul id="2a8568fa-e39f-80dd-b5a5-c65defdf67c9" class="bulleted-list"><li style="list-style-type:disc">Порядок строк/ID коррелирует с таргетом (сортировка по времени/клиентам/сессиям).</li></ul><ul id="2a8568fa-e39f-8063-9d53-e95b36a026fa" class="bulleted-list"><li style="list-style-type:disc">Шаблоны пропусков/квантили «под тест» (например, уникальные сочетания NaN → класс).</li></ul><p id="2a8568fa-e39f-80ff-a057-e45ac3cadef2" class=""><strong>(F) Дубликаты/near-duplicates:</strong></p><ul id="2a8568fa-e39f-80e0-98f5-c025ca2c3d79" class="bulleted-list"><li style="list-style-type:disc">Почти идентичные строки в train/val/test; «поиск близнецов» превращается в поиск таргета.</li></ul><hr id="2a8568fa-e39f-8041-8f84-c44d20256cb1"/><h2 id="2a8568fa-e39f-802e-b69b-fac6e04efe34" class="">3) Красные флаги «магии»</h2><ul id="2a8568fa-e39f-80e6-8be0-f21ebef82afc" class="bulleted-list"><li style="list-style-type:disc">Фича с <strong>аномально высокой важностью</strong> и нулевой интерпретацией (особенно: индекс/позиция/хэш).</li></ul><ul id="2a8568fa-e39f-800d-9f41-e041eac49d2f" class="bulleted-list"><li style="list-style-type:disc"><strong>Перестановочный тест</strong> (shuffle y) даёт CV <strong>существенно выше</strong> случайного — значит, модель ловит не таргет, а структуру.</li></ul><ul id="2a8568fa-e39f-80ac-85ab-de4d88747b4f" class="bulleted-list"><li style="list-style-type:disc"><strong>Adversarial validation</strong> (train vs test) AUC &gt; 0.7 — сильный сдвиг; топ-фичи AV совпадают с «магией».</li></ul><ul id="2a8568fa-e39f-80e6-8ed9-db55827322a9" class="bulleted-list"><li style="list-style-type:disc">Разные сплиты дают <strong>разные знаки/эффекты</strong> одной и той же фичи.</li></ul><ul id="2a8568fa-e39f-8071-843a-e436066c0002" class="bulleted-list"><li style="list-style-type:disc">Метрика <strong>растёт</strong> при добавлении признака «число пропусков»/«индекс в файле», хотя смысла нет.</li></ul><hr id="2a8568fa-e39f-80d4-87c9-d1c706c71653"/><h2 id="2a8568fa-e39f-809d-8927-c9737d5028eb" class="">4) Тесты на утечки (быстрые и надёжные)</h2><h3 id="2a8568fa-e39f-80ee-ac00-c439b2143f23" class="">4.1 Перестановка таргета (Leakage Smoke Test)</h3><ol type="1" id="2a8568fa-e39f-800c-b588-c5d96a19c59e" class="numbered-list" start="1"><li>Перемешать y внутри каждого фолда (сохраняя баланс).</li></ol><ol type="1" id="2a8568fa-e39f-80d4-bbc1-d0d0e85c4eda" class="numbered-list" start="2"><li>Обучить пайплайн <strong>включая все препроцессоры</strong>, как обычно.</li></ol><ol type="1" id="2a8568fa-e39f-803f-afa1-d8c35f039e50" class="numbered-list" start="3"><li>Если CV &gt;&gt; случайного шума → <strong>утечка</strong> в препроцессинге/структуре.</li></ol><h3 id="2a8568fa-e39f-8098-9d20-ccf34e297ddd" class="">4.2 AV (adversarial validation) и PSI</h3><ul id="2a8568fa-e39f-8078-8a9b-f57f53510ad3" class="bulleted-list"><li style="list-style-type:disc">Обучить классификатор «train vs test» на <strong>сырых X</strong>.</li></ul><ul id="2a8568fa-e39f-801f-9c25-ed56e5d577b7" class="bulleted-list"><li style="list-style-type:disc">AUC↑ → сдвиг. Посмотреть важности — список «подозреваемых» каналов утечки/магии.</li></ul><ul id="2a8568fa-e39f-8088-8648-e59a18825980" class="bulleted-list"><li style="list-style-type:disc">PSI по топ-фичам: &gt;0.25 — тяжёлый сдвиг; 0.1–0.25 — внимание.</li></ul><h3 id="2a8568fa-e39f-8039-bcc3-ff835b1c263f" class="">4.3 «Анти-время»</h3><ul id="2a8568fa-e39f-8049-8e5c-cac394aea88c" class="bulleted-list"><li style="list-style-type:disc">Перемешать порядок строк; если метрика <strong>падает резко</strong> — вы опирались на скрытое время/блоки.</li></ul><h3 id="2a8568fa-e39f-800b-8dcc-fb91062d067f" class="">4.4 «Дубликаты и соседи»</h3><ul id="2a8568fa-e39f-80f1-a222-d7ecaff72a2a" class="bulleted-list"><li style="list-style-type:disc">Найти дубликаты/near-duplicates (хэш строк/метрики расстояния). Если <strong>валид совпадает</strong> с train → переоценка CV.</li></ul><h3 id="2a8568fa-e39f-8029-bb84-ec38e2ade57b" class="">4.5 Null-importance</h3><ul id="2a8568fa-e39f-802c-a915-c4f10fbadd75" class="bulleted-list"><li style="list-style-type:disc">Сравнить важности фич на реальном y vs на перемешанном y. Стабильно высокая важность в обоих случаях → фича «объясняет» структуру данных, а не таргет.</li></ul><hr id="2a8568fa-e39f-80e5-a030-c2fa303ea13a"/><h2 id="2a8568fa-e39f-809d-a198-c81dc588cde3" class="">5) Дизайн валидации для анонимок</h2><h3 id="2a8568fa-e39f-8013-92cd-ebe2af79dfab" class="">5.1 Freeze CV и группы</h3><ul id="2a8568fa-e39f-8074-be32-cebce507634f" class="bulleted-list"><li style="list-style-type:disc">Сформировать и <strong>зафиксировать</strong> <code>fold_map.parquet</code>.</li></ul><ul id="2a8568fa-e39f-8077-8e1d-e24bde21b6ce" class="bulleted-list"><li style="list-style-type:disc">Если есть намёк на сущность (user_id/order_id, даже анонимный), используйте <strong>GroupKFold</strong> (гипотезу групп проверяйте по корреляциям/повторяемости паттернов пропусков/статистик).</li></ul><h3 id="2a8568fa-e39f-8041-a553-c31b905d90b4" class="">5.2 Time/Purged/Embargo (когда «пахнет временем»)</h3><ul id="2a8568fa-e39f-8069-a2ab-dec5f20c1cd9" class="bulleted-list"><li style="list-style-type:disc">Даже без явного времени вводите <strong>разрыв (gap)</strong> между train/val в рамках rolling/expanding.</li></ul><ul id="2a8568fa-e39f-800f-b933-cc84cd763349" class="bulleted-list"><li style="list-style-type:disc">PurgedKFold: удалите околопограничные наблюдения (embargo ≥ максимальный лаг).</li></ul><h3 id="2a8568fa-e39f-80d2-b504-ecdedc508404" class="">5.3 Transductive-safe CV</h3><ul id="2a8568fa-e39f-80b7-ae52-c8559972b999" class="bulleted-list"><li style="list-style-type:disc">Если планируете на инференсе использовать <strong>нелинейные безтаргетные трансформы</strong> с учетом <strong>теста</strong> (например, PCA/кластеры/квантили «по всем X»), <strong>в CV нельзя подглядывать валид</strong>. Варианты:<ul id="2a8568fa-e39f-80e3-96fa-c65baee79bf8" class="bulleted-list"><li style="list-style-type:circle"><strong>Строго безопасно:</strong> в каждом фолде fit трансформера <strong>только на train</strong>; в проде fit на <strong>train+unlabeled external</strong>, но понимаем, что LB может быть слегка выше.</li></ul><ul id="2a8568fa-e39f-8038-9cd7-dbb8765fd737" class="bulleted-list"><li style="list-style-type:circle"><strong>Трансдуктивная имитация:</strong> для фолда k трансформ обучается на <strong>(train_k + тест)</strong>, но <strong>исключая</strong> валид_k — так мы не «видим» валидацию через тест. Это сложнее в реализации, но честнее.</li></ul></li></ul><hr id="2a8568fa-e39f-8045-a12d-de5a29a58867"/><h2 id="2a8568fa-e39f-8063-939c-d12e0c36e2ce" class="">6) Безопасные паттерны признаков для анонимок</h2><h3 id="2a8568fa-e39f-80d2-a46f-f4df7398f8d9" class="">6.1 Ничего глобального без OOF</h3><ul id="2a8568fa-e39f-808b-a6c5-cfec26f7eeba" class="bulleted-list"><li style="list-style-type:disc"><strong>Target/Fold-aware только через OOF</strong>: TE/CTR/WOE/GLMM/эмбеддинги/стэкинг — всегда с OOF-протоколом.</li></ul><ul id="2a8568fa-e39f-8024-8c00-c2bead595108" class="bulleted-list"><li style="list-style-type:disc"><strong>Глобальные статистики</strong> (средние/квантили/скейлеры) — fit <strong>по train фолда</strong>, применить к валидации; <strong>не</strong> считать из train+val.</li></ul><h3 id="2a8568fa-e39f-8052-aec1-e64b557a6b90" class="">6.2 Частоты и «редкость» (без таргета)</h3><ul id="2a8568fa-e39f-8070-8f20-faacae99fb6a" class="bulleted-list"><li style="list-style-type:disc"><code>count(c)</code>, <code>freq(c)=n_c/N</code>, <code>nunique(group)</code>, энтропия по наборам — устойчивые базовые фичи, <strong>нет утечки</strong>.</li></ul><ul id="2a8568fa-e39f-8068-8cbc-e04a7206ee87" class="bulleted-list"><li style="list-style-type:disc">Для high-card — <strong>hashing</strong> (фиксированный размер, контролируем коллизии).</li></ul><h3 id="2a8568fa-e39f-8070-aa61-ca2439544616" class="">6.3 Перекрёстия (feature crosses) — аккуратно</h3><ul id="2a8568fa-e39f-802a-9e23-ceb4366f83f4" class="bulleted-list"><li style="list-style-type:disc">Сырые A×B → взрыв размерности; используйте <strong>hash-cross</strong> или top-K (остальное <code>__RARE__</code>).</li></ul><h3 id="2a8568fa-e39f-80ab-ad64-dfb73093d318" class="">6.4 Монотонные биннинги/ранги</h3><ul id="2a8568fa-e39f-80b6-94ad-e06bda33906d" class="bulleted-list"><li style="list-style-type:disc">Квантили/ранги <strong>внутри фолда</strong> (или внутри группы в фолде); хорошие стабилизаторы для деревьев.</li></ul><h3 id="2a8568fa-e39f-8017-a98d-fa8d5be162aa" class="">6.5 KNN/кластерные признаки</h3><ul id="2a8568fa-e39f-807e-8bc0-fd15c54a30d1" class="bulleted-list"><li style="list-style-type:disc">KNN-дистанции до <strong>train-корпуса</strong>; в CV — для валидации считаем расстояния до <strong>train-части фолда</strong>, не до всех.</li></ul><ul id="2a8568fa-e39f-80f7-995a-cfd530c90f62" class="bulleted-list"><li style="list-style-type:disc">Кластеры/PCA/UMAP — fit на train-части фолда; в финале либо refit на всём train (прод/приват LB), либо трансдуктивно и честно отметить.</li></ul><h3 id="2a8568fa-e39f-80a0-a713-e0601bd78663" class="">6.6 Шаблоны пропусков/маски</h3><ul id="2a8568fa-e39f-8074-a022-d0ff4d11b639" class="bulleted-list"><li style="list-style-type:disc">Бинарные маски NaN часто сильны. Но: <strong>маску считать на уровне фолда</strong>; избегать «уникальных» масок валидов, созданных из train+val.</li></ul><hr id="2a8568fa-e39f-8042-86db-e671a5f07074"/><h2 id="2a8568fa-e39f-808b-b764-d93006fa820a" class="">7) Что считать «риск-фичами» (и как их обезвредить)</h2><ul id="2a8568fa-e39f-807a-96ae-c5f8d54fda38" class="bulleted-list"><li style="list-style-type:disc">Индексы/позиции/хэши, зависящие от порядка строк → <strong>удалить</strong> или рандомизировать.</li></ul><ul id="2a8568fa-e39f-80d8-acdb-ffb3ab394981" class="bulleted-list"><li style="list-style-type:disc">Дистанции/схожести, если включают валид/тест <strong>в fit</strong> → переделать под OOF-схему.</li></ul><ul id="2a8568fa-e39f-80aa-99ed-f8a77773486f" class="bulleted-list"><li style="list-style-type:disc">Фичи, построенные с использованием <strong>всего X</strong> (train+val), особенно квантили/стандартизация/кластеризация — <strong>перефитить по train-части</strong>.</li></ul><ul id="2a8568fa-e39f-8096-967c-e8e3a206306b" class="bulleted-list"><li style="list-style-type:disc">Сильные TE на редких категориях → увеличить сглаживание, добавить шум, <code>__RARE__/__UNK__</code>, иерархический back-off.</li></ul><hr id="2a8568fa-e39f-80d6-a9ed-f088a8b87a9b"/><h2 id="2a8568fa-e39f-80e3-a9e2-cab508c7ae72" class="">8) Регуляризация и правила «стоп» на анонимках</h2><ul id="2a8568fa-e39f-80bb-b60d-ccade3666109" class="bulleted-list"><li style="list-style-type:disc">Модели: глубина ≤6–8, <code>min_data_in_leaf↑</code>, <code>lambda_l2↑</code>, <code>feature_fraction/bagging_fraction↓</code>.</li></ul><ul id="2a8568fa-e39f-80c3-b733-ec768029965f" class="bulleted-list"><li style="list-style-type:disc"><strong>Alt-split</strong>: любой прирост фич/модели проверять на альтернативном сплите (другой seed/Group/Time).</li></ul><ul id="2a8568fa-e39f-80c1-964f-ee7abc7da434" class="bulleted-list"><li style="list-style-type:disc"><strong>Seed-bagging</strong>: 3–5 сидов лучшего сетапа; брать <strong>медиану</strong> OOF-метрик.</li></ul><ul id="2a8568fa-e39f-807b-b6b1-fa4559a59460" class="bulleted-list"><li style="list-style-type:disc"><strong>Правило снятия</strong>: если AV AUC↑, PSI↑, а прирост на alt-split ≈ 0 → <strong>снять фичу/пачку</strong>.</li></ul><hr id="2a8568fa-e39f-8079-8b2d-eced1b0ea4ea"/><h2 id="2a8568fa-e39f-8060-9d52-d0a5587f7eb4" class="">9) Этические и практические оговорки</h2><ul id="2a8568fa-e39f-80c0-ab38-fb56c2f5b7cf" class="bulleted-list"><li style="list-style-type:disc"><strong>Трансдукция на Kaggle</strong>: обычно <strong>разрешено</strong> использовать тестовые признаки <strong>без таргетов</strong> (скейлить/кластеризовать/бинировать по train+test), но <strong>в CV нельзя смотреть в свою валидацию</strong> “через тест”. Для <strong>прод</strong> — избегать трансдукции; держите пайплайн «train-only fit» + мониторинг сдвигов (PSI/AV).</li></ul><ul id="2a8568fa-e39f-80b2-8bed-d4b6b7a2050f" class="bulleted-list"><li style="list-style-type:disc"><strong>«Магию» без причинной опоры</strong> лучше не нести в прод: она ломается при смене сбора/порядка данных.</li></ul><hr id="2a8568fa-e39f-80ab-85ac-f3a1c81e60ba"/><h2 id="2a8568fa-e39f-8019-8ca2-d2dd2a14fe47" class="">10) Мини-алгоритмы (шаблоны)</h2><h3 id="2a8568fa-e39f-8052-ae14-df401d24bb5d" class="">10.1 OOF-трансформ (любой препроцессор)</h3><p id="2a8568fa-e39f-80c0-ab19-c2d16082ab8c" class="">Для каждого фолда k:</p><ol type="1" id="2a8568fa-e39f-8048-9e80-c1b23855348e" class="numbered-list" start="1"><li>fit(Transformer, X_train_k)</li></ol><ol type="1" id="2a8568fa-e39f-8046-ab6a-db86c95aa838" class="numbered-list" start="2"><li>X_val_k ← transform(X_val_k)</li></ol><ol type="1" id="2a8568fa-e39f-8028-b203-cb3d38bd42c2" class="numbered-list" start="3"><li>X_test ← transform(X_test) <strong>трансформер обучен только на train_k</strong>.</li></ol><h3 id="2a8568fa-e39f-8049-b9dc-d32b1de11373" class="">10.2 Псевдовремя и gap</h3><ul id="2a8568fa-e39f-8095-9313-eab6b15a4430" class="bulleted-list"><li style="list-style-type:disc">Если подозреваете время: создайте <strong>прокси-ось</strong> (например, ранг по сумме/количеству NaN/первой главной компоненте) → валидируйте роллингом с <strong>gap</strong>.</li></ul><h3 id="2a8568fa-e39f-808c-9de3-ec6ccb76c374" class="">10.3 Проверка на «индексную магию»</h3><ul id="2a8568fa-e39f-8036-bb9e-dc7d46227e74" class="bulleted-list"><li style="list-style-type:disc">Добавьте фичу <code>row_id</code>/<code>order</code> и посмотрите её важность. Если зашкаливает → порядок «несёт» информацию; перемешайте строки, пересоберите сплит.</li></ul><hr id="2a8568fa-e39f-806a-9081-d9e85d14130e"/><h2 id="2a8568fa-e39f-80b0-a52b-c6527a97cdc8" class="">11) Карта решений в 5-часовой спринт</h2><p id="2a8568fa-e39f-80b8-b381-d567951186e5" class=""><strong>0–20 мин</strong> — Диагностика</p><ul id="2a8568fa-e39f-8046-8848-defe8839ba02" class="bulleted-list"><li style="list-style-type:disc">Freeze <code>fold_map</code>. Запускаем AV и PSI; перестановка y на «дым-тест». Проверяем дубликаты.</li></ul><p id="2a8568fa-e39f-80e5-80ea-d85ffef1a37a" class=""><strong>20–90 мин</strong> — База без магии</p><ul id="2a8568fa-e39f-805e-8bb7-eb7c139b9400" class="bulleted-list"><li style="list-style-type:disc">Бустинг (Cat/LGBM) с <strong>безопасными</strong> фичами: count/freq/nunique, ранги/квантили (внутри фолда), hash-cross.</li></ul><ul id="2a8568fa-e39f-8097-a093-d500c6986ab4" class="bulleted-list"><li style="list-style-type:disc">Никаких TE/эмбеддингов/кластеров до стабилизации CV↔LB.</li></ul><p id="2a8568fa-e39f-80d2-b9d7-c3f39951aa49" class=""><strong>90–150 мин</strong> — Контролируемые усиления</p><ul id="2a8568fa-e39f-80f4-98ce-c9896f3b7b19" class="bulleted-list"><li style="list-style-type:disc">OOF-TE с сильным сглаживанием + шум; KNN-дистанции <strong>до train-корпуса</strong>; PCA/кластеры <strong>fit на train-части фолда</strong>.</li></ul><ul id="2a8568fa-e39f-8026-8fe5-fafd8c017394" class="bulleted-list"><li style="list-style-type:disc">Alt-split + seed-bagging (медиана OOF).</li></ul><p id="2a8568fa-e39f-80d1-a82a-f3926bc1f603" class=""><strong>150–210 мин</strong> — Санити и надёжность</p><ul id="2a8568fa-e39f-806e-bd05-e5e7c44741b3" class="bulleted-list"><li style="list-style-type:disc">Повтор «дым-теста», AV ещё раз на новом фич-сете.</li></ul><ul id="2a8568fa-e39f-8025-b45d-d151f75d31d4" class="bulleted-list"><li style="list-style-type:disc">Срезы (slice eval) по «подозрительным» признакам/маскам, сравнение стабильности.</li></ul><p id="2a8568fa-e39f-80ea-bfe4-ef2ce2284d70" class=""><strong>210–240 мин</strong> — Финал</p><ul id="2a8568fa-e39f-805a-ae60-cc1f1f6ccda5" class="bulleted-list"><li style="list-style-type:disc">Safe-бленд (усреднение 3–5 сидов/двух моделей).</li></ul><ul id="2a8568fa-e39f-80c8-b281-c14fad7abee5" class="bulleted-list"><li style="list-style-type:disc">Короткий отчёт: что сняли как «магическое», что оставили и почему (AV/alt-split/seed-стабильность).</li></ul><hr id="2a8568fa-e39f-8031-9cb4-f3772e0e5bb4"/><h2 id="2a8568fa-e39f-800e-bdc7-ebbcb8110288" class="">12) Частые ошибки (и короткие фиксы)</h2><ul id="2a8568fa-e39f-8062-a593-edb0c589a2eb" class="bulleted-list"><li style="list-style-type:disc"><strong>Fit скейлера/кластеров на train+val</strong> → refit по train-части фолда.</li></ul><ul id="2a8568fa-e39f-807b-a764-de067c23e97b" class="bulleted-list"><li style="list-style-type:disc"><strong>TE без OOF</strong> → переделать на K-Fold OOF / ordered.</li></ul><ul id="2a8568fa-e39f-8073-a06e-f8d160acdc0f" class="bulleted-list"><li style="list-style-type:disc"><strong>Квантили/биннинг «на всём X»</strong> → fit на train-части, фиксировать интервалы.</li></ul><ul id="2a8568fa-e39f-8021-a9d5-f5460a9509e1" class="bulleted-list"><li style="list-style-type:disc"><strong>Использование валид/тест при поиске соседей</strong> → только корпус train для валид/тест.</li></ul><ul id="2a8568fa-e39f-802c-b86e-dcdb8f161eb6" class="bulleted-list"><li style="list-style-type:disc"><strong>Сильная важность row_id/числа NaN</strong> → перемешать строки, перепроверить; либо выкинуть фичу.</li></ul><hr id="2a8568fa-e39f-801c-95b2-cd2c524285aa"/><h2 id="2a8568fa-e39f-8044-92ef-e3d7bf20813c" class="">13) Что фиксировать в отчёте</h2><ul id="2a8568fa-e39f-80f4-bdb3-f561cfd18bfd" class="bulleted-list"><li style="list-style-type:disc">Схема CV (K/Group/Time/Purged + embargo/gap), <code>fold_map.parquet</code>.</li></ul><ul id="2a8568fa-e39f-8008-aede-e61d404d0b38" class="bulleted-list"><li style="list-style-type:disc">Результаты AV/PSI до/после «риск-фич».</li></ul><ul id="2a8568fa-e39f-8039-8861-e34b2f68a0da" class="bulleted-list"><li style="list-style-type:disc">Перестановочный тест: CV при shuffled y (должен ≈ случайному).</li></ul><ul id="2a8568fa-e39f-8003-a304-c6d6ab3d6c60" class="bulleted-list"><li style="list-style-type:disc">Список <strong>риск-фич</strong> и решения (сняты/смягчены).</li></ul><ul id="2a8568fa-e39f-80a8-be78-eef7de408f5c" class="bulleted-list"><li style="list-style-type:disc">Alt-split/seed-стабильность; итоговый safe-бленд.</li></ul><hr id="2a8568fa-e39f-802d-9fc7-e1b1fca66eb4"/><h2 id="2a8568fa-e39f-8084-abfc-c0c62c7b108f" class="">14) Мини-FAQ</h2><ul id="2a8568fa-e39f-8094-b825-d272df032185" class="bulleted-list"><li style="list-style-type:disc"><strong>Можно ли использовать тест при препроцессинге?</strong> В прод — лучше нет. В Kaggle — да, но <strong>в CV не подсматривайте валид через тест</strong> (используйте transductive-safe схему).</li></ul><ul id="2a8568fa-e39f-80ea-a03e-c5a2fd294ce6" class="bulleted-list"><li style="list-style-type:disc"><strong>Что делать, если магия даёт +0.01 AUC?</strong> Пропустить через §4–§8: AV/alt-split/seed-стабильность. Не прошла — снять.</li></ul><ul id="2a8568fa-e39f-8046-937c-c667be2ec3db" class="bulleted-list"><li style="list-style-type:disc"><strong>Нет времени на полноценный OOF-TE?</strong> Возьмите <strong>freq/count</strong> + hash-cross — часто 70–80% эффекта без риска утечки.</li></ul><hr id="2a8568fa-e39f-8022-9a00-f5493d7f87b2"/><h2 id="2a8568fa-e39f-8011-97d1-decbdd5c4376" class="">15) Короткий чек-лист (перед сабмитом)</h2><ul id="2a8568fa-e39f-807b-bb2d-eb90c75d007c" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked"><code>fold_map</code> зафиксирован; препроцессоры fit <strong>по train-части</strong> каждого фолда.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-805e-8402-d9ba90386f69" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Перестановочный тест пройден (нет «магии» структуры).</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-801a-be0c-f1b655d4af35" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">AV/PSI ок; «подозрительные» каналы либо сняты, либо стабилизированы.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-80a6-b22a-f7fc07264f7b" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Alt-split подтвердил прирост; сид-стабильность норм.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-804c-91e7-e264fe369fe1" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">В отчёте перечислены снятые «магические» фичи и причины.</span><div class="indented"></div></li></ul><hr id="2a8568fa-e39f-80b7-99aa-f837be54e095"/><p id="2a8568fa-e39f-8008-9d83-c237b1b26710" class="">Если нужно, подготовлю каркас кода: <code>LeakGuardTransformer</code> (любой скейлер/кластер/PCA в OOF-обёртке), <code>transductive_cv_splitter</code> (исключает валид из «тестоподобного» fit), и скрипт «дым-теста» (shuffle-y + AV/PSI отчёт).</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

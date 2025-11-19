@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 7. «АвтоПрайс: предсказание стоимости по фото» — medianAPE</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8066-a54b-e2416caa789c" class="page sans"><header><h1 class="page-title">Модуль 7. «АвтоПрайс: предсказание стоимости по фото» — medianAPE</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8073-80f3-c7a1a4628c69" class=""><strong>Модуль 7 — CV-регрессия «АвтоПрайс» (medianAPE): фьюжн фото + табличка, лог-скейл и калибровка</strong>. Сначала полная теория (что даёт очки и где ломается), затем лабы до валидного сабмита.</p><hr id="2a8568fa-e39f-80ac-9583-cb51c52e2832"/><h2 id="2a8568fa-e39f-80c7-98b6-dcb1fb5a3d26" class="">1) Результаты модуля (что ученик должен уметь)</h2><ul id="2a8568fa-e39f-80f7-a291-fe5fc5b25e05" class="bulleted-list"><li style="list-style-type:disc">Понимать постановку: <strong>до 4 фото на объявление</strong>, часть табличных полей (кузов/привод/комплектации/гео и т. п.), таргет — <code>price_TARGET</code>. Train — <strong>янв–ноя 2024</strong>, test — <strong>декабрь 2024</strong> (временной сплит). Сабмит <code>sample_submission.csv</code> в формате <code>ID,target</code>. Метрика — <strong>medianAPE</strong>.</li></ul><ul id="2a8568fa-e39f-8040-91fe-d533d181e47f" class="bulleted-list"><li style="list-style-type:disc">Собрать <strong>надёжный TimeSplit CV без утечек</strong> и локально считать <strong>medianAPE</strong> так же, как на платформе.</li></ul><ul id="2a8568fa-e39f-8035-9049-d0503662a4ae" class="bulleted-list"><li style="list-style-type:disc">Построить фьюжн-пайплайн:<ol type="1" id="2a8568fa-e39f-8041-982e-f03019915dce" class="numbered-list" start="1"><li><strong>Табличка</strong> (CatBoost/LGBM + аккуратный препроцесс мультивыборов),</li></ol><ol type="1" id="2a8568fa-e39f-80e5-b31b-d42cfccece94" class="numbered-list" start="2"><li><strong>Фото-эмбеддинги</strong> (CLIP/ViT/ResNet из <code>timm</code>), агрегация по 4 изображениям (mean/max/attention/Top-K),</li></ol><ol type="1" id="2a8568fa-e39f-8033-8b08-c302de723546" class="numbered-list" start="3"><li><strong>Стэкинг/бленд</strong> (Level-2) и <strong>калибровка</strong> предсказаний под medianAPE (квантиль/Huber/клиппинг).</li></ol></li></ul><ul id="2a8568fa-e39f-8001-9612-ec99f9226446" class="bulleted-list"><li style="list-style-type:disc">Упаковать сабмит и «release-чек-лист» (диапазоны, NaN, формат, время).</li></ul><hr id="2a8568fa-e39f-80c5-9de3-f75ff024ec28"/><h2 id="2a8568fa-e39f-80be-836e-f384ac808b65" class="">2) Теория (90–120 минут)</h2><h3 id="2a8568fa-e39f-801a-9d3b-cadba7339ede" class="">A. Данные, сплит, метрика</h3><ul id="2a8568fa-e39f-8025-bad4-e3bf17b64a4b" class="bulleted-list"><li style="list-style-type:disc"><strong>Размерность:</strong> ~70k объявлений / 273k фото в train, ~25k / 98k фото в test. До <strong>4 изображений на объект</strong> (например, <code>100000_0.jpg</code> … <code>100000_3.jpg</code>).</li></ul><ul id="2a8568fa-e39f-805b-9339-dc00f14caf28" class="bulleted-list"><li style="list-style-type:disc"><strong>Табличные поля:</strong> тип кузова, привод, двигатель, число дверей, цвет, ПТС, дата закрытия, руль, ДТП, владельцы, пробег, координаты, <strong>equipment</strong> (одиночные и <strong>мультивыбор</strong>поля вида <code>_mult</code>).</li></ul><ul id="2a8568fa-e39f-809e-ac62-eda5ac52032a" class="bulleted-list"><li style="list-style-type:disc"><strong>Сплит по времени:</strong> train = янв–ноя, test = декабрь — значит CV должен <strong>симулировать будущее</strong>.</li></ul><ul id="2a8568fa-e39f-8020-a66c-feb2aea84bd7" class="bulleted-list"><li style="list-style-type:disc"><strong>Метрика:</strong> <code>medianAPE = median(|ŷ − y| / y)</code>. Медиана устойчива к хвостам → важны калибровки и обработка выбросов.</li></ul><h3 id="2a8568fa-e39f-80eb-9abd-ccffe1e66919" class="">B. CV и анти-утечки</h3><ul id="2a8568fa-e39f-80c0-a82b-c14f35fc71a3" class="bulleted-list"><li style="list-style-type:disc"><strong>TimeSplit/Purged</strong>: фолды по месяцам/неделям; вал — «позже» тренировки, с <strong>эмбарго</strong> (буфер) между train и val.</li></ul><ul id="2a8568fa-e39f-8029-a943-c1f78afebaaa" class="bulleted-list"><li style="list-style-type:disc"><strong>Категорики/частоты:</strong> все статистики (target/freq/mean encoding) — строго <strong>OOF</strong>; никаких фиттов на всём train сразу.</li></ul><ul id="2a8568fa-e39f-80cd-8b57-f998bd7c73b4" class="bulleted-list"><li style="list-style-type:disc"><strong>Фото:</strong> эмбеддинги из моделей — норм, но <strong>агрегации по объекту</strong> не должны «подсматривать» в val/test.</li></ul><ul id="2a8568fa-e39f-80dd-b369-edc7c1ec1bfe" class="bulleted-list"><li style="list-style-type:disc"><strong>Гео/дата:</strong> признаки, привязанные ко времени/локации, должны считаться только из <strong>train-окна</strong>.</li></ul><h3 id="2a8568fa-e39f-8020-a768-ed306e941005" class="">C. Табличные признаки (что даёт очки быстро)</h3><ul id="2a8568fa-e39f-8084-804f-e7e6a9963b3f" class="bulleted-list"><li style="list-style-type:disc"><strong>Базовая обработка:</strong><ul id="2a8568fa-e39f-806c-90a5-e0f3557a43a1" class="bulleted-list"><li style="list-style-type:circle">one-hot/кат-кодирование для одиночных опций (<code>body_type</code>, <code>drive_type</code>, …),</li></ul><ul id="2a8568fa-e39f-8030-8ee5-fe4ecaaccf21" class="bulleted-list"><li style="list-style-type:circle"><strong>мультивыбор</strong> (<code>_mult</code>) → multi-hot / count / TF-like частоты по словарю опций,</li></ul><ul id="2a8568fa-e39f-804c-860f-e135e2199f8f" class="bulleted-list"><li style="list-style-type:circle">числовые: лог-преобразования (<code>log1p(mileage)</code>), клиппинг экстремумов,</li></ul><ul id="2a8568fa-e39f-80a2-97aa-f69ae0382449" class="bulleted-list"><li style="list-style-type:circle"><strong>гео</strong>: шир/долг → грид-биннинг, расстояние до центров (если возможно),</li></ul><ul id="2a8568fa-e39f-8008-b82e-c9d5bcbef7ae" class="bulleted-list"><li style="list-style-type:circle"><strong>календарные</strong>: коды месяца/недели/сезона из дат.</li></ul></li></ul><ul id="2a8568fa-e39f-80e1-b354-e75a218898df" class="bulleted-list"><li style="list-style-type:disc"><strong>Модели:</strong> CatBoost (cat_features), LightGBM (с частотным/target-encoding OOF).</li></ul><ul id="2a8568fa-e39f-80ba-b139-d52d85a9f97a" class="bulleted-list"><li style="list-style-type:disc"><strong>MAE vs APE:</strong> регрессия по лог-цене (<code>log(price)</code>) стабилизирует хвосты; при оценке переводить обратно и считать APE на оригинале.</li></ul><h3 id="2a8568fa-e39f-8081-9916-e3ffb3f4f208" class="">D. Визуальные признаки (ключ к приросту)</h3><ul id="2a8568fa-e39f-8015-a886-df16af02f85d" class="bulleted-list"><li style="list-style-type:disc"><strong>Экстракция эмбеддингов:</strong><ul id="2a8568fa-e39f-8046-9ad8-e2d9586f64f9" class="bulleted-list"><li style="list-style-type:circle">CLIP ViT-B/32 или <code>timm</code> ResNet/ViT → 512/768-мерные векторы на <strong>каждое фото</strong>.</li></ul></li></ul><ul id="2a8568fa-e39f-809d-8bd0-f5e81b341722" class="bulleted-list"><li style="list-style-type:disc"><strong>Агрегация 4 фото → объект:</strong><ul id="2a8568fa-e39f-80c2-bbd1-d6c1e5a410b1" class="bulleted-list"><li style="list-style-type:circle"><strong>Mean/Max-pool</strong>, <strong>Top-K mean</strong> (по уверенности/контрасту),</li></ul><ul id="2a8568fa-e39f-8014-86f7-faf8bdf327d9" class="bulleted-list"><li style="list-style-type:circle"><strong>Attention-pool</strong> (маленькая self-attn-голова поверх 4 векторов).</li></ul></li></ul><ul id="2a8568fa-e39f-8000-b16d-dd6190e9ad2c" class="bulleted-list"><li style="list-style-type:disc"><strong>Нормализация:</strong> L2-норма, PCA/whitening (опционально) в OOF-протоколе.</li></ul><ul id="2a8568fa-e39f-8079-ae0c-d9e09e4729db" class="bulleted-list"><li style="list-style-type:disc"><strong>Фьюжн-варианты:</strong><ul id="2a8568fa-e39f-8071-92b5-e3718d2e47c3" class="bulleted-list"><li style="list-style-type:circle"><em>Late fusion:</em> табличная модель и отдельный регрессор по фото-вектору → Level-2.</li></ul><ul id="2a8568fa-e39f-8088-9a82-d03a6ed4fb52" class="bulleted-list"><li style="list-style-type:circle"><em>Early fusion:</em> конкатенация табличных и визуальных фич → единый GBDT (требует аккуратного скейлинга).</li></ul></li></ul><h3 id="2a8568fa-e39f-80be-9d9b-c33d3fa2205f" class="">E. Потери и калибровка под medianAPE</h3><ul id="2a8568fa-e39f-8043-9acc-dca57b68d288" class="bulleted-list"><li style="list-style-type:disc"><strong>Huber/Quantile-регрессия</strong> (τ≈0.5) — лучше для медианных критериев.</li></ul><ul id="2a8568fa-e39f-8025-a5e0-eab06bc45d0d" class="bulleted-list"><li style="list-style-type:disc"><strong>Калибровка диапазона:</strong> клиппинг цен по перцентилям (1–99%) на val, защита от «0» в знаменателе APE.</li></ul><ul id="2a8568fa-e39f-8067-a1f2-d05b0ee88951" class="bulleted-list"><li style="list-style-type:disc"><strong>Пост-проц:</strong> сглаживание «перестрелок» по классам (напр., <code>body_type</code>/<code>engine_type</code> out-of-range) через правила/бэйес-коррекцию.</li></ul><h3 id="2a8568fa-e39f-80b3-85b7-f55745cf9c26" class="">F. Стэкинг/бленд</h3><ul id="2a8568fa-e39f-80e4-a3a1-e14f7fec8bb2" class="bulleted-list"><li style="list-style-type:disc"><strong>OOF Level-2:</strong> бленд табличного регрессора и фото-регрессора (ridge/elastic/CatBoost Level-2).</li></ul><ul id="2a8568fa-e39f-804e-b21d-ed028877bc1d" class="bulleted-list"><li style="list-style-type:disc"><strong>Веса бленда:</strong> подбираются по <strong>val-medianAPE</strong>; следим, чтобы Level-2 обучался <strong>только на OOF</strong>.</li></ul><h3 id="2a8568fa-e39f-8065-92d1-e63a7f395486" class="">G. Скорость, I/O, воспроизводимость</h3><ul id="2a8568fa-e39f-8069-9515-e3d52479d50f" class="bulleted-list"><li style="list-style-type:disc">Сохранение фото-эмбеддингов на диск (<code>parquet/npy</code>), батч-экстракция, кэш.</li></ul><ul id="2a8568fa-e39f-80cc-ad7f-df9439fef227" class="bulleted-list"><li style="list-style-type:disc">Полный прогон ≤ N минут на локальном железе — логируем время этапов (извлечение, обучение, инференс, сабмит).</li></ul><hr id="2a8568fa-e39f-80d8-a4b3-d792b5527f5e"/><h2 id="2a8568fa-e39f-8045-ac4e-e6db1d54cbb1" class="">3) Практика (лабы, 3–4 часа)</h2><h3 id="2a8568fa-e39f-80b0-b2f9-e133b99f0dbd" class="">Лаба 1. Данные, CV и локальная medianAPE</h3><ol type="1" id="2a8568fa-e39f-80a7-8e9f-e975b07a2204" class="numbered-list" start="1"><li>Загрузить <code>train_dataset.parquet</code>, <code>test_dataset.parquet</code>, фотоархивы; сверить до 4 изображений на ID.</li></ol><ol type="1" id="2a8568fa-e39f-801e-b312-e80806a0da1e" class="numbered-list" start="2"><li>Реализовать TimeSplit (янв–ноя → train, ноя/декабрь → val-симуляция) + <code>medianAPE(y, ŷ)</code> с устойчивостью к нулям/NaN.</li></ol><ol type="1" id="2a8568fa-e39f-80af-a68a-c63b5500a499" class="numbered-list" start="3"><li>Собрать <strong>табличный бейзлайн</strong> (Cat/LGBM) с аккуратной обработкой <code>_mult</code> и лог-таргетом; оценить medianAPE (↓ лучше).</li></ol><p id="2a8568fa-e39f-8045-be46-cbddd22c0f11" class=""><strong>Артефакты:</strong> <code>cv_timesplit.py</code>, <code>metrics_reg.py (medianAPE)</code>, <code>baseline_tabular.py</code>.</p><hr id="2a8568fa-e39f-809c-9df1-de0dd46d8d5f"/><h3 id="2a8568fa-e39f-80d6-95e7-c9b1a109731a" class="">Лаба 2. Фото-эмбеддинги и агрегирование 4→1</h3><ol type="1" id="2a8568fa-e39f-8034-99a4-d7aa68bcd0f5" class="numbered-list" start="1"><li>Экстрактор (CLIP/ViT/ResNet) → вектор на фото.</li></ol><ol type="1" id="2a8568fa-e39f-8019-b863-e1aef640f274" class="numbered-list" start="2"><li>Агрегация по объявлению: <strong>mean</strong>, <strong>max</strong>, <strong>Top-K mean</strong>, <strong>attention-pool</strong> (простая self-attn над 4 векторами).</li></ol><ol type="1" id="2a8568fa-e39f-8002-a12b-cad3d896f14f" class="numbered-list" start="3"><li>Регрессор по фото-вектору (LGBM/Cat или линейный) → OOF-предикт и val-medianAPE.</li></ol><p id="2a8568fa-e39f-80b2-8577-cb08c391c6dc" class=""><strong>Артефакты:</strong> <code>build_img_embeddings.py</code>, <code>aggregate_imgs.py</code>, <code>reg_image_head.py</code>.</p><hr id="2a8568fa-e39f-808b-8e4b-c91d1e9651a3"/><h3 id="2a8568fa-e39f-80ee-b606-e0caedcd50b2" class="">Лаба 3. Фьюжн и Level-2</h3><ol type="1" id="2a8568fa-e39f-8085-acb2-d1df3eb4a9cb" class="numbered-list" start="1"><li><strong>Early fusion:</strong> конкатенация табличных фич и фото-вектора → GBDT; замер прироста.</li></ol><ol type="1" id="2a8568fa-e39f-8094-806e-ff734602e68f" class="numbered-list" start="2"><li><strong>Late fusion:</strong> OOF-предикты табличного и фото-регрессора → <strong>Level-2</strong> (ridge/Cat).</li></ol><ol type="1" id="2a8568fa-e39f-80f7-9ed2-dc9a626aa88c" class="numbered-list" start="3"><li>Выбор лучшего варианта по val-medianAPE; лог важности/весов.</li></ol><p id="2a8568fa-e39f-80d2-ad76-e311a2f17b35" class=""><strong>Артефакты:</strong> <code>train_fusion.py</code>, <code>blend_level2.py</code>, <code>ablation_fusion.md</code>.</p><hr id="2a8568fa-e39f-8015-a2ac-f691972848da"/><h3 id="2a8568fa-e39f-8055-b407-e6a570e686ee" class="">Лаба 4. Калибровка под medianAPE</h3><ol type="1" id="2a8568fa-e39f-80d2-a7ec-f2a5636a8c66" class="numbered-list" start="1"><li>Сравнить <strong>Huber vs Quantile(τ=0.5)</strong>; проверить, как меняется медиана APE.</li></ol><ol type="1" id="2a8568fa-e39f-80a3-9ef8-e4f7a36fcabf" class="numbered-list" start="2"><li>Пост-проц: перцентильный клиппинг предсказаний (1–99%), правила для явных выбросов (по пробегу/ДВС/кузову).</li></ol><ol type="1" id="2a8568fa-e39f-80de-8de6-cc6969487686" class="numbered-list" start="3"><li>Финальный выбор конфигурации.</li></ol><p id="2a8568fa-e39f-80d8-b351-ce75bbe21f18" class=""><strong>Артефакты:</strong> <code>calibration.py</code>, <code>postprocess_price.py</code>.</p><hr id="2a8568fa-e39f-8081-96cb-d9df34d5d423"/><h3 id="2a8568fa-e39f-8012-8c1b-c7d856621558" class="">Лаба 5. Инференс и сабмит</h3><ol type="1" id="2a8568fa-e39f-80b1-9014-d8ae2706a768" class="numbered-list" start="1"><li>Полный прогон: табличные фичи → фото-эмбеддинги → фьюжн/бленд → калибровка.</li></ol><ol type="1" id="2a8568fa-e39f-8089-8915-d153433077ae" class="numbered-list" start="2"><li>Сформировать <code>sample_submission.csv</code>совместимый <code>ID,target</code> (проверка типов/NaN/формата).</li></ol><ol type="1" id="2a8568fa-e39f-80bd-a412-c1aa65a02ae7" class="numbered-list" start="3"><li>Лог времени и «release-чек-лист».</li></ol><p id="2a8568fa-e39f-80be-9882-cb391d33f211" class=""><strong>Артефакты:</strong> <code>predict.py</code>, <code>make_submission.py</code>, <code>final_submit.csv</code>.</p><hr id="2a8568fa-e39f-8012-9573-f4bfe87085a1"/><h2 id="2a8568fa-e39f-8088-973c-db439c587131" class="">4) Критерии сдачи</h2><ul id="2a8568fa-e39f-8040-a309-dfe4acafba84" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректный TimeSplit</strong> (train до ноября, вал — позднее/декабрь-симуляция) и локальный <code>medianAPE</code>скрипт.</li></ul><ul id="2a8568fa-e39f-80d6-a727-f1fbe5ff3c11" class="bulleted-list"><li style="list-style-type:disc">Фото-эмбеддинги агрегированы 4→1; есть сравнение ≥2 способов (mean/attention/Top-K).</li></ul><ul id="2a8568fa-e39f-806c-966a-c1cb96623079" class="bulleted-list"><li style="list-style-type:disc"><strong>Фьюжн + Level-2</strong> дают ощутимый прирост по medianAPE относительно табличного бейзлайна.</li></ul><ul id="2a8568fa-e39f-8061-bcc2-cf932b532dd4" class="bulleted-list"><li style="list-style-type:disc">Валидация стабильна на нескольких «сдвигах во времени».</li></ul><ul id="2a8568fa-e39f-8096-a58f-c6f6635e930d" class="bulleted-list"><li style="list-style-type:disc">Валидный сабмит формата <code>ID,target</code> как в <code>sample_submission.csv</code>.</li></ul><hr id="2a8568fa-e39f-8061-b536-f054decc7a52"/><h2 id="2a8568fa-e39f-80e2-bbc1-ed39d506b0e0" class="">5) Домашнее задание</h2><ol type="1" id="2a8568fa-e39f-8000-ae2c-d17441dbf8c4" class="numbered-list" start="1"><li>Снять <strong>таблицу абляций</strong>: табличка → +фото (mean) → +attention → +Level-2 → +калибровка; укажите medianAPE и время.</li></ol><ol type="1" id="2a8568fa-e39f-809a-9d82-cbaa7dd272b0" class="numbered-list" start="2"><li>Подобрать <strong>Top-K</strong> для агрегации фото (K=1..4) и порог для клиппинга предсказаний (1–5-й перцентиль).</li></ol><ol type="1" id="2a8568fa-e39f-80bc-9bd8-ec335d022813" class="numbered-list" start="3"><li>Реализовать <strong>гео-фичи</strong> (биннинг координат/радиусы по желанию) и показать их вклад.</li></ol><ol type="1" id="2a8568fa-e39f-804b-bc4f-f34aba978005" class="numbered-list" start="4"><li>Подготовить <code>repro.sh</code> (полная сборка сабмита) и <code>README</code> с указанием требуемых ресурсов/времени.</li></ol><hr id="2a8568fa-e39f-806d-acb1-e69d9c87d680"/><p id="2a8568fa-e39f-80d1-b5b0-e90856d5df9d" class="">Если ок, дальше — <strong>Модуль 8 (сквозной фичеринг и стэкинг)</strong>: общие приёмы, которые добавляют очки во всех задачах (и быстро переносятся в боевой 6-часовой спринт).</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

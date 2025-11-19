@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М10. Страхование и риск-скоринг (классика Kaggle)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-809d-bf45-c0ba44926ebb" class="page sans"><header><h1 class="page-title">М10. Страхование и риск-скоринг (классика Kaggle)</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-807a-bb14-e400239abb51" class="">ниже — подробный Модуль 10. Фокус: <strong>страхование и риск-скоринг</strong>: частота/тяжесть убытков (frequency–severity), Tweedie/GLM/GBDT, калибровка, лифт-таблицы и утечки. Всё заточено под 5-часовой формат.</p><h2 id="2a8568fa-e39f-8006-bf94-ed81b89fba20" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-8025-a13d-d9535095798c" class="bulleted-list"><li style="list-style-type:disc">Определять правильную <strong>формулировку задачи</strong>: вероятность убытка (claim occurrence), <strong>частота × тяжесть</strong> и «чистая премия» (pure premium).</li></ul><ul id="2a8568fa-e39f-803d-b7a5-cce2d6cba829" class="bulleted-list"><li style="list-style-type:disc">Настраивать <strong>валидирование</strong> с экспозицией и временем полиса (Group/Time/Purged), без утечек.</li></ul><ul id="2a8568fa-e39f-808a-a514-ce0067219a70" class="bulleted-list"><li style="list-style-type:disc">Освоить <strong>модели</strong>: GLM (Poisson/NegBin/Gamma/Tweedie) и GBDT-аналог (LightGBM/XGB/CatBoost с Tweedie/Quantile/BCE).</li></ul><ul id="2a8568fa-e39f-805c-8d57-eab2f419953b" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>фич-фабрику страховщика</strong>: тарифные классы, гео/техпараметры, история, сезонность, телематика (если есть).</li></ul><ul id="2a8568fa-e39f-80d2-a993-d705eb95e6b6" class="bulleted-list"><li style="list-style-type:disc">Делать <strong>калибровку</strong> (Platt/Isotonic), <strong>лифт-/Лоренц-кривые</strong>, <strong>Gini/Lift@К</strong> и оценку финансового эффекта.</li></ul><p id="2a8568fa-e39f-801c-81a8-caac1b6fc306" class=""><strong>Выход:</strong> пайплайн страховщика: <code>exposure_cv.py</code>, <code>ins_features.py</code>, <code>glm_tools.py</code>, <code>tweedie_lgbm.py</code>, <code>calibration_lift.py</code>, чек-листы утечек.</p><hr id="2a8568fa-e39f-800e-a934-dd86d230ee88"/><h2 id="2a8568fa-e39f-8082-bd74-d318707deedf" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-8048-ac3c-f14bf1a01106" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-8086-b996-eb30cf4dc329" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 4–5 часов</strong>.</li></ul><ul id="2a8568fa-e39f-809a-8ace-e569e1aa6a81" class="bulleted-list"><li style="list-style-type:disc">Защита «паспорт решения» (1 стр) + 2 сабмита.</li></ul><hr id="2a8568fa-e39f-8016-9df7-cefae7fd5691"/><h2 id="2a8568fa-e39f-8086-9cf4-ed152f94c9b0" class="">3) Карта решений за ≤10 минут</h2><ol type="1" id="2a8568fa-e39f-8080-83fe-d18882eeed2c" class="numbered-list" start="1"><li><strong>Что предсказываем?</strong><ul id="2a8568fa-e39f-800a-94b5-c9156a3d4a85" class="bulleted-list"><li style="list-style-type:disc"><strong>Occurrence</strong> (есть убыток = 1/0) → BCE/AUC/PR-AUC.</li></ul><ul id="2a8568fa-e39f-80d5-92c2-c5453f1d0c65" class="bulleted-list"><li style="list-style-type:disc"><strong>Frequency</strong> (# убытков на экспозицию) → Poisson/NegBin, метрика: deviance/RMSE по rate.</li></ul><ul id="2a8568fa-e39f-8015-8f98-c424fc7e4724" class="bulleted-list"><li style="list-style-type:disc"><strong>Severity</strong> (размер убытка | убыток&gt;0) → Gamma/Lognormal/Quantile.</li></ul><ul id="2a8568fa-e39f-8078-a7df-cc37ed17c397" class="bulleted-list"><li style="list-style-type:disc"><strong>Pure premium</strong> = <code>E[frequency] × E[severity] × exposure</code>.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-807e-b1d4-f1364e80e22c" class="numbered-list" start="2"><li><strong>Экспозиция</strong>: <code>exposure</code> (в годах/мес) — <strong>обязательный offset</strong> для частоты; для классификации — sample_weight ∝ exposure.</li></ol><ol type="1" id="2a8568fa-e39f-80df-a5d1-cc893917340f" class="numbered-list" start="3"><li><strong>Валидирование</strong>:<ul id="2a8568fa-e39f-802d-8a6f-e446a4403ab1" class="bulleted-list"><li style="list-style-type:disc"><strong>GroupKFold по policy_id/client_id/vehicle_id</strong>,</li></ul><ul id="2a8568fa-e39f-8090-a520-f701b7da45ee" class="bulleted-list"><li style="list-style-type:disc"><strong>Time/Purged</strong> по дате начала полиса/убытка (embargo ≥ макс окна фич),</li></ul><ul id="2a8568fa-e39f-8051-935e-f8f2bbd593c9" class="bulleted-list"><li style="list-style-type:disc">держать <strong>целиком полисы</strong> в одном сплите.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-8066-9c88-f907380a30a5" class="numbered-list" start="4"><li><strong>Метрика выбора</strong>:<ul id="2a8568fa-e39f-80f6-901d-ce94ca38908a" class="bulleted-list"><li style="list-style-type:disc">Occurrence → AUC/PR-AUC + калибровка (Brier/ECE);</li></ul><ul id="2a8568fa-e39f-80cc-bec7-ff82983a8574" class="bulleted-list"><li style="list-style-type:disc">Pure premium → RMSLE/RMSE в лог-пространстве, Tweedie deviance, <strong>Normalized Gini</strong> для тарификации.</li></ul></li></ol><hr id="2a8568fa-e39f-8060-b683-d73a21ce451b"/><h2 id="2a8568fa-e39f-8056-8dbe-d1fcc0c4f441" class="">4) Большие утечки (что ломает всё)</h2><ul id="2a8568fa-e39f-80b2-979c-fdacc1b0a414" class="bulleted-list"><li style="list-style-type:disc">Использование <strong>послепродажных</strong> признаков (стоимость ремонта, статус урегулирования, постфактум «fraud flag»).</li></ul><ul id="2a8568fa-e39f-8060-a315-cfee63fbd55a" class="bulleted-list"><li style="list-style-type:disc">Агрегаты по клиенту/ТС, включающие период <strong>после</strong> даты валидации.</li></ul><ul id="2a8568fa-e39f-8037-84d3-f088663743dd" class="bulleted-list"><li style="list-style-type:disc">Смешивание частей одного полиса/ТС между train/valid.</li></ul><ul id="2a8568fa-e39f-80a5-85e5-f06a83a4537a" class="bulleted-list"><li style="list-style-type:disc">Лаги/роллинги по претензиям, посчитанные <strong>сквозь валид</strong>.</li></ul><ul id="2a8568fa-e39f-801e-90fc-e03a1c9dc0e6" class="bulleted-list"><li style="list-style-type:disc">«Твики» под публичный LB вместо контроля <strong>CV↔LB</strong> и <strong>лифт-кривых</strong>.</li></ul><hr id="2a8568fa-e39f-80d9-b109-ef202f8a5840"/><h2 id="2a8568fa-e39f-80f6-9c3a-d07b57e31f38" class="">5) Три постановки задачи и модели</h2><h3 id="2a8568fa-e39f-8054-89a9-fdba2b19816d" class="">A) Occurrence (вероятность убытка)</h3><ul id="2a8568fa-e39f-8020-987b-f4f668b2a02b" class="bulleted-list"><li style="list-style-type:disc"><strong>Модели:</strong> CatBoost/LGBM/XGB (BCE), class weights/<code>scale_pos_weight</code>, focal-loss (опц.).</li></ul><ul id="2a8568fa-e39f-804d-851d-db9e25111940" class="bulleted-list"><li style="list-style-type:disc"><strong>Калибровка:</strong> Platt/Isotonic на OOF.</li></ul><ul id="2a8568fa-e39f-8080-a609-fa394fc79918" class="bulleted-list"><li style="list-style-type:disc"><strong>Интерпретации:</strong> лифт-кривая, decile-таблица (top-risk группы).</li></ul><h3 id="2a8568fa-e39f-800e-b610-deb991e5f3df" class="">B) Frequency–Severity</h3><ul id="2a8568fa-e39f-80e4-8159-c55c70f70ca5" class="bulleted-list"><li style="list-style-type:disc"><strong>Frequency:</strong> GLM Poisson/NegBin c <strong>offset = log(exposure)</strong>; альтернативно LGBM с целевой <code>claims/exposure</code>.</li></ul><ul id="2a8568fa-e39f-802c-b402-f0b53cafe090" class="bulleted-list"><li style="list-style-type:disc"><strong>Severity:</strong> Gamma/Lognormal (GLM или Quantile/Huber-GBDT) <strong>только для строк с claim&gt;0</strong>; веса — claim-level.</li></ul><ul id="2a8568fa-e39f-80ae-a5fc-e1aa464945b4" class="bulleted-list"><li style="list-style-type:disc"><strong>Сборка:</strong> <code>pure_premium = freq_pred × sev_pred</code>.</li></ul><h3 id="2a8568fa-e39f-80d8-adf5-edfecf192d26" class="">C) Tweedie (всё в одном)</h3><ul id="2a8568fa-e39f-8038-9f3e-e7aff0a92a5e" class="bulleted-list"><li style="list-style-type:disc"><strong>Tweedie GBDT/GLM:</strong> <code>power p ∈ (1,2)</code> (компаунд Poisson-Gamma), <code>link=log</code>; на вход — <strong>claim amount</strong> с нулями + exposure.</li></ul><ul id="2a8568fa-e39f-803e-8a12-d9205f6d2b00" class="bulleted-list"><li style="list-style-type:disc">Подбираем <code>p</code> (сеткой по CV).</li></ul><hr id="2a8568fa-e39f-8031-a6f4-f0e11e52b4f4"/><h2 id="2a8568fa-e39f-80d6-86ea-e8461579868d" class="">6) Метрики тарификации и бизнес-показатели</h2><ul id="2a8568fa-e39f-808e-ad2c-d89a424d5b49" class="bulleted-list"><li style="list-style-type:disc"><strong>AUC/PR-AUC</strong> — для occurrence.</li></ul><ul id="2a8568fa-e39f-801a-9f4d-d5558f1ce8fc" class="bulleted-list"><li style="list-style-type:disc"><strong>Deviance/Tweedie deviance</strong>, <strong>RMSE/RMSLE</strong> (log-пространство).</li></ul><ul id="2a8568fa-e39f-8077-a6a9-e9d813e5d413" class="bulleted-list"><li style="list-style-type:disc"><strong>Normalized Gini</strong> (по премии vs убыток), <strong>Lift-таблицы</strong> (децильные бины по риску).</li></ul><ul id="2a8568fa-e39f-80a7-834c-e198bbb49f8b" class="bulleted-list"><li style="list-style-type:disc"><strong>Калибровка:</strong> Brier, <strong>ECE</strong>, релайбилити-кривые.</li></ul><ul id="2a8568fa-e39f-80d6-bfd9-cf45733fd71f" class="bulleted-list"><li style="list-style-type:disc"><strong>Финансовый срез:</strong> отношение ожидаемого убытка к премии на бинах (Loss Ratio по deciles).</li></ul><hr id="2a8568fa-e39f-80ed-8512-f3e2b195c49b"/><h2 id="2a8568fa-e39f-8037-b484-cf02cfcf12d6" class="">7) Фич-фабрика страховщика</h2><p id="2a8568fa-e39f-80f9-be5e-e1532e7d9106" class=""><strong>Категориальные и уровни риска</strong></p><ul id="2a8568fa-e39f-80ef-85ce-d5cdda0ed700" class="bulleted-list"><li style="list-style-type:disc">Марка/модель/класс ТС, тип двигателя/мощность, возраст водителя/стажа, usage (личный/коммерческий), регион/гардинг.</li></ul><ul id="2a8568fa-e39f-80c7-94c6-c125f1b9ae3e" class="bulleted-list"><li style="list-style-type:disc"><strong>Тарифные классы/бонус-малус</strong>: safe-кодировки (freq/target-fold), ordinal порядки для классов.</li></ul><p id="2a8568fa-e39f-80ed-85e9-cee187305b0c" class=""><strong>История и частоты</strong></p><ul id="2a8568fa-e39f-80fe-b6b9-c9399f0aac13" class="bulleted-list"><li style="list-style-type:disc">Rolling/expanding counts по клиенту/ТС: # убытков за 1/3/5 лет, средняя тяжесть (только <strong>в прошлом</strong>), без утечки.</li></ul><ul id="2a8568fa-e39f-80d5-b873-e247af7334cd" class="bulleted-list"><li style="list-style-type:disc">Recency (время с последнего убытка), claim-rate на сегменте (vehicle_class×region).</li></ul><p id="2a8568fa-e39f-80bd-971d-df06fb17b3b0" class=""><strong>Экспозиция и сезонность</strong></p><ul id="2a8568fa-e39f-803d-bdaa-f4efb8c42be4" class="bulleted-list"><li style="list-style-type:disc"><code>exposure</code>, месяц/квартал старта, сезонные флаги, праздники (кражи/град — сезонность).</li></ul><p id="2a8568fa-e39f-8039-9cf6-e4d76a535250" class=""><strong>Гео/погодные</strong></p><ul id="2a8568fa-e39f-80a4-a463-ee59821d87b8" class="bulleted-list"><li style="list-style-type:disc">Региональные частоты/тяжесть (safe OOF), погодно-климатические индикаторы (если доступны и известны на момент старта полиса).</li></ul><p id="2a8568fa-e39f-80fe-81f1-df29eae7d01c" class=""><strong>Теленатика (если есть)</strong></p><ul id="2a8568fa-e39f-800a-8300-fab079632887" class="bulleted-list"><li style="list-style-type:disc">trip-статистики: средняя/макс скорость, доля ночных поездок, резкие торможения/ускорения per 100 км; агрегировать <strong>до даты тарификации</strong>.</li></ul><blockquote id="2a8568fa-e39f-80a6-8eae-d7374c28ea63" class="">Все таргет-зависимые статистики — только OOF/time-aware. Любые агрегаты «в будущее» запрещены.</blockquote><hr id="2a8568fa-e39f-80cf-b740-ee2a2ce32d7e"/><h2 id="2a8568fa-e39f-80bf-a497-f4683974de9a" class="">8) Монотонности и shape-контроль</h2><ul id="2a8568fa-e39f-803f-922f-f6d6b82efe95" class="bulleted-list"><li style="list-style-type:disc">Логичные связи: мощность↑ → risk↑, возраст водителя (U-shape с young/old), # прошлых claims↑ → risk↑.</li></ul><ul id="2a8568fa-e39f-80ba-a538-dfe781b9b7f7" class="bulleted-list"><li style="list-style-type:disc"><strong>LightGBM/XGB:</strong> <code>monotone_constraints</code> на 2–5 фич (там, где связь однозначна).</li></ul><ul id="2a8568fa-e39f-8013-a0df-c400373ed559" class="bulleted-list"><li style="list-style-type:disc"><strong>Spline/WOE-биннинг</strong> для «U-shape»: piecewise фичи (например, <code>(age&lt;25)</code>, <code>(age&gt;65)</code>), либо GLM со сплайнами.</li></ul><hr id="2a8568fa-e39f-8080-8db5-f23b80e8e397"/><h2 id="2a8568fa-e39f-80d0-b03a-d7bdc5d66ecd" class="">9) Калибровка и прайсинг</h2><ul id="2a8568fa-e39f-807f-886e-d2024c14eaa8" class="bulleted-list"><li style="list-style-type:disc"><strong>Occurrence → calibrated prob</strong> (Platt/Isotonic).</li></ul><ul id="2a8568fa-e39f-8063-b93e-c309623454e7" class="bulleted-list"><li style="list-style-type:disc"><strong>Frequency/Severity/Tweedie:</strong> проверяем <strong>калибровку по deciles</strong> (ожидание vs факт), корректируем глобальные сдвиги.</li></ul><ul id="2a8568fa-e39f-80a8-b4ef-d9bcf8f465a7" class="bulleted-list"><li style="list-style-type:disc"><strong>Technical premium</strong>: <code>pure_premium × (1 + loading)</code> (loading не оптимизируем в спринте, но показываем расчёт LR).</li></ul><hr id="2a8568fa-e39f-804f-a4af-ea1a6e623990"/><h2 id="2a8568fa-e39f-80f9-8354-d3a9c11033b5" class="">10) Бейзлайны и ансамбль</h2><ul id="2a8568fa-e39f-8009-9c73-cf4e988b818f" class="bulleted-list"><li style="list-style-type:disc"><strong>Baseline-0 (≤45 мин):</strong> CatBoost (BCE) для occurrence с корректной CV + калибровка → AUC + лифт.</li></ul><ul id="2a8568fa-e39f-80b9-a26a-ed24e5d57e43" class="bulleted-list"><li style="list-style-type:disc"><strong>Baseline-1 (≤90 мин):</strong> Tweedie-LGBM (<code>tweedie_variance_power=p</code>) для claim amount + exposure → deviance/RMSLE.</li></ul><ul id="2a8568fa-e39f-802c-9ca8-c44f2cd992c2" class="bulleted-list"><li style="list-style-type:disc"><strong>Frequency–Severity (≤120 мин):</strong> Poisson-GLM + Gamma-GBDT → pure premium.</li></ul><ul id="2a8568fa-e39f-802c-9ba3-ee2719487953" class="bulleted-list"><li style="list-style-type:disc"><strong>Ансамбль (30–45 мин):</strong> усреднение лог-пространств (log-pure-premium) моделей Tweedie и F×S; веса по OOF-девайансу/Normalized Gini.</li></ul><hr id="2a8568fa-e39f-80fa-a18e-f0c382cd9a87"/><h2 id="2a8568fa-e39f-80c4-8540-c5103aa3b4f2" class="">11) Мини-практикум A (60–90 мин): occurrence → лифт</h2><p id="2a8568fa-e39f-80f9-93a5-d1abcde395a3" class=""><strong>Цель:</strong> устойчивый скоринг вероятности убытка + калибровка.</p><p id="2a8568fa-e39f-800c-968e-e75badab6ec0" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8026-8c99-c691aa793b6d" class="numbered-list" start="1"><li>GroupKFold(client/vehicle) + BCE-CatBoost → OOF AUC.</li></ol><ol type="1" id="2a8568fa-e39f-809f-af2c-e5840382316e" class="numbered-list" start="2"><li>Калибровка (Isotonic) + лифт/децильная таблица.</li></ol><ol type="1" id="2a8568fa-e39f-8006-bac8-df9be76af665" class="numbered-list" start="3"><li>Честная проверка CV↔LB, отчёт «где модель врёт» (miscalibration plot).</li></ol><p id="2a8568fa-e39f-80b9-b608-d5a8e590df48" class=""><strong>Артефакты:</strong> <code>calibration_lift.py</code>, <code>lift_report.md</code>.</p><hr id="2a8568fa-e39f-80c9-ad24-f3b27437abcc"/><h2 id="2a8568fa-e39f-8051-9f1f-d76a5f975cfd" class="">12) Мини-практикум B (60–90 мин): Tweedie</h2><p id="2a8568fa-e39f-806d-a47e-e6371b6895a6" class=""><strong>Цель:</strong> «всё-в-одном» c экспозицией.</p><p id="2a8568fa-e39f-8069-83ff-e216a78e4031" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8096-8241-e8434f358e3e" class="numbered-list" start="1"><li>Подбор <code>p∈{1.1,1.3,1.5,1.7}</code> по OOF-девайансу.</li></ol><ol type="1" id="2a8568fa-e39f-80d7-8019-f141379d42c0" class="numbered-list" start="2"><li>Сравнить RMSLE/Normalized Gini с occurrence-подходом.</li></ol><ol type="1" id="2a8568fa-e39f-80ac-96e3-f9117d33e2f5" class="numbered-list" start="3"><li>Decile LR по премии.</li></ol><p id="2a8568fa-e39f-8095-ade7-e8432c9ad72b" class=""><strong>Артефакты:</strong> <code>tweedie_lgbm.py</code>, <code>tweedie_report.md</code>.</p><hr id="2a8568fa-e39f-8072-adef-c088b43ae15f"/><h2 id="2a8568fa-e39f-801c-8897-c9a39ae5a6c2" class="">13) Мини-практикум C (60–90 мин): frequency × severity</h2><p id="2a8568fa-e39f-805c-a42d-ef9580d35e25" class=""><strong>Цель:</strong> сборка pure premium и стресс-тест.</p><p id="2a8568fa-e39f-80ce-9c62-d1fbbfc37e18" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-80b1-92b9-cca6e9e9e443" class="numbered-list" start="1"><li>Poisson-GLM (offset log(exposure)) → частота; Gamma-GBDT → тяжесть.</li></ol><ol type="1" id="2a8568fa-e39f-80c1-bd50-ec1990fbdd6d" class="numbered-list" start="2"><li>Перемножить → pure premium; сравнить с Tweedie.</li></ol><ol type="1" id="2a8568fa-e39f-80e8-9419-cfaf5546b962" class="numbered-list" start="3"><li>Альтернативный сплит (другой seed/Time) → проверка переносимости.</li></ol><p id="2a8568fa-e39f-80bf-9fca-ef141b2ae643" class=""><strong>Артефакты:</strong> <code>glm_tools.py</code>, <code>ins_assemble.py</code>.</p><hr id="2a8568fa-e39f-807f-8835-d8b50df21622"/><h2 id="2a8568fa-e39f-802b-bcd4-de84224270ad" class="">14) Самостоятельный 5-часовой спринт</h2><p id="2a8568fa-e39f-80a8-8596-ee67629e326b" class=""><strong>Варианты:</strong> автострахование/медицинские полисы/имущество (подмножество).</p><p id="2a8568fa-e39f-8030-a811-ccc2fd0916fe" class=""><strong>Требования:</strong></p><ul id="2a8568fa-e39f-80f5-8349-d9b1dee187e0" class="bulleted-list"><li style="list-style-type:disc">Корректная CV (Group + Time/Purged с embargo), учёт <code>exposure</code>.</li></ul><ul id="2a8568fa-e39f-8064-9f45-e9b89cdadf70" class="bulleted-list"><li style="list-style-type:disc">Два тракта: (а) occurrence→calibration→лифт; (б) Tweedie <strong>или</strong> Frequency–Severity.</li></ul><ul id="2a8568fa-e39f-8098-a60e-fb9a15a90f1a" class="bulleted-list"><li style="list-style-type:disc">≥10 безопасных фич (тарифные/гео/история/сезонность), 1 «смелая» (монотонность/сплайны/теленатика).</li></ul><ul id="2a8568fa-e39f-8075-9005-ea073f004c05" class="bulleted-list"><li style="list-style-type:disc">2 сабмита + паспорт решения: метрики, лифт, decile LR, CV↔LB, риски утечки.</li></ul><hr id="2a8568fa-e39f-80f5-b5d5-e79cd4658545"/><h2 id="2a8568fa-e39f-806c-90a2-dd7df9abd80b" class="">15) Чек-лист утечек (версия М10)</h2><ul id="2a8568fa-e39f-80ca-a738-d170285eb873" class="bulleted-list"><li style="list-style-type:disc">Любые агрегаты истории — <strong>только до даты тарификации</strong> (OOF/time-aware).</li></ul><ul id="2a8568fa-e39f-801e-8578-dba57add5c66" class="bulleted-list"><li style="list-style-type:disc">Offset/экспозиция корректны и <strong>не содержат будущих дней</strong>.</li></ul><ul id="2a8568fa-e39f-8011-a0fa-f74f41d52dd4" class="bulleted-list"><li style="list-style-type:disc">Не делим один полис/ТС по сплитам.</li></ul><ul id="2a8568fa-e39f-8064-9d75-e7f1a6a327ac" class="bulleted-list"><li style="list-style-type:disc">Никаких переменных, известных только <strong>после</strong> убытка (repair cost, fraud status и т.п.).</li></ul><hr id="2a8568fa-e39f-80c5-afab-e44c908e1652"/><h2 id="2a8568fa-e39f-808c-a5d8-d4cfaf16d32d" class="">16) Оценивание</h2><ul id="2a8568fa-e39f-8079-9f26-e1f7fc27e688" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: CV, экспозиция, отсутствие утечек.</li></ul><ul id="2a8568fa-e39f-80a1-96aa-f3b3e2401354" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: AUC/PR-AUC (occurrence), deviance/RMSLE (premium), <strong>Normalized Gini</strong>, лифт по deciles.</li></ul><ul id="2a8568fa-e39f-803a-8f22-eeefb40da16f" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: воспроизводимость ≤15 мин, отчёты калибровки/лифта, скорость.</li></ul><ul id="2a8568fa-e39f-80cd-a90f-c17752379734" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: ясная логика постановки (occ vs F×S vs Tweedie), бизнес-интерпретация LR.</li></ul><hr id="2a8568fa-e39f-8005-bafc-c761b2696a9d"/><h2 id="2a8568fa-e39f-80ca-8b2f-e2a51c3d4b45" class="">17) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-80b7-aeb1-c21b834d461f" class="bulleted-list"><li style="list-style-type:disc"><code>exposure_cv.py</code> (Group + Time/Purged + embargo, offset-friendly).</li></ul><ul id="2a8568fa-e39f-80de-8e16-f12e635b5093" class="bulleted-list"><li style="list-style-type:disc"><code>ins_features.py</code> (тарифные классы, история, сезонность, гео, телематика; OOF/time-aware).</li></ul><ul id="2a8568fa-e39f-80c7-8a02-c95be0963bea" class="bulleted-list"><li style="list-style-type:disc"><code>glm_tools.py</code> (Poisson/NegBin/Gamma с offset), <code>tweedie_lgbm.py</code>.</li></ul><ul id="2a8568fa-e39f-80ec-942f-caa00c502f08" class="bulleted-list"><li style="list-style-type:disc"><code>calibration_lift.py</code> (Isotonic/Platt, лифт/Лоренц, decile LR).</li></ul><ul id="2a8568fa-e39f-8084-8036-c302765eafc1" class="bulleted-list"><li style="list-style-type:disc">Пресеты: <code>catboost_occ.yaml</code>, <code>lgbm_tweedie.yaml</code>, <code>glm_poisson.yaml</code>, <code>gbdt_gamma.yaml</code>.</li></ul><ul id="2a8568fa-e39f-8042-a0cc-d4dddb3d5632" class="bulleted-list"><li style="list-style-type:disc">Чек-листы: «экспозиция и offset», «лифт и калибровка», «монотонности».</li></ul><hr id="2a8568fa-e39f-8049-a2af-df1f058ca7eb"/><h2 id="2a8568fa-e39f-809e-80cf-d3d6f94523c3" class="">18) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-8041-bab1-c4140e189b06" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин:</strong> постановка (occ vs premium), CV (Group+Time/Purged), экспозиция, бейзлайн → сабмит_1.</li></ul><ul id="2a8568fa-e39f-8028-88d2-e0fdd7293090" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин:</strong> фич-ядро (тарифные/история/сезонность), калибровка и лифт.</li></ul><ul id="2a8568fa-e39f-801d-85fb-d7b04dc29422" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> Tweedie <strong>или</strong> F×S, подбор <code>p</code>/сборка pure premium → сабмит_2.</li></ul><ul id="2a8568fa-e39f-800a-94d6-c4bd933bc924" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> монотонности/сплайны, стресс-сплит, Normalized Gini.</li></ul><ul id="2a8568fa-e39f-80bd-acde-dbb8499f6bf5" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> лёгкий ансамбль, финальный отчёт (li ft/deciles/LR, где риски и что делать с +2 часами).</li></ul><p id="2a8568fa-e39f-80a9-9ba9-c583c8db5a0a" class="">Если нужно — могу сразу выдать каркасы <code>exposure_cv.py</code>/<code>tweedie_lgbm.py</code>/<code>calibration_lift.py</code> под твой текущий темплейт (те же интерфейсы, что у CV/Encoder), чтобы команда просто подключила и погнала.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

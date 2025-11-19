@@ -1,0 +1,921 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 8.3. LoRA для Seq2Seq (суммаризатор диалогов)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80c0-9a8e-de0247bd1d03" class="page sans"><header><h1 class="page-title">Урок 8.3. LoRA для Seq2Seq (суммаризатор диалогов)</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-805b-be5f-c2e773102475" class="">Окей, погнали учить BART/T5 “по-нашему” суммировать диалоги с помощью LoRA 💼🧠</p><p id="2ab568fa-e39f-809c-b101-c8538ec2e1ae" class="">В 8.2 мы прикрутили LoRA к каузалке (чат-боту). Теперь делаем то же самое, но для <strong>seq2seq-суммаризатора диалогов</strong> из М5.</p><hr id="2ab568fa-e39f-80ef-a486-fc184ec2dc02"/><h2 id="2ab568fa-e39f-80d9-91ca-ff4d4acb14df" class="">0. Что делаем в этом уроке</h2><p id="2ab568fa-e39f-805a-ada3-cb47794a84c1" class="">План простой:</p><ol type="1" id="2ab568fa-e39f-8090-b119-ef5a4fab458e" class="numbered-list" start="1"><li>Взять уже знакомый сетап из М5: <code>dialogs.csv</code> с колонками <code>dialog</code> и <code>summary</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80ca-835d-c14d0f88bf36" class="numbered-list" start="2"><li>Загрузить базовую seq2seq-модель (например, <code>facebook/bart-large-cnn</code> или T5).</li></ol><ol type="1" id="2ab568fa-e39f-80d4-b61b-d106ea98afa1" class="numbered-list" start="3"><li>Навесить на неё LoRA адаптер (<code>TaskType.SEQ_2_SEQ_LM</code>).</li></ol><ol type="1" id="2ab568fa-e39f-8073-9f5a-c2701696b6e9" class="numbered-list" start="4"><li>Обучить LoRA-адаптер с <code>Seq2SeqTrainer</code> и ROUGE-метрикой.</li></ol><ol type="1" id="2ab568fa-e39f-80d2-9f84-eb577887e8b7" class="numbered-list" start="5"><li>Сохранить адаптер.</li></ol><ol type="1" id="2ab568fa-e39f-809e-9555-df35d1b9e4c6" class="numbered-list" start="6"><li>Собрать функцию <code>summarize_dialog_lora(...)</code> и сравнить с full FT или даже с “голой” предобученной моделью.</li></ol><p id="2ab568fa-e39f-809d-b51e-f485f85210c6" class="">То есть тот же суммаризатор, но <strong>обучаем не всю модель, а только маленький LoRA-слой</strong>.</p><hr id="2ab568fa-e39f-802b-bab0-fdd52cc596fb"/><h2 id="2ab568fa-e39f-80d4-9ece-f8ef7baaa6a3" class="">1. Напоминание: наш суммаризатор из М5</h2><p id="2ab568fa-e39f-8071-9707-d2e3b8d77b51" class="">В модуле 5 у тебя был кейс:</p><blockquote id="2ab568fa-e39f-8081-986a-cb6d6e7fe311" class="">Есть dialogs.csv:<ul id="2ab568fa-e39f-80cd-8470-f950454e0708" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code> — длинная переписка (user + support),</li></ul><ul id="2ab568fa-e39f-8087-950a-d88d03413edb" class="bulleted-list"><li style="list-style-type:disc"><code>summary</code> — короткое описание сути.</li></ul></blockquote><p id="2ab568fa-e39f-807f-903b-f4e59ae87383" class="">Мы делали:</p><ul id="2ab568fa-e39f-806a-9fb6-c52499968f40" class="bulleted-list"><li style="list-style-type:disc">full fine-tuning BART/T5 через <code>AutoModelForSeq2SeqLM</code>,</li></ul><ul id="2ab568fa-e39f-8014-8a20-cbd5140e8afe" class="bulleted-list"><li style="list-style-type:disc"><code>Seq2SeqTrainer</code>,</li></ul><ul id="2ab568fa-e39f-806a-ad50-eaf1fee7d5ad" class="bulleted-list"><li style="list-style-type:disc">ROUGE как метрику.</li></ul><p id="2ab568fa-e39f-8023-9fe7-ed146482eec5" class="">Теперь всё то же самое, только:</p><ul id="2ab568fa-e39f-80cd-8a06-de12602c1158" class="bulleted-list"><li style="list-style-type:disc">базовая модель <strong>заморожена</strong>,</li></ul><ul id="2ab568fa-e39f-80eb-a341-c48787b346f1" class="bulleted-list"><li style="list-style-type:disc">LoRA-адаптер добавляет “твои” знания и стиль суммаризации.</li></ul><hr id="2ab568fa-e39f-8096-86c3-c7902c41c0eb"/><h2 id="2ab568fa-e39f-8052-8d48-f04345b13392" class="">2. Данные: <code>dialogs.csv</code></h2><h3 id="2ab568fa-e39f-80a4-813f-c20842406af2" class="">2.1. Формат файла</h3><p id="2ab568fa-e39f-8032-9718-cf401cdcff78" class="">Пример строки:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801a-818f-e547b1e6cf08" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">dialog,summary
+&quot;User: Hi, the app crashes when I open the gallery.\nSupport: Sorry to hear that, can you share your device and OS version?\nUser: iPhone 13, iOS 17.1, app version 5.2.1.\nSupport: Thanks, we are aware of this bug and working on a fix.&quot;,&quot;User reports gallery crashes after update on iPhone 13 / iOS 17.1, fix in progress.&quot;
+</code></pre><ul id="2ab568fa-e39f-801d-b4cb-f8a6bf5be91c" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code> — всё, что было сказано в переписке (можно с переносами строк).</li></ul><ul id="2ab568fa-e39f-809d-85e0-d7dfa9d4fec2" class="bulleted-list"><li style="list-style-type:disc"><code>summary</code> — 1–3 предложения, сжимающие суть.</li></ul><h3 id="2ab568fa-e39f-809e-8ca9-d50c5444134e" class="">2.2. Загрузка через <code>datasets</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8016-837e-ede1c43cbd65" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset, DatasetDict
+
+raw = load_dataset(&quot;csv&quot;, data_files=&quot;dialogs.csv&quot;)[&quot;train&quot;]
+print(raw[0])
+</code></pre><p id="2ab568fa-e39f-805b-b384-f28e389ee887" class="">Проверяем, что есть столбцы:</p><ul id="2ab568fa-e39f-80d3-88a0-e07b1c0c16bc" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code></li></ul><ul id="2ab568fa-e39f-80d5-83dc-cb0492427e03" class="bulleted-list"><li style="list-style-type:disc"><code>summary</code></li></ul><p id="2ab568fa-e39f-80c2-ad24-ea1fa94f56da" class="">Делаем сплит:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e8-8739-d6f1c5801209" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">split = raw.train_test_split(test_size=0.1, seed=42)
+
+dataset = DatasetDict({
+    &quot;train&quot;: split[&quot;train&quot;],
+    &quot;validation&quot;: split[&quot;test&quot;],
+})
+
+print(dataset)
+</code></pre><hr id="2ab568fa-e39f-8035-8cff-d72c4e7ddd2d"/><h2 id="2ab568fa-e39f-8068-9990-fa38a5c2a758" class="">3. Базовая seq2seq-модель и токенизатор</h2><p id="2ab568fa-e39f-8009-a4c4-ce265cec11ea" class="">Возьмём, например, BART:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8002-a489-f2c8d441ab16" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+model_name = &quot;facebook/bart-large-cnn&quot;  # можно поменять на T5, mBART и т.д.
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+base_model = AutoModelForSeq2SeqLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+)
+</code></pre><ul id="2ab568fa-e39f-8046-baaf-d5694dcf6916" class="bulleted-list"><li style="list-style-type:disc">Для урока берём обычный fp16/fp32.</li></ul><ul id="2ab568fa-e39f-8050-a67a-fdd4208d22a6" class="bulleted-list"><li style="list-style-type:disc">Если хочется совсем по-взрослому, можно прикрутить 4-бит, но давай тут не усложнять (квантование уже было в 8.2).</li></ul><hr id="2ab568fa-e39f-8070-a386-c19273ecb0f9"/><h2 id="2ab568fa-e39f-80f7-9dda-c8b89ecd964b" class="">4. Навешиваем LoRA на Seq2Seq-модель</h2><h3 id="2ab568fa-e39f-80d1-8f5c-de05734ad89e" class="">4.1. LoRAConfig для SEQ_2_SEQ_LM</h3><p id="2ab568fa-e39f-8049-8d00-c21e9038c056" class="">Важно: теперь <code>task_type=TaskType.SEQ_2_SEQ_LM</code>.</p><p id="2ab568fa-e39f-8026-b914-e065163c3444" class="">Для BART/T5-подобных моделей типично таргетят <code>q_proj</code> и <code>v_proj</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8022-972a-cf66f6ba9e90" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import LoraConfig, get_peft_model, TaskType
+
+lora_config = LoraConfig(
+    task_type=TaskType.SEQ_2_SEQ_LM,
+    r=8,
+    lora_alpha=16,
+    lora_dropout=0.1,
+    target_modules=[&quot;q_proj&quot;, &quot;v_proj&quot;],  # для BART/T5-подобных
+)
+</code></pre><h3 id="2ab568fa-e39f-80a7-b9b7-e8ae5aa9a450" class="">4.2. Оборачиваем модель в PEFT</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f1-a0d6-eda2c0700d3e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">lora_model = get_peft_model(base_model, lora_config)
+lora_model.print_trainable_parameters()
+</code></pre><p id="2ab568fa-e39f-8064-ada3-f10d95c41ae4" class="">Ты должен увидеть что-то вроде:</p><ul id="2ab568fa-e39f-8022-998e-d3a37f087bfc" class="bulleted-list"><li style="list-style-type:disc"><code>trainable params: X M</code></li></ul><ul id="2ab568fa-e39f-80e2-b921-f1a43589c7df" class="bulleted-list"><li style="list-style-type:disc"><code>all params: Y M</code></li></ul><p id="2ab568fa-e39f-80a4-8b57-c25cd267d4a8" class="">И <code>X</code> будет <strong>радикально меньше</strong> <code>Y</code>.</p><p id="2ab568fa-e39f-80c8-8f07-c59e0ac9e23e" class="">Базовая модель теперь заморожена, учим только LoRA-слой внутри attention.</p><hr id="2ab568fa-e39f-8019-89a3-e481329766c5"/><h2 id="2ab568fa-e39f-80d5-8637-d60d9035f063" class="">5. Препроцессинг: токенизация <code>dialog</code> → input, <code>summary</code> → labels</h2><h3 id="2ab568fa-e39f-8032-9b68-c6f5fa9f8721" class="">5.1. Гиперпараметры токенизации</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a4-af16-fdbeeebdf83f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">max_input_length = 512
+max_target_length = 64
+</code></pre><h3 id="2ab568fa-e39f-8090-983f-eb97773e1849" class="">5.2. Функция препроцессинга</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cc-8e52-cbe8f1a6f0df" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def preprocess_function(batch):
+    inputs = batch[&quot;dialog&quot;]
+    targets = batch[&quot;summary&quot;]
+
+    # Токенизация входа (диалога)
+    model_inputs = tokenizer(
+        inputs,
+        max_length=max_input_length,
+        truncation=True,
+    )
+
+    # Токенизация таргета (summary)
+    with tokenizer.as_target_tokenizer():
+        labels = tokenizer(
+            targets,
+            max_length=max_target_length,
+            truncation=True,
+        )
+
+    model_inputs[&quot;labels&quot;] = labels[&quot;input_ids&quot;]
+    return model_inputs
+</code></pre><h3 id="2ab568fa-e39f-804d-9051-e60e8d17df75" class="">5.3. Применяем ко всему датасету</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a1-b1a0-f55c2ff240ce" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=[&quot;dialog&quot;, &quot;summary&quot;],
+)
+
+print(tokenized_dataset[&quot;train&quot;][0])
+</code></pre><p id="2ab568fa-e39f-80fd-a483-fd81a0d17ede" class="">Видим примерно:</p><ul id="2ab568fa-e39f-8011-bf09-c686543f73ad" class="bulleted-list"><li style="list-style-type:disc"><code>input_ids</code></li></ul><ul id="2ab568fa-e39f-8029-9ade-e65136a118a4" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code></li></ul><ul id="2ab568fa-e39f-80d7-ac99-fe05a6041d26" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code></li></ul><hr id="2ab568fa-e39f-802e-8539-c15d1678af6a"/><h2 id="2ab568fa-e39f-80b3-a5eb-e403a0c4cbcd" class="">6. DataCollatorForSeq2Seq</h2><p id="2ab568fa-e39f-80b6-b7d1-f371458dc3c4" class="">Seq2Seq-коллатор нужен, чтобы:</p><ul id="2ab568fa-e39f-8013-b94e-f2ac7762857c" class="bulleted-list"><li style="list-style-type:disc">паддить <code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>,</li></ul><ul id="2ab568fa-e39f-80e7-8f46-c3fd8d326ef8" class="bulleted-list"><li style="list-style-type:disc">заменять паддинг в <code>labels</code> на <code>100</code> (чтобы не считать loss по паддингу).</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cd-8db7-dd3cf8b1a303" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForSeq2Seq
+
+data_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    model=lora_model,
+    label_pad_token_id=-100,
+)
+</code></pre><hr id="2ab568fa-e39f-8042-8c3d-c3dc0dbfbaa0"/><h2 id="2ab568fa-e39f-8024-a45c-e211782dc725" class="">7. ROUGE как метрика качества</h2><h3 id="2ab568fa-e39f-80a5-bdfc-dd4ff7fedf3b" class="">7.1. Подключаем evaluate</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8001-afa4-d700839e218d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import evaluate
+import numpy as np
+
+rouge_metric = evaluate.load(&quot;rouge&quot;)
+</code></pre><h3 id="2ab568fa-e39f-801d-bded-c3139c1dc86b" class="">7.2. Постобработка текстов</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808f-96ef-c7f3cc7b64ed" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def postprocess_text(preds, labels):
+    preds = [p.strip() for p in preds]
+    labels = [l.strip() for l in labels]
+    return preds, labels
+</code></pre><h3 id="2ab568fa-e39f-80b7-b292-edc5b180bded" class="">7.3. Функция <code>compute_metrics</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8028-90dc-d9b90af2a59b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+
+    # Если модель возвращает Tuple, берём первую часть
+    if isinstance(predictions, tuple):
+        predictions = predictions[0]
+
+    # Декодируем предикты
+    decoded_preds = tokenizer.batch_decode(
+        predictions, skip_special_tokens=True
+    )
+
+    # Декодируем labels: заменяем -100 на pad_token_id
+    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(
+        labels, skip_special_tokens=True
+    )
+
+    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+
+    result = rouge_metric.compute(
+        predictions=decoded_preds,
+        references=decoded_labels,
+        use_stemmer=True,
+    )
+
+    # Обычно смотрят rouge1/rouge2/rougeL
+    result = {k: v.mid.fmeasure for k, v in result.items()}
+
+    return result
+</code></pre><hr id="2ab568fa-e39f-803f-a827-ffc5981c7836"/><h2 id="2ab568fa-e39f-8022-a603-c9a52fb277b6" class="">8. Seq2SeqTrainingArguments + Seq2SeqTrainer с LoRA-моделью</h2><h3 id="2ab568fa-e39f-801a-a653-ec420b8978b2" class="">8.1. TrainingArguments</h3><p id="2ab568fa-e39f-8048-bc17-f78f67ef2b5f" class="">Важный момент: так как мы учим <strong>только LoRA</strong>, learning rate можно сделать выше, чем при full FT.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800a-baff-ccdb2a8625ec" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import Seq2SeqTrainingArguments
+
+training_args = Seq2SeqTrainingArguments(
+    output_dir=&quot;checkpoints/dialog_summarizer_lora&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=1e-4,                 # повышаем LR по сравнению с full FT
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=8,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    logging_steps=20,
+    predict_with_generate=True,
+    generation_max_length=64,
+    generation_num_beams=4,
+    fp16=torch.cuda.is_available(),
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;rougeL&quot;,
+    greater_is_better=True,
+    report_to=[&quot;none&quot;],                 # или [&quot;tensorboard&quot;]
+)
+</code></pre><h3 id="2ab568fa-e39f-80ad-93b8-d7c36f38dc69" class="">8.2. Seq2SeqTrainer</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a3-8be3-daf09931462a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import Seq2SeqTrainer
+
+trainer = Seq2SeqTrainer(
+    model=lora_model,
+    args=training_args,
+    train_dataset=tokenized_dataset[&quot;train&quot;],
+    eval_dataset=tokenized_dataset[&quot;validation&quot;],
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    compute_metrics=compute_metrics,
+)
+</code></pre><p id="2ab568fa-e39f-8078-802a-ca8f6ac72036" class="">Запускаем обучение:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8036-b0da-dbef5b423ccf" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer.train()
+</code></pre><p id="2ab568fa-e39f-8092-a592-f1d94a34d8a0" class="">Во время обучения смотрим:</p><ul id="2ab568fa-e39f-802b-a2f6-e71b554940f8" class="bulleted-list"><li style="list-style-type:disc">train loss,</li></ul><ul id="2ab568fa-e39f-8064-87c8-ebc509ddc978" class="bulleted-list"><li style="list-style-type:disc">eval loss,</li></ul><ul id="2ab568fa-e39f-801f-81e2-cb1358ad6eb4" class="bulleted-list"><li style="list-style-type:disc">ROUGE метрики (rouge1, rouge2, rougeL).</li></ul><hr id="2ab568fa-e39f-80ea-9787-d6b85b9267b6"/><h2 id="2ab568fa-e39f-80fd-91c9-c7a2acb32705" class="">9. Сохранение LoRA-адаптера</h2><p id="2ab568fa-e39f-80d9-a758-cfb882fbd1bd" class="">После обучения:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ca-bd85-fe833409ec3f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">adapter_dir = &quot;models/dialog_summarizer_lora&quot;
+
+lora_model.save_pretrained(adapter_dir)
+tokenizer.save_pretrained(adapter_dir)
+</code></pre><p id="2ab568fa-e39f-802e-bd27-d00316971074" class="">Это <strong>не полный BART</strong>, а только:</p><ul id="2ab568fa-e39f-807b-a4e2-f943b7103552" class="bulleted-list"><li style="list-style-type:disc">LoRA-весы,</li></ul><ul id="2ab568fa-e39f-80db-92a4-cca6d261375f" class="bulleted-list"><li style="list-style-type:disc">конфиг PEFT,</li></ul><ul id="2ab568fa-e39f-804e-b661-ed2480180027" class="bulleted-list"><li style="list-style-type:disc">токенизатор.</li></ul><p id="2ab568fa-e39f-8011-8a5a-cb21aee4607b" class="">Базовой модели в этой папке нет (и не надо).</p><hr id="2ab568fa-e39f-80a8-b99e-c2e00afdbb60"/><h2 id="2ab568fa-e39f-80f8-bf9b-df93e470bd81" class="">10. Инференс с LoRA-суммаризатором</h2><p id="2ab568fa-e39f-801c-8a75-dd359ce1f21e" class="">Теперь у нас есть:</p><ul id="2ab568fa-e39f-80d4-9405-d5afd5a26cc5" class="bulleted-list"><li style="list-style-type:disc">базовая BART-модель (из Hub или локального кеша),</li></ul><ul id="2ab568fa-e39f-80d0-8f36-ffefb904833c" class="bulleted-list"><li style="list-style-type:disc">папка с адаптером (<code>adapter_dir</code>).</li></ul><h3 id="2ab568fa-e39f-808b-b118-e4088d2ef35d" class="">10.1. Загрузка base + LoRA для инференса</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807d-bd16-f6fe08e6f6a3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import PeftModel
+
+device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+base_model = AutoModelForSeq2SeqLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(device)
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+lora_model = PeftModel.from_pretrained(
+    base_model,
+    adapter_dir,
+)
+lora_model.eval()
+</code></pre><h3 id="2ab568fa-e39f-8061-8cb9-e3aabe01254e" class="">10.2. Функция <code>summarize_dialog_lora</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802b-91ce-d65c713cf698" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def summarize_dialog_lora(dialog: str, max_new_tokens: int = 64) -&gt; str:
+    inputs = tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    ).to(device)
+
+    with torch.no_grad():
+        out_ids = lora_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+        )
+
+    summary = tokenizer.decode(
+        out_ids[0],
+        skip_special_tokens=True,
+    ).strip()
+
+    return summary
+</code></pre><h3 id="2ab568fa-e39f-80c7-9978-d24baea20cd9" class="">10.3. Пример использования</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804e-a761-dc63ab3fac7b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">dialog = &quot;&quot;&quot;
+User: Hi, after the last update the app crashes when I open the gallery.
+Support: Sorry about that! Could you tell me your device and OS version?
+User: It&#x27;s a Samsung S21 on Android 14.
+Support: Thanks, we are aware of this issue and working on a fix.
+&quot;&quot;&quot;
+
+print(&quot;DIALOG:&quot;)
+print(dialog)
+print(&quot;-&quot; * 80)
+print(&quot;SUMMARY (LoRA):&quot;)
+print(summarize_dialog_lora(dialog))
+</code></pre><p id="2ab568fa-e39f-8038-8b14-fadd69bebf08" class="">Можно сравнить:</p><ul id="2ab568fa-e39f-8082-a7b2-c445db086741" class="bulleted-list"><li style="list-style-type:disc">output LoRA-модели,</li></ul><ul id="2ab568fa-e39f-8052-813d-ff0de9ba8145" class="bulleted-list"><li style="list-style-type:disc">output “голого” <code>facebook/bart-large-cnn</code> без дообучения,</li></ul><ul id="2ab568fa-e39f-8014-8132-dd2c2a7fa02d" class="bulleted-list"><li style="list-style-type:disc">(если есть) output full FT-модели.</li></ul><hr id="2ab568fa-e39f-80ac-a596-ec95bc3fa593"/><h2 id="2ab568fa-e39f-8026-a15e-c2fca24c8c03" class="">11. (Опционально) Merge LoRA в базовую модель</h2><p id="2ab568fa-e39f-80dc-ab75-e7354cdbc6d7" class="">Если хочешь в проде не тащить <code>peft</code> и адаптер отдельно, можно <strong>слить LoRA в веса модели</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802f-a570-cd0f69f6b1c6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import PeftModel
+
+base_model = AutoModelForSeq2SeqLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+)
+
+lora_model = PeftModel.from_pretrained(base_model, adapter_dir)
+
+merged_model = lora_model.merge_and_unload()
+merged_model.save_pretrained(&quot;models/dialog_summarizer_lora_merged&quot;)
+tokenizer.save_pretrained(&quot;models/dialog_summarizer_lora_merged&quot;)
+</code></pre><p id="2ab568fa-e39f-80eb-b5da-cbf13526e204" class="">Теперь <code>merged_model</code> — обычная seq2seq-модель, которую можно грузить без <code>peft</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808f-991f-daf7ec5fe6d2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">merged = AutoModelForSeq2SeqLM.from_pretrained(
+    &quot;models/dialog_summarizer_lora_merged&quot;,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(device)
+</code></pre><p id="2ab568fa-e39f-808f-8fb1-d077026ad4ed" class="">Минус: LoRA уже <strong>“впаялась”</strong> в базу — нельзя легко откатить назад или переключать адаптеры.</p><hr id="2ab568fa-e39f-80c8-8bdb-ee38ece53ccd"/><h2 id="2ab568fa-e39f-802e-88a7-d8d26007a694" class="">12. Домашка к уроку 8.3</h2><h3 id="2ab568fa-e39f-80fc-bea8-e93b9399a857" class="">Задание 1. Собрать LoRA-суммаризатор</h3><ol type="1" id="2ab568fa-e39f-8015-b2c6-e959ebd8f69b" class="numbered-list" start="1"><li>Подготовь <code>dialogs.csv</code>:<ul id="2ab568fa-e39f-8035-8d59-c12dd6edfb7f" class="bulleted-list"><li style="list-style-type:disc">минимум 100–200 диалогов,</li></ul><ul id="2ab568fa-e39f-809e-b00d-e168ae60fce1" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code>, <code>summary</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-803d-b3bc-fe78cd55ff91" class="numbered-list" start="2"><li>Напиши скрипт <code>train_lora_summarizer.py</code>, который:<ul id="2ab568fa-e39f-80d6-ab8a-c543dae4abce" class="bulleted-list"><li style="list-style-type:disc">загружает датасет,</li></ul><ul id="2ab568fa-e39f-8075-a458-d0fb74131fe1" class="bulleted-list"><li style="list-style-type:disc">токенизирует (как в уроке),</li></ul><ul id="2ab568fa-e39f-80e7-95ed-d01bfab2ee70" class="bulleted-list"><li style="list-style-type:disc">настраивает LoRA (<code>TaskType.SEQ_2_SEQ_LM</code>, <code>target_modules</code>),</li></ul><ul id="2ab568fa-e39f-8000-b056-e918de56f4ff" class="bulleted-list"><li style="list-style-type:disc">обучает 2–3 эпохи,</li></ul><ul id="2ab568fa-e39f-80fa-8cb2-d3b26ba5516b" class="bulleted-list"><li style="list-style-type:disc">сохраняет адаптер в <code>models/dialog_summarizer_lora</code>.</li></ul></li></ol><h3 id="2ab568fa-e39f-8060-8b6a-f9b6c61afa53" class="">Задание 2. Сравнение full FT vs LoRA (если есть full FT)</h3><p id="2ab568fa-e39f-80f0-9c9d-f5424dbf0f23" class="">Если в М5 ты делал full FT той же модели:</p><ol type="1" id="2ab568fa-e39f-805d-9aaa-d89cbef9c041" class="numbered-list" start="1"><li>Возьми 50–100 диалогов из валидации.</li></ol><ol type="1" id="2ab568fa-e39f-8041-83b5-e3d0cc4e4c96" class="numbered-list" start="2"><li>Для каждого посчитай:<ul id="2ab568fa-e39f-80d0-869a-d9125c4c43d6" class="bulleted-list"><li style="list-style-type:disc">ROUGE-метрики для full FT-модели,</li></ul><ul id="2ab568fa-e39f-809d-8639-d7591b925ab6" class="bulleted-list"><li style="list-style-type:disc">ROUGE для LoRA-модели.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f3-9490-c783cf0dd0c2" class="numbered-list" start="3"><li>Сравни:<ul id="2ab568fa-e39f-80e7-b614-e1fc40bfeabe" class="bulleted-list"><li style="list-style-type:disc">качество,</li></ul><ul id="2ab568fa-e39f-80ab-b47a-c3046a0ab410" class="bulleted-list"><li style="list-style-type:disc">время обучения,</li></ul><ul id="2ab568fa-e39f-80f2-8d93-dd00506e4231" class="bulleted-list"><li style="list-style-type:disc">размер чекпоинта:<ul id="2ab568fa-e39f-802f-9b08-c304a9e35e6c" class="bulleted-list"><li style="list-style-type:circle">full модель,</li></ul><ul id="2ab568fa-e39f-8011-b63b-c417bda1878f" class="bulleted-list"><li style="list-style-type:circle">LoRA-адаптер.</li></ul></li></ul></li></ol><p id="2ab568fa-e39f-80d7-8c60-e8ee9138d48f" class="">Если full FT нет — сравни LoRA vs “голая” предобученная модель.</p><h3 id="2ab568fa-e39f-80e8-83f4-f66613fa131d" class="">Задание 3. Поиграть с LoRA-гиперпараметрами</h3><ol type="1" id="2ab568fa-e39f-8011-81a9-f544d057d812" class="numbered-list" start="1"><li>Сделай два варианта LoRA-конфига:<ul id="2ab568fa-e39f-8021-84c9-fe8aa7630a4b" class="bulleted-list"><li style="list-style-type:disc">Вариант A:<ul id="2ab568fa-e39f-80ea-960d-eefee43b2e40" class="bulleted-list"><li style="list-style-type:circle"><code>r = 4</code>, <code>lora_alpha = 8</code>, <code>lora_dropout = 0.1</code></li></ul></li></ul><ul id="2ab568fa-e39f-80d1-ab91-dda3a27b79fc" class="bulleted-list"><li style="list-style-type:disc">Вариант B:<ul id="2ab568fa-e39f-8008-8734-f82a2a1406d5" class="bulleted-list"><li style="list-style-type:circle"><code>r = 16</code>, <code>lora_alpha = 32</code>, <code>lora_dropout = 0.1</code></li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80de-b13a-c0a4b718ac04" class="numbered-list" start="2"><li>Для каждого:<ul id="2ab568fa-e39f-8020-8c80-c43e2430cc70" class="bulleted-list"><li style="list-style-type:disc">обучи 1–2 эпохи (не обязательно до полного сходимого состояния),</li></ul><ul id="2ab568fa-e39f-80a4-8662-de6bf444412b" class="bulleted-list"><li style="list-style-type:disc">сравни:<ul id="2ab568fa-e39f-8079-90c7-cb91687610a8" class="bulleted-list"><li style="list-style-type:circle">ROUGE на валидейшене,</li></ul><ul id="2ab568fa-e39f-80af-b275-df2e55ffd7d0" class="bulleted-list"><li style="list-style-type:circle">размер адаптера,</li></ul><ul id="2ab568fa-e39f-80a5-b2b1-eb0fcd52b254" class="bulleted-list"><li style="list-style-type:circle">расстояние глазами: какие summary тебе кажутся более внятными.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8058-8771-eff9faf363d3" class="numbered-list" start="3"><li>Напиши вывод:<ul id="2ab568fa-e39f-8092-a4cf-edefad80e416" class="bulleted-list"><li style="list-style-type:disc">какой вариант <strong>ты</strong> выбрал бы для реального продукта и почему.</li></ul></li></ol><hr id="2ab568fa-e39f-8076-892d-f344a6197d3d"/><p id="2ab568fa-e39f-80e6-823b-c1060a25fcd0" class="">На этом 8.3 прожат: у тебя есть <strong>LoRA-суммаризатор диалогов</strong>, который:</p><ul id="2ab568fa-e39f-801e-8085-d4de0d1d0e60" class="bulleted-list"><li style="list-style-type:disc">дешевле по ресурсам,</li></ul><ul id="2ab568fa-e39f-80c6-a447-fc59f2fc0622" class="bulleted-list"><li style="list-style-type:disc">компактнее,</li></ul><ul id="2ab568fa-e39f-80c9-8004-e0ce3a2fd79b" class="bulleted-list"><li style="list-style-type:disc">и легко комбинируется с разными адаптерами.</li></ul><p id="2ab568fa-e39f-80be-9656-cb4d933e8045" class="">Дальше в 8.4 будем учиться жить с зоопарком адаптеров: несколько задач, разные стили, merge, управление.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

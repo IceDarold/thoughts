@@ -1,0 +1,831 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.2. Популярностные рекомендации</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8028-b0fd-d5a0fbe0bd76" class="page sans"><header><h1 class="page-title">Урок 1.2. Популярностные рекомендации</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80cd-9a55-f8c9c57b45a2" class="">1. Цели и результат урока</h2><p id="2aa568fa-e39f-80ff-98a2-f590bf7c2045" class=""><strong>После урока студент:</strong></p><ul id="2aa568fa-e39f-80cd-ac93-fd3e76a8bf71" class="bulleted-list"><li style="list-style-type:disc">Понимает разницу между:<ul id="2aa568fa-e39f-8094-b27f-e4a42a2d0429" class="bulleted-list"><li style="list-style-type:circle">глобальной популярностью;</li></ul><ul id="2aa568fa-e39f-8014-b828-da9f906c6170" class="bulleted-list"><li style="list-style-type:circle">популярностью в сегменте;</li></ul><ul id="2aa568fa-e39f-8085-b91e-ccf60478a1fe" class="bulleted-list"><li style="list-style-type:circle">популярностью с учётом времени.</li></ul></li></ul><ul id="2aa568fa-e39f-8045-9de1-d749a811150c" class="bulleted-list"><li style="list-style-type:disc">Умеет аккуратно считать:<ul id="2aa568fa-e39f-80d3-8cbf-ff8bb55f0050" class="bulleted-list"><li style="list-style-type:circle"><code>pop(item)</code> по разным критериям;</li></ul><ul id="2aa568fa-e39f-803c-9ac0-c37cae35aded" class="bulleted-list"><li style="list-style-type:circle"><code>pop(item | segment)</code> (например, по стране/категории).</li></ul></li></ul><ul id="2aa568fa-e39f-8027-a23e-ce8ae689fd17" class="bulleted-list"><li style="list-style-type:disc">Умеет писать функцию рекомендаций:<ul id="2aa568fa-e39f-8081-9402-c50a903ad9d1" class="bulleted-list"><li style="list-style-type:circle">с fallback’ами: «сначала сегмент, потом глобалка»;</li></ul><ul id="2aa568fa-e39f-8059-a231-c92e7c0b5d9e" class="bulleted-list"><li style="list-style-type:circle">с минимальными бизнес-правилами (фильтры).</li></ul></li></ul><ul id="2aa568fa-e39f-80e9-ba21-c223bff077e3" class="bulleted-list"><li style="list-style-type:disc">Имеет в ноутбуке <strong>рабочий popularity-бейзлайн</strong>, который завтра уже можно засунуть в сабмит.</li></ul><hr id="2aa568fa-e39f-80e3-9926-d1eb2a7ef55b"/><h2 id="2aa568fa-e39f-80e7-9ef4-e32a1268fcab" class="">2. Структура урока (90 мин)</h2><p id="2aa568fa-e39f-80a8-acc4-f3b4fdd12bc2" class="">Примерный тайминг:</p><ol type="1" id="2aa568fa-e39f-80ac-9e03-ffbb8981fadf" class="numbered-list" start="1"><li><strong>0–10 мин</strong> — связь с уроком 1.1, постановка задачи.</li></ol><ol type="1" id="2aa568fa-e39f-8085-a1e0-f482387bbba2" class="numbered-list" start="2"><li><strong>10–30 мин</strong> — теория: виды популярности (global, segmented, time-decayed).</li></ol><ol type="1" id="2aa568fa-e39f-809f-bf2c-e771b16cbaaa" class="numbered-list" start="3"><li><strong>30–65 мин</strong> — кодим в ноутбуке: считаем популярности + базовые функции.</li></ol><ol type="1" id="2aa568fa-e39f-803e-abed-febb1c2dc6d5" class="numbered-list" start="4"><li><strong>65–85 мин</strong> — собираем рекомендатель <code>recommend_popularity(user_id, k)</code>.</li></ol><ol type="1" id="2aa568fa-e39f-8095-96bc-cafdd66cd92e" class="numbered-list" start="5"><li><strong>85–90 мин</strong> — домашка и wrap-up.</li></ol><hr id="2aa568fa-e39f-8041-96b3-d834284bccc9"/><h2 id="2aa568fa-e39f-8007-9d71-f295907bf6bc" class="">3. Блок 0–10 мин: контекст</h2><p id="2aa568fa-e39f-8064-be8c-c95183ca4816" class="">Кратко напоминаешь:</p><ul id="2aa568fa-e39f-80ab-a4a7-debc8602aaa6" class="bulleted-list"><li style="list-style-type:disc">В 1.1 мы:<ul id="2aa568fa-e39f-809e-af65-cb954df23183" class="bulleted-list"><li style="list-style-type:circle">разобрали датасет,</li></ul><ul id="2aa568fa-e39f-806c-824b-fd4d702cb3c2" class="bulleted-list"><li style="list-style-type:circle">посмотрели на users/items,</li></ul><ul id="2aa568fa-e39f-80a0-bd25-dee9bdd20582" class="bulleted-list"><li style="list-style-type:circle">сделали <strong>нулевой baseline</strong>: <code>recommend_for_user_dummy</code> → просто топ популярных.</li></ul></li></ul><ul id="2aa568fa-e39f-8000-86fb-d888133bd1bf" class="bulleted-list"><li style="list-style-type:disc">Сейчас цель:<ul id="2aa568fa-e39f-8027-a492-e05ef39187ee" class="bulleted-list"><li style="list-style-type:circle">сделать этот baseline <strong>адекватным</strong>:<ul id="2aa568fa-e39f-8097-ac29-d4e32e9efedc" class="bulleted-list"><li style="list-style-type:square">учитывать пользовательский сегмент;</li></ul><ul id="2aa568fa-e39f-8029-ba5d-e937dd107fd2" class="bulleted-list"><li style="list-style-type:square">учитывать время;</li></ul><ul id="2aa568fa-e39f-8006-ae23-ce4a251adff8" class="bulleted-list"><li style="list-style-type:square">заложить основу, которую можно сравнивать с более сложными моделями.</li></ul></li></ul></li></ul><p id="2aa568fa-e39f-8089-91e6-e8402cbf11d3" class="">Вопрос группе:</p><blockquote id="2aa568fa-e39f-80b5-9dfb-c5c72b9977ce" class="">«В каких ситуациях вам, как пользователю, вообще не хочется видеть глобальные хиты?»</blockquote><p id="2aa568fa-e39f-8071-8b26-f4feb57e534c" class="">(пример ответов: нишевые вкусы, локальные бренды, свежие релизы и т.д.) — от этого плавно переходишь к сегментам и времени.</p><hr id="2aa568fa-e39f-8000-bc40-dcc95a1cfbf6"/><h2 id="2aa568fa-e39f-808b-9a55-cebbb799d741" class="">4. Блок 10–30 мин: теория — виды популярности</h2><h3 id="2aa568fa-e39f-8029-a705-fddfe2c4a5f6" class="">4.1. Global popularity</h3><p id="2aa568fa-e39f-80e6-83a3-edb8d57a668e" class=""><strong>Идея:</strong></p><p id="2aa568fa-e39f-803c-8dd1-d740f7945443" class=""><code>pop(item)</code> = сколько раз с item взаимодействовали (или сколько уникальных пользователей его трогали).</p><p id="2aa568fa-e39f-80eb-a27a-f6bec44b7685" class="">Обсуждаете:</p><ul id="2aa568fa-e39f-80fe-b053-d101a08add9c" class="bulleted-list"><li style="list-style-type:disc">Можно считать по:<ul id="2aa568fa-e39f-80b6-96f4-d4ad1dd0b23b" class="bulleted-list"><li style="list-style-type:circle">всем событиям: <code>view + click + cart + purchase</code>;</li></ul><ul id="2aa568fa-e39f-80e2-bd9a-e30b8fc85d47" class="bulleted-list"><li style="list-style-type:circle">только «сильным» событиям, например, покупкам;</li></ul></li></ul><ul id="2aa568fa-e39f-805f-bd23-e4ea642367fd" class="bulleted-list"><li style="list-style-type:disc">Это уже ok-решение, особенно если:<ul id="2aa568fa-e39f-80c6-8325-d5d99b6f1d2c" class="bulleted-list"><li style="list-style-type:circle">у нас cold start по пользователю;</li></ul><ul id="2aa568fa-e39f-80f5-b697-ca39c120ace9" class="bulleted-list"><li style="list-style-type:circle">нет истории и фич.</li></ul></li></ul><p id="2aa568fa-e39f-80f2-a9dc-c31e641452a2" class="">Псевдоформулы:</p><ul id="2aa568fa-e39f-8040-acb3-d6f389caa006" class="bulleted-list"><li style="list-style-type:disc"><code>pop(item) = count(interactions where item_id == item)</code></li></ul><ul id="2aa568fa-e39f-80c8-966e-e66906699c10" class="bulleted-list"><li style="list-style-type:disc">или <code>pop(item) = #unique users, interacted with item</code>.</li></ul><h3 id="2aa568fa-e39f-8007-baba-c7f0153bc207" class="">4.2. Сегментная популярность</h3><p id="2aa568fa-e39f-809e-a197-d5a085721a80" class=""><strong>Идея:</strong></p><p id="2aa568fa-e39f-80f1-b212-c74c71085eb9" class="">популярность должна зависеть от сегмента пользователя.</p><p id="2aa568fa-e39f-8069-a460-d784e74a8e63" class="">Примеры сегментов:</p><ul id="2aa568fa-e39f-808f-b40b-d98836b217c6" class="bulleted-list"><li style="list-style-type:disc">гео: страна, город;</li></ul><ul id="2aa568fa-e39f-800c-9c7c-f4c82f45bf98" class="bulleted-list"><li style="list-style-type:disc">язык интерфейса;</li></ul><ul id="2aa568fa-e39f-8012-b466-df998ac78b64" class="bulleted-list"><li style="list-style-type:disc">возрастная группа;</li></ul><ul id="2aa568fa-e39f-803c-9c6b-f7a02ff87a89" class="bulleted-list"><li style="list-style-type:disc">тип устройства (mobile/desktop, Android/iOS);</li></ul><ul id="2aa568fa-e39f-8092-aefc-fc4f7093b6e8" class="bulleted-list"><li style="list-style-type:disc">простая кластеризация пользователей (потом).</li></ul><p id="2aa568fa-e39f-8060-92d4-f55a8b1953f0" class="">Формально:</p><ul id="2aa568fa-e39f-80f7-8472-efa6e27025a6" class="bulleted-list"><li style="list-style-type:disc"><code>pop(item | segment = s) = количество взаимодействий с item среди пользователей сегмента s</code>.</li></ul><p id="2aa568fa-e39f-8079-9910-e87fe62df183" class="">Обсуждение:</p><ul id="2aa568fa-e39f-80a5-a298-ebafa5cd3e08" class="bulleted-list"><li style="list-style-type:disc">Если сегмент маленький → мало данных → шум.</li></ul><ul id="2aa568fa-e39f-80f6-86f5-e2f21cb371ee" class="bulleted-list"><li style="list-style-type:disc">Нужен fallback:<ul id="2aa568fa-e39f-8083-83e7-f262d559e6c3" class="bulleted-list"><li style="list-style-type:circle"><code>pop(item | segment)</code><p id="2aa568fa-e39f-8003-85ef-ff22a2dabb68" class="">→ если нет достаточной статистики → <code>pop(item)</code> (глобальная).</p></li></ul></li></ul><h3 id="2aa568fa-e39f-8083-9057-c1538e1f9095" class="">4.3. Time-decayed popularity</h3><p id="2aa568fa-e39f-80a0-8180-e0f866141774" class=""><strong>Проблема «вечных хитов»:</strong></p><ul id="2aa568fa-e39f-801d-a243-e7ed55ec743d" class="bulleted-list"><li style="list-style-type:disc">Товар мог быть суперпопулярным год назад, но сейчас его уже никто не трогает.</li></ul><ul id="2aa568fa-e39f-8053-951b-dd23feb70616" class="bulleted-list"><li style="list-style-type:disc">Старые события должны весить меньше, чем свежие.</li></ul><p id="2aa568fa-e39f-80de-979e-de04da21de66" class=""><strong>Примеры decay:</strong></p><ol type="1" id="2aa568fa-e39f-8047-b7cc-d17837bf2b14" class="numbered-list" start="1"><li><strong>Окно по времени:</strong><ul id="2aa568fa-e39f-8053-b907-f6bfe05d4a99" class="bulleted-list"><li style="list-style-type:disc">считаем популярность только за последние N дней:<ul id="2aa568fa-e39f-80af-b68d-e090a9e5e4c3" class="bulleted-list"><li style="list-style-type:circle"><code>pop_recent(item) = count(interactions for item in [T-N, T])</code>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80bc-958d-c25d4ab56305" class="numbered-list" start="2"><li><strong>Экспоненциальный decay:</strong><ul id="2aa568fa-e39f-806e-bc61-eabb2eeed361" class="bulleted-list"><li style="list-style-type:disc">вес события:<ul id="2aa568fa-e39f-8021-9d6d-e92ad8db3fc8" class="bulleted-list"><li style="list-style-type:circle"><code>w = exp(-λ * Δt)</code>,<p id="2aa568fa-e39f-805c-84c8-ed9859529499" class="">где <code>Δt</code> — сколько времени прошло с момента события.</p></li></ul></li></ul><ul id="2aa568fa-e39f-80f7-9877-c73bcaa9c93c" class="bulleted-list"><li style="list-style-type:disc"><code>pop(item) = Σ w_i по всем событиям item</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8044-925f-c430d49ab794" class="numbered-list" start="3"><li><strong>Ступенчатый decay (piecewise):</strong><ul id="2aa568fa-e39f-80d8-aa62-c98c3850c834" class="bulleted-list"><li style="list-style-type:disc">события:<ul id="2aa568fa-e39f-805c-9fb0-f3b3c87f0e92" class="bulleted-list"><li style="list-style-type:circle">за последнюю неделю → вес 3;</li></ul><ul id="2aa568fa-e39f-8007-b64f-e15ba1714705" class="bulleted-list"><li style="list-style-type:circle">за прошлый месяц → вес 2;</li></ul><ul id="2aa568fa-e39f-8004-a868-fdbf81a17512" class="bulleted-list"><li style="list-style-type:circle">старше месяца → вес 1.</li></ul></li></ul></li></ol><p id="2aa568fa-e39f-80a3-af62-d890c888531f" class="">Обсудить простоту реализации vs качество.</p><p id="2aa568fa-e39f-80ec-a858-d8c1e8453577" class="">На практике на первом этапе можно брать просто <strong>окно по времени</strong>.</p><h3 id="2aa568fa-e39f-802b-ad61-e39e083bb103" class="">4.4. Бизнес-правила и фильтры</h3><p id="2aa568fa-e39f-80cf-aee2-c3ca831a8d01" class="">Примеры:</p><ul id="2aa568fa-e39f-80ec-934b-fb545592d1f7" class="bulleted-list"><li style="list-style-type:disc">Не рекомендуем:<ul id="2aa568fa-e39f-80e1-82c9-f9aa1d3272fa" class="bulleted-list"><li style="list-style-type:circle">товары, которые недоступны (out-of-stock);</li></ul><ul id="2aa568fa-e39f-80b7-ba90-ff30ee1fcb5d" class="bulleted-list"><li style="list-style-type:circle">товары, явно помеченные как запрещённые;</li></ul><ul id="2aa568fa-e39f-805b-b57b-c2029bd165aa" class="bulleted-list"><li style="list-style-type:circle">тот же item пользователю, если задача — показать новинки.</li></ul></li></ul><ul id="2aa568fa-e39f-80f7-af2f-c820494e947b" class="bulleted-list"><li style="list-style-type:disc">Простейшие правила:<ul id="2aa568fa-e39f-80ba-a781-e7005b8d0e6b" class="bulleted-list"><li style="list-style-type:circle">ограничение на количество товаров из одной категории;</li></ul><ul id="2aa568fa-e39f-80fd-b855-da0e1fd75081" class="bulleted-list"><li style="list-style-type:circle">приоритет новинок.</li></ul></li></ul><p id="2aa568fa-e39f-8093-b588-e69d27069ab7" class=""><strong>Вывод блока:</strong> популярность ≠ один вектор. Это целое семейство базовых моделей.</p><hr id="2aa568fa-e39f-8041-a1cc-f5d6581245c3"/><h2 id="2aa568fa-e39f-80d6-8941-e514f3323dfb" class="">5. Блок 30–65 мин: считаем популярности в ноутбуке</h2><p id="2aa568fa-e39f-805e-b77b-d9017a05ac97" class="">Всё ниже — как каркас, который можно давать студентам.</p><h3 id="2aa568fa-e39f-8051-9e71-e02e687e884c" class="">5.1. Global popularity</h3><p id="2aa568fa-e39f-807b-bcba-c6b3e72b5f1f" class="">В ноутбуке:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8003-8605-da94cf2a26a1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import pandas as pd
+
+train = pd.read_csv(&quot;../data/train_interactions.csv&quot;)
+
+# допустим, у нас есть столбец event_type, и нас интересуют только &#x27;purchase&#x27;
+target_events = train[train[&#x27;event_type&#x27;] == &#x27;purchase&#x27;] if &#x27;event_type&#x27; in train.columns else train
+
+item_popularity = (
+    target_events[&#x27;item_id&#x27;]
+    .value_counts()
+    .rename(&#x27;popularity&#x27;)
+    .reset_index()
+    .rename(columns={&#x27;index&#x27;: &#x27;item_id&#x27;})
+)
+
+item_popularity.head()
+</code></pre><p id="2aa568fa-e39f-80a2-aeb4-e29a11ca3f4c" class="">Дальше удобно иметь <strong>словарь item → score</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8091-9343-fc63e56591f1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">item_popularity_dict = dict(zip(item_popularity[&#x27;item_id&#x27;], item_popularity[&#x27;popularity&#x27;]))
+popular_items_global = item_popularity[&#x27;item_id&#x27;].tolist()
+</code></pre><h3 id="2aa568fa-e39f-8067-85f3-c5d95c5a9e70" class="">5.2. Сегментная популярность</h3><p id="2aa568fa-e39f-8031-a80f-d683c991e7df" class="">Выбираете один сегмент, который точно есть в данных, например <code>country</code> или <code>user_group</code>. Если его нет, можно сделать искусственный (например, <code>user_id % 10</code> как «кластер»).</p><p id="2aa568fa-e39f-80ab-9e52-d5fc9e16e515" class="">Предположим, что у нас есть колонка <code>country</code> в train:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80f4-b95b-fedd2a82bcef" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># сначала присоединим user-атрибуты, если они в отдельном файле
+# users = pd.read_csv(&quot;../data/users.csv&quot;)
+# train = train.merge(users[[&#x27;user_id&#x27;, &#x27;country&#x27;]], on=&#x27;user_id&#x27;, how=&#x27;left&#x27;)
+
+segment_col = &#x27;country&#x27;
+
+segment_item_popularity = (
+    target_events
+    .groupby([segment_col, &#x27;item_id&#x27;])
+    .size()
+    .rename(&#x27;popularity&#x27;)
+    .reset_index()
+)
+segment_item_popularity.head()
+</code></pre><p id="2aa568fa-e39f-80d9-ba2b-f3f2e7be4ac2" class="">Теперь хотим быстро получать топ товары <strong>по сегменту</strong>. Например, сделаем словарь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8053-a5eb-e7c40a67ddd9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import defaultdict
+
+segment_to_items = defaultdict(list)
+
+for seg, group in segment_item_popularity.groupby(segment_col):
+    # сортируем по popularity для конкретного сегмента
+    top_items = group.sort_values(&#x27;popularity&#x27;, ascending=False)[&#x27;item_id&#x27;].tolist()
+    segment_to_items[seg] = top_items
+</code></pre><p id="2aa568fa-e39f-8084-8042-ed0df9e05d1a" class="">И fallback: если сегмента нет в словаре или мало данных, вернем <code>popular_items_global</code>.</p><h3 id="2aa568fa-e39f-800a-8492-d868934a857f" class="">5.3. Time-decayed popularity (упрощённый вариант)</h3><p id="2aa568fa-e39f-804b-8308-f6d6e9de98a6" class="">Берём просто события за последнее окно, скажем 30 дней.</p><p id="2aa568fa-e39f-809b-9f60-e4168f56b538" class="">Допустим, <code>timestamp</code> — это unix time или что-то превращаемое в <code>datetime</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-801e-b7aa-da4cceedbe87" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">train[&#x27;timestamp&#x27;] = pd.to_datetime(train[&#x27;timestamp&#x27;])
+
+max_time = train[&#x27;timestamp&#x27;].max()
+window_days = 30
+time_threshold = max_time - pd.Timedelta(days=window_days)
+
+recent_events = target_events[target_events[&#x27;timestamp&#x27;] &gt;= time_threshold]
+
+item_recent_popularity = (
+    recent_events[&#x27;item_id&#x27;]
+    .value_counts()
+    .rename(&#x27;recent_popularity&#x27;)
+    .reset_index()
+    .rename(columns={&#x27;index&#x27;: &#x27;item_id&#x27;})
+)
+
+item_recent_popularity_dict = dict(zip(
+    item_recent_popularity[&#x27;item_id&#x27;],
+    item_recent_popularity[&#x27;recent_popularity&#x27;]
+))
+recent_popular_items = item_recent_popularity[&#x27;item_id&#x27;].tolist()
+</code></pre><p id="2aa568fa-e39f-80fb-a071-c4d260bf5daf" class="">Можно показать второй вариант — <strong>ступенчатый decay</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d9-a637-d65cca8efdc2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def compute_time_weighted_popularity(df, now=None):
+    if now is None:
+        now = df[&#x27;timestamp&#x27;].max()
+
+    def weight_for_delta(delta_days):
+        if delta_days &lt;= 7:
+            return 3.0
+        elif delta_days &lt;= 30:
+            return 2.0
+        else:
+            return 1.0
+
+    df = df.copy()
+    df[&#x27;delta_days&#x27;] = (now - df[&#x27;timestamp&#x27;]).dt.days
+    df[&#x27;weight&#x27;] = df[&#x27;delta_days&#x27;].apply(weight_for_delta)
+
+    weighted = (
+        df.groupby(&#x27;item_id&#x27;)[&#x27;weight&#x27;]
+        .sum()
+        .rename(&#x27;weighted_popularity&#x27;)
+        .reset_index()
+    )
+    return weighted
+
+weighted_popularity_df = compute_time_weighted_popularity(target_events)
+weighted_popularity_dict = dict(zip(
+    weighted_popularity_df[&#x27;item_id&#x27;],
+    weighted_popularity_df[&#x27;weighted_popularity&#x27;]
+))
+</code></pre><p id="2aa568fa-e39f-80e0-bc1d-e60e7e4cbda7" class="">Важно: не тонем в матане, просто показываем идею.</p><hr id="2aa568fa-e39f-80cc-b6ab-f4373072d5cd"/><h2 id="2aa568fa-e39f-800e-8534-da37d884b04d" class="">6. Блок 65–85 мин: пишем recommend_popularity(user_id, k)</h2><h3 id="2aa568fa-e39f-8067-a611-c12d72715f95" class="">6.1. Логика функции</h3><p id="2aa568fa-e39f-80ca-bbad-e427a4d6da91" class="">Псевдо:</p><ol type="1" id="2aa568fa-e39f-80fa-bbf3-f83e9dca3561" class="numbered-list" start="1"><li>Узнать сегмент пользователя (<code>country</code>, <code>device</code>…).</li></ol><ol type="1" id="2aa568fa-e39f-8079-9ce0-f9fe5f042e54" class="numbered-list" start="2"><li>Взять top-N из <code>segment_to_items[segment]</code>, если сегмент есть и там достаточно товаров.</li></ol><ol type="1" id="2aa568fa-e39f-80f5-8cc6-cc3f297c0f95" class="numbered-list" start="3"><li>При необходимости дополнить список глобальными популярными.</li></ol><ol type="1" id="2aa568fa-e39f-80e1-b5eb-c723356290e0" class="numbered-list" start="4"><li>Учитывать time-decayed score:<ul id="2aa568fa-e39f-809c-a5e9-f12fd81f8e92" class="bulleted-list"><li style="list-style-type:disc">либо сортировать кандидатов по «смешанному» score:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80a7-82b6-df25254e96e9" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">score = w_global * pop_global(item) + w_recent * pop_recent(item)
+</code></pre></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cf-bc83-d93cdb902d42" class="numbered-list" start="5"><li>Вернуть top-K.</li></ol><h3 id="2aa568fa-e39f-80a1-8d7d-d2c4ae38af77" class="">6.2. Кодовый каркас</h3><p id="2aa568fa-e39f-80a2-86e8-ed08be1d9ba3" class="">Предположим, что у нас есть:</p><ul id="2aa568fa-e39f-80ed-b0e3-fbdbf56eb13e" class="bulleted-list"><li style="list-style-type:disc"><code>user_features</code> с колонками <code>user_id</code> и <code>country</code>;</li></ul><ul id="2aa568fa-e39f-801f-a4f3-e6145e900366" class="bulleted-list"><li style="list-style-type:disc">заранее посчитанные:<ul id="2aa568fa-e39f-8034-b756-e320ab7154f0" class="bulleted-list"><li style="list-style-type:circle"><code>item_popularity_dict</code>,</li></ul><ul id="2aa568fa-e39f-8031-a7cb-ea85120d2e6d" class="bulleted-list"><li style="list-style-type:circle"><code>item_recent_popularity_dict</code>,</li></ul><ul id="2aa568fa-e39f-800f-b693-d9a014ec2ff8" class="bulleted-list"><li style="list-style-type:circle"><code>segment_to_items</code>.</li></ul></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80f5-a53a-d34d83693479" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># подготовим mapping user_id -&gt; segment (country)
+user_segment = dict(zip(user_features[&#x27;user_id&#x27;], user_features[&#x27;country&#x27;]))
+
+def get_segment_for_user(user_id):
+    return user_segment.get(user_id, None)
+</code></pre><p id="2aa568fa-e39f-80df-89e1-d0714b82259c" class="">Теперь сама функция:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d2-bcc4-f4502c383b1b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_popularity(user_id, k=10,
+                         w_global=1.0, w_recent=1.0,
+                         min_segment_candidates=30):
+    &quot;&quot;&quot;
+    Простая популярностная рекомендация:
+    - пытаемся использовать сегментные популярности
+    - если их мало, используем глобальную
+    - сортируем по комбинированному score (global + recent)
+    &quot;&quot;&quot;
+    seg = get_segment_for_user(user_id)
+
+    # 1. Берём кандидатов из сегмента, если есть
+    candidates = []
+    if seg is not None and seg in segment_to_items:
+        candidates = segment_to_items[seg][:max(k * 5, min_segment_candidates)]
+
+    # 2. Добавляем глобально популярные, чтобы расширить список
+    candidates = list(dict.fromkeys(candidates + popular_items_global))  # убираем дубликаты
+
+    # 3. Считаем score для каждого кандидата
+    def score(item_id):
+        g = item_popularity_dict.get(item_id, 0)
+        r = item_recent_popularity_dict.get(item_id, 0)
+        return w_global * g + w_recent * r
+
+    ranked = sorted(candidates, key=score, reverse=True)
+
+    # 4. Возвращаем top-K
+    return ranked[:k]
+</code></pre><p id="2aa568fa-e39f-804c-b01c-df0986fa29d3" class="">Обсуждаете:</p><ul id="2aa568fa-e39f-80ea-8017-c7b52a8f9268" class="bulleted-list"><li style="list-style-type:disc">где тут можно «докрутить»:<ul id="2aa568fa-e39f-80e3-b7af-debe60140f5d" class="bulleted-list"><li style="list-style-type:circle">ввести фильтры (не показывать уже купленное, если это условие задачи);</li></ul><ul id="2aa568fa-e39f-8008-abaa-cd0da11b4f66" class="bulleted-list"><li style="list-style-type:circle">ограничить по категории и т.п.</li></ul></li></ul><h3 id="2aa568fa-e39f-804d-beb4-dc4a71579122" class="">Мини-практика</h3><p id="2aa568fa-e39f-803e-9727-d80eaa92e69a" class="">Пусть студенты:</p><ol type="1" id="2aa568fa-e39f-80a7-adb7-c06ebd8bd6f7" class="numbered-list" start="1"><li>Выбирают 3–5 случайных пользователей.</li></ol><ol type="1" id="2aa568fa-e39f-8059-9d9b-df232dc9e41b" class="numbered-list" start="2"><li>Для каждого:<ul id="2aa568fa-e39f-809b-be99-cbaf62da266a" class="bulleted-list"><li style="list-style-type:disc">вызывают <code>recommend_popularity(user_id, k=10)</code>;</li></ul><ul id="2aa568fa-e39f-80f4-95f5-eb779bdd230e" class="bulleted-list"><li style="list-style-type:disc">для сравнения — старый <code>recommend_for_user_dummy</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807f-bd47-c77d7824abd5" class="numbered-list" start="3"><li>Пишут краткий комментарий:<ul id="2aa568fa-e39f-8048-9ac9-c38752a823f1" class="bulleted-list"><li style="list-style-type:disc">есть ли видимая разница;</li></ul><ul id="2aa568fa-e39f-80ee-935d-fd400c5bf429" class="bulleted-list"><li style="list-style-type:disc">удалось ли поймать какой-то «сегментный» эффект.</li></ul></li></ol><hr id="2aa568fa-e39f-806a-af09-c45083f3b1c8"/><h2 id="2aa568fa-e39f-8052-86a3-f7c4c0838f31" class="">7. Блок 85–90 мин: домашка и wrap-up</h2><h3 id="2aa568fa-e39f-8000-b2da-f12b9f7bb094" class="">Домашка 1.2</h3><p id="2aa568fa-e39f-8046-870d-d80e494e09fa" class=""><strong>Цель домашки:</strong></p><p id="2aa568fa-e39f-80cb-9a1b-cd21546b6ddb" class="">чуть-чуть покопаться в параметрах и заодно потренировать чувство «что такое хорошая эвристика».</p><ol type="1" id="2aa568fa-e39f-8079-8d88-c3dfa3b52996" class="numbered-list" start="1"><li><strong>В ноутбуке:</strong><ul id="2aa568fa-e39f-801e-8322-edf3922f8672" class="bulleted-list"><li style="list-style-type:disc">Реализовать два варианта популярности:<ol type="1" id="2aa568fa-e39f-8007-af94-f5959c422bc7" class="numbered-list" start="1"><li>Simple global popularity (как в 1.1, но аккуратно вынести в функцию/класс).</li></ol><ol type="1" id="2aa568fa-e39f-80a0-936b-ee4b025b1425" class="numbered-list" start="2"><li>Segmented + time-decayed popularity (как на уроке, можно чуть упростить).</li></ol></li></ul><ul id="2aa568fa-e39f-8026-b615-e220c2cfa88b" class="bulleted-list"><li style="list-style-type:disc">Для 20–30 случайных пользователей собрать таблицу:<table id="2aa568fa-e39f-807a-8b9c-ce6a307adde5" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-8024-8e8f-cb4042e8442a"><th id="SqH[" class="simple-table-header-color simple-table-header">user_id</th><th id="EyJU" class="simple-table-header-color simple-table-header">top-5 simple_pop</th><th id="QIfs" class="simple-table-header-color simple-table-header">top-5 segment_time_pop</th></tr></thead><tbody></tbody></table></li></ul><ul id="2aa568fa-e39f-800b-a280-d280ae6390e6" class="bulleted-list"><li style="list-style-type:disc">Для выбранной <strong>оффлайн-валидации (очень простой)</strong>:<ul id="2aa568fa-e39f-8020-83f0-c3c13a31c146" class="bulleted-list"><li style="list-style-type:circle">сделать временной сплит (train / simple val);</li></ul><ul id="2aa568fa-e39f-80f8-92c0-e22696f138b5" class="bulleted-list"><li style="list-style-type:circle">посчитать, хотя бы для части пользователей:<ul id="2aa568fa-e39f-8039-a317-fe2f5ee6edea" class="bulleted-list"><li style="list-style-type:square">HitRate@K для simple_pop;</li></ul><ul id="2aa568fa-e39f-809b-a30d-c5e146d9e272" class="bulleted-list"><li style="list-style-type:square">HitRate@K для segment_time_pop.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803f-8b09-d48a0b267266" class="numbered-list" start="2"><li><strong>Короткий текстовый отчёт (пусть просто markdown-ячейка):</strong><ul id="2aa568fa-e39f-8008-9a3a-c448b1cd2422" class="bulleted-list"><li style="list-style-type:disc">Какие отличия в рекомендациях ты увидел визуально?</li></ul><ul id="2aa568fa-e39f-806f-9f07-deed215937e6" class="bulleted-list"><li style="list-style-type:disc">Для каких пользователей segmented/time-decayed явно лучше?</li></ul><ul id="2aa568fa-e39f-804f-9bee-e96cc89c2b06" class="bulleted-list"><li style="list-style-type:disc">Поменялись ли оффлайн-метрики (даже если расчёт грубый)?</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8096-aacc-f27e0a3408b1" class="numbered-list" start="3"><li>(Опционально, если группа сильная):<ul id="2aa568fa-e39f-80de-95d5-c5d884f4faf3" class="bulleted-list"><li style="list-style-type:disc">Ввести один «ручной гиперпараметр», например:<ul id="2aa568fa-e39f-80c9-9c85-fffb8bd617c7" class="bulleted-list"><li style="list-style-type:circle">размер окна по времени;</li></ul><ul id="2aa568fa-e39f-80e2-990e-c0bc4ad70245" class="bulleted-list"><li style="list-style-type:circle">weights <code>w_global</code>, <code>w_recent</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-8075-bd7f-ddede280f32f" class="bulleted-list"><li style="list-style-type:disc">Попробовать 2–3 разных настройки и посмотреть, меняется ли HitRate@K.</li></ul></li></ol><hr id="2aa568fa-e39f-8060-9e26-e4a2ea31ad81"/><h2 id="2aa568fa-e39f-80fc-97f5-ce0cd2789db9" class="">Быстрый recap для студентов</h2><p id="2aa568fa-e39f-801b-8b76-c905bd245dc2" class="">В конце урока можно оставить такой список на слайде / в ноутбуке:</p><p id="2aa568fa-e39f-80cf-a9b8-c74415aa5237" class=""><strong>Сегодня разобрались:</strong></p><ul id="2aa568fa-e39f-80f4-b5f2-e0d9828dbfe0" class="bulleted-list"><li style="list-style-type:disc">Popularity ≠ просто <code>value_counts</code>.</li></ul><ul id="2aa568fa-e39f-80b3-995f-d9826336dc38" class="bulleted-list"><li style="list-style-type:disc">Бывает:<ul id="2aa568fa-e39f-804d-b972-f540842519c6" class="bulleted-list"><li style="list-style-type:circle">global;</li></ul><ul id="2aa568fa-e39f-80f2-b4ee-c3f02f462a39" class="bulleted-list"><li style="list-style-type:circle">segmented;</li></ul><ul id="2aa568fa-e39f-8079-b4a4-fc1b66a0d9d2" class="bulleted-list"><li style="list-style-type:circle">time-decayed.</li></ul></li></ul><ul id="2aa568fa-e39f-8047-a201-f23a688650d0" class="bulleted-list"><li style="list-style-type:disc">Для рекомендаций мы собираем:<ul id="2aa568fa-e39f-8082-9444-f0d79ca09376" class="bulleted-list"><li style="list-style-type:circle">кандидатов из сегмента;<p id="2aa568fa-e39f-80f7-a580-f4cf1bc7118f" class="">-fallback на глобальные;</p></li></ul><ul id="2aa568fa-e39f-804f-8350-c9c2ba57ac4c" class="bulleted-list"><li style="list-style-type:circle">сортируем по комбинированному score.</li></ul></li></ul><ul id="2aa568fa-e39f-8076-a895-e0040d1bd8b3" class="bulleted-list"><li style="list-style-type:disc">У нас теперь есть:<ul id="2aa568fa-e39f-8004-a2fb-ebdded6386a7" class="bulleted-list"><li style="list-style-type:circle">функция <code>recommend_popularity(user_id, k)</code>,</li></ul><ul id="2aa568fa-e39f-8055-8faa-f26362879880" class="bulleted-list"><li style="list-style-type:circle">которую дальше можно:<ul id="2aa568fa-e39f-8064-8ae5-e992f479a038" class="bulleted-list"><li style="list-style-type:square">комбинировать с item-to-item;</li></ul><ul id="2aa568fa-e39f-8078-838a-c554d79fc871" class="bulleted-list"><li style="list-style-type:square">сравнивать по оффлайн-метрикам.</li></ul></li></ul></li></ul><hr id="2aa568fa-e39f-80dc-83ed-e1a81a054464"/><p id="2aa568fa-e39f-8053-9180-f024bedad296" class="">Если хочешь, дальше могу:</p><ul id="2aa568fa-e39f-800f-ba87-c543af547fba" class="bulleted-list"><li style="list-style-type:disc">расписать <strong>урок 1.3</strong> так же подробно (co-occurrence + item-to-item),</li></ul><ul id="2aa568fa-e39f-80c3-ba16-de763cc5ae96" class="bulleted-list"><li style="list-style-type:disc">или сделать <strong>единый шаблон baseline-репозитория</strong>: структура папок, <code>config.yaml</code>, <code>src/</code> с <code>data.py</code>, <code>features.py</code>, <code>models.py</code>, чтобы весь курс строился поверх одного каркаса.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

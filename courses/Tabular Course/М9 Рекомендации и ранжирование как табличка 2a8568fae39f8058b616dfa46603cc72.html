@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М9. Рекомендации и ранжирование как табличка</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8058-b616-dfa46603cc72" class="page sans"><header><h1 class="page-title">М9. Рекомендации и ранжирование как табличка</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8026-931b-e8ff4e08ae9a" class="">ниже — подробный Модуль 9. Фокус: <strong>рекомендации и ранжирование “как табличка”</strong> — быстрый candidate gen → табличный re-rank (GBDT), честные групповые сплиты и метрики @K. Всё завязано под 5-часовой формат.</p><h2 id="2a8568fa-e39f-80cf-b912-e4b9d80c3d28" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-80a4-b8d4-ebecccc2bd18" class="bulleted-list"><li style="list-style-type:disc">За ≤10 минут определить <strong>структуру запроса</strong> (user/session/context) и корректный <strong>group-aware</strong> сплит.</li></ul><ul id="2a8568fa-e39f-80ad-bc22-d2abc0f85af5" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>конвейер кандидатов</strong> (co-visitation / pop-decay / item2vec / MF/ALS/BPR) и табличный <strong>re-rank</strong> (LGBM/CB/XGB ranker).</li></ul><ul id="2a8568fa-e39f-8073-95e8-c1875ac8a109" class="bulleted-list"><li style="list-style-type:disc">Считать <strong>метрики @K</strong> (Recall/MAP/NDCG, HitRate) и уметь их стабилизировать.</li></ul><ul id="2a8568fa-e39f-8089-baff-c422f1f6a0a4" class="bulleted-list"><li style="list-style-type:disc">Закрыть <strong>cold-start</strong> (новые пользователи/товары) и <strong>бизнес-правила</strong> (диверсификация, свежесть, повторные покупки).</li></ul><ul id="2a8568fa-e39f-8053-afb1-fdeaae157000" class="bulleted-list"><li style="list-style-type:disc">Собрать лёгкий <strong>ансамбль</strong> по источникам кандидатов и моделям.</li></ul><p id="2a8568fa-e39f-80bc-b8c9-e8af48dfdcbb" class=""><strong>Выход:</strong> папка <code>recsys/</code> с <code>candidate_gen.py</code>, <code>rec_feature_factory.py</code>, <code>rank_metrics.py</code>, <code>rankers/*.py|*.yaml</code>, чек-листы сплитов/утечек.</p><hr id="2a8568fa-e39f-80ac-a7e0-ee5fa49ee7ab"/><h2 id="2a8568fa-e39f-805c-8b81-e44fdbd62840" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-805a-ac91-cffb9d68a79a" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-80bd-a2fa-d520e7837e38" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 4–5 часов</strong>.</li></ul><ul id="2a8568fa-e39f-80d7-8084-c3fd8029f8f0" class="bulleted-list"><li style="list-style-type:disc">Защита «паспорт решения» (1 стр) + 2 сабмита.</li></ul><hr id="2a8568fa-e39f-80c5-84c1-e629cb3131da"/><h2 id="2a8568fa-e39f-80e2-ab3d-c3f9774093ba" class="">3) Карта решений за ≤10 минут</h2><ol type="1" id="2a8568fa-e39f-80f2-955b-f1692fb7ae88" class="numbered-list" start="1"><li><strong>Что такое “запрос”?</strong><ul id="2a8568fa-e39f-80b3-bca8-da8976411218" class="bulleted-list"><li style="list-style-type:disc">user-level (история пользователя), session-level (последние N событий), context-level (поисковая фраза/дестинация/даты).</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-80f1-aae8-d41e264c61f1" class="numbered-list" start="2"><li><strong>Что предсказываем?</strong><ul id="2a8568fa-e39f-8053-9482-fecb7b0973e7" class="bulleted-list"><li style="list-style-type:disc">next-item / repeat-purchase / click-through / booking-choice.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-8072-b177-dd13358de20f" class="numbered-list" start="3"><li><strong>Метрика и K:</strong> Recall@20/MAP@20/NDCG@20 (или бизнес-метрика).</li></ol><ol type="1" id="2a8568fa-e39f-803e-8421-c03b50aae260" class="numbered-list" start="4"><li><strong>CV:</strong> GroupKFold/GroupShuffleSplit по <strong>query_id</strong> (user_id или session_id), <strong>time-aware</strong> (train раньше valid); <strong>gap ≥ max_окна</strong>.</li></ol><ol type="1" id="2a8568fa-e39f-8023-b40b-cec747f6f4df" class="numbered-list" start="5"><li><strong>План:</strong> 3–4 источника кандидатов → 200–500 кандидатов/запрос → табличный re-rank → метрики @K → лёгкий ансамбль.</li></ol><hr id="2a8568fa-e39f-80cd-8219-f23d195e0500"/><h2 id="2a8568fa-e39f-8089-b953-e1e6e9afe8e6" class="">4) Честная валидация (без самообмана)</h2><ul id="2a8568fa-e39f-803e-8a53-c8f34e0eedfa" class="bulleted-list"><li style="list-style-type:disc"><strong>Группы = запросы</strong>: не делим один и тот же user/session между train/valid.</li></ul><ul id="2a8568fa-e39f-80f2-bfc1-fbdb504ed28b" class="bulleted-list"><li style="list-style-type:disc"><strong>Time-aware:</strong> все статистики и модели кандидатов обучаются <strong>только</strong> на прошлых событиях относительно валидации.</li></ul><ul id="2a8568fa-e39f-80f8-92bd-c7012fed2157" class="bulleted-list"><li style="list-style-type:disc"><strong>Никаких “future co-vis”</strong>: co-visitation/частоты считаем скользящим окном <strong>до момента запроса</strong>.</li></ul><ul id="2a8568fa-e39f-8017-9527-e2b84ed2e7ec" class="bulleted-list"><li style="list-style-type:disc"><strong>Нормы @K:</strong> метрики считаем на <strong>полном списке</strong> с учётом “истинных” таргетов в валидном окне.</li></ul><hr id="2a8568fa-e39f-8074-a1a4-c225bb8a0e0d"/><h2 id="2a8568fa-e39f-80e2-9ccd-ecc27c7107b3" class="">5) Candidate Generation (минимальный набор + расширения)</h2><p id="2a8568fa-e39f-8057-82e5-f84a3e55eafa" class=""><strong>База (быстро и крепко):</strong></p><ul id="2a8568fa-e39f-80d5-8999-e66c6723d4b3" class="bulleted-list"><li style="list-style-type:disc"><strong>Pop-decay</strong>: глобальная/по категории/по региону — частота с экспон. затуханием по времени.</li></ul><ul id="2a8568fa-e39f-8069-b603-d228877c5f7d" class="bulleted-list"><li style="list-style-type:disc"><strong>Co-visitation</strong> (item×item): окна co-occurrence (напр., в одной корзине/сессии), взвешивания по позиции/времени.</li></ul><ul id="2a8568fa-e39f-80e0-b4ba-c4432c757962" class="bulleted-list"><li style="list-style-type:disc"><strong>Recency-aware user-history</strong>: последние N просмотренных/купленных → соседи по co-vis/embeddings.</li></ul><ul id="2a8568fa-e39f-80c3-a5e8-ee1cbb39a829" class="bulleted-list"><li style="list-style-type:disc"><strong>Item2vec</strong> (skip-gram на сессиях): k ближайших соседей по косинусу.</li></ul><p id="2a8568fa-e39f-80f3-921f-ff0efb2d5336" class=""><strong>Средний уровень:</strong></p><ul id="2a8568fa-e39f-806c-92b0-c665823a5a7d" class="bulleted-list"><li style="list-style-type:disc"><strong>MF/ALS/BPR</strong> (user×item матрица, implicit feedback): топ-N по score для каждого запроса.</li></ul><ul id="2a8568fa-e39f-80ef-86ac-c71c07a184f8" class="bulleted-list"><li style="list-style-type:disc"><strong>Category/brand aware</strong>: популярность внутри (cat, brand), совместимость “user profile × item”.</li></ul><ul id="2a8568fa-e39f-804d-a533-d3c6dde3ae82" class="bulleted-list"><li style="list-style-type:disc"><strong>Context-aware</strong>: фильтрация по дате/цене/району/длительности (Expedia-стайл).</li></ul><p id="2a8568fa-e39f-8095-9c3b-e52462e62d0a" class=""><strong>Рекомендации по количеству:</strong> суммарно <strong>200–500 кандидатов на запрос</strong> (merge-union + de-dup), с тегом источника и score каждого источника.</p><hr id="2a8568fa-e39f-8087-9688-cfae22314367"/><h2 id="2a8568fa-e39f-80c3-983a-c207fb05a8b5" class="">6) Feature Factory для re-rank (user/item/query/pair)</h2><p id="2a8568fa-e39f-8057-86af-f2d09ff6d239" class=""><strong>Глобальные (item):</strong></p><ul id="2a8568fa-e39f-80e4-9a66-d98067cfbd1a" class="bulleted-list"><li style="list-style-type:disc">популярность (глоб/категория), свежесть (age), цена/скидка, рейтинг/отзывы, редкость.</li></ul><p id="2a8568fa-e39f-80c8-82c4-d822de5eaa92" class=""><strong>Пользовательские (user/profile):</strong></p><ul id="2a8568fa-e39f-80a1-ae40-e2823d1f0fd0" class="bulleted-list"><li style="list-style-type:disc">частоты/доли категорий, средняя цена, последние покупки, recency/periodicity, region/home-cat, device.</li></ul><p id="2a8568fa-e39f-807d-b613-f375e0489cb2" class=""><strong>Контекст (query):</strong></p><ul id="2a8568fa-e39f-80a0-8e51-ff53fcebe985" class="bulleted-list"><li style="list-style-type:disc">дата/сезон, длительность/бюджет/локация, search filters, day-of-week, mobile/desktop.</li></ul><p id="2a8568fa-e39f-80e0-a69b-eab2e159c9bd" class=""><strong>Парные (user×item / session×item):</strong></p><ul id="2a8568fa-e39f-80dd-b24e-fcf1c91ffcf2" class="bulleted-list"><li style="list-style-type:disc">co-vis score, item2vec cos, Jaccard/TF-IDF по категориям/тэгам, цена vs личный медианный чек, distance/overlap предпочтений, “similarity to last-k”.</li></ul><p id="2a8568fa-e39f-8053-ac41-c7c88ce33b0f" class=""><strong>Source-aware:</strong></p><ul id="2a8568fa-e39f-8047-a8eb-e0f77b9483a2" class="bulleted-list"><li style="list-style-type:disc">бинарники “кандидат из X”, исходный score (нормирован/ранг), аггрегаты по источникам (max/min/mean).</li></ul><p id="2a8568fa-e39f-8085-95f4-e722cfafce66" class=""><strong>Ранж-специфика:</strong></p><ul id="2a8568fa-e39f-80f8-9d79-efe508ed6ff2" class="bulleted-list"><li style="list-style-type:disc">позиция в листинге (если есть), penalty за “слишком частые повторки” (anti-spam), diversity-bucket id.</li></ul><hr id="2a8568fa-e39f-808b-9feb-f8ce41f8a196"/><h2 id="2a8568fa-e39f-8060-a9eb-db63f83d2924" class="">7) Потоки таргетов и негативов</h2><ul id="2a8568fa-e39f-806a-b56d-db8785d3caea" class="bulleted-list"><li style="list-style-type:disc"><strong>Labeling:</strong> 1, если item ∈ целевой набор (например, куплен/кликнут в валидном окне запроса), иначе 0.</li></ul><ul id="2a8568fa-e39f-8025-92cb-cd170157e5b5" class="bulleted-list"><li style="list-style-type:disc"><strong>Negatives:</strong><ul id="2a8568fa-e39f-8094-81ef-fd5f07a936e0" class="bulleted-list"><li style="list-style-type:circle">полунегативы = кандидаты, не попавшие в “истину”;</li></ul><ul id="2a8568fa-e39f-806f-954a-edb6198e8ca5" class="bulleted-list"><li style="list-style-type:circle">добавить <strong>сложные негативы</strong> (pop-top, похожие соседи) — стабилизирует обучение.</li></ul></li></ul><ul id="2a8568fa-e39f-80c9-8e0c-f70d10316a4f" class="bulleted-list"><li style="list-style-type:disc"><strong>Баланс:</strong> стратифицированный негативный sampling на запрос, фиксировать <strong>top-K eval</strong> независимо от количества негативов.</li></ul><hr id="2a8568fa-e39f-8031-abc5-eba936d75a7d"/><h2 id="2a8568fa-e39f-8001-a930-d74f760a42a5" class="">8) Модели и лоссы (ранжирование)</h2><ul id="2a8568fa-e39f-8045-8084-c0538f7b5756" class="bulleted-list"><li style="list-style-type:disc"><strong>LightGBM ranker</strong>: LambdaMART (objective=rank_xendcg/…); группа = query_id; метрика — NDCG@K/Map@K.</li></ul><ul id="2a8568fa-e39f-8061-88ec-f041aedb32c7" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost ranker</strong>: YetiRank/PairLogit, <code>group_id=query_id</code>, хорошо ест категориальные.</li></ul><ul id="2a8568fa-e39f-80b7-bf4d-dfc45608e586" class="bulleted-list"><li style="list-style-type:disc"><strong>XGBoost rank</strong>: pairwise/ndcg; но следим за временем/стабильностью.</li></ul><ul id="2a8568fa-e39f-8074-b595-cc4cb9eff882" class="bulleted-list"><li style="list-style-type:disc"><strong>Pointwise CTR-re-rank</strong> (логистическая регрессия/GBDT с BCE) — baseline;</li></ul><ul id="2a8568fa-e39f-80b5-9924-c7ff4820aef8" class="bulleted-list"><li style="list-style-type:disc"><strong>Pairwise/listwise</strong> предпочтительнее для @K, но строже к корректности групп.</li></ul><p id="2a8568fa-e39f-8090-a5e2-f92f62bbf516" class=""><strong>Трюки:</strong></p><ul id="2a8568fa-e39f-80ce-8a70-fc9afa1c09c5" class="bulleted-list"><li style="list-style-type:disc">нормировать фичи/скоры источников <strong>внутри запроса</strong> (z/rank);</li></ul><ul id="2a8568fa-e39f-80a3-b2f3-dc09b1bd3d31" class="bulleted-list"><li style="list-style-type:disc">group-wise регуляризация (min_data_in_leaf per group ↑);</li></ul><ul id="2a8568fa-e39f-80d4-9ca0-e2e7ee1a8bbf" class="bulleted-list"><li style="list-style-type:disc">seed-bagging (3–5 сидов) с усреднением нормированных скоров.</li></ul><hr id="2a8568fa-e39f-8099-81a0-eb731b41bae2"/><h2 id="2a8568fa-e39f-8001-9e60-d7d6f0b19f85" class="">9) Пост-процессинг и бизнес-правила</h2><ul id="2a8568fa-e39f-8041-b960-f1fcb3bce725" class="bulleted-list"><li style="list-style-type:disc"><strong>Дедуп</strong> и <strong>tie-breakers</strong> (по source-score/свежести/цене).</li></ul><ul id="2a8568fa-e39f-806e-ad6a-dfbc55b0af5e" class="bulleted-list"><li style="list-style-type:disc"><strong>Diversity</strong>: MMR/greedy по категориям/брендам/продавцам; ограничить повтор из одной категории в топ-N.</li></ul><ul id="2a8568fa-e39f-8061-9de9-ce9c49d25b87" class="bulleted-list"><li style="list-style-type:disc"><strong>Novelty/serendipity</strong>: бонус за новые для пользователя товары (bounded).</li></ul><ul id="2a8568fa-e39f-8083-a97d-ddaf23559430" class="bulleted-list"><li style="list-style-type:disc"><strong>Repeat-purchase</strong>: для FMCG — whitelist для частых повторов (Instacart-стайл).</li></ul><ul id="2a8568fa-e39f-803b-acd6-ee37b9e8601f" class="bulleted-list"><li style="list-style-type:disc"><strong>Фильтры наличия/логистики</strong>: stock, регион, сроки — как hard constraints.</li></ul><hr id="2a8568fa-e39f-802b-866c-fe1aa870e112"/><h2 id="2a8568fa-e39f-8030-b539-df1fa0c2432c" class="">10) Метрики @K и мониторинг</h2><ul id="2a8568fa-e39f-8089-a74d-c801611d15ae" class="bulleted-list"><li style="list-style-type:disc"><strong>Recall@K / HitRate@K</strong> — базовый охват истинных.</li></ul><ul id="2a8568fa-e39f-80ab-88a3-d9b965019983" class="bulleted-list"><li style="list-style-type:disc"><strong>MAP@K / NDCG@K</strong> — положение “истины” в списке (бонус за верх).</li></ul><ul id="2a8568fa-e39f-8086-82cb-f7de7dd46a54" class="bulleted-list"><li style="list-style-type:disc"><strong>Coverage/Novelty/Diversity</strong> — доля уникальных товаров/категорий.</li></ul><ul id="2a8568fa-e39f-805b-aed2-e9e5aa102e41" class="bulleted-list"><li style="list-style-type:disc"><strong>Latency budget</strong> — измеряем среднее и P95 у pipeline (cand gen + re-rank).</li></ul><ul id="2a8568fa-e39f-8015-b5a3-e1242e1458dd" class="bulleted-list"><li style="list-style-type:disc"><strong>CV↔LB</strong> — вести таблицу сабмитов: split, cand-sources, feature set, ranker, @K метрики.</li></ul><hr id="2a8568fa-e39f-8026-8d9e-fd416d67e9dc"/><h2 id="2a8568fa-e39f-8072-8c18-c9b3a2590787" class="">11) Cold-start и дрейф</h2><ul id="2a8568fa-e39f-80f7-bbc6-ca5aebe39a26" class="bulleted-list"><li style="list-style-type:disc"><strong>Новый пользователь</strong>: pop-decay в нужном bucket (регион/категория/время), context-filters.</li></ul><ul id="2a8568fa-e39f-8083-8c58-c9c462a35476" class="bulleted-list"><li style="list-style-type:disc"><strong>Новый товар</strong>: контентные признаки (категория/бренд/цена/описание-эмбеддинги) + кат/рег-популярность.</li></ul><ul id="2a8568fa-e39f-8066-a0cb-f198b38c4dcc" class="bulleted-list"><li style="list-style-type:disc"><strong>Дрейф</strong>: AV по “старые запросы vs новые”, PSI по ключевым фичам; ускоренное переобучение cand-матриц (ежедневно/еженедельно).</li></ul><hr id="2a8568fa-e39f-8032-b67f-d1fc357709b5"/><h2 id="2a8568fa-e39f-80ff-9aa8-fcb620a1baac" class="">12) Бейзлайны и ансамбль</h2><ul id="2a8568fa-e39f-8037-b2ba-ce05dadc2298" class="bulleted-list"><li style="list-style-type:disc"><strong>Baseline-0 (≤30–45 мин):</strong> pop-decay + co-vis → re-rank pointwise (BCE) → Recall@20/MAP@20.</li></ul><ul id="2a8568fa-e39f-8061-a493-e99e8cb4c51b" class="bulleted-list"><li style="list-style-type:disc"><strong>Baseline-1 (≤90 мин):</strong> + item2vec кандидаты, + ranker (LambdaMART) → NDCG@20.</li></ul><ul id="2a8568fa-e39f-8011-8bf2-d1c98093996d" class="bulleted-list"><li style="list-style-type:disc"><strong>Ансамбль (30–45 мин):</strong><ul id="2a8568fa-e39f-8053-a84e-d81af4da291f" class="bulleted-list"><li style="list-style-type:circle">стэкинг: логистическая регрессия по z-скорам нескольких ранкеров;</li></ul><ul id="2a8568fa-e39f-80e2-82c8-f01400d73d27" class="bulleted-list"><li style="list-style-type:circle">RRF (reciprocal rank fusion) поверх отсортированных списков;</li></ul><ul id="2a8568fa-e39f-80a1-a84e-e5438d0a5cb8" class="bulleted-list"><li style="list-style-type:circle">веса по OOF-NDCG.</li></ul></li></ul><hr id="2a8568fa-e39f-8045-b560-f6b1dcb33de1"/><h2 id="2a8568fa-e39f-8064-b88b-e8833b4145c5" class="">13) Мини-практикум A (60–90 мин): Instacart-стайл repeat</h2><p id="2a8568fa-e39f-80a8-8e18-c710e31e0577" class=""><strong>Цель:</strong> повторные покупки и @K.</p><p id="2a8568fa-e39f-8090-9ba5-c1db26d0a85b" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8023-89c6-e004a900cc92" class="numbered-list" start="1"><li>cand: pop-decay per user×department + co-vis корзин.</li></ol><ol type="1" id="2a8568fa-e39f-80d8-ae83-c68526186db2" class="numbered-list" start="2"><li>features: user-freq/recency, item-reorder-rate, pair co-vis score.</li></ol><ol type="1" id="2a8568fa-e39f-807d-a8f9-e66f3990a1f6" class="numbered-list" start="3"><li>ranker: LGBM LambdaMART; Recall@20/MAP@20; короткий анализ ошибок (какие dep проваливаются).</li></ol><hr id="2a8568fa-e39f-803a-8edf-db6493265d92"/><h2 id="2a8568fa-e39f-80b4-b034-c769903d6ce0" class="">14) Мини-практикум B (60–90 мин): Expedia-стайл выбор варианта</h2><p id="2a8568fa-e39f-8093-8235-f208b0b5c820" class=""><strong>Цель:</strong> контекстный фильтр + re-rank.</p><p id="2a8568fa-e39f-807b-a0d5-fb300b733cac" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-80b3-a188-ea855c3f1f3c" class="numbered-list" start="1"><li>cand: pop по destination×season + item2vec.</li></ol><ol type="1" id="2a8568fa-e39f-80e9-ab36-f93c0aca1657" class="numbered-list" start="2"><li>features: price vs user-median, position bias, stay_length, “distance to query”.</li></ol><ol type="1" id="2a8568fa-e39f-80ff-a259-e30b84846f56" class="numbered-list" start="3"><li>CatBoost YetiRank; NDCG@20; post-процедуры: diversity по chain/region.</li></ol><hr id="2a8568fa-e39f-8029-a298-c2970dfcfb3c"/><h2 id="2a8568fa-e39f-8084-bc8f-c4469c9499a0" class="">15) Мини-практикум C (45–60 мин): Avito-стайл спрос/CTR</h2><p id="2a8568fa-e39f-80fa-8ac5-c30cc127c8dd" class=""><strong>Цель:</strong> pointwise vs pairwise.</p><p id="2a8568fa-e39f-804c-a83b-d6ca0ae03638" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8076-8a0e-fb0ac168d55f" class="numbered-list" start="1"><li>cand: co-vis объявления + pop категорий.</li></ol><ol type="1" id="2a8568fa-e39f-806d-a626-ec41834e8944" class="numbered-list" start="2"><li>features: текст/кат-сигналы (tf-idf-суммы/эмбеддинги как числовые), user-history.</li></ol><ol type="1" id="2a8568fa-e39f-8079-a1fa-d8380d69e131" class="numbered-list" start="3"><li>BCE-re-rank vs LambdaMART; сравнить MAP/NDCG.</li></ol><hr id="2a8568fa-e39f-808f-82dc-fd704becee7a"/><h2 id="2a8568fa-e39f-80fe-8a92-e68702397c69" class="">16) Самостоятельный 5-часовой спринт</h2><p id="2a8568fa-e39f-8016-b3de-c7ccae5ac859" class=""><strong>Варианты:</strong> repeat-покупки / выбор предложения / CTR-реранж.</p><p id="2a8568fa-e39f-80ac-8d35-df413da698ab" class=""><strong>Требования:</strong></p><ul id="2a8568fa-e39f-800c-b3f6-c73716b7d38d" class="bulleted-list"><li style="list-style-type:disc">Корректный group+time сплит, <strong>≥3 источника кандидатов</strong>, 10–20 core-фич + 5 pair-фич.</li></ul><ul id="2a8568fa-e39f-8056-b588-ec33a81a2b9e" class="bulleted-list"><li style="list-style-type:disc">2 сабмита: (а) pointwise baseline, (б) listwise/pairwise + post-processing (diversity/novelty).</li></ul><ul id="2a8568fa-e39f-806d-92b1-f7491a25b190" class="bulleted-list"><li style="list-style-type:disc">Паспорт решения: схема CV, источники кандидатов, ключевые фичи, @K метрики, узкие места по времени.</li></ul><hr id="2a8568fa-e39f-8080-8f9c-eb6f04a5cda8"/><h2 id="2a8568fa-e39f-80f1-945a-ed3338834a35" class="">17) Чек-лист утечек (версия М9)</h2><ul id="2a8568fa-e39f-804f-9ac9-d2d7ef7ed91b" class="bulleted-list"><li style="list-style-type:disc">Cand-статистики (co-vis/pop/item2vec/MF) считаются <strong>только на train-прошлом</strong>; ни одного события из валид/тест.</li></ul><ul id="2a8568fa-e39f-80c0-b65f-cba397faba1f" class="bulleted-list"><li style="list-style-type:disc">В парных фичах нельзя использовать сигналы “после” момента запроса.</li></ul><ul id="2a8568fa-e39f-80c0-b3bb-e14153242cca" class="bulleted-list"><li style="list-style-type:disc">Группы не рвутся: один <code>query_id</code> строго в одном сплите.</li></ul><ul id="2a8568fa-e39f-80c1-939c-f746a8c9a3c3" class="bulleted-list"><li style="list-style-type:disc">Post-filters/stock — не должны смотреть в будущее.</li></ul><hr id="2a8568fa-e39f-802a-986c-d6036001e5c0"/><h2 id="2a8568fa-e39f-8087-a972-ea6eb8d544d3" class="">18) Оценивание</h2><ul id="2a8568fa-e39f-80b1-acf5-db9a49641bd8" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: сплит, отсутствие утечек, честные кандидаты.</li></ul><ul id="2a8568fa-e39f-8027-be0b-fa94cc66de50" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: Recall/MAP/NDCG@K, стабильность на альтернативном сплите.</li></ul><ul id="2a8568fa-e39f-802a-a177-da0d4e165e98" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: скорость cand gen и re-rank, кэш Parquet/Polars, reproducibility ≤15 мин.</li></ul><ul id="2a8568fa-e39f-80bf-96b7-c2a15513fc5c" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: ясная аргументация источников/фич/моделей, план борьбы с дрейфом.</li></ul><hr id="2a8568fa-e39f-80a0-9ff1-c3e2e92625ee"/><h2 id="2a8568fa-e39f-804b-8287-f4fb4402fac8" class="">19) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-80be-b756-f2a7633ff1f3" class="bulleted-list"><li style="list-style-type:disc"><code>candidate_gen.py</code>: pop-decay, co-vis, item2vec, MF/ALS/BPR, merge-union + нормировка скоров.</li></ul><ul id="2a8568fa-e39f-8083-8633-f2615ee9a78c" class="bulleted-list"><li style="list-style-type:disc"><code>rec_feature_factory.py</code>: user/item/query/pair фичи, нормировки внутри запроса, anti-spam/diversity hooks.</li></ul><ul id="2a8568fa-e39f-8097-b909-c195f4d3d65d" class="bulleted-list"><li style="list-style-type:disc"><code>rankers/</code>: пресеты <code>lgbm_rank.yaml</code>, <code>catboost_yeti.yaml</code>, <code>xgb_rank.yaml</code>, скрипт seed-bagging.</li></ul><ul id="2a8568fa-e39f-8027-8cd7-ee4a5dac6953" class="bulleted-list"><li style="list-style-type:disc"><code>rank_metrics.py</code>: Recall/MAP/NDCG@K, Coverage/Novelty/Diversity, latency-лог.</li></ul><ul id="2a8568fa-e39f-8079-8571-f37c23bd995f" class="bulleted-list"><li style="list-style-type:disc"><code>splits_rec.py</code>: group+time сплиты с gap по истории.</li></ul><ul id="2a8568fa-e39f-809b-95e1-c0c8a893a937" class="bulleted-list"><li style="list-style-type:disc">Чек-листы: «cand без утечки», «@K sanity-checks», «diversity/novelty правила».</li></ul><hr id="2a8568fa-e39f-806c-a523-dd56fef10ef5"/><h2 id="2a8568fa-e39f-8093-ad07-d43cbeec755d" class="">20) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-809f-8f8d-caa33a9ea176" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин:</strong> CV (group+time), cand: pop+co-vis → сбор 300–500 кандидатов, pointwise бейзлайн → сабмит_1.</li></ul><ul id="2a8568fa-e39f-805c-9d3e-eef0f60d45b8" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин:</strong> + item2vec/MF кандидаты, ядро фич → LambdaMART → сабмит_2.</li></ul><ul id="2a8568fa-e39f-80e7-ae2d-d8e513195b4d" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> пост-процедуры (diversity/novelty), альтернативный сплит, стресс-тест.</li></ul><ul id="2a8568fa-e39f-8001-8dfe-d30d74ba6a9a" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> ансамбль (rankers/источники), финальный топ-K.</li></ul><ul id="2a8568fa-e39f-80de-a2ad-d404daef3967" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> паспорт решения: что дало прирост, где риски, что бы делали с ещё 2 часами.</li></ul><p id="2a8568fa-e39f-80f5-b6a0-f92e053a3f3e" class="">Хочешь — накину каркасы <code>candidate_gen.py</code> и <code>rec_feature_factory.py</code> ровно под твой текущий темплейт (та же CLI-схема, что у CV/Encoder/TS-factory), чтобы команда могла сразу вставить модуль в спринты.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

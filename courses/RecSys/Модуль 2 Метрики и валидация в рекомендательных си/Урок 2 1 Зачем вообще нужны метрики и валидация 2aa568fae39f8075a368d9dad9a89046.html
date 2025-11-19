@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 2.1. Зачем вообще нужны метрики и валидация</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8075-a368-d9dad9a89046" class="page sans"><header><h1 class="page-title">Урок 2.1. Зачем вообще нужны метрики и валидация</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80d1-a872-ebdbe81442a9" class="">1. Цели урока</h2><p id="2aa568fa-e39f-8095-90d5-fce0725f054f" class="">К концу урока студент должен уметь:</p><ul id="2aa568fa-e39f-80fc-b1bd-f051ea7a655d" class="bulleted-list"><li style="list-style-type:disc">объяснить, <strong>зачем</strong> нужны метрики в рекомендательных системах (не «просто потому что так надо»);</li></ul><ul id="2aa568fa-e39f-80b6-bddb-e5f7c9ada4bf" class="bulleted-list"><li style="list-style-type:disc">различать:<ul id="2aa568fa-e39f-805b-969d-c792d35da536" class="bulleted-list"><li style="list-style-type:circle"><strong>бизнес-метрики</strong> (выручка, CTR, GMV, retention и т.п.),</li></ul><ul id="2aa568fa-e39f-8013-a377-cf2e1a9132ac" class="bulleted-list"><li style="list-style-type:circle"><strong>offline-метрики ML-моделей</strong> (Recall@K, MAP@K, NDCG, RMSE и т.д.),</li></ul><ul id="2aa568fa-e39f-8068-89bf-d7ca86df2fc8" class="bulleted-list"><li style="list-style-type:circle"><strong>online-метрики</strong> (что меряют в A/B тесте);</li></ul></li></ul><ul id="2aa568fa-e39f-80aa-9086-f70d33635dd0" class="bulleted-list"><li style="list-style-type:disc">разобрать текстовое описание задачи и:<ul id="2aa568fa-e39f-80d5-a8c2-d91ed95462ad" class="bulleted-list"><li style="list-style-type:circle">предложить 1–2 разумные <strong>offline-метрики</strong>,</li></ul><ul id="2aa568fa-e39f-8096-ac84-d41e0281646b" class="bulleted-list"><li style="list-style-type:circle">предложить 1–2 возможные <strong>online-метрики</strong>;</li></ul></li></ul><ul id="2aa568fa-e39f-8001-b690-ea65a96251a6" class="bulleted-list"><li style="list-style-type:disc">понимать, откуда берётся ситуация:<ul id="2aa568fa-e39f-8046-b986-f253dd45843b" class="bulleted-list"><li style="list-style-type:circle">«на моей валидации всё супер, а на leaderboard/в проде — грусть»,</li></ul><ul id="2aa568fa-e39f-808d-9100-f657e09f61ef" class="bulleted-list"><li style="list-style-type:circle">и назвать <strong>как минимум 3 причины</strong>, почему так бывает.</li></ul></li></ul><hr id="2aa568fa-e39f-8079-890e-e89eaf1c2a8a"/><h2 id="2aa568fa-e39f-8080-9277-d0cad060f1aa" class="">2. Структура урока (примерно 90 минут)</h2><p id="2aa568fa-e39f-809e-b62c-f52269978044" class=""><strong>Блок 1 (15–20 мин)</strong> — контекст: зачем нам вообще метрики</p><p id="2aa568fa-e39f-80aa-92e3-c9b3ab916e97" class=""><strong>Блок 2 (25–30 мин)</strong> — карта метрик: бизнес → offline → online</p><p id="2aa568fa-e39f-8058-84e2-d8294ddf89d0" class=""><strong>Блок 3 (20–25 мин)</strong> — разбор типовых сценариев RecSys</p><p id="2aa568fa-e39f-800e-92d5-efbd74470dd7" class=""><strong>Блок 4 (15–20 мин)</strong> — групповая работа + обсуждение</p><p id="2aa568fa-e39f-8094-9240-e76e4b35cfd0" class=""><strong>Домашка</strong> — рефлексия на своём датасете/сореве</p><hr id="2aa568fa-e39f-804a-a68c-ea4bb9b8d611"/><h2 id="2aa568fa-e39f-80fe-b218-f02b6f08e776" class="">3. Блок 1. Зачем метрики: мотивация и боль</h2><h3 id="2aa568fa-e39f-8022-ae33-eff714a40a16" class="">3.1. История-вводка</h3><p id="2aa568fa-e39f-80d1-bd97-eab266fdb7e1" class="">Препод рассказывает типичную историю (или ты пишешь как narrative в конспекте):</p><blockquote id="2aa568fa-e39f-808d-968d-efbebb9e586e" class="">У нас e-commerce. Мы сделали новую модель рекомендаций, у неё Recall@20 вырос с 0.25 до 0.35. Радуемся, выкатываем в прод → а выручка не растёт, пользователи кликают чуть больше, но покупают меньше. Что пошло не так?</blockquote><p id="2aa568fa-e39f-8004-8f01-cfd00d3eccd7" class="">Разбор:</p><ul id="2aa568fa-e39f-8040-9694-db4f6661b58c" class="bulleted-list"><li style="list-style-type:disc">Модель научилась «догонять» дешёвые/скидочные/кликабельные товары;</li></ul><ul id="2aa568fa-e39f-803f-b469-db034f4e6843" class="bulleted-list"><li style="list-style-type:disc">CTR вырос → логично;</li></ul><ul id="2aa568fa-e39f-8084-817b-dd04412f2d68" class="bulleted-list"><li style="list-style-type:disc">но средний чек упал, маржа уменьшилась → бизнес страдает;</li></ul><ul id="2aa568fa-e39f-80aa-8d35-c8513dc40e1d" class="bulleted-list"><li style="list-style-type:disc">значит, <strong>мы оптимизировали не ту метрику</strong>.</li></ul><p id="2aa568fa-e39f-8011-aa83-f2c557a59af5" class="">Вывод:</p><p id="2aa568fa-e39f-8015-af26-e90660329c50" class=""><strong>«Скажи мне, какую метрику ты оптимизируешь — и я скажу, что с твоей моделью будет в проде»</strong>.</p><h3 id="2aa568fa-e39f-80da-a121-e806857a7e34" class="">3.2. Мини-определения</h3><ul id="2aa568fa-e39f-8033-85a3-eba9ba79cf55" class="bulleted-list"><li style="list-style-type:disc"><strong>Метрика</strong> — численный критерий, по которому мы сравниваем модели/стратегии.</li></ul><ul id="2aa568fa-e39f-80cf-8011-f62faf633337" class="bulleted-list"><li style="list-style-type:disc">В RecSys уровни:<ol type="1" id="2aa568fa-e39f-80a1-b12f-c69e944b4242" class="numbered-list" start="1"><li><strong>Бизнес-метрики</strong>:<ul id="2aa568fa-e39f-80fd-8b86-f70c15363d25" class="bulleted-list"><li style="list-style-type:disc">выручка, GMV, маржа;</li></ul><ul id="2aa568fa-e39f-8070-a5af-de5398a611e8" class="bulleted-list"><li style="list-style-type:disc">CTR, conversion;</li></ul><ul id="2aa568fa-e39f-802b-99e9-e5f75fdfcd0d" class="bulleted-list"><li style="list-style-type:disc">retention, DAU/MAU, время в продукте;</li></ul><ul id="2aa568fa-e39f-804d-a0d4-c0012f3c4e13" class="bulleted-list"><li style="list-style-type:disc">churn rate.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8013-af7c-efb7ebd1680b" class="numbered-list" start="2"><li><strong>Product/UX-метрики</strong>:<ul id="2aa568fa-e39f-8071-a28e-c14225757a49" class="bulleted-list"><li style="list-style-type:disc">удовлетворённость рекомендациями (опросы, NPS);</li></ul><ul id="2aa568fa-e39f-80fb-a559-cd1f01285d95" class="bulleted-list"><li style="list-style-type:disc">глубина сессии, время на сайте/в приложении;</li></ul><ul id="2aa568fa-e39f-8001-bf32-e36f8df05415" class="bulleted-list"><li style="list-style-type:disc">количество жалоб, отписок, скрытий.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80bc-9b7f-f2931d5b79ae" class="numbered-list" start="3"><li><strong>Offline-ML метрики</strong>:<ul id="2aa568fa-e39f-8094-9dea-dbaf0065fa93" class="bulleted-list"><li style="list-style-type:disc">RMSE, AUC, Recall@K, NDCG@K и т.д.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8029-bc6e-cdadcbdeeedb" class="numbered-list" start="4"><li><strong>Online-метрики</strong>:<ul id="2aa568fa-e39f-807c-98a2-ef080d37b671" class="bulleted-list"><li style="list-style-type:disc">то, что меряем в A/B тестах (увеличение GMV, CTR, watch time, retention).</li></ul></li></ol></li></ul><p id="2aa568fa-e39f-8046-911c-ed4bb6edf05f" class="">Логика: бизнес говорит «хочу больше денег/удержания», а мы говорим:</p><p id="2aa568fa-e39f-805c-b50b-d18721b1a7e3" class=""><strong>«Ок, мы не можем сразу мерять деньги, но можем оптимизировать такой-то прокси»</strong>.</p><hr id="2aa568fa-e39f-8066-b1df-c87d0a6faada"/><h2 id="2aa568fa-e39f-80fc-a79a-ca5dff275e6a" class="">4. Блок 2. Связь бизнес → offline → online</h2><h3 id="2aa568fa-e39f-806f-94f8-c10a2f856296" class="">4.1. Бизнес-кейсы (3 штуки)</h3><p id="2aa568fa-e39f-8037-98c2-ed72d72b0da4" class="">Препод (или материал) даёт 3 кейса:</p><ol type="1" id="2aa568fa-e39f-8093-ab9d-f5ca07ac1179" class="numbered-list" start="1"><li><strong>Маркетплейс / интернет-магазин</strong><ul id="2aa568fa-e39f-8067-98f7-c971824a0b83" class="bulleted-list"><li style="list-style-type:disc">цель бизнеса:<ul id="2aa568fa-e39f-80d7-b635-ec7a9f665aca" class="bulleted-list"><li style="list-style-type:circle">увеличить выручку (GMV) и маржу;</li></ul><ul id="2aa568fa-e39f-8006-9937-dc604dc8b866" class="bulleted-list"><li style="list-style-type:circle">увеличить конверсию в покупку;</li></ul></li></ul><ul id="2aa568fa-e39f-8012-8721-f239008c3791" class="bulleted-list"><li style="list-style-type:disc">важные аспекты:<ul id="2aa568fa-e39f-80f7-a5d1-e45603a3ea87" class="bulleted-list"><li style="list-style-type:circle">не только «что купят», но и <strong>сколько</strong> и с какой маржой;</li></ul><ul id="2aa568fa-e39f-8066-b3bb-f4cbd0e627f6" class="bulleted-list"><li style="list-style-type:circle">LTV пользователя.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c3-a2ba-e73f5f5b782b" class="numbered-list" start="2"><li><strong>Видеоплатформа / стриминг</strong><ul id="2aa568fa-e39f-80db-8cc7-ee10efc61c7a" class="bulleted-list"><li style="list-style-type:disc">цели:<ul id="2aa568fa-e39f-80aa-8968-cbd97a2de09c" class="bulleted-list"><li style="list-style-type:circle">увеличить общее watch time;</li></ul><ul id="2aa568fa-e39f-80da-b100-d1811f7531ea" class="bulleted-list"><li style="list-style-type:circle">удерживать пользователя в сервисе;</li></ul></li></ul><ul id="2aa568fa-e39f-806c-a686-f13050c205f5" class="bulleted-list"><li style="list-style-type:disc">при этом:<ul id="2aa568fa-e39f-80dc-a871-f52483d76376" class="bulleted-list"><li style="list-style-type:circle">не закапывать пользователя в однообразный контент.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-800b-a727-da6bd89200cb" class="numbered-list" start="3"><li><strong>Новости / контентная платформа</strong><ul id="2aa568fa-e39f-8061-8b78-ee8d55134741" class="bulleted-list"><li style="list-style-type:disc">цели:<ul id="2aa568fa-e39f-803a-b045-e44c8d958065" class="bulleted-list"><li style="list-style-type:circle">удержание, вовлечённость;</li></ul><ul id="2aa568fa-e39f-80a7-bf0b-c6e52eadae20" class="bulleted-list"><li style="list-style-type:circle">иногда — баланс разных источников/точек зрения;</li></ul></li></ul><ul id="2aa568fa-e39f-80af-94f5-d6a097820e0d" class="bulleted-list"><li style="list-style-type:disc">риски:<ul id="2aa568fa-e39f-8021-9361-c208a9c30c95" class="bulleted-list"><li style="list-style-type:circle">echo chambers;</li></ul><ul id="2aa568fa-e39f-80a5-bc9d-fd3afe081b6b" class="bulleted-list"><li style="list-style-type:circle">поляризация.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8008-8cac-fc10836d8a62" class="">4.2. Как из этого получить offline-метрики</h3><p id="2aa568fa-e39f-800a-af4a-e81ed7af4451" class="">Показываем логическую цепочку:</p><p id="2aa568fa-e39f-80bf-88f0-c211b34985be" class=""><strong>Пример 1: e-commerce</strong></p><ul id="2aa568fa-e39f-80d0-a472-c7281b2fffb6" class="bulleted-list"><li style="list-style-type:disc">Бизнес: GMV ↑.</li></ul><ul id="2aa568fa-e39f-8010-b9b7-ff5e347da7ea" class="bulleted-list"><li style="list-style-type:disc">Online-метрика (на A/B тест):<ul id="2aa568fa-e39f-80a2-9eca-fa592c9f82b5" class="bulleted-list"><li style="list-style-type:circle">средний чек на сессию;</li></ul><ul id="2aa568fa-e39f-8067-94f3-c87a07e23d09" class="bulleted-list"><li style="list-style-type:circle">конверсия в покупку;</li></ul><ul id="2aa568fa-e39f-80e5-98b9-e9acabfb0b5b" class="bulleted-list"><li style="list-style-type:circle">GMV на пользователя в день.</li></ul></li></ul><ul id="2aa568fa-e39f-8024-83b9-c641f62fbfad" class="bulleted-list"><li style="list-style-type:disc">Offline-метрика:<ul id="2aa568fa-e39f-806d-b069-c9f04dc19f79" class="bulleted-list"><li style="list-style-type:circle">Recall@K по покупкам;</li></ul><ul id="2aa568fa-e39f-804a-8148-f9ff8cdbb6e5" class="bulleted-list"><li style="list-style-type:circle">NDCG@K с весами по цене/марже товара;</li></ul><ul id="2aa568fa-e39f-80bb-865b-f6fb86b191fe" class="bulleted-list"><li style="list-style-type:circle">MAP@K по «покупкам» как релевантным объектам.</li></ul></li></ul><p id="2aa568fa-e39f-8050-93d3-c6bf4109f978" class=""><strong>Пример 2: видео</strong></p><ul id="2aa568fa-e39f-804c-8563-e553f0f49f76" class="bulleted-list"><li style="list-style-type:disc">Бизнес: watch time ↑.</li></ul><ul id="2aa568fa-e39f-803d-89f7-eb2126d54fc1" class="bulleted-list"><li style="list-style-type:disc">Online:<ul id="2aa568fa-e39f-805e-9400-d70ddcff7158" class="bulleted-list"><li style="list-style-type:circle">среднее время просмотра на сессию;</li></ul><ul id="2aa568fa-e39f-8030-8b5f-f44542c9be61" class="bulleted-list"><li style="list-style-type:circle">вероятность вернуться завтра/через неделю.</li></ul></li></ul><ul id="2aa568fa-e39f-80aa-8166-e4ca1fbad18a" class="bulleted-list"><li style="list-style-type:disc">Offline:<ul id="2aa568fa-e39f-8040-8e13-c66ad8253504" class="bulleted-list"><li style="list-style-type:circle">вероятность досмотра (binary label);</li></ul><ul id="2aa568fa-e39f-802a-a199-f6c7a2c4f45c" class="bulleted-list"><li style="list-style-type:circle">ranking по предсказанному watch time;</li></ul><ul id="2aa568fa-e39f-80d7-93cd-fbdc328b5c4d" class="bulleted-list"><li style="list-style-type:circle">NDCG по длине просмотра.</li></ul></li></ul><p id="2aa568fa-e39f-8018-8f74-d515d896739e" class="">Логика, которую ты хочешь вшить в голову студентов:</p><blockquote id="2aa568fa-e39f-8031-9eb5-eddd73064858" class="">Offline-метрика — это наш лучший approximation того, чего реально хочет бизнес, но на исторических данных.</blockquote><h3 id="2aa568fa-e39f-807b-b553-e13d215c57dd" class="">4.3. Online-метрики и их ограничения (без деталей A/B)</h3><ul id="2aa568fa-e39f-8073-bae8-f2d3c6c841e5" class="bulleted-list"><li style="list-style-type:disc">A/B тесты:<ul id="2aa568fa-e39f-8035-8272-d539bb967cc0" class="bulleted-list"><li style="list-style-type:circle">группа A — текущая модель,</li></ul><ul id="2aa568fa-e39f-8075-b2c8-fc0d69c4b16d" class="bulleted-list"><li style="list-style-type:circle">группа B — новая модель.</li></ul></li></ul><ul id="2aa568fa-e39f-8029-b79f-ca2e0198c943" class="bulleted-list"><li style="list-style-type:disc">Смотрим разницу в:<ul id="2aa568fa-e39f-80c6-8f66-f0699b8494ae" class="bulleted-list"><li style="list-style-type:circle">CTR/GMV/watch time/retention и т.д.</li></ul></li></ul><ul id="2aa568fa-e39f-8047-8f03-ff15082ebca9" class="bulleted-list"><li style="list-style-type:disc">Почему просто всегда делать A/B — <strong>не вариант</strong>:<ul id="2aa568fa-e39f-8064-b567-da4d0586e505" class="bulleted-list"><li style="list-style-type:circle">дорого и долго;</li></ul><ul id="2aa568fa-e39f-8041-9c12-d7f1ef73c28a" class="bulleted-list"><li style="list-style-type:circle">риск раскатить плохую модель на живых пользователях;</li></ul><ul id="2aa568fa-e39f-807c-bb2f-cf4337b7e091" class="bulleted-list"><li style="list-style-type:circle">нельзя гонять десятки экспериментов параллельно без хорошей системы.</li></ul></li></ul><hr id="2aa568fa-e39f-8098-9d38-ccac0c1bec3c"/><h2 id="2aa568fa-e39f-8051-9032-c61ecb7da801" class="">5. Блок 3. Почему offline и online/leaderboard могут расходиться</h2><h3 id="2aa568fa-e39f-80ed-b614-f511505989e5" class="">5.1. Классические причины</h3><ol type="1" id="2aa568fa-e39f-803a-9b13-cea3975129d7" class="numbered-list" start="1"><li><strong>Плохая схема валидации</strong><ul id="2aa568fa-e39f-80f0-94c3-ed49e3f2098c" class="bulleted-list"><li style="list-style-type:disc">Неправильно выбран сплит (random вместо time-based).</li></ul><ul id="2aa568fa-e39f-8078-aa6f-d0151a03821d" class="bulleted-list"><li style="list-style-type:disc">В валидации есть лики:<ul id="2aa568fa-e39f-8054-8e63-e6fe1ca30449" class="bulleted-list"><li style="list-style-type:circle">фичи считают статистику по всему датасету, включая период валидации;</li></ul><ul id="2aa568fa-e39f-8016-97ce-f334bd8839f1" class="bulleted-list"><li style="list-style-type:circle">границы train/valid не совпадают с тем, как будут использовать модель.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8048-ba25-d422565ae589" class="numbered-list" start="2"><li><strong>Неподходящая offline-метрика</strong><ul id="2aa568fa-e39f-8004-aa87-e829499d302b" class="bulleted-list"><li style="list-style-type:disc">Оптимизируем RMSE/Logloss, когда бизнесу важен именно top-K;</li></ul><ul id="2aa568fa-e39f-80d3-81f5-f85389ff850d" class="bulleted-list"><li style="list-style-type:disc">оптимизируем Recall@K, а бизнесу важен GMV → модель научилась предлагать много дешёвых товаров.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8029-90ae-feb2897a323c" class="numbered-list" start="3"><li><strong>Мismatch user behaviour</strong><ul id="2aa568fa-e39f-809c-bc9f-f28f26738baa" class="bulleted-list"><li style="list-style-type:disc">На исторических данных пользователь видел рекомендации в одном формате;</li></ul><ul id="2aa568fa-e39f-80d2-8ff8-d18e12329e95" class="bulleted-list"><li style="list-style-type:disc">новая модель может вести себя по-разному (например, сильно менять diversity);</li></ul><ul id="2aa568fa-e39f-8026-913d-d191d1d9a489" class="bulleted-list"><li style="list-style-type:disc">offline-лог не отражает реакцию пользователя на новые рекомендации.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8047-a387-cc28213ec59d" class="numbered-list" start="4"><li><strong>Разница в данных</strong><ul id="2aa568fa-e39f-80d2-a0b1-d5810de2b96c" class="bulleted-list"><li style="list-style-type:disc">Train/valid делались по историческим данным во время распродажи, а прод работает в «спокойный» период;</li></ul><ul id="2aa568fa-e39f-80ff-9b12-ec8d9cdf5faf" class="bulleted-list"><li style="list-style-type:disc">появилось много новых товаров/пользователей, которых не было в train.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807e-b646-cb45e4d77fd8" class="numbered-list" start="5"><li><strong>В соревнованиях: приватный vs публичный leaderboard</strong><ul id="2aa568fa-e39f-801a-a7a8-ea863ba56cac" class="bulleted-list"><li style="list-style-type:disc">Public LB строится на одном подмножестве test;</li></ul><ul id="2aa568fa-e39f-80e8-a2f3-fd4c982661d0" class="bulleted-list"><li style="list-style-type:disc">Private LB — на другом, невидимом;</li></ul><ul id="2aa568fa-e39f-803e-8fd5-ed59a345676b" class="bulleted-list"><li style="list-style-type:disc">переобучение на public LB (LB-shake, «подгонка под плашку»);</li></ul><ul id="2aa568fa-e39f-8057-8738-f297d359eabc" class="bulleted-list"><li style="list-style-type:disc">плохо имитированная offline-валидация → offline и private LB расходятся.</li></ul></li></ol><h3 id="2aa568fa-e39f-8048-99d2-e146a80058a1" class="">5.2. Мини-дискуссия</h3><p id="2aa568fa-e39f-8004-8005-e4b978fe9dc2" class="">Вопросы, которые можно задать группе:</p><ul id="2aa568fa-e39f-80d1-aa20-de92114eaa22" class="bulleted-list"><li style="list-style-type:disc">Может ли быть случаем, когда на offline метрике <strong>модель А лучше</strong>, а бизнесу <strong>лучше модель B</strong>?<p id="2aa568fa-e39f-8004-b380-c3c3819f64cd" class="">Примеры (e-commerce, видео, новости).</p></li></ul><ul id="2aa568fa-e39f-801b-a588-f4af3f664909" class="bulleted-list"><li style="list-style-type:disc">Что опаснее:<ul id="2aa568fa-e39f-806a-a313-f6b0a9759738" class="bulleted-list"><li style="list-style-type:circle">завышенная offline-оценка (кажется, что модель хорошая, но в реале хуже),</li></ul><ul id="2aa568fa-e39f-801c-abc7-f1489ae9a7ea" class="bulleted-list"><li style="list-style-type:circle">или заниженная (мы боимся выкатывать, но на самом деле могли бы получить профит)?</li></ul></li></ul><hr id="2aa568fa-e39f-8034-95a1-d94008f14a48"/><h2 id="2aa568fa-e39f-80dc-972c-cda9299266d4" class="">6. Блок 4. Практическое задание на уроке</h2><h3 id="2aa568fa-e39f-8077-96a1-f2a9bc0cf003" class="">6.1. Формат</h3><ul id="2aa568fa-e39f-8063-93a7-fd714039943f" class="bulleted-list"><li style="list-style-type:disc">Делим студентов на мини-группы (по 2–3 человека).</li></ul><ul id="2aa568fa-e39f-8099-aecf-cc5048b42398" class="bulleted-list"><li style="list-style-type:disc">Каждой группе выдаём <strong>описание маленького кейса</strong> (можно придумать 3–4 разных). Например:<p id="2aa568fa-e39f-80de-b394-c17d705df910" class=""><strong>Кейс A. Интернет-магазин одежды</strong></p><p id="2aa568fa-e39f-802a-97e2-f728d8fe45a7" class="">Задача: рекомендовать пользователю товары на главной.</p><p id="2aa568fa-e39f-80ef-9565-dade76d366fa" class="">Данные: лог просмотров и покупок, цена, скидка, категория, бренд.</p><p id="2aa568fa-e39f-80e7-a5a9-df07a2555e97" class="">Цель бизнеса: повысить GMV, но не за счёт огромных скидок, плюс контролировать количество возвратов.</p><p id="2aa568fa-e39f-8064-a04a-dca26d5b8131" class=""><strong>Кейс B. Видеоплатформа</strong></p><p id="2aa568fa-e39f-802d-91bf-c764fa88fd2b" class="">Задача: рекомендовать следующее видео.</p><p id="2aa568fa-e39f-8028-99a9-c6e56ad81a1f" class="">Данные: истории просмотров, длительность видео, жанр, watch time.</p><p id="2aa568fa-e39f-80eb-8d2f-e16409618838" class="">Цель: максимизировать watch time, не вызывая раздражение однообразием.</p><p id="2aa568fa-e39f-80ab-aefb-fa8c0c563a32" class=""><strong>Кейс C. Новостной сайт</strong></p><p id="2aa568fa-e39f-8034-bdf5-fa683c23d3f7" class="">Задача: рекомендовать статьи.</p><p id="2aa568fa-e39f-80de-9146-cecb96caa1d7" class="">Данные: клики, просмотры, тема статьи, источник, длина текста.</p><p id="2aa568fa-e39f-80f0-b934-c9738900674f" class="">Цель: удерживать пользователя, но избегать слишком сильной политической однобокости.</p></li></ul><h3 id="2aa568fa-e39f-808f-ae6b-e66e41ea0a85" class="">6.2. Задание группам</h3><p id="2aa568fa-e39f-8034-a600-dea0686dd422" class="">Для своего кейса:</p><ol type="1" id="2aa568fa-e39f-80ff-84c8-e02e20f3366e" class="numbered-list" start="1"><li>Определить <strong>бизнес-метрики</strong>:<ul id="2aa568fa-e39f-80e8-8655-cf8a6d3a5c85" class="bulleted-list"><li style="list-style-type:disc">что бизнес по факту хочет видеть (конверсия, GMV, время, retention, diversity…)</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8042-b759-dfa0f076da26" class="numbered-list" start="2"><li>Предложить:<ul id="2aa568fa-e39f-8038-a415-d611d2e58914" class="bulleted-list"><li style="list-style-type:disc"><strong>1–2 offline-метрики</strong>, которые адекватно приближают бизнес-цели;</li></ul><ul id="2aa568fa-e39f-803c-b98f-ec646369b174" class="bulleted-list"><li style="list-style-type:disc"><strong>1–2 online-метрики</strong>, которые в реальном A/B тесте вы бы смотрели.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8074-9746-d2cdd46f2796" class="numbered-list" start="3"><li>В идеале — примерной фразой:<blockquote id="2aa568fa-e39f-8040-ad14-ff8d856f9eb7" class="">«Мы будем оптимизировать оффлайн такую-то метрику, потому что она коррелирует с ___, но знаем, что есть ограничения: ____»</blockquote></li></ol><h3 id="2aa568fa-e39f-80ae-be23-cd77ff5f5475" class="">6.3. Обсуждение</h3><ul id="2aa568fa-e39f-808f-a88b-c34e37f52155" class="bulleted-list"><li style="list-style-type:disc">Каждая группа кратко презентует (2–3 минуты).</li></ul><ul id="2aa568fa-e39f-8003-8b4e-fe38534d8a73" class="bulleted-list"><li style="list-style-type:disc">Препод/ты как автор курса отмечаешь:<ul id="2aa568fa-e39f-8005-a958-f555867791f0" class="bulleted-list"><li style="list-style-type:circle">где хорошо связали бизнес → offline → online;</li></ul><ul id="2aa568fa-e39f-8047-a8c0-d196e5b9368c" class="bulleted-list"><li style="list-style-type:circle">где offline метрика неплоха, но есть очевидные дыры;</li></ul><ul id="2aa568fa-e39f-8087-928d-c1dcb6678c5d" class="bulleted-list"><li style="list-style-type:circle">какие ещё метрики можно добавить.</li></ul></li></ul><hr id="2aa568fa-e39f-8021-9a99-d488c3b29001"/><h2 id="2aa568fa-e39f-803c-8524-feb6d5d595f9" class="">7. Домашнее задание 2.1 (подробно)</h2><p id="2aa568fa-e39f-8078-a4ec-f6567667c9f6" class=""><strong>Цель домашки:</strong></p><p id="2aa568fa-e39f-80c3-95b7-e9e10295f805" class="">перевести теорию в личный контекст — <strong>на том датасете/сореве, который студент уже выбрал в Модуле 1</strong>.</p><h3 id="2aa568fa-e39f-8057-9f9d-f6776a584544" class="">Шаг 1. Описание задачи (коротко, но чётко)</h3><p id="2aa568fa-e39f-80c8-8d8a-c66bcf09b99d" class="">Студент берёт свой сорев/датасет и отвечает письменно:</p><ol type="1" id="2aa568fa-e39f-8058-89e3-ef2241b0f856" class="numbered-list" start="1"><li>Как называется задача?</li></ol><ol type="1" id="2aa568fa-e39f-80c2-be34-da8a9333e685" class="numbered-list" start="2"><li>Кто здесь пользователь? Что считается «рекомендовать пользователю»?</li></ol><ol type="1" id="2aa568fa-e39f-8016-9c33-ec104026734c" class="numbered-list" start="3"><li>Что является <strong>таргетом</strong>?<ul id="2aa568fa-e39f-8087-917c-dbd13ca39a37" class="bulleted-list"><li style="list-style-type:disc">покупать?</li></ul><ul id="2aa568fa-e39f-8057-b47d-fb2882e758a5" class="bulleted-list"><li style="list-style-type:disc">кликать?</li></ul><ul id="2aa568fa-e39f-8027-80f2-fe0400b2d417" class="bulleted-list"><li style="list-style-type:disc">просматривать дальше?</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8082-99af-d2b9676258b5" class="numbered-list" start="4"><li>Есть ли в описании уже <strong>официальная метрика</strong>? Какая?</li></ol><h3 id="2aa568fa-e39f-806d-b46b-fec412b13561" class="">Шаг 2. Бизнес-метрика (гипотеза)</h3><p id="2aa568fa-e39f-807e-ac1b-fe62de14248d" class="">Ответить в свободной форме (0.5–1 страница):</p><ul id="2aa568fa-e39f-8076-903e-fe550b954075" class="bulleted-list"><li style="list-style-type:disc">Если представить, что это <strong>реальный продукт</strong>, то:<ul id="2aa568fa-e39f-8015-9ec8-f08bfd082de8" class="bulleted-list"><li style="list-style-type:circle">какая бизнес-цель у этой рекомендательной системы?<p id="2aa568fa-e39f-80c0-ae71-c5f6b0c60812" class="">(увеличить выручку, конверсию, вовлечённость, удержание…)</p></li></ul><ul id="2aa568fa-e39f-8082-a990-f2b6bc7f819c" class="bulleted-list"><li style="list-style-type:circle">какие бизнес-метрики ты бы смотрел в A/B тестах?</li></ul></li></ul><h3 id="2aa568fa-e39f-8069-9b7a-da35252b7d68" class="">Шаг 3. Offline-метрики</h3><ol type="1" id="2aa568fa-e39f-80e9-8989-f3fd559ba48d" class="numbered-list" start="1"><li>Указать:<ul id="2aa568fa-e39f-8054-a91b-cc9fe09caeeb" class="bulleted-list"><li style="list-style-type:disc">какую <strong>offline-метрику</strong> ты бы взял как основную для обучения/валидации модели;</li></ul><ul id="2aa568fa-e39f-80aa-8b77-f298173ab834" class="bulleted-list"><li style="list-style-type:disc">1–2 дополнительные метрики, которые будешь мониторить.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8014-8c5a-dc239ac4eb3b" class="numbered-list" start="2"><li>Обосновать:<ul id="2aa568fa-e39f-8012-9d23-f2fd8d99b7bf" class="bulleted-list"><li style="list-style-type:disc">почему эта метрика <strong>связана</strong> с бизнес-целями;</li></ul><ul id="2aa568fa-e39f-80a2-93b9-cab2e3e87ca1" class="bulleted-list"><li style="list-style-type:disc">где она может <strong>обманывать</strong>:<ul id="2aa568fa-e39f-808d-820c-ff2bf8c0fca7" class="bulleted-list"><li style="list-style-type:circle">пример: «Recall@K хочет показать все релевантные товары, но не учитывает доходность/маржу».</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8029-87b7-cb083d640571" class="">Шаг 4. Критический взгляд</h3><p id="2aa568fa-e39f-80f6-9f57-d74195cb4264" class="">Написать минимум 3 пункта:</p><blockquote id="2aa568fa-e39f-800b-a745-dbdd6b471e91" class="">«В каких ситуациях модель, оптимизированная по моей offline-метрике, может быть плохой для бизнеса/пользователя?»</blockquote><p id="2aa568fa-e39f-804f-b301-f4a87628e6de" class="">Например:</p><ul id="2aa568fa-e39f-8047-9cb6-c838ffbe8535" class="bulleted-list"><li style="list-style-type:disc">модель пушит слишком дешёвые товары;</li></ul><ul id="2aa568fa-e39f-80a0-aa5f-c857157d9ef0" class="bulleted-list"><li style="list-style-type:disc">модель сильно снижает разнообразие, но offline-Recall не страдает;</li></ul><ul id="2aa568fa-e39f-80c9-ae57-dfca24ab3032" class="bulleted-list"><li style="list-style-type:disc">модель слишком хорошо ловит краткосрочные тренды и забывает про долгосрочные интересы.</li></ul><hr id="2aa568fa-e39f-80e8-a3de-fde322a48f83"/><h2 id="2aa568fa-e39f-80c1-8708-c4624fd2fa20" class="">8. Оценка результата урока</h2><p id="2aa568fa-e39f-8070-ade8-f730f7b6f3b8" class="">Чек-лист, что студент <strong>усвоил урок 2.1</strong>, если он:</p><ul id="2aa568fa-e39f-8007-9de8-ca3e35bd78df" class="bulleted-list"><li style="list-style-type:disc">может на словах объяснить, чем:<ul id="2aa568fa-e39f-8050-a675-e788dee3316f" class="bulleted-list"><li style="list-style-type:circle">бизнес-метрика отличается от offline-метрики;</li></ul><ul id="2aa568fa-e39f-802a-b55f-d1fa3d8f81e0" class="bulleted-list"><li style="list-style-type:circle">offline от online;</li></ul></li></ul><ul id="2aa568fa-e39f-801d-ad43-fa3049789e2e" class="bulleted-list"><li style="list-style-type:disc">способен глядя на описание новой задачи:<ul id="2aa568fa-e39f-8072-95a8-e0309440fd1d" class="bulleted-list"><li style="list-style-type:circle">назвать хотя бы одну разумную offline-метрику;</li></ul><ul id="2aa568fa-e39f-80ce-9f4e-e1bf7e493d41" class="bulleted-list"><li style="list-style-type:circle">хотя бы одну online-метрику;</li></ul></li></ul><ul id="2aa568fa-e39f-80cb-bf10-ec4903e414af" class="bulleted-list"><li style="list-style-type:disc">может привести пример, когда:<ul id="2aa568fa-e39f-80bf-921c-d483524af45b" class="bulleted-list"><li style="list-style-type:circle">«offline метрика улучшилась, а бизнесу стало хуже»,</li></ul><ul id="2aa568fa-e39f-80d3-b93a-e708f810fdaf" class="bulleted-list"><li style="list-style-type:circle">и логично объяснить, почему.</li></ul></li></ul><hr id="2aa568fa-e39f-8005-bcaa-d39f46a9de34"/><p id="2aa568fa-e39f-8031-916c-ce0c5f9dae9b" class="">Если хочешь, дальше можно детализировать <strong>урок 2.2</strong> (прям с формулами и ручными примерами расчёта HitRate/MAP/NDCG) или сразу накидать <strong>готовые шаблоны задач/кейсов</strong> для 2.1 (чтобы ты мог просто раздать их студентам).</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

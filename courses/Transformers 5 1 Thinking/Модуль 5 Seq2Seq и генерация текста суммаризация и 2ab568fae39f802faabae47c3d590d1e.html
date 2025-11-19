@@ -1,0 +1,1052 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 5. Seq2Seq и генерация текста: суммаризация и авто-ответы</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-802f-aaba-e47c3d590d1e" class="page sans"><header><h1 class="page-title">Модуль 5. Seq2Seq и генерация текста: суммаризация и авто-ответы</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-805c-89d0-fce2485f33fd" class="">Окей, теперь делаем <strong>“магию GPT-стиля” по-взрослому</strong> — seq2seq, <code>generate</code>, суммаризации и ответы ботика ✨</p><p id="2ab568fa-e39f-8025-a11f-cc63337b6508" class="">Логика курса такая:</p><ul id="2ab568fa-e39f-8052-8c76-efd68e12fa51" class="bulleted-list"><li style="list-style-type:disc">М0–М1 — <code>pipeline</code>, игрушки.</li></ul><ul id="2ab568fa-e39f-8022-b54f-d45c4701aa2f" class="bulleted-list"><li style="list-style-type:disc">М2–М4 — классификация тикетов: модели, датасеты, Trainer.</li></ul><ul id="2ab568fa-e39f-80f8-b0cf-dc93795c454f" class="bulleted-list"><li style="list-style-type:disc"><strong>М5</strong> — всё то же, но для <strong>seq2seq</strong>: суммаризация диалогов и генерация ответов.</li></ul><hr id="2ab568fa-e39f-8086-83b8-f90be1b41ca4"/><p id="2ab568fa-e39f-80bb-929a-d8e78ee151c4" class=""><strong>Глобальный кейс модуля:</strong></p><blockquote id="2ab568fa-e39f-8069-b096-f499f5990db5" class="">У нас есть длинные диалоги с пользователем (чат поддержки).<p id="2ab568fa-e39f-8030-b990-cac890ecb2fd" class="">Хотим:</p><ol type="1" id="2ab568fa-e39f-8050-babc-ca4c91217d05" class="numbered-list" start="1"><li>Автоматом <strong>делать краткое резюме диалога</strong> (чтобы агент сразу видел суть).</li></ol><ol type="1" id="2ab568fa-e39f-80f3-8b23-c3d601d4864f" class="numbered-list" start="2"><li>Генерировать <strong>черновик ответа</strong> (“шаблон письма”) на основе резюме.</li></ol></blockquote><p id="2ab568fa-e39f-8022-997f-c46f398cffe2" class="">Будем использовать T5/BART-подобные модели (<code>AutoModelForSeq2SeqLM</code>) и <code>Seq2SeqTrainer</code>.</p><p id="2ab568fa-e39f-8014-b69d-f6a53c4bd02e" class="">Структура:</p><ol type="1" id="2ab568fa-e39f-8081-9eea-f5f74851c87c" class="numbered-list" start="1"><li>5.1 — Базовая генерация: <code>AutoModelForSeq2SeqLM</code> + <code>.generate</code> (без обучения).<figure id="2ab568fa-e39f-8093-a340-fda416d221e3" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%205%20Seq2Seq%20%D0%B8%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%205%201%20%D0%9F%D0%B5%D1%80%D0%B2%D0%B0%D1%8F%20seq2seq-%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C%20%D0%B4%D0%B5%D0%BB%D0%B0%D0%B5%D0%BC%20%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8E%202ab568fae39f8093a340fda416d221e3.html">Урок 5.1. Первая seq2seq-модель: делаем суммаризацию диалога через generate()</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-802c-b00c-fac8738e4e2f" class="numbered-list" start="2"><li>5.2 — Подготовка данных для seq2seq (<code>input_text</code> → <code>target_text</code>) + <code>DataCollatorForSeq2Seq</code>.<figure id="2ab568fa-e39f-80f3-b7ef-e6a2315fda92" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%205%20Seq2Seq%20%D0%B8%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%205%202%20%D0%93%D0%BE%D1%82%D0%BE%D0%B2%D0%B8%D0%BC%20%D0%B4%D0%B0%D1%82%D0%B0%D1%81%D0%B5%D1%82%20%D0%B4%D0%BB%D1%8F%20seq2seq%20dialog%20%E2%86%92%20summ%202ab568fae39f80f3b7efe6a2315fda92.html">Урок 5.2. Готовим датасет для seq2seq: dialog → summary + DataCollatorForSeq2Seq</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-80ad-861d-f07a9f018f1e" class="numbered-list" start="3"><li>5.3 — Fine-tuning seq2seq с <code>Seq2SeqTrainer</code> и метрикой ROUGE.<figure id="2ab568fa-e39f-80c7-af49-f7b44a467e7b" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%205%20Seq2Seq%20%D0%B8%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%205%203%20Fine-tuning%20seq2seq%20Seq2SeqTrainer%20+%20ROUG%202ab568fae39f80c7af49f7b44a467e7b.html">Урок 5.3. Fine-tuning seq2seq: Seq2SeqTrainer + ROUGE</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-8099-9b1a-cb733ee9dcdf" class="numbered-list" start="4"><li>5.4 — Мини-проект: модель, которая сама <strong>суммирует диалог и предлагает черновик ответа</strong>.<figure id="2ab568fa-e39f-804c-b760-f1b804e41bf1" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%205%20Seq2Seq%20%D0%B8%20%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%D1%82%D0%B5%D0%BA%D1%81%D1%82%D0%B0%20%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%205%204%20%D0%9C%D0%B8%D0%BD%D0%B8-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%20%E2%80%9CSummarize%20&amp;%20Reply%E2%80%9D%20%E2%80%94%20%D1%80%D0%B5%D0%B7%D1%8E%D0%BC%D0%B5%20%202ab568fae39f804cb760f1b804e41bf1.html">Урок 5.4. Мини-проект: “Summarize &amp; Reply” — резюме диалога + черновик ответа саппорта</a></figure></li></ol><hr id="2ab568fa-e39f-80ac-a6ba-cecca2e010a8"/><h2 id="2ab568fa-e39f-80a2-9149-d28aee70fe06" class="">Урок 5.1. Знакомство с AutoModelForSeq2SeqLM и generate()</h2><p id="2ab568fa-e39f-80ff-8509-c652d4629365" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-803f-94c7-ddbbc74dcfa7" class="">Научиться использовать seq2seq-модель руками:</p><ul id="2ab568fa-e39f-80f2-af41-f7f43542a8db" class="bulleted-list"><li style="list-style-type:disc">токенизировать вход и таргет,</li></ul><ul id="2ab568fa-e39f-8046-b433-e66904cae394" class="bulleted-list"><li style="list-style-type:disc">вызывать <code>.generate</code>,</li></ul><ul id="2ab568fa-e39f-80f6-8fa2-e30703cd0d8e" class="bulleted-list"><li style="list-style-type:disc">управлять стратегиями генерации (greedy, beam search, sampling).</li></ul><h3 id="2ab568fa-e39f-8007-8066-cf6951835c7b" class="">5.1.1. Кейс</h3><blockquote id="2ab568fa-e39f-8099-8982-d91d5a7bdf2e" class="">Берём готовую модель суммаризации (например, BART/T5),<p id="2ab568fa-e39f-808b-9857-c6109669413e" class="">и учимся “выжимать” из длинного диалога короткое резюме — пока <strong>без дообучения</strong>.</p></blockquote><h3 id="2ab568fa-e39f-8044-83b4-cc54822841cd" class="">5.1.2. Ключевые объекты</h3><ul id="2ab568fa-e39f-8044-afbd-f5befa491510" class="bulleted-list"><li style="list-style-type:disc"><code>AutoTokenizer.from_pretrained(model_id)</code></li></ul><ul id="2ab568fa-e39f-80a6-87ec-d5962c7acdba" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForSeq2SeqLM.from_pretrained(model_id)</code></li></ul><ul id="2ab568fa-e39f-805a-baed-ec9f5ec1c768" class="bulleted-list"><li style="list-style-type:disc"><code>model.generate(...)</code> — сердце всей движухи.</li></ul><h3 id="2ab568fa-e39f-800f-9a96-cf41754f3827" class="">5.1.3. Код: простая суммаризация диалога</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e6-b512-e15805c0c46d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+model_id = &quot;facebook/bart-large-cnn&quot;  # пример, можно взять T5
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+
+dialog = &quot;&quot;&quot;
+User: Hi, I updated the app yesterday and now it crashes whenever I open the gallery.
+Support: Sorry to hear that. Can you tell me your device and OS version?
+User: iPhone 13, iOS 17.1, app version 5.2.1.
+Support: Thanks. Does it crash only in the gallery?
+User: Yes, only when I open the gallery or upload photos.
+Support: Got it, we know about this bug and are working on a fix for this week.
+&quot;&quot;&quot;
+
+inputs = tokenizer(
+    dialog,
+    return_tensors=&quot;pt&quot;,
+    truncation=True,
+    max_length=512,
+)
+
+with torch.no_grad():
+    summary_ids = model.generate(
+        **inputs,
+        max_new_tokens=60,
+        min_length=20,
+        num_beams=4,        # beam search
+        length_penalty=1.0,
+        no_repeat_ngram_size=3,
+    )
+
+summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+print(&quot;SUMMARY:&quot;)
+print(summary)
+</code></pre><p id="2ab568fa-e39f-804d-826f-c925bad3e0a7" class="">Объясняем:</p><ul id="2ab568fa-e39f-80c6-9da5-f4e946336474" class="bulleted-list"><li style="list-style-type:disc"><code>max_new_tokens</code> / <code>min_length</code> — контролируем длину.</li></ul><ul id="2ab568fa-e39f-80fa-a75b-e9ba6c9d69e9" class="bulleted-list"><li style="list-style-type:disc"><code>num_beams</code> — beam search vs greedy (<code>num_beams=1</code>).</li></ul><ul id="2ab568fa-e39f-8016-b020-df17ffc6897c" class="bulleted-list"><li style="list-style-type:disc"><code>no_repeat_ngram_size</code> — защита от “заикания”.</li></ul><ul id="2ab568fa-e39f-807c-9dcc-db06e69c4630" class="bulleted-list"><li style="list-style-type:disc"><code>length_penalty</code> — штраф за длину (больше → модель любит короткие, меньше → длинные).</li></ul><h3 id="2ab568fa-e39f-806c-99ec-feaf72e7b016" class="">5.1.4. Greedy vs beam vs sampling</h3><p id="2ab568fa-e39f-8013-b5ed-e2f34fb9424f" class="">Показываем три режима на одном диалоге.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808b-876d-fb6619594c83" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def summarize(dialog, mode=&quot;beam&quot;):
+    inputs = tokenizer(dialog, return_tensors=&quot;pt&quot;, truncation=True, max_length=512)
+
+    gen_kwargs = dict(max_new_tokens=60, min_length=20)
+
+    if mode == &quot;beam&quot;:
+        gen_kwargs.update(num_beams=4, do_sample=False)
+    elif mode == &quot;greedy&quot;:
+        gen_kwargs.update(num_beams=1, do_sample=False)
+    elif mode == &quot;sample&quot;:
+        gen_kwargs.update(
+            do_sample=True,
+            top_k=50,
+            top_p=0.9,
+            temperature=0.7,
+        )
+    else:
+        raise ValueError(&quot;Unknown mode&quot;)
+
+    with torch.no_grad():
+        output_ids = model.generate(**inputs, **gen_kwargs)
+    return tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+
+for m in [&quot;greedy&quot;, &quot;beam&quot;, &quot;sample&quot;]:
+    print(&quot;MODE:&quot;, m)
+    print(summarize(dialog, mode=m))
+    print(&quot;-&quot; * 80)
+</code></pre><p id="2ab568fa-e39f-801e-85fb-fc8f2c896620" class=""><strong>Важный вывод:</strong></p><p id="2ab568fa-e39f-80cb-bc79-cecafdbec545" class="">Ученики видят, насколько <strong>сильно</strong> влияет стратегия декодинга.</p><h3 id="2ab568fa-e39f-80fb-86ad-c3cbdb0d8896" class="">5.1.5. Домашка 5.1</h3><ol type="1" id="2ab568fa-e39f-80cb-8393-d1a704273802" class="numbered-list" start="1"><li>Взять 2–3 разных длинных текста:<ul id="2ab568fa-e39f-8058-bd77-eca59fddc3d9" class="bulleted-list"><li style="list-style-type:disc">диалог,</li></ul><ul id="2ab568fa-e39f-8016-87e0-fecf2b659513" class="bulleted-list"><li style="list-style-type:disc">статью/новость,</li></ul><ul id="2ab568fa-e39f-80ec-8187-c74d7bc664f7" class="bulleted-list"><li style="list-style-type:disc">описание бага.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8031-9673-ee20cd23a3db" class="numbered-list" start="2"><li>Сгенерировать summary в трёх режимах:<ul id="2ab568fa-e39f-8059-bcd0-f1a35e470093" class="bulleted-list"><li style="list-style-type:disc">greedy,</li></ul><ul id="2ab568fa-e39f-8043-ba3e-ee8f9ad74415" class="bulleted-list"><li style="list-style-type:disc">beam search (разные <code>num_beams</code>),</li></ul><ul id="2ab568fa-e39f-808b-9b08-c921c24be188" class="bulleted-list"><li style="list-style-type:disc">sampling (<code>top_k</code>, <code>top_p</code>, <code>temperature</code>).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8047-aea0-fa887e427bf3" class="numbered-list" start="3"><li>Написать короткий текстовый отчёт:<p id="2ab568fa-e39f-80cd-bc49-f8cb1d01c2ae" class="">насколько summaries отличаются и как именно меняются при разных настройках.</p></li></ol><hr id="2ab568fa-e39f-8012-bed0-d08da0069873"/><h2 id="2ab568fa-e39f-8020-844c-f0eddd02f403" class="">Урок 5.2. Датасет для seq2seq: input_text → target_text + DataCollatorForSeq2Seq</h2><p id="2ab568fa-e39f-806d-90e2-ef0f31a1c378" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80ff-962d-c828cbc787c1" class="">Научить готовить данные для seq2seq:</p><ul id="2ab568fa-e39f-80b8-9ec9-d3dabe3264fc" class="bulleted-list"><li style="list-style-type:disc">в датасете есть <strong>пары</strong>: <code>dialog_text</code> → <code>summary_text</code>,</li></ul><ul id="2ab568fa-e39f-80e6-a013-ec8e441b9260" class="bulleted-list"><li style="list-style-type:disc">токенизируем <strong>и вход, и таргет</strong>,</li></ul><ul id="2ab568fa-e39f-805e-aa4e-fcf5c7b0de4a" class="bulleted-list"><li style="list-style-type:disc">используем <code>DataCollatorForSeq2Seq</code>, чтобы аккуратно паддить и сдвигать <code>labels</code>.</li></ul><h3 id="2ab568fa-e39f-8010-88bd-fb4ccfdc948f" class="">5.2.1. Кейс</h3><blockquote id="2ab568fa-e39f-80bc-8c4a-daca470191e9" class="">У нас есть CSV dialogs.csv вида:<ul id="2ab568fa-e39f-8094-9811-ddb047a03ee4" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code> — длинная переписка (user + support),</li></ul><ul id="2ab568fa-e39f-80e0-b183-c2579e294293" class="bulleted-list"><li style="list-style-type:disc"><code>summary</code> — краткое резюме (что случилось, на чем остановились).</li></ul></blockquote><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c8-948c-cc833f03ac97" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">dialog,summary
+&quot;User: ...\nSupport: ...&quot;, &quot;User reports crashes in gallery on iOS 17.1, fix in progress.&quot;
+...
+</code></pre><p id="2ab568fa-e39f-8089-a150-cf7bcf5155c4" class="">Наша задача — превратить это в токенизированный <code>DatasetDict</code> для seq2seq.</p><h3 id="2ab568fa-e39f-809c-93d0-f4a33573a007" class="">5.2.2. Библиотеки</h3><p id="2ab568fa-e39f-8004-a3cc-d77a76a16c4a" class="">Новых две штуки:</p><ul id="2ab568fa-e39f-80f8-ab9e-d5f17c2fb2d2" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForSeq2SeqLM</code> — уже видели.</li></ul><ul id="2ab568fa-e39f-80c8-af4a-c2743b102467" class="bulleted-list"><li style="list-style-type:disc"><code>DataCollatorForSeq2Seq</code> — умеет:<ul id="2ab568fa-e39f-80e1-8073-d1b82022c906" class="bulleted-list"><li style="list-style-type:circle">паддить input и labels до внутрибатчевого max_len,</li></ul><ul id="2ab568fa-e39f-804a-a5d4-d1574ff55f71" class="bulleted-list"><li style="list-style-type:circle">правильно ставить <code>labels = -100</code> на паддинг (чтобы не считать loss по паддингу),</li></ul><ul id="2ab568fa-e39f-802a-8676-ca33a40143f2" class="bulleted-list"><li style="list-style-type:circle">(опционально) управлять <code>decoder_start_token_id</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-800b-9517-fddbe368d44d" class="">5.2.3. Код: загрузка и map для seq2seq</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ee-adae-fc559cd6d231" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset, DatasetDict
+from transformers import AutoTokenizer
+
+model_name = &quot;facebook/bart-large-cnn&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+raw = load_dataset(
+    &quot;csv&quot;,
+    data_files=&quot;dialogs.csv&quot;,
+)[&quot;train&quot;]
+
+# train/val split
+split = raw.train_test_split(test_size=0.1, seed=42)
+dataset = DatasetDict(
+    {
+        &quot;train&quot;: split[&quot;train&quot;],
+        &quot;validation&quot;: split[&quot;test&quot;],
+    }
+)
+
+print(dataset)
+print(dataset[&quot;train&quot;][0])
+</code></pre><p id="2ab568fa-e39f-80d2-9411-e33795b3b373" class="">Теперь пишем функцию препроцессинга:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8015-be82-d26a1973c270" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">max_input_length = 512
+max_target_length = 64
+
+def preprocess_function(batch):
+    # Диалоги → input
+    inputs = batch[&quot;dialog&quot;]
+    # Резюме → target
+    targets = batch[&quot;summary&quot;]
+
+    # Токенизация input
+    model_inputs = tokenizer(
+        inputs,
+        max_length=max_input_length,
+        truncation=True,
+    )
+
+    # Токенизация target (as target_texts)
+    with tokenizer.as_target_tokenizer():
+        labels = tokenizer(
+            targets,
+            max_length=max_target_length,
+            truncation=True,
+        )
+
+    model_inputs[&quot;labels&quot;] = labels[&quot;input_ids&quot;]
+    return model_inputs
+
+tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=[&quot;dialog&quot;, &quot;summary&quot;],
+)
+
+print(tokenized_dataset[&quot;train&quot;][0])
+</code></pre><blockquote id="2ab568fa-e39f-8082-9973-dc4fb3c625c8" class="">Для T5-стиля можно ещё добавить промпт:<p id="2ab568fa-e39f-802e-9c0a-e31c5771e818" class=""><code>&quot;summarize: &quot; + dialog</code> перед токенизацией.</p></blockquote><h3 id="2ab568fa-e39f-80fb-b9f7-e800d85cd0dd" class="">5.2.4. DataCollatorForSeq2Seq</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bc-b077-d31a2d89eed4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForSeq2Seq, AutoModelForSeq2SeqLM
+
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+data_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    model=model,
+    label_pad_token_id=-100,
+)
+</code></pre><p id="2ab568fa-e39f-802e-ac9a-d3f23914ad81" class="">Проверим, что выдаёт collator:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806a-8a17-f56267c5297a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from torch.utils.data import DataLoader
+
+train_loader = DataLoader(
+    tokenized_dataset[&quot;train&quot;],
+    batch_size=4,
+    shuffle=True,
+    collate_fn=data_collator,
+)
+
+batch = next(iter(train_loader))
+for k, v in batch.items():
+    print(k, v.shape)
+</code></pre><p id="2ab568fa-e39f-8007-b3da-ea1d00b88062" class="">Объясняем:</p><ul id="2ab568fa-e39f-8081-8e32-db25f2d868a2" class="bulleted-list"><li style="list-style-type:disc">В батче есть <code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>.</li></ul><ul id="2ab568fa-e39f-8093-b566-db4fbef5dbb7" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code> — уже паддятся до одинаковой длины и на падд-позициях стоят <code>100</code>.</li></ul><h3 id="2ab568fa-e39f-8030-af8f-eae1a90dccdc" class="">5.2.5. Домашка 5.2</h3><ol type="1" id="2ab568fa-e39f-802f-9ce8-c9b6ae0dac5a" class="numbered-list" start="1"><li>Сделать свой <code>dialogs.csv</code> (минимум 20 диалогов),<p id="2ab568fa-e39f-809c-b0d9-c2abb4b5ebd5" class="">где <code>summary</code> — <strong>ручное</strong> краткое описание.</p></li></ol><ol type="1" id="2ab568fa-e39f-804c-97ed-e6ca4a2ecb18" class="numbered-list" start="2"><li>Написать <code>preprocess_function</code> и затокенизировать датасет.</li></ol><ol type="1" id="2ab568fa-e39f-80eb-8433-e26aba2229da" class="numbered-list" start="3"><li>Создать <code>DataCollatorForSeq2Seq</code> и проверить один batch:<ul id="2ab568fa-e39f-801c-a485-e170d8d4d95a" class="bulleted-list"><li style="list-style-type:disc">формы <code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>,</li></ul><ul id="2ab568fa-e39f-80fc-9086-fabc25dd9a99" class="bulleted-list"><li style="list-style-type:disc">убедиться, что паддинг в <code>labels</code> заменён на <code>100</code>.</li></ul></li></ol><hr id="2ab568fa-e39f-8080-8ded-cd7c716fb126"/><h2 id="2ab568fa-e39f-808b-9ca3-d0b8b1afe7b6" class="">Урок 5.3. Fine-tuning seq2seq с Seq2SeqTrainer + ROUGE</h2><p id="2ab568fa-e39f-807e-a79f-fd1829c370a3" class=""><strong>Цель:</strong></p><ul id="2ab568fa-e39f-80e5-9a75-d001fba509f4" class="bulleted-list"><li style="list-style-type:disc">Показать, как обучать seq2seq модель через <code>Seq2SeqTrainer</code>,</li></ul><ul id="2ab568fa-e39f-8047-882b-fd2a70bd00f5" class="bulleted-list"><li style="list-style-type:disc">считать ROUGE как метрику качества суммаризации,</li></ul><ul id="2ab568fa-e39f-8031-97ec-cf9f55908eaa" class="bulleted-list"><li style="list-style-type:disc">использовать <code>predict_with_generate</code> и <code>generation_*</code> аргументы.</li></ul><h3 id="2ab568fa-e39f-805b-9b8b-c1fef4662345" class="">5.3.1. Теория</h3><p id="2ab568fa-e39f-8039-8ef6-e8fffccf35cb" class="">Новый герой — <code>Seq2SeqTrainer</code>:</p><ul id="2ab568fa-e39f-80e4-a3fa-faf5eab65056" class="bulleted-list"><li style="list-style-type:disc">похож на <code>Trainer</code>, но:<ul id="2ab568fa-e39f-8005-b839-f4d86b31ebfe" class="bulleted-list"><li style="list-style-type:circle">умеет вызывать <code>.generate</code> во время eval,</li></ul><ul id="2ab568fa-e39f-80df-b140-f07d62a37918" class="bulleted-list"><li style="list-style-type:circle">учитывает <code>label_smoother</code>,</li></ul><ul id="2ab568fa-e39f-8094-9c32-e63aa0b5d3a5" class="bulleted-list"><li style="list-style-type:circle">лучше заточен под seq2seq.</li></ul></li></ul><p id="2ab568fa-e39f-808c-9d6e-dbf4b7625b27" class="">Ещё один новый герой — библиотека <code>evaluate</code> (опционально):</p><ul id="2ab568fa-e39f-802e-9884-eb151359204a" class="bulleted-list"><li style="list-style-type:disc"><code>pip install evaluate</code>,</li></ul><ul id="2ab568fa-e39f-80dd-8328-c016d0213f8a" class="bulleted-list"><li style="list-style-type:disc"><code>evaluate.load(&quot;rouge&quot;)</code> → удобный ROUGE.</li></ul><h3 id="2ab568fa-e39f-8038-8505-dd57197ba4d6" class="">5.3.2. Код: Seq2SeqTrainer</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8071-bf46-f3da72b0b288" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+from datasets import load_dataset, DatasetDict
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM,
+    DataCollatorForSeq2Seq,
+    Seq2SeqTrainingArguments,
+    Seq2SeqTrainer,
+)
+import evaluate
+
+model_name = &quot;facebook/bart-large-cnn&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+raw = load_dataset(&quot;csv&quot;, data_files=&quot;dialogs.csv&quot;)[&quot;train&quot;]
+split = raw.train_test_split(test_size=0.1, seed=42)
+dataset = DatasetDict({&quot;train&quot;: split[&quot;train&quot;], &quot;validation&quot;: split[&quot;test&quot;]})
+
+max_input_length = 512
+max_target_length = 64
+
+def preprocess_function(batch):
+    inputs = batch[&quot;dialog&quot;]
+    targets = batch[&quot;summary&quot;]
+
+    model_inputs = tokenizer(
+        inputs,
+        max_length=max_input_length,
+        truncation=True,
+    )
+
+    with tokenizer.as_target_tokenizer():
+        labels = tokenizer(
+            targets,
+            max_length=max_target_length,
+            truncation=True,
+        )
+
+    model_inputs[&quot;labels&quot;] = labels[&quot;input_ids&quot;]
+    return model_inputs
+
+tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=[&quot;dialog&quot;, &quot;summary&quot;],
+)
+
+data_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    model=model,
+    label_pad_token_id=-100,
+)
+
+rouge_metric = evaluate.load(&quot;rouge&quot;)
+</code></pre><p id="2ab568fa-e39f-8096-8d56-ec41983d6b2e" class="">Теперь <code>compute_metrics</code> для seq2seq:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8061-9a8a-f543f86b7dbe" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def postprocess_text(preds, labels):
+    preds = [p.strip() for p in preds]
+    labels = [l.strip() for l in labels]
+    return preds, labels
+
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+
+    # predictions — это логиты или ids, но у Seq2SeqTrainer обычно уже ids
+    if isinstance(predictions, tuple):
+        predictions = predictions[0]
+
+    decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+
+    # Заменяем -100 в labels, чтобы декодировать
+    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+
+    result = rouge_metric.compute(
+        predictions=decoded_preds,
+        references=decoded_labels,
+        use_stemmer=True,
+    )
+
+    # Обычно смотрят rouge1 / rougeL
+    result = {k: v.mid.fmeasure for k, v in result.items()}
+
+    # Можно добавить среднюю длину
+    prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions]
+    result[&quot;gen_len&quot;] = np.mean(prediction_lens)
+
+    return result
+</code></pre><p id="2ab568fa-e39f-80c4-b791-e6dca029a204" class="">Инициализируем <code>Seq2SeqTrainingArguments</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8098-be94-ed85577dcde4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = Seq2SeqTrainingArguments(
+    output_dir=&quot;checkpoints/dialog_summarizer&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=3e-5,
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=8,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    logging_steps=20,
+    predict_with_generate=True,        # ключевая штука для seq2seq
+    generation_max_length=64,
+    generation_num_beams=4,
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;rougeL&quot;,
+    greater_is_better=True,
+)
+</code></pre><p id="2ab568fa-e39f-8078-a4dd-e35d5f0fbbfc" class="">И сам <code>Seq2SeqTrainer</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8012-9bd6-fb5102e122fb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer = Seq2SeqTrainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_dataset[&quot;train&quot;],
+    eval_dataset=tokenized_dataset[&quot;validation&quot;],
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    compute_metrics=compute_metrics,
+)
+
+trainer.train()
+
+metrics = trainer.evaluate()
+print(metrics)
+
+trainer.save_model(&quot;models/dialog_summarizer&quot;)
+tokenizer.save_pretrained(&quot;models/dialog_summarizer&quot;)
+</code></pre><h3 id="2ab568fa-e39f-800c-8cb2-dab106d5f07b" class="">5.3.3. Домашка 5.3</h3><ol type="1" id="2ab568fa-e39f-8058-9924-d5f7c9f07f6c" class="numbered-list" start="1"><li>Запустить fine-tuning seq2seq на своём <code>dialogs.csv</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8050-a4c1-edfc432eb565" class="numbered-list" start="2"><li>Посмотреть ROUGE-метрики до и после обучения (начала/конца).</li></ol><ol type="1" id="2ab568fa-e39f-80ba-849f-c3f70c74da5d" class="numbered-list" start="3"><li>Поиграть с:<ul id="2ab568fa-e39f-8052-be3f-ee57a7d7f61e" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs</code> (2/4),</li></ul><ul id="2ab568fa-e39f-80bc-8b1f-ea8b910154a6" class="bulleted-list"><li style="list-style-type:disc"><code>generation_num_beams</code> (1/4),</li></ul><ul id="2ab568fa-e39f-80d1-8e36-fcf6f9b801dc" class="bulleted-list"><li style="list-style-type:disc">и посмотреть, как меняется <code>rougeL</code>.</li></ul></li></ol><hr id="2ab568fa-e39f-80bc-bb8b-c3e55d5f3520"/><h2 id="2ab568fa-e39f-8028-9329-e31c626716e6" class="">Урок 5.4. Мини-проект: “Summarize &amp; Reply” — авто-резюме + черновик ответа</h2><p id="2ab568fa-e39f-8078-8a94-c1a6dbeb5226" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80e7-93b2-e38351d6e328" class="">Собрать <strong>конечный продукт</strong>:</p><ol type="1" id="2ab568fa-e39f-80c1-b863-ec82ad8cee89" class="numbered-list" start="1"><li>Функция <code>summarize_dialog(dialog_text)</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80fa-8886-db733e0dd5a9" class="numbered-list" start="2"><li>Функция <code>suggest_reply(dialog_text)</code>:<ul id="2ab568fa-e39f-80d4-9e01-d43d90146c6d" class="bulleted-list"><li style="list-style-type:disc">сперва делает summary,</li></ul><ul id="2ab568fa-e39f-80c9-906e-d87e983de941" class="bulleted-list"><li style="list-style-type:disc">потом генерирует черновик ответа по шаблону.</li></ul></li></ol><h3 id="2ab568fa-e39f-8029-b86b-c0521553231e" class="">5.4.1. Структура проекта</h3><p id="2ab568fa-e39f-80c5-ba34-e823a1216c31" class="">Предлагаемый файл <code>summarize_and_reply.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807d-9c35-f35c920b0ce1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+MODEL_DIR = &quot;models/dialog_summarizer&quot;  # путь к обученной модели
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
+model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_DIR)
+
+
+def summarize_dialog(dialog: str, max_new_tokens: int = 64) -&gt; str:
+    inputs = tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    )
+
+    with torch.no_grad():
+        summary_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            num_beams=4,
+            length_penalty=1.0,
+            no_repeat_ngram_size=3,
+        )
+
+    return tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
+
+def suggest_reply(dialog: str) -&gt; str:
+    # 1. Делаем summary диалога
+    summary = summarize_dialog(dialog)
+
+    # 2. Генерируем черновик ответа на основе summary.
+    # Можно использовать ту же модель, но с промптом в стиле T5/BART.
+    prompt = (
+        &quot;You are a polite customer support agent. &quot;
+        &quot;Read the following summary of a conversation and write a short, friendly reply to the user.\n\n&quot;
+        f&quot;Summary: {summary}\n\n&quot;
+        &quot;Reply:&quot;
+    )
+
+    inputs = tokenizer(
+        prompt,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    )
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=80,
+            num_beams=4,
+            length_penalty=1.0,
+            no_repeat_ngram_size=3,
+        )
+
+    reply = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    return reply
+
+
+if __name__ == &quot;__main__&quot;:
+    dialog = &quot;&quot;&quot;
+    User: Hi, the app started crashing after the last update when I open the gallery.
+    Support: Sorry about that. Could you tell me your device and OS version?
+    User: It&#x27;s a Samsung S21, Android 14, app version 5.2.1.
+    Support: Thanks! Does it crash anywhere else or only in the gallery?
+    User: Only in the gallery when I try to upload or preview images.
+    &quot;&quot;&quot;
+
+    summary = summarize_dialog(dialog)
+    print(&quot;SUMMARY:\n&quot;, summary)
+    print(&quot;-&quot; * 80)
+    reply = suggest_reply(dialog)
+    print(&quot;SUGGESTED REPLY:\n&quot;, reply)
+</code></pre><h3 id="2ab568fa-e39f-80a7-9928-d8b7ce98bb2b" class="">5.4.2. Обсуждение</h3><ul id="2ab568fa-e39f-80f3-ad91-f54eec5c9de5" class="bulleted-list"><li style="list-style-type:disc">На практике ответ лучше генерировать моделью, обученной именно на реплаях (SFT по “диалог → ответ”), но для учебного курса:<ul id="2ab568fa-e39f-80d6-8a86-c8d9a5ab3c32" class="bulleted-list"><li style="list-style-type:circle">нам важно показать <strong>композицию моделей</strong>:<ul id="2ab568fa-e39f-8092-a63e-f2d0043b88c7" class="bulleted-list"><li style="list-style-type:square"><code>dialog → summary</code>,</li></ul><ul id="2ab568fa-e39f-80cf-aa0c-fa9e23e63218" class="bulleted-list"><li style="list-style-type:square"><code>summary → reply</code>.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-8031-9984-e1f0fecbd61b" class="bulleted-list"><li style="list-style-type:disc">Это уже “полупродакт”:<ul id="2ab568fa-e39f-8043-a5a4-d3555c5ab078" class="bulleted-list"><li style="list-style-type:circle">можно вставить в веб-морду,</li></ul><ul id="2ab568fa-e39f-80c4-bb8a-ea85dcde9525" class="bulleted-list"><li style="list-style-type:circle">можно давать саппорту как подсказку.</li></ul></li></ul><h3 id="2ab568fa-e39f-80d0-9566-edbaaf566915" class="">5.4.3. Домашка 5.4 (итоговая по модулю)</h3><ol type="1" id="2ab568fa-e39f-80c1-bba9-d20517a7e1fb" class="numbered-list" start="1"><li>Доделать/дополировать <code>summarize_and_reply.py</code>:<ul id="2ab568fa-e39f-80b8-ab55-de8b36bc20ac" class="bulleted-list"><li style="list-style-type:disc">например, сделать CLI:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8026-8ebf-c604ce1f7c1f" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">python summarize_and_reply.py --dialog path/to/dialog.txt
+</code></pre></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d1-afc6-faee25a1d47f" class="numbered-list" start="2"><li>Создать 3–5 диалогов, на которых:<ul id="2ab568fa-e39f-80e8-9208-e0d0a531aa75" class="bulleted-list"><li style="list-style-type:disc">посмотреть качество summary,</li></ul><ul id="2ab568fa-e39f-80b6-9c38-da133142ca40" class="bulleted-list"><li style="list-style-type:disc">посмотреть, насколько адекватен черновик ответа.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8066-abe9-dde71f4f0173" class="numbered-list" start="3"><li>Написать короткое “ретро”:<ul id="2ab568fa-e39f-80aa-847a-e62de92a9f43" class="bulleted-list"><li style="list-style-type:disc">что получается хорошо,</li></ul><ul id="2ab568fa-e39f-8090-83a9-cc4f50426660" class="bulleted-list"><li style="list-style-type:disc">где модель тупит,</li></ul><ul id="2ab568fa-e39f-803f-9ca2-cd23ca35077f" class="bulleted-list"><li style="list-style-type:disc">что бы вы улучшили (данные, промпты, модель, стратегия генерации).</li></ul></li></ol><hr id="2ab568fa-e39f-80e4-9d11-c1f9040bf01e"/><h2 id="2ab568fa-e39f-8095-896e-f1da72882ef9" class="">Что ученик умеет после модуля 5</h2><p id="2ab568fa-e39f-8008-9029-ca926e8703c6" class="">После модуля 5 человек:</p><ul id="2ab568fa-e39f-8020-8058-d470e98d8f42" class="bulleted-list"><li style="list-style-type:disc">уверенно обращается с <code>AutoModelForSeq2SeqLM</code>, <code>generate</code>, strategy-параметрами;</li></ul><ul id="2ab568fa-e39f-8071-bd40-d8678663b62b" class="bulleted-list"><li style="list-style-type:disc">умеет готовить датасет для задач вида <code>input_text</code> → <code>target_text</code>;</li></ul><ul id="2ab568fa-e39f-806c-8a2b-ef982a752c30" class="bulleted-list"><li style="list-style-type:disc">знает, как использовать <code>DataCollatorForSeq2Seq</code> и <code>Seq2SeqTrainer</code>;</li></ul><ul id="2ab568fa-e39f-80b4-b181-c4d4d804bc8c" class="bulleted-list"><li style="list-style-type:disc">умеет считать ROUGE и анализировать качество суммаризации;</li></ul><ul id="2ab568fa-e39f-80d2-aa18-f965acb68210" class="bulleted-list"><li style="list-style-type:disc">собрал <strong>мини-продукт</strong>: auto-summarizer диалогов + helper для черновика ответа.</li></ul><p id="2ab568fa-e39f-8049-bbde-e3f7781f7149" class="">Дальше можно идти в:</p><ul id="2ab568fa-e39f-80dd-8edf-f270212d1628" class="bulleted-list"><li style="list-style-type:disc"><strong>PEFT/LoRA для seq2seq</strong> (дешёвое дообучение больших моделей),</li></ul><ul id="2ab568fa-e39f-8045-bc1c-cd9a6b6349ac" class="bulleted-list"><li style="list-style-type:disc"><strong>интеграцию с </strong><code><strong>accelerate</strong></code><strong> и multi-GPU</strong>,</li></ul><ul id="2ab568fa-e39f-8087-b477-de6264f2eb2d" class="bulleted-list"><li style="list-style-type:disc">или отдельный модуль по <strong>инструкционному тюнингу / RLHF</strong> для генеративных моделей.</li></ul><p id="2ab568fa-e39f-8036-98f7-d013b72839ad" class="">Если хочешь, можем следующим шагом:</p><ul id="2ab568fa-e39f-805a-af8b-c2a251ce37f9" class="bulleted-list"><li style="list-style-type:disc">собрать <strong>короткий силлабус всего курса по transformers</strong> (модули 0–5 в одном компактном документе),</li></ul><ul id="2ab568fa-e39f-801a-a1e3-e32e35da5d7f" class="bulleted-list"><li style="list-style-type:disc">или спроектировать “надстройку” к этому курсу: отдельный блок по PEFT/LoRA.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

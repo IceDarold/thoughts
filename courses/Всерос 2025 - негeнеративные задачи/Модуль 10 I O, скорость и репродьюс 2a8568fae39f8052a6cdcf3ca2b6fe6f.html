@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 10. I/O, скорость и репродьюс</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8052-a6cd-cf3ca2b6fe6f" class="page sans"><header><h1 class="page-title">Модуль 10. I/O, скорость и репродьюс</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8063-8f80-f8bf9df5803e" class=""><strong>Модуль 10 — I/O, скорость и репродьюс</strong>: как читать/писать быстро, считать фичи без Python-циклов, кэшировать промежуточные артефакты и гарантировать детерминизм. Теория → практические лабы под каждый тип задачи (табличка/RecSys/текст/аудио/CV).</p><hr id="2a8568fa-e39f-80c1-9e47-ce946eea349e"/><h2 id="2a8568fa-e39f-800b-8248-e66e5e91cffd" class="">1) Результаты модуля (к чему приходим)</h2><ul id="2a8568fa-e39f-807f-b68c-e8ab6d819f27" class="bulleted-list"><li style="list-style-type:disc">Умеешь переводить датасеты в <strong>Parquet/Arrow</strong> с колонночным чтением, предикатным пушдауном и разумной компрессией (snappy/zstd).</li></ul><ul id="2a8568fa-e39f-807e-b2fd-f5aae12189e3" class="bulleted-list"><li style="list-style-type:disc">Собираешь пайплайн на <strong>Polars (LazyFrame)</strong>/PyArrow с <strong>ленивыми</strong> группировками/джоинами, без «.apply» и Python-циклов.</li></ul><ul id="2a8568fa-e39f-800a-8016-eaf8cbd8841c" class="bulleted-list"><li style="list-style-type:disc">Придерживаешься <strong>бюджета времени</strong> на энд-ту-энд прогон (реалистично для ноутбука/небольшого сервера):<ul id="2a8568fa-e39f-8073-a3b7-d5a82c9d401a" class="bulleted-list"><li style="list-style-type:circle">Табличка (feat→train→pred): ≤ 10–15 мин</li></ul><ul id="2a8568fa-e39f-8044-b1c7-cf9abd46f33c" class="bulleted-list"><li style="list-style-type:circle">RecSys (кандидаты→ранжер→саб): ≤ 20–30 мин</li></ul><ul id="2a8568fa-e39f-806d-accb-cade07858650" class="bulleted-list"><li style="list-style-type:circle">Текст H@3 (vectorize→infer): ≤ 10–15 мин</li></ul><ul id="2a8568fa-e39f-8070-b3dd-c4fa982bcdae" class="bulleted-list"><li style="list-style-type:circle">Аудио KWS (decode→mel→infer): ≤ 15–25 мин</li></ul><ul id="2a8568fa-e39f-80a6-8f17-dcd3959f237b" class="bulleted-list"><li style="list-style-type:circle">CV (эмбеддинги 4 фото/объект→фьюжн): ≤ 25–40 мин (при батчевом эмбеддинге)</li></ul></li></ul><ul id="2a8568fa-e39f-802b-9504-f0f1eb3ddda0" class="bulleted-list"><li style="list-style-type:disc">Включаешь <strong>контент-хеш кэш</strong> для тяжёлых стадий (эмбеддинги/кандидаты/мел-спектры).</li></ul><ul id="2a8568fa-e39f-8030-9c06-d2f559d4837b" class="bulleted-list"><li style="list-style-type:disc">Гарантируешь <strong>детерминизм</strong> (сиды, фиксированные треды BLAS/LightGBM/CatBoost/PyTorch) и «1-клик» сборку <code>repro.sh</code>.</li></ul><hr id="2a8568fa-e39f-80ca-bbdc-c28bc26d5fbb"/><h2 id="2a8568fa-e39f-8080-85b4-e004673ad5ab" class="">2) Теория (90–120 минут)</h2><h3 id="2a8568fa-e39f-8089-9bf2-ed45ec33928c" class="">A. Форматы данных и «правильные» файлы</h3><ul id="2a8568fa-e39f-8079-b2a6-c63c0cd6bf6c" class="bulleted-list"><li style="list-style-type:disc"><strong>CSV → Parquet/Arrow</strong>: колонночность, типы, сжатие <strong>snappy/zstd</strong>, <strong>row group</strong> 128–512МБ; выгода: 2–10× быстрее I/O, меньше RAM.</li></ul><ul id="2a8568fa-e39f-8092-b88c-de49ff082647" class="bulleted-list"><li style="list-style-type:disc"><strong>Колонко-проектирование</strong>: читать только нужные столбцы; фильтры (predicate pushdown) — отрабатывают на уровне сканера.</li></ul><ul id="2a8568fa-e39f-8011-927f-d57f4bb4129e" class="bulleted-list"><li style="list-style-type:disc"><strong>Схема</strong>: заранее фиксируем dtypes (int32/float32/categorical вместо object); избыток float64 = лишние ГБ и миллисекунды.</li></ul><h3 id="2a8568fa-e39f-8091-a8d6-c5afe0f28b8e" class="">B. DataFrame-движки: Polars/Arrow vs pandas</h3><ul id="2a8568fa-e39f-80f6-a397-e280f27fe43f" class="bulleted-list"><li style="list-style-type:disc"><strong>Polars Lazy</strong>: ленивые планы, <strong>streaming</strong> для больших группировок, автоматический параллелизм.</li></ul><ul id="2a8568fa-e39f-8035-9487-c5538245c8f3" class="bulleted-list"><li style="list-style-type:disc">Паттерн «SQL в коде»: <strong>select→with_columns→group_by→agg→join</strong>. Избегаем <code>.apply</code>/python-UDF (если нельзя — numba/vectorize/expr).</li></ul><ul id="2a8568fa-e39f-8053-96e9-cce2e867b71e" class="bulleted-list"><li style="list-style-type:disc"><strong>pandas</strong> остаётся ок для маленьких задач, но без <code>.apply</code> в горячих местах; используем <code>merge_asof</code> для тайм-джоинов.</li></ul><h3 id="2a8568fa-e39f-80b8-8e4b-c0323ca7254a" class="">C. Джоины, группировки, сортировки</h3><ul id="2a8568fa-e39f-804e-a90b-f01e2512fe7b" class="bulleted-list"><li style="list-style-type:disc">Сортированная предварительная разметка (by key) → <strong>asof/semijoin</strong> вместо cartesian.</li></ul><ul id="2a8568fa-e39f-8081-8d0d-cd112be70559" class="bulleted-list"><li style="list-style-type:disc">Раздельная агрегация и <strong>broadcast join</strong> (агрегаты малы → memory-friendly).</li></ul><ul id="2a8568fa-e39f-8070-9359-e580d4db95ce" class="bulleted-list"><li style="list-style-type:disc">Стабильные индексы и контроль кардинальности (диагностика «вдруг 10× дублировал»).</li></ul><h3 id="2a8568fa-e39f-809d-9ab2-df5555992338" class="">D. Фичи без утечек и без тормозов</h3><ul id="2a8568fa-e39f-807d-a1b6-c9e4bba7cfa6" class="bulleted-list"><li style="list-style-type:disc"><strong>Vectorized</strong>: все частоты/mean/lag → выражениями фреймворка.</li></ul><ul id="2a8568fa-e39f-8098-a476-f09501f9c50e" class="bulleted-list"><li style="list-style-type:disc"><strong>Hashing для крестов</strong> (A×B, A×B×C) c фикс-размером; backoff уровни (A,<em>)/(</em>,B) считаем заранее.</li></ul><ul id="2a8568fa-e39f-8096-a726-d8c7aaf90149" class="bulleted-list"><li style="list-style-type:disc"><strong>OOF-протокол</strong> как техническая дисциплина: сплиты → fit на каждом фолде → concat OOF.</li></ul><h3 id="2a8568fa-e39f-8049-ba35-e2e591f381ff" class="">E. Параллелизм и GIL</h3><ul id="2a8568fa-e39f-80dc-9f7c-ee7d89fb9e66" class="bulleted-list"><li style="list-style-type:disc">Когда <strong>многопроцесс</strong> (аудио-декод, имидж-эмбеддинг) и когда <strong>многопоток</strong> (GBDT, BLAS).</li></ul><ul id="2a8568fa-e39f-80bb-b80f-dd809a8c863a" class="bulleted-list"><li style="list-style-type:disc">Пулы: <code>multiprocessing</code>, <code>joblib</code>, Polars под капотом. <strong>Не</strong> запускать тяжёлые тред-задачи внутри процессных пулов → троттлинг.</li></ul><ul id="2a8568fa-e39f-80f3-be36-e6bf4ff69887" class="bulleted-list"><li style="list-style-type:disc">Контроль потоков: <code>OMP_NUM_THREADS</code>, <code>MKL_NUM_THREADS</code>, <code>NUMEXPR_NUM_THREADS</code>, <code>LIGHTGBM_NUM_THREADS</code>, <code>CATBOOST_THREAD_COUNT</code>.</li></ul><h3 id="2a8568fa-e39f-80a4-a219-fda119bcd4cf" class="">F. Кэширование и адресация артефактов</h3><ul id="2a8568fa-e39f-805f-aa59-fc65acb32b16" class="bulleted-list"><li style="list-style-type:disc">Контент-хеш (SHA-1/xxhash) от <strong>версии кода + конфига + входных файлов</strong> → имя папки кэша:<p id="2a8568fa-e39f-80e2-965e-fa2026121e03" class=""><code>cache/{stage}/{hash}/…</code> (stage: <code>img_emb</code>, <code>audio_mel</code>, <code>candidates</code>, <code>tfidf</code>).</p></li></ul><ul id="2a8568fa-e39f-8079-a123-d701643632a8" class="bulleted-list"><li style="list-style-type:disc">Политика протухания: сменился конфиг/код — новый хеш, старое остаётся.</li></ul><h3 id="2a8568fa-e39f-80c0-8352-e85090e5ee6e" class="">G. Специфика по доменам</h3><ul id="2a8568fa-e39f-806d-b0ea-f02f001dbbc8" class="bulleted-list"><li style="list-style-type:disc"><strong>RecSys</strong>:<ul id="2a8568fa-e39f-8071-b19f-dcd1ba371068" class="bulleted-list"><li style="list-style-type:circle">co-vis за O(N·W) по скользящему окну; хранить <strong>top-K соседей</strong> на item (heap), счётчики <code>int32</code>;</li></ul><ul id="2a8568fa-e39f-8022-98cd-c781a42707a0" class="bulleted-list"><li style="list-style-type:circle">ANN/FAISS для item2vec/LightGCN соседей; candidate union→dedup→budget.</li></ul></li></ul><ul id="2a8568fa-e39f-809c-9c85-e710192e7187" class="bulleted-list"><li style="list-style-type:disc"><strong>Текст H@3</strong>:<ul id="2a8568fa-e39f-80c3-84b8-fd404a28b475" class="bulleted-list"><li style="list-style-type:circle">HashingVectorizer/TF-IDF → <strong>CSR/CSC</strong>; никогда не плотнить матрицы;</li></ul><ul id="2a8568fa-e39f-803a-a948-cd1a4f67d0f7" class="bulleted-list"><li style="list-style-type:circle">Truncated SVD (опционально) — только если даёт ускорение обучения.</li></ul></li></ul><ul id="2a8568fa-e39f-80d2-b7ff-fe6abc6cdb5f" class="bulleted-list"><li style="list-style-type:disc"><strong>Аудио KWS</strong>:<ul id="2a8568fa-e39f-80c6-a3f2-ed0295706ff1" class="bulleted-list"><li style="list-style-type:circle">массовый <strong>ffmpeg/torchaudio</strong> декод в multiprocessing; число окон = функция <code>win/hop</code> (держим под контролем);</li></ul><ul id="2a8568fa-e39f-800e-a5b4-cb80abddc542" class="bulleted-list"><li style="list-style-type:circle">кэш <strong>mel</strong> на диск (float16) + reuse между фолдами.</li></ul></li></ul><ul id="2a8568fa-e39f-8071-b425-da63bfe67780" class="bulleted-list"><li style="list-style-type:disc"><strong>CV (фото)</strong>:<ul id="2a8568fa-e39f-8012-b91b-ef4a8aa30729" class="bulleted-list"><li style="list-style-type:circle">батч-эмбеддинг (torch, no_grad, autocast), <strong>num_workers</strong>, pin_memory;</li></ul><ul id="2a8568fa-e39f-8047-b73b-ce71c4d92494" class="bulleted-list"><li style="list-style-type:circle">пред-декод JPEG (libjpeg-turbo/pillow-simd/opencv) и сохранение эмбеддингов в parquet/npy.</li></ul></li></ul><ul id="2a8568fa-e39f-80d3-992e-ec43b569a871" class="bulleted-list"><li style="list-style-type:disc"><strong>Табличка</strong>:<ul id="2a8568fa-e39f-8094-a467-fafd39feb049" class="bulleted-list"><li style="list-style-type:circle">массивные группировки/энкодеры — Polars/Arrow; TE/CTR строго OOF, хранить OOF-признаки.</li></ul></li></ul><h3 id="2a8568fa-e39f-8090-a370-ec3e7d09dee9" class="">H. Тренировка/инференс быстро и детерминированно</h3><ul id="2a8568fa-e39f-8023-97d8-d52aabb9a75d" class="bulleted-list"><li style="list-style-type:disc">GBDT: ранняя остановка, разумные итерации, <code>feature_fraction/bagging_fraction</code> → скорость.</li></ul><ul id="2a8568fa-e39f-8072-a9a0-f907c5c89df3" class="bulleted-list"><li style="list-style-type:disc">PyTorch: <code>torch.manual_seed</code>, отключить nondet-опции (<code>cudnn.deterministic=True</code>, <code>benchmark=False</code>), <code>torch.set_num_threads(k)</code>.</li></ul><ul id="2a8568fa-e39f-8036-ba3d-f4561c1f3793" class="bulleted-list"><li style="list-style-type:disc">CatBoost/LightGBM: фикс сид, фикс тредов; лог времени fit/predict.</li></ul><h3 id="2a8568fa-e39f-8046-8cce-ec8815ed7ae0" class="">I. Профилирование и «цифровая гигиена»</h3><ul id="2a8568fa-e39f-803a-9732-fa8edb5bf0b2" class="bulleted-list"><li style="list-style-type:disc">Таймеры по этапам, <code>cProfile</code>/line-profiler для горячих функций; отчёт с «топ-3 узких мест».</li></ul><ul id="2a8568fa-e39f-807d-9378-c56658b484c8" class="bulleted-list"><li style="list-style-type:disc">Считаем <strong>пропускную способность</strong> (строк/сек, изображений/сек, аудио-сек/сек) — это KPI.</li></ul><h3 id="2a8568fa-e39f-80f5-bc3e-ea1d11f12cae" class="">J. «Паник-кнопка»: деградация под дедлайн</h3><ul id="2a8568fa-e39f-803b-abac-e5457f5df96d" class="bulleted-list"><li style="list-style-type:disc">Быстрая сборка: меньше фич, меньше кандидатов, уменьшенные эмбеддинги (PCA), крупнее hop (меньше окон), запрет HPO, только бленд.</li></ul><ul id="2a8568fa-e39f-80e5-8b82-e23d6f41622d" class="bulleted-list"><li style="list-style-type:disc">Всегда иметь <strong>валидный baseline</strong> и скрипт, который сделает сабмит независимо от HPO.</li></ul><h3 id="2a8568fa-e39f-8017-a2f5-da045bba388d" class="">K. Репродьюс на практике</h3><ul id="2a8568fa-e39f-809a-9e41-e0b59d297b2b" class="bulleted-list"><li style="list-style-type:disc"><code>requirements.txt/pyproject.toml</code> с пиннутыми версиями; фикс путей; <code>repro.sh</code> (end-to-end); <strong>seedlog.json</strong> и <strong>timelog.json</strong>.</li></ul><hr id="2a8568fa-e39f-8050-b767-c6fee7b29675"/><h2 id="2a8568fa-e39f-80c8-973f-fa6d6fa5c3a5" class="">3) Практика (3–4 часа, лабы)</h2><h3 id="2a8568fa-e39f-806e-ae44-c079cef8a192" class="">Лаба 1. «CSV → Parquet/Polars», ускорение 5–10×</h3><ul id="2a8568fa-e39f-805a-b79f-e89c6e882983" class="bulleted-list"><li style="list-style-type:disc">Конвертировать один из больших train CSV/TSV в Parquet (snappy/zstd), задать схему dtypes.</li></ul><ul id="2a8568fa-e39f-8073-bc14-ecb03886e234" class="bulleted-list"><li style="list-style-type:disc">Переписать 2–3 тяжёлых группировки на <strong>Polars Lazy</strong> (streaming).</li></ul><ul id="2a8568fa-e39f-80bd-b7da-e64145a0f41d" class="bulleted-list"><li style="list-style-type:disc">Снять сравнение: время чтения/группировки/память (до/после).<p id="2a8568fa-e39f-80e1-8d5b-c02cee7ab90f" class=""><strong>Артефакты:</strong> <code>convert_to_parquet.py</code>, <code>polars_basics.py</code>, <code>speed_report_io.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-8098-8cc1-fb61b2e4a999" class="">Лаба 2. RecSys: быстрый co-vis + кандидаты с бюджетом</h3><ul id="2a8568fa-e39f-8031-9859-c59af34b2d2c" class="bulleted-list"><li style="list-style-type:disc">Реализовать генерацию co-vis с <strong>скользящим окном</strong> и весами по времени без Python-циклов (Polars expr/Numba).</li></ul><ul id="2a8568fa-e39f-808d-8709-e935b92610b8" class="bulleted-list"><li style="list-style-type:disc">Хранить <strong>top-K</strong> на item; собрать union кандидатов, <strong>dedup + budget</strong>.</li></ul><ul id="2a8568fa-e39f-80cb-9211-f3e7acddd4b6" class="bulleted-list"><li style="list-style-type:disc">Логи: <code>recall@20 vs #candidates</code>, время этапов (счёт→запись→загрузка).<p id="2a8568fa-e39f-80b0-98c5-c7128fdfb337" class=""><strong>Артефакты:</strong> <code>build_coviz_fast.py</code>, <code>candidates_fast.parquet</code>, <code>cand_speed.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-8083-a08a-c5b07b98e109" class="">Лаба 3. Аудио: распараллеленный декод и кэш mel</h3><ul id="2a8568fa-e39f-8057-b510-e0c67b16df0f" class="bulleted-list"><li style="list-style-type:disc">Многопроцессный декод Opus→PCM, батч-подготовка <strong>mel</strong> (float16) и кэш на диск; контроль числа окон через <code>win/hop</code>.</li></ul><ul id="2a8568fa-e39f-8040-80f5-c1681ce5f8be" class="bulleted-list"><li style="list-style-type:disc">Сравнить время end-to-end (decode→mel→infer) до/после кэша и при разных <code>win/hop</code>.<p id="2a8568fa-e39f-8080-8946-c00cea5f6dfc" class=""><strong>Артефакты:</strong> <code>decode_parallel.py</code>, <code>mel_cache_builder.py</code>, <code>kws_speed.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-8041-bb5e-d58574f1f0ab" class="">Лаба 4. CV: батч-эмбеддинг изображений</h3><ul id="2a8568fa-e39f-8094-9621-fe6e352abbf3" class="bulleted-list"><li style="list-style-type:disc">DataLoader с <code>num_workers</code>, <code>pin_memory</code>, AMP; снятие <strong>fps</strong> (изображений/сек), запись эмбеддингов (parquet).</li></ul><ul id="2a8568fa-e39f-80f8-b66e-ce91eb6aeec7" class="bulleted-list"><li style="list-style-type:disc">Агрегация 4→1 (mean/top-k/attention) — сравнить время и точность на мини-валидации.<p id="2a8568fa-e39f-8058-8b32-dd5b04b57d4a" class=""><strong>Артефакты:</strong> <code>img_embedder.py</code>, <code>img_aggregate.py</code>, <code>cv_speed.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-8039-ad8e-e3792b4d4eb4" class="">Лаба 5. Текст: CSR-пайплайн и быстрый инференс</h3><ul id="2a8568fa-e39f-809d-a603-c3a6ed6ad3c4" class="bulleted-list"><li style="list-style-type:disc">Hashing/TF-IDF в CSR, обучение LR/SGD, сохранение матриц; никогда не <code>toarray()</code>.</li></ul><ul id="2a8568fa-e39f-809a-8203-ed1224bde887" class="bulleted-list"><li style="list-style-type:disc">Тайминг vectorize→fit→predict; сравнение с «наивной» реализацией.<p id="2a8568fa-e39f-80b5-9652-eeec491bb56f" class=""><strong>Артефакты:</strong> <code>text_vectorize_fast.py</code>, <code>h3_speed.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-80b0-a658-ddae2d0536c0" class="">Лаба 6. Детерминизм и «repro.sh»</h3><ul id="2a8568fa-e39f-8078-92e0-f25393622b77" class="bulleted-list"><li style="list-style-type:disc">Завести <code>seed_manager.py</code>, выставить треды BLAS/GBDT/Torch; показать повторяемость метрик и времени (±2–5%).</li></ul><ul id="2a8568fa-e39f-801a-b74f-e5dd5b05a200" class="bulleted-list"><li style="list-style-type:disc">Собрать <code>repro.sh</code>, который из «сырого data/» делает два сабмита за ограниченное время.<p id="2a8568fa-e39f-8069-b9d6-f77367f2a276" class=""><strong>Артефакты:</strong> <code>seed_manager.py</code>, <code>repro.sh</code>, <code>determinism_report.md</code>.</p></li></ul><hr id="2a8568fa-e39f-80c6-b122-e9cdf3b9ab0d"/><h2 id="2a8568fa-e39f-80e4-a6fd-c8f27e693cfe" class="">4) Критерии сдачи</h2><ul id="2a8568fa-e39f-8065-8553-f5a31d50ade1" class="bulleted-list"><li style="list-style-type:disc"><strong>Энд-ту-энд время</strong> в твоём окружении попадает в оговорённые бюджеты для <strong>двух разных треков</strong> (на выбор).</li></ul><ul id="2a8568fa-e39f-8054-9354-e202aaf0ebd9" class="bulleted-list"><li style="list-style-type:disc">Есть <strong>кэш-слой</strong> с контент-хешем для минимум одного тяжёлого этапа (эмбеддинги/кандидаты/mel).</li></ul><ul id="2a8568fa-e39f-80bb-bc1d-c77f33af93da" class="bulleted-list"><li style="list-style-type:disc">В репо лежат: <code>convert_to_parquet.py</code>, <code>polars_*</code>, <code>build_coviz_fast.py</code>, <code>mel_cache_builder.py</code>/<code>img_embedder.py</code>, <code>seed_manager.py</code>, <code>repro.sh</code>, все <code>_speed.md</code> отчёты.</li></ul><ul id="2a8568fa-e39f-80c6-9b11-c8456736c907" class="bulleted-list"><li style="list-style-type:disc"><strong>Детерминизм</strong> подтверждён: повторный прогон даёт те же сабмиты/метрики, расхождение времени в пределах 5–10%.</li></ul><hr id="2a8568fa-e39f-8045-8c04-e50285207a03"/><h2 id="2a8568fa-e39f-8040-abf5-c51ef00aa28f" class="">5) Домашка</h2><ol type="1" id="2a8568fa-e39f-8092-a989-e3f458751b57" class="numbered-list" start="1"><li>Найди <strong>самый медленный шаг</strong> своего пайплайна и перепиши его в виде ленивых выражений Polars/Numba-ядра. Покажи ускорение ≥2×.</li></ol><ol type="1" id="2a8568fa-e39f-80b2-8577-ef4671083403" class="numbered-list" start="2"><li>Включи <strong>контент-хеш-кэш</strong> на этом шаге и проверь, что повторный прогон не пересчитывает артефакт.</li></ol><ol type="1" id="2a8568fa-e39f-80fd-aa01-ea81fe8b4112" class="numbered-list" start="3"><li>Сними <strong>черепаховую диаграмму</strong> (распределение времени по этапам) до/после оптимизаций.</li></ol><ol type="1" id="2a8568fa-e39f-801a-a9b2-f423cb05e09a" class="numbered-list" start="4"><li>Добавь «паник-профиль» в <code>repro.sh</code> (флаги <code>-fast</code>/<code>-safe</code>) и зафиксируй потери качества vs экономия времени.</li></ol><hr id="2a8568fa-e39f-800e-a257-cc4a0fc28bbb"/><p id="2a8568fa-e39f-8021-8299-ce528f60698c" class="">Хочешь — дальше упакую <strong>Модуль 11: Диагностика сдвигов, устойчивость и “release чек-лист”</strong> (как не утонуть на приватном тесте и не завалить сабмит форматом).</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

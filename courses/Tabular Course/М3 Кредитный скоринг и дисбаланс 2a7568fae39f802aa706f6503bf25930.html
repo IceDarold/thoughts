@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М3. Кредитный скоринг и дисбаланс</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a7568fa-e39f-802a-a706-f6503bf25930" class="page sans"><header><h1 class="page-title">М3. Кредитный скоринг и дисбаланс</h1><p class="page-description"></p></header><div class="page-body"><figure id="2a8568fa-e39f-8062-a9ff-e297c4d54dbd" class="link-to-page"><a href="%D0%9C3%20%D0%9A%D1%80%D0%B5%D0%B4%D0%B8%D1%82%D0%BD%D1%8B%D0%B9%20%D1%81%D0%BA%D0%BE%D1%80%D0%B8%D0%BD%D0%B3%20%D0%B8%20%D0%B4%D0%B8%D1%81%D0%B1%D0%B0%D0%BB%D0%B0%D0%BD%D1%81/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F%202a8568fae39f8062a9ffe297c4d54dbd.html">Теория</a></figure><hr id="2a8568fa-e39f-8096-bf8b-f154dcbe6b14"/><h2 id="2a7568fa-e39f-80ee-9909-ddbfcbea0c4f" class="">1) Цели модуля</h2><ul id="2a7568fa-e39f-800b-805e-c9b8f7dffa89" class="bulleted-list"><li style="list-style-type:disc">Уметь <strong>распознавать и обрабатывать дисбаланс</strong>: class weights, down/up-sampling, focal-loss, threshold moving.</li></ul><ul id="2a7568fa-e39f-8092-9729-d4d6332c70ba" class="bulleted-list"><li style="list-style-type:disc">Настраивать <strong>валидирование для клиентских/временных данных</strong> (GroupKFold по клиенту, Time/Purged по транзакциям).</li></ul><ul id="2a7568fa-e39f-8080-ae4a-f0bad761736b" class="bulleted-list"><li style="list-style-type:disc">Работать с <strong>бизнес-метриками</strong>: ROC-AUC/PR-AUC, top-K capture, кастомная AMEX-метрика (ранжирующая).</li></ul><ul id="2a7568fa-e39f-8076-b742-f9cb5a86015e" class="bulleted-list"><li style="list-style-type:disc">Построить «<strong>безопасную фабрику фич</strong>» для счетов/транзакций: агрегаты per-client/device/merchant с окнами, decay.</li></ul><ul id="2a7568fa-e39f-8020-9ec9-d7f9fcaca13f" class="bulleted-list"><li style="list-style-type:disc">Собрать <strong>лёгкий ансамбль</strong> (CatBoost/LGBM/XGB) и корректно <strong>калибровать</strong> вероятности (Platt/Isotonic/Brier).</li></ul><p id="2a7568fa-e39f-806f-b804-c1d416ad5f81" class=""><strong>Выход:</strong> пайплайн «скоринг под дисбаланс» (скрипты веса/порог/калибровка), чек-лист утечек, готовые пресеты.</p><hr id="2a7568fa-e39f-80fc-8e72-dc4f9a2ef545"/><h2 id="2a7568fa-e39f-80dc-8837-dd731de696f0" class="">2) Формат и тайминг</h2><ul id="2a7568fa-e39f-80da-8d2e-e557802f2e35" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a7568fa-e39f-8065-8b37-e6c048b32b5f" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 5 часов</strong> (в окно между занятиями или сразу после).</li></ul><ul id="2a7568fa-e39f-809b-8e05-e5769e39be0a" class="bulleted-list"><li style="list-style-type:disc">Короткая защита «паспорт решения».</li></ul><hr id="2a7568fa-e39f-80b2-be7f-d22a871f97f3"/><h2 id="2a7568fa-e39f-8078-911b-dc142242839d" class="">3) Карта решений: что делать при дисбалансе (≤10 минут)</h2><ol type="1" id="2a7568fa-e39f-802c-8277-f51d23518a6e" class="numbered-list" start="1"><li><strong>Тип задачи</strong><ul id="2a7568fa-e39f-806b-b180-d988ca15a135" class="bulleted-list"><li style="list-style-type:disc">Скоринг/фрод = <strong>ранжирование</strong> (порог вторичен) → ROC-AUC/PR-AUC, top-K.</li></ul><ul id="2a7568fa-e39f-8076-a595-e95294d039a1" class="bulleted-list"><li style="list-style-type:disc">Операционные правила = нужен <strong>порог</strong> → оптимизируем по F1/Recall@K/бизнес-функции издержек.</li></ul></li></ol><ol type="1" id="2a7568fa-e39f-80ca-bfa6-ea5b3cf13fa2" class="numbered-list" start="2"><li><strong>Быстрый выбор техники</strong><ul id="2a7568fa-e39f-8075-946c-f3504ff1e498" class="bulleted-list"><li style="list-style-type:disc">Мало данных/скорость важна → <strong>class_weight / scale_pos_weight</strong> (Cat/LGBM/XGB).</li></ul><ul id="2a7568fa-e39f-80a4-a6fd-e13b5c437f6b" class="bulleted-list"><li style="list-style-type:disc">Сильный дисбаланс и шумные миноры → <strong>focal loss</strong> (или alpha-weighted BCE).</li></ul><ul id="2a7568fa-e39f-8060-ada4-d2278f16e50f" class="bulleted-list"><li style="list-style-type:disc">Огромный класс «0» → <strong>down-sampling</strong> негатива (с «поправкой базовой вероятности») + веса.</li></ul><ul id="2a7568fa-e39f-8025-997f-e64cd5984b52" class="bulleted-list"><li style="list-style-type:disc">PR-AUC важнее → контролируем вероятность, <strong>калибруем</strong>.</li></ul></li></ol><ol type="1" id="2a7568fa-e39f-80d2-a0c4-f8ea83324395" class="numbered-list" start="3"><li><strong>CV-схема</strong><ul id="2a7568fa-e39f-80e1-b458-f11931e8d46c" class="bulleted-list"><li style="list-style-type:disc"><strong>GroupKFold по client_id</strong> (скоринг, мульти-стейтменты).</li></ul><ul id="2a7568fa-e39f-8095-89d7-f5a9340293d4" class="bulleted-list"><li style="list-style-type:disc"><strong>Time/Purged</strong> по транзакциям (фрод, лаги/роллинги, embargo).</li></ul><ul id="2a7568fa-e39f-8000-95fc-f24f8263e1af" class="bulleted-list"><li style="list-style-type:disc">Для кастомных ранжирующих метрик: считать на <strong>OOF</strong> и на hold-out.</li></ul></li></ol><hr id="2a7568fa-e39f-8052-aaae-f47cefa07d35"/><h2 id="2a7568fa-e39f-8080-8ca3-d676d1ba7d83" class="">4) Метрики: что и зачем</h2><ul id="2a7568fa-e39f-80ef-b969-d60adf43c8e2" class="bulleted-list"><li style="list-style-type:disc"><strong>ROC-AUC</strong> — устойчивый ориентир при дисбалансе, но может «лгать» про top-K.</li></ul><ul id="2a7568fa-e39f-80f3-b903-e2ba8c5a4c6c" class="bulleted-list"><li style="list-style-type:disc"><strong>PR-AUC</strong> — ценен при очень редком «1», чувствителен к калибровке.</li></ul><ul id="2a7568fa-e39f-80f9-ad0c-c6f4169417e3" class="bulleted-list"><li style="list-style-type:disc"><strong>Top-K / Capture@K</strong> — «какую долю мошенничества поймаем в верхних K%».</li></ul><ul id="2a7568fa-e39f-80ab-b18e-cc181ca3fff8" class="bulleted-list"><li style="list-style-type:disc"><strong>Кастом AMEX</strong> — ранжирование + capture в топ-х; оптимизируем <strong>ранг</strong>, не порог.</li></ul><ul id="2a7568fa-e39f-80fc-af98-fba31be8a058" class="bulleted-list"><li style="list-style-type:disc"><strong>Brier / ECE</strong> — для калибровки (если нужна пороговая политика).</li></ul><hr id="2a7568fa-e39f-8071-afec-dc3f1c972e62"/><h2 id="2a7568fa-e39f-80ff-a7e4-fe470ea301e8" class="">5) Обработка дисбаланса: рецепты</h2><ul id="2a7568fa-e39f-80e1-96ee-fb5c54218677" class="bulleted-list"><li style="list-style-type:disc"><strong>Веса классов</strong>:<ul id="2a7568fa-e39f-80ad-90d2-d45b1450a1f8" class="bulleted-list"><li style="list-style-type:circle">LGBM: <code>scale_pos_weight ≈ N_neg/N_pos</code>; проверить устойчивость OOF.</li></ul><ul id="2a7568fa-e39f-802c-b353-e54b85331290" class="bulleted-list"><li style="list-style-type:circle">CatBoost: <code>class_weights=[w0,w1]</code>; часто + легкая L2.</li></ul><ul id="2a7568fa-e39f-808d-bd9e-e6142c951f6a" class="bulleted-list"><li style="list-style-type:circle">XGB: <code>scale_pos_weight</code> + <code>max_delta_step</code> при сильном дисбалансе.</li></ul></li></ul><ul id="2a7568fa-e39f-800f-b95f-d198acc95753" class="bulleted-list"><li style="list-style-type:disc"><strong>Focal loss</strong> (γ=1–2, α для «1»): уменьшает вклад легко-классифицируемых «0», усиливает тяжёлые примеры.</li></ul><ul id="2a7568fa-e39f-8092-94e3-e9abac294cb9" class="bulleted-list"><li style="list-style-type:disc"><strong>Down-/Up-sampling</strong>:<ul id="2a7568fa-e39f-8047-948d-d24d12f852cf" class="bulleted-list"><li style="list-style-type:circle"><strong>Down-sample</strong> негатива до соотношения 1:10..1:20 → быстрее обучение.</li></ul><ul id="2a7568fa-e39f-8085-ab5c-e46584341691" class="bulleted-list"><li style="list-style-type:circle">Корректировать пороги/калибровку (иначе «съедится» базовая вероятность).</li></ul><ul id="2a7568fa-e39f-80f3-b9c0-c6a178838931" class="bulleted-list"><li style="list-style-type:circle"><strong>Up-sample</strong> позитива осторожно (seed-bagging лучше, чем дубли).</li></ul></li></ul><ul id="2a7568fa-e39f-808d-9544-c4aba986adb0" class="bulleted-list"><li style="list-style-type:disc"><strong>Threshold moving</strong>: оптимизация порога на <strong>OOF</strong> под бизнес-метрику (cost-sensitive).</li></ul><ul id="2a7568fa-e39f-80d5-80d5-c8dd2ec166b4" class="bulleted-list"><li style="list-style-type:disc"><strong>Cost-sensitive fit</strong>: sample_weight на объект (дорогие FN/FP).</li></ul><hr id="2a7568fa-e39f-806b-a5f0-e55fb8fd8602"/><h2 id="2a7568fa-e39f-8003-9fbc-ce0c06dc8219" class="">6) Калибровка вероятностей</h2><ul id="2a7568fa-e39f-8059-892b-ed7d246b0ebe" class="bulleted-list"><li style="list-style-type:disc"><strong>Platt scaling</strong> (логистическая регрессия поверх OOF-скор): быстро, часто достаточно.</li></ul><ul id="2a7568fa-e39f-80de-866f-db61d2e29be3" class="bulleted-list"><li style="list-style-type:disc"><strong>Isotonic regression</strong> — мощнее, но может переобучать; контролировать по фолдам.</li></ul><ul id="2a7568fa-e39f-8016-8e47-f431c51191f9" class="bulleted-list"><li style="list-style-type:disc"><strong>Оценка</strong>: Brier, ECE, релайбилити-плоты.</li></ul><ul id="2a7568fa-e39f-8062-8d92-c25fde2227c9" class="bulleted-list"><li style="list-style-type:disc"><strong>Правило:</strong> калибровку подгоняем на OOF, применяем к test-скор.</li></ul><hr id="2a7568fa-e39f-80a9-a516-fb5953b619f5"/><h2 id="2a7568fa-e39f-809f-a617-c330668fef81" class="">7) CV под скоринг и фрод</h2><ul id="2a7568fa-e39f-80b9-99ca-ead6647ef73d" class="bulleted-list"><li style="list-style-type:disc"><strong>Скоринг (panel с клиентами):</strong> <code>GroupKFold(client_id)</code>; если есть время — <strong>rolling по месяцам</strong> с удержанием клиента.</li></ul><ul id="2a7568fa-e39f-802a-96f0-c137abc360b1" class="bulleted-list"><li style="list-style-type:disc"><strong>Фрод (транзакции):</strong> <code>TimeSeriesSplit</code>/<code>PurgedKFold</code> + <code>gap</code>; признаки <strong>только из прошлого</strong>; кодировки — rolling/expanding.</li></ul><ul id="2a7568fa-e39f-8004-9b58-cbd2db613bb1" class="bulleted-list"><li style="list-style-type:disc"><strong>Adversarial validation</strong>: если drift висок, усиливаем time-aware, сокращаем «токсичные» фичи.</li></ul><hr id="2a7568fa-e39f-80f2-aa9d-d5aa44bb504d"/><h2 id="2a7568fa-e39f-8057-aff7-faf8753b836f" class="">8) Безопасный фичинжиниринг (короткий каталог)</h2><p id="2a7568fa-e39f-80e1-a15a-f5618cadcae1" class=""><strong>Персональные/панельные (скоринг):</strong></p><ul id="2a7568fa-e39f-803f-b15f-d4b533d38487" class="bulleted-list"><li style="list-style-type:disc">Aggregates per client: <code>mean/median/max/min/std</code>, доли просрочек, <strong>DPD суммарные/макс</strong>, число активных продуктов.</li></ul><ul id="2a7568fa-e39f-8005-b8bb-e8a7fa5597a6" class="bulleted-list"><li style="list-style-type:disc"><strong>Тренды</strong> (slope/Δ) по лимитам/балансам/расходам, <strong>recency</strong> (последняя активность).</li></ul><ul id="2a7568fa-e39f-80bb-82bc-c1abf9b613f1" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность дохода/платежа</strong> (коэфф. вариации), utilization (balance/limit), category mix.</li></ul><p id="2a7568fa-e39f-800b-8c7b-e90025b071cd" class=""><strong>Транзакции/фрод:</strong></p><ul id="2a7568fa-e39f-804f-a4f0-f34dfe757f7e" class="bulleted-list"><li style="list-style-type:disc"><strong>RFM</strong> (recency/frequency/monetary), velocity (операций/минуту), суммы по окнам 1/7/30/90.</li></ul><ul id="2a7568fa-e39f-80ad-bcfe-e83741239887" class="bulleted-list"><li style="list-style-type:disc">Перекрёстные частоты: <code>user×merchant</code>, <code>card×device</code>, <code>ip×hour</code>, <strong>rare pooling</strong>.</li></ul><ul id="2a7568fa-e39f-80cc-b6bf-fbf779c7763a" class="bulleted-list"><li style="list-style-type:disc"><strong>Time-aware кодировки</strong> (rolling counts/expanding mean), decay-агрегаты (экспон. спад).</li></ul><ul id="2a7568fa-e39f-80c0-ae59-fdfa87fb4017" class="bulleted-list"><li style="list-style-type:disc"><strong>Device/Geo сигнатуры</strong>: расстояния/переключения, часовое распределение.</li></ul><blockquote id="2a7568fa-e39f-80e7-8682-c22477b29656" class="">Правило: для всех агрегатов — никакого будущего; для кодировок — только OOF/time-aware.</blockquote><hr id="2a7568fa-e39f-806e-ace7-c70bae9e1f0f"/><h2 id="2a7568fa-e39f-801f-90de-d688f30240ab" class="">9) Базовые пресеты моделей</h2><ul id="2a7568fa-e39f-8088-ac2c-fcdc8314b3f9" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost</strong>: сильный старт с категориальными; <code>class_weights</code>, <code>depth 6–8</code>, <code>l2_leaf_reg 3–10</code>, <code>auto_class_weights=None/Balance</code>.</li></ul><ul id="2a7568fa-e39f-808c-88a2-ec4e3e43f035" class="bulleted-list"><li style="list-style-type:disc"><strong>LightGBM</strong>: <code>num_leaves 63–255</code>, <code>feature_fraction 0.6–0.9</code>, <code>bagging_fraction 0.6–0.9</code>, <code>scale_pos_weight</code>, <code>min_data_in_leaf ↑ при шуме</code>.</li></ul><ul id="2a7568fa-e39f-80c1-9629-cec79334b8cf" class="bulleted-list"><li style="list-style-type:disc"><strong>XGBoost</strong>: <code>max_depth 6–10</code>, <code>eta 0.02–0.1</code>, <code>subsample/colsample 0.6–0.9</code>, <code>scale_pos_weight</code>, <code>eval_metric=auc/pr-auc</code>.</li></ul><p id="2a7568fa-e39f-80a0-9424-f26b4a9d7759" class=""><strong>Ансамбль (30–45 мин):</strong> 2–3 модели, веса по OOF (Optuna/по сетке), bagging seeds (3–5), усреднение логитов.</p><hr id="2a7568fa-e39f-8092-b573-f6e3236e3df9"/><h2 id="2a7568fa-e39f-80f5-abba-fa7ed12b068a" class="">10) Мини-практикум A (60–90 мин): скоринг (panel)</h2><p id="2a7568fa-e39f-80ab-82d1-fd58eb0319b0" class=""><strong>Цель:</strong> устойчивый ранжирующий скор (AUC/AMEX-стайл), без фиксации порога.</p><p id="2a7568fa-e39f-8051-8a4e-e241d6a8d7c2" class=""><strong>План:</strong></p><ol type="1" id="2a7568fa-e39f-8085-9c32-df3ed7377d67" class="numbered-list" start="1"><li><code>GroupKFold(client_id)</code> + CatBoost-бейзлайн → OOF AUC.</li></ol><ol type="1" id="2a7568fa-e39f-805b-a920-c296a6c177ff" class="numbered-list" start="2"><li>Доб. 5–8 безопасных агрегатов per client → ΔOOF.</li></ol><ol type="1" id="2a7568fa-e39f-80ca-be47-c056cad2cae2" class="numbered-list" start="3"><li>Лёгкий бленд CatBoost+LGBM (веса по OOF).</li></ol><ol type="1" id="2a7568fa-e39f-80c5-8acc-cc1f65b884b4" class="numbered-list" start="4"><li>Проверка drift (AV), отчёт по стабильности.</li></ol><p id="2a7568fa-e39f-801f-b610-f26b09e2163d" class=""><strong>Артефакты:</strong> OOF-лог, <code>cv.yaml</code>, <code>featureset_v1.json</code>, сабмит_1–2.</p><hr id="2a7568fa-e39f-80ae-a3a3-fe18a91916d8"/><h2 id="2a7568fa-e39f-80ee-9ed3-cd64de44847b" class="">11) Мини-практикум B (60–90 мин): фрод (transactions)</h2><p id="2a7568fa-e39f-8067-9e8c-eebb6a531025" class=""><strong>Цель:</strong> PR-AUC/Recall@K, time-aware фичи.</p><p id="2a7568fa-e39f-8003-a60f-d73cd3b72468" class=""><strong>План:</strong></p><ol type="1" id="2a7568fa-e39f-80a4-91c2-d3a1d1014c0a" class="numbered-list" start="1"><li><code>TimeSeriesSplit(gap)</code> + LGBM с <code>scale_pos_weight</code>.</li></ol><ol type="1" id="2a7568fa-e39f-8028-9743-e8d763292a53" class="numbered-list" start="2"><li>Rolling counts (user/item 7/30), velocity, rare pooling → ΔOOF (PR-AUC).</li></ol><ol type="1" id="2a7568fa-e39f-802b-8a24-d197d6f14cba" class="numbered-list" start="3"><li>Threshold moving под Recall@K на OOF.</li></ol><ol type="1" id="2a7568fa-e39f-8040-a78e-c0261a6e6714" class="numbered-list" start="4"><li>(Опционально) focal-loss/alpha-BCE и сравнить.</li></ol><p id="2a7568fa-e39f-8048-80a0-d090cb44e847" class=""><strong>Артефакты:</strong> калибровка/порог, метрики PR-AUC/Recall@K, сабмит_финал.</p><hr id="2a7568fa-e39f-804c-b53e-fc380ccfebae"/><h2 id="2a7568fa-e39f-8090-84eb-cf9062f5caf0" class="">12) Домашка-разминка (до спринта)</h2><ul id="2a7568fa-e39f-808f-ad7d-dafb2eb4a5b3" class="bulleted-list"><li style="list-style-type:disc">Реализовать утилиты: <code>compute_class_weights</code>, <code>apply_downsample</code>, <code>fit_calibrator</code>, <code>optimize_threshold(metric_fn)</code>.</li></ul><ul id="2a7568fa-e39f-8057-80a5-e9ff993bb574" class="bulleted-list"><li style="list-style-type:disc">Сформировать <strong>бизнес-метрику</strong> (таблица издержек FP/FN или Capture@K) и функцию её расчёта на OOF.</li></ul><hr id="2a7568fa-e39f-80f6-96a8-d289cb5ac5b4"/><h2 id="2a7568fa-e39f-80a2-86a5-c6b4ce53d468" class="">13) Самостоятельный 5-часовой спринт</h2><p id="2a7568fa-e39f-806d-b7ef-f8af096333f4" class=""><strong>Выбор кейса (преподаватель выдаёт):</strong></p><ul id="2a7568fa-e39f-80dc-ac65-f59e731ab682" class="bulleted-list"><li style="list-style-type:disc"><strong>Скоринг</strong> (мульти-стейтменты на клиента) <strong>или</strong> <strong>Фрод</strong> (поток транзакций).<p id="2a7568fa-e39f-80c7-a6cc-f524cd1fb83e" class=""><strong>Требования:</strong></p></li></ul><ul id="2a7568fa-e39f-8096-9bd6-e00fb85971af" class="bulleted-list"><li style="list-style-type:disc">Корректная CV (Group/Time/Purged), минимум 8 безопасных фич, один «смелый» приём + стресс-тест.</li></ul><ul id="2a7568fa-e39f-80c4-97dd-c3cd0a3ad6af" class="bulleted-list"><li style="list-style-type:disc">Один сабмит «чистый ранжирующий», один — <strong>с калиброванным порогом</strong> под бизнес-метрику.</li></ul><ul id="2a7568fa-e39f-802b-9f07-fe5a760b4745" class="bulleted-list"><li style="list-style-type:disc">Отчёт: CV↔LB, дрифт/AV, выбор обработки дисбаланса, паспорт решения (1 страница).</li></ul><hr id="2a7568fa-e39f-80d2-8e3a-e829eae64cda"/><h2 id="2a7568fa-e39f-803e-ab8f-d8362ea870dc" class="">14) Чек-лист утечек (версия М3)</h2><ul id="2a7568fa-e39f-80a9-8604-c201e7f3807d" class="bulleted-list"><li style="list-style-type:disc">Кодировки/агрегаты — <strong>только OOF</strong> и/или <strong>только из прошлого</strong> (embargo).</li></ul><ul id="2a7568fa-e39f-8098-92e8-f47b143d7f2e" class="bulleted-list"><li style="list-style-type:disc">Группы клиентов <strong>не пересекаются</strong> между train/valid.</li></ul><ul id="2a7568fa-e39f-80d3-a7ba-cd4854e473c4" class="bulleted-list"><li style="list-style-type:disc">Threshold/порог подбираем <strong>по OOF</strong>, не по публичному LB.</li></ul><ul id="2a7568fa-e39f-8063-8e15-cdd1b6a44153" class="bulleted-list"><li style="list-style-type:disc">Любая «магия» проверяется переносом на альтернативный hold-out.</li></ul><hr id="2a7568fa-e39f-80e2-859e-ec7bb88a1914"/><h2 id="2a7568fa-e39f-80d5-902a-f3cff83afded" class="">15) Оценивание</h2><ul id="2a7568fa-e39f-802f-b24a-fe40a35813a4" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: сплит и time-политика, отсутствие утечек.</li></ul><ul id="2a7568fa-e39f-80f9-84e9-e8ff8967564e" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: ΔOOF/ΔLB, устойчивость (std по фолдам), адекватность top-K.</li></ul><ul id="2a7568fa-e39f-80a5-9488-c33bb3cfcf7d" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: воспроизводимость, скорость (лог таймингов), аккуратные артефакты (OOF/кал. модель).</li></ul><ul id="2a7568fa-e39f-8040-b46f-fac5ef52b4ef" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: ясный выбор техники дисбаланса/метрики/порога.</li></ul><hr id="2a7568fa-e39f-80c0-8c84-f37c5f4ad9dc"/><h2 id="2a7568fa-e39f-805b-8d51-dfc155bbb719" class="">16) Что уходит «в рюкзак»</h2><ul id="2a7568fa-e39f-805d-839f-c7366157bc18" class="bulleted-list"><li style="list-style-type:disc"><code>imbalance.py</code> (веса, сэмплинг, focal-loss обёртки), <code>calibration.py</code> (Platt/Isotonic), <code>thresholds.py</code>.</li></ul><ul id="2a7568fa-e39f-80be-9299-e2c595ca6392" class="bulleted-list"><li style="list-style-type:disc">Шаблон <code>scoring_feature_factory.py</code> (panel) и <code>fraud_feature_factory.py</code> (time-aware).</li></ul><ul id="2a7568fa-e39f-8037-bf00-f816daf95bc7" class="bulleted-list"><li style="list-style-type:disc">Пресеты <code>lgbm_credit.yaml</code>, <code>catboost_fraud.yaml</code> + скрипт бленда логитов.</li></ul><ul id="2a7568fa-e39f-8084-acef-df17832f52ee" class="bulleted-list"><li style="list-style-type:disc">Чек-листы: «дисбаланс за 15 минут», «калибровка», «Recall@K/Top-K лайфхаки».</li></ul><hr id="2a7568fa-e39f-8014-8f37-c4b7d3548123"/><h2 id="2a7568fa-e39f-8042-93b7-ca294b949764" class="">17) Встроено в 5-часовой формат (ритм)</h2><ul id="2a7568fa-e39f-80ef-8b03-c5fe29130d53" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин</strong>: CV (Group/Time) + бейзлайн с весами → OOF/сабмит_1.</li></ul><ul id="2a7568fa-e39f-8064-88aa-cf295ed74a44" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин</strong>: безопасные фичи (агрегаты/rolling/rare pooling) → ΔOOF/сабмит_2.</li></ul><ul id="2a7568fa-e39f-805e-bb42-e1f79a03f24c" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин</strong>: обработка дисбаланса (focal/досэмплинг), стабилизация.</li></ul><ul id="2a7568fa-e39f-807e-9a33-fdb754028a34" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин</strong>: калибровка и/или threshold moving под бизнес-метрику.</li></ul><ul id="2a7568fa-e39f-802b-a267-ec3090267159" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин</strong>: лёгкий ансамбль, финальный сабмит + паспорт решения.</li></ul><p id="2a7568fa-e39f-8007-9bf0-ec4e59f511e5" class="">Готов продолжить и детализировать кодовые скелеты (<code>imbalance.py</code>, <code>calibration.py</code>, фабрики фич) ровно под твой репозиторий и стиль запуска.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

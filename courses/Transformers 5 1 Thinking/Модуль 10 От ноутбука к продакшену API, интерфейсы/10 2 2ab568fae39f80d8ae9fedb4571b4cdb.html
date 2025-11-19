@@ -1,0 +1,870 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>10.2</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80d8-ae9f-edb4571b4cdb" class="page sans"><header><h1 class="page-title">10.2</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80b4-8e1d-f1a32e0b8741" class="">Поехали рисовать мордочку нашему ассистенту 😎</p><p id="2ab568fa-e39f-808b-8de3-dbf6b2b78d39" class="">Это будет полный <strong>урок 10.2</strong>: теория + полный код Gradio + объяснение всего, что там происходит.</p><hr id="2ab568fa-e39f-8089-8213-ff9d716c78cb"/><h2 id="2ab568fa-e39f-8091-be36-d04563d6fd88" class="">1. Задача урока 10.2</h2><p id="2ab568fa-e39f-80bd-ac32-ebc6f20c056f" class="">В 10.1 мы:</p><ul id="2ab568fa-e39f-8053-bbb7-fe7220117e93" class="bulleted-list"><li style="list-style-type:disc">подняли <strong>FastAPI</strong>сервис,</li></ul><ul id="2ab568fa-e39f-800a-a528-f8a4d572e114" class="bulleted-list"><li style="list-style-type:disc">сделали эндпоинты:<ul id="2ab568fa-e39f-8024-b954-f47d46615995" class="bulleted-list"><li style="list-style-type:circle"><code>/classify_ticket</code>,</li></ul><ul id="2ab568fa-e39f-80b4-a22d-d26f920fe804" class="bulleted-list"><li style="list-style-type:circle"><code>/summarize_dialog</code>,</li></ul><ul id="2ab568fa-e39f-8001-9970-ebbf8ebfdee0" class="bulleted-list"><li style="list-style-type:circle"><code>/support_reply</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8050-92f0-f748b4cb934a" class="">Но работать через <code>curl</code> и Postman — как-то грустно. Хочется интерфейс, где:</p><ul id="2ab568fa-e39f-80f3-91ec-ff2115400c47" class="bulleted-list"><li style="list-style-type:disc">слева вводишь диалог,</li></ul><ul id="2ab568fa-e39f-802f-8687-f983da2877f5" class="bulleted-list"><li style="list-style-type:disc">жмёшь кнопку,</li></ul><ul id="2ab568fa-e39f-80bd-9211-f07e3dc1a54c" class="bulleted-list"><li style="list-style-type:disc">справа красиво появляются:<ul id="2ab568fa-e39f-803b-8fc5-c22375ce00c4" class="bulleted-list"><li style="list-style-type:circle">класс тикета,</li></ul><ul id="2ab568fa-e39f-8080-ac00-d506c38da493" class="bulleted-list"><li style="list-style-type:circle">уверенность,</li></ul><ul id="2ab568fa-e39f-805c-a6ea-f5e47e989b02" class="bulleted-list"><li style="list-style-type:circle">summary,</li></ul><ul id="2ab568fa-e39f-80b6-934e-f070ced2cb2c" class="bulleted-list"><li style="list-style-type:circle">контекст из базы знаний (если RAG включён),</li></ul><ul id="2ab568fa-e39f-80fe-a09c-c466c48a3481" class="bulleted-list"><li style="list-style-type:circle">и ответ ассистента.</li></ul></li></ul><p id="2ab568fa-e39f-809b-8c49-c4bfb97134fa" class="">Для этого мы будем использовать <strong>Gradio</strong>.</p><p id="2ab568fa-e39f-809a-a31f-d0860830d3c0" class="">В этом уроке:</p><ol type="1" id="2ab568fa-e39f-8061-8151-dcefeaec03b7" class="numbered-list" start="1"><li>Разберём, что такое Gradio и чем он отличается от FastAPI.</li></ol><ol type="1" id="2ab568fa-e39f-801d-850f-f1b48708743a" class="numbered-list" start="2"><li>Соберём простой Gradio-интерфейс поверх тех функций, которые у нас уже есть (из 10.1).</li></ol><ol type="1" id="2ab568fa-e39f-80f1-b780-f71fdd5bdae5" class="numbered-list" start="3"><li>По шагам напишем <code>ui.py</code>:<ul id="2ab568fa-e39f-80c9-875e-f155b04e1dcb" class="bulleted-list"><li style="list-style-type:disc">layout (Blocks, Row, Column),</li></ul><ul id="2ab568fa-e39f-8017-8256-c0e08893fbdf" class="bulleted-list"><li style="list-style-type:disc">inputs и outputs,</li></ul><ul id="2ab568fa-e39f-8042-b5d0-f661705a17fe" class="bulleted-list"><li style="list-style-type:disc">привязка кнопки к функции.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80ab-abf9-ed620af173c4" class="numbered-list" start="4"><li>Покажем, как всё это запустить и пощупать.</li></ol><hr id="2ab568fa-e39f-80b5-ad26-e6851502085d"/><h2 id="2ab568fa-e39f-804f-a878-d1885c8deb07" class="">2. Теория: FastAPI vs Gradio — кто за что отвечает</h2><h3 id="2ab568fa-e39f-80aa-8229-dfffe115a0cd" class="">2.1. FastAPI — “backend API”, Gradio — “интерактивная витрина”</h3><p id="2ab568fa-e39f-8036-832c-f34732dae517" class="">Можно думать так:</p><ul id="2ab568fa-e39f-8020-82ea-d4bd95d7eb18" class="bulleted-list"><li style="list-style-type:disc"><strong>FastAPI</strong> — это “мозг сервиса”, который:<ul id="2ab568fa-e39f-8010-b7d8-e9a2e868e14a" class="bulleted-list"><li style="list-style-type:circle">принимает JSON,</li></ul><ul id="2ab568fa-e39f-8047-b718-f55b7169563e" class="bulleted-list"><li style="list-style-type:circle">вызывает модели,</li></ul><ul id="2ab568fa-e39f-80bb-9f99-fea9b4216bdb" class="bulleted-list"><li style="list-style-type:circle">отдаёт JSON.</li></ul><ul id="2ab568fa-e39f-800f-98f2-d9fb427d12f3" class="bulleted-list"><li style="list-style-type:circle">Это удобно для интеграции с фронтом, ботами, другими бекендами.</li></ul></li></ul><ul id="2ab568fa-e39f-80d8-bb48-d521de5601ef" class="bulleted-list"><li style="list-style-type:disc"><strong>Gradio</strong> — это “библиотека для прототипа UI”:<ul id="2ab568fa-e39f-80d2-9e6a-e26f2146df95" class="bulleted-list"><li style="list-style-type:circle">создаёт веб-страницу с формами, кнопками, чатами,</li></ul><ul id="2ab568fa-e39f-80da-8dc0-fdde45212a2c" class="bulleted-list"><li style="list-style-type:circle">связывает видимые компоненты с Python-функциями.</li></ul><ul id="2ab568fa-e39f-8001-9afa-df2949742226" class="bulleted-list"><li style="list-style-type:circle">Отлично подходит для демо, internal-тулинга, учебных проектов.</li></ul></li></ul><p id="2ab568fa-e39f-805a-93b3-ec18a52ff9e9" class="">Gradio может работать <strong>двумя способами</strong>:</p><ol type="1" id="2ab568fa-e39f-8080-991e-e5137663dbd4" class="numbered-list" start="1"><li><strong>Напрямую поверх Python-функций</strong>.<p id="2ab568fa-e39f-80a1-aead-c7638220b1b5" class="">Ты просто пишешь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8054-81c6-ca2d318dfd6e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def fn(x): ...
+gr.Interface(fn, inputs=..., outputs=...)
+</code></pre><p id="2ab568fa-e39f-8080-a0bb-dc0d7890ebb6" class="">Gradio вызывает <code>fn</code> напрямую внутри того же процесса.</p></li></ol><ol type="1" id="2ab568fa-e39f-804c-9bfe-ce1b4ad6cf92" class="numbered-list" start="2"><li><strong>Поверх API-сервиса</strong>.<p id="2ab568fa-e39f-8085-99f7-f75da5642bd2" class="">Тогда Gradio-UI — это фронт, который сам ходит к FastAPI через HTTP (<code>requests</code>).</p></li></ol><p id="2ab568fa-e39f-80a1-b769-f5230d4e5287" class="">В этом уроке мы возьмём <strong>первый вариант</strong> (проще):</p><ul id="2ab568fa-e39f-8078-8e27-c122b6931e34" class="bulleted-list"><li style="list-style-type:disc">переиспользуем питоновские функции из 10.1 (<code>classify_ticket</code>, <code>summarize_dialog</code>, <code>build_context</code>, <code>build_rag_prompt</code>, <code>generate_reply</code>),</li></ul><ul id="2ab568fa-e39f-80ab-b8d5-ee59cca57023" class="bulleted-list"><li style="list-style-type:disc">сделаем Gradio-приложение <code>ui.py</code>, которое импортирует эти функции.</li></ul><hr id="2ab568fa-e39f-8029-b6d6-d8ffbb84a157"/><h2 id="2ab568fa-e39f-80b3-9af2-f4ecd181c804" class="">3. Быстрая интуиция по Gradio (на игрушечном примере)</h2><p id="2ab568fa-e39f-8040-ba10-c5ce4b20788d" class="">Чтобы понять механику, минимальный пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8094-bbef-d97ea4244e9f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import gradio as gr
+
+def greet(name):
+    return f&quot;Привет, {name}!&quot;
+
+demo = gr.Interface(
+    fn=greet,
+    inputs=gr.Textbox(label=&quot;Твоё имя&quot;),
+    outputs=gr.Textbox(label=&quot;Ответ&quot;),
+)
+
+demo.launch()
+</code></pre><p id="2ab568fa-e39f-8006-b558-e19d5e6d7cc1" class="">Что происходит:</p><ul id="2ab568fa-e39f-8050-8086-cfad79f8978d" class="bulleted-list"><li style="list-style-type:disc"><code>greet</code> — обычная Python-функция.</li></ul><ul id="2ab568fa-e39f-8077-b573-c52a278eff4b" class="bulleted-list"><li style="list-style-type:disc"><code>Interface</code> связывает:<ul id="2ab568fa-e39f-80c7-a850-f07d45d88d9f" class="bulleted-list"><li style="list-style-type:circle"><code>inputs</code> → поля ввода,</li></ul><ul id="2ab568fa-e39f-806f-a250-cb90cbd31870" class="bulleted-list"><li style="list-style-type:circle"><code>outputs</code> → виджеты для результатов.</li></ul></li></ul><ul id="2ab568fa-e39f-80e5-9782-c10bad0e49cd" class="bulleted-list"><li style="list-style-type:disc">Когда пользователь вводит имя и жмёт кнопку:<ul id="2ab568fa-e39f-80b6-8ed0-d60506d79e28" class="bulleted-list"><li style="list-style-type:circle">Gradio вызывает <code>greet(name)</code>,</li></ul><ul id="2ab568fa-e39f-8071-bfd7-cf0aa93e6233" class="bulleted-list"><li style="list-style-type:circle">подставляет результат в output-текстбокс.</li></ul></li></ul><p id="2ab568fa-e39f-8069-abe6-d8ee7d0a6677" class="">Для более сложных интерфейсов есть <code>gr.Blocks</code> — конструктор из блоков (Row/Column и т.д.). Мы будем использовать <strong>Blocks</strong>, потому что:</p><ul id="2ab568fa-e39f-80e0-9b21-fa0292371c5a" class="bulleted-list"><li style="list-style-type:disc">нам нужно несколько outputs,</li></ul><ul id="2ab568fa-e39f-801b-a244-c46d98f06431" class="bulleted-list"><li style="list-style-type:disc">удобно организовать layout: слева инпуты, справа результаты.</li></ul><hr id="2ab568fa-e39f-80f0-b715-e09d07c4f9ac"/><h2 id="2ab568fa-e39f-807b-9013-e7e054f4a6d5" class="">4. Дизайн интерфейса нашего Support Assistant</h2><p id="2ab568fa-e39f-80d2-8438-d4ecdc65a790" class="">Что мы хотим видеть на странице:</p><p id="2ab568fa-e39f-801e-adf7-cb1040f39d3a" class=""><strong>Inputs:</strong></p><ul id="2ab568fa-e39f-8058-9be8-d375a7664827" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code> — большой <code>Textbox</code> (много строк) для диалога/тикета.</li></ul><ul id="2ab568fa-e39f-80d5-b51d-d1e1d0e8c92d" class="bulleted-list"><li style="list-style-type:disc"><code>use_rag</code> — <code>Checkbox</code>: использовать базу знаний (RAG) или нет.</li></ul><p id="2ab568fa-e39f-80fe-ac14-e2b7d657c09e" class=""><strong>Outputs:</strong></p><ul id="2ab568fa-e39f-8041-9ead-d29215426c45" class="bulleted-list"><li style="list-style-type:disc"><code>label</code> — лейбл тикета (bug/feature/billing/…).</li></ul><ul id="2ab568fa-e39f-8003-8d6f-feb90a98d102" class="bulleted-list"><li style="list-style-type:disc"><code>confidence</code> — уверенность классификатора.</li></ul><ul id="2ab568fa-e39f-8082-9216-c2e3ebe31a0e" class="bulleted-list"><li style="list-style-type:disc"><code>summary</code> — результат суммаризации диалога.</li></ul><ul id="2ab568fa-e39f-80a8-b38b-e346694a25ae" class="bulleted-list"><li style="list-style-type:disc"><code>context</code> — какие куски базы знаний мы использовали.</li></ul><ul id="2ab568fa-e39f-80a6-8429-d31cc65bdf71" class="bulleted-list"><li style="list-style-type:disc"><code>answer</code> — ответ ассистента.</li></ul><p id="2ab568fa-e39f-805f-8e27-c176e073cdd6" class=""><strong>Flow:</strong></p><ol type="1" id="2ab568fa-e39f-80f7-bf96-ffdfd0745916" class="numbered-list" start="1"><li>Пользователь вводит диалог.</li></ol><ol type="1" id="2ab568fa-e39f-800b-ac44-dbc2dd35a617" class="numbered-list" start="2"><li>Нажимает кнопку “Получить ответ”.</li></ol><ol type="1" id="2ab568fa-e39f-80f6-af0e-ff203d95ad52" class="numbered-list" start="3"><li>Мы:<ul id="2ab568fa-e39f-80da-a653-dd43838b7efd" class="bulleted-list"><li style="list-style-type:disc">классифицируем тикет,</li></ul><ul id="2ab568fa-e39f-8085-967d-d71d972a8928" class="bulleted-list"><li style="list-style-type:disc">суммируем диалог,</li></ul><ul id="2ab568fa-e39f-803f-82bd-f4543f5e38a6" class="bulleted-list"><li style="list-style-type:disc">(если <code>use_rag</code>) достаём контекст,</li></ul><ul id="2ab568fa-e39f-80f6-a42b-dc5d213c43cb" class="bulleted-list"><li style="list-style-type:disc">собираем промпт,</li></ul><ul id="2ab568fa-e39f-8065-b51e-c6c5ebf41405" class="bulleted-list"><li style="list-style-type:disc">генерируем ответ.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-802e-a191-c19819080a83" class="numbered-list" start="4"><li>Возвращаем все пять значений в UI.</li></ol><hr id="2ab568fa-e39f-80b8-bb7e-c8fdec9ff814"/><h2 id="2ab568fa-e39f-803f-bc7b-d75ecbd65e0c" class="">5. Подготовка: переиспользуем функции из <code>app.py</code></h2><p id="2ab568fa-e39f-8082-ab61-fca11ff42913" class="">Из урока 10.1 у нас есть файл <code>app.py</code> с функциями:</p><ul id="2ab568fa-e39f-8000-a5ad-d441e214e71c" class="bulleted-list"><li style="list-style-type:disc"><code>classify_ticket(text: str) -&gt; (label, confidence)</code></li></ul><ul id="2ab568fa-e39f-8036-acb7-fcc34d02b9ec" class="bulleted-list"><li style="list-style-type:disc"><code>summarize_dialog(dialog: str, max_new_tokens: int = 64) -&gt; str</code></li></ul><ul id="2ab568fa-e39f-80c3-8447-efd297f89af1" class="bulleted-list"><li style="list-style-type:disc"><code>build_context(question: str, summary: str, top_k: int = 3)</code></li></ul><ul id="2ab568fa-e39f-80cb-8e0c-c6d9a8b75a2e" class="bulleted-list"><li style="list-style-type:disc"><code>build_rag_prompt(question: str, summary: str, context: str)</code></li></ul><ul id="2ab568fa-e39f-8034-95e8-df0ba487d1f8" class="bulleted-list"><li style="list-style-type:disc"><code>generate_reply(prompt: str, max_new_tokens: int = 128) -&gt; str</code></li></ul><p id="2ab568fa-e39f-8060-892d-c83c318a09ba" class="">Мы можем:</p><ul id="2ab568fa-e39f-8045-8eed-ed9da0444145" class="bulleted-list"><li style="list-style-type:disc">Либо продублировать код моделей в <code>ui.py</code> (не очень красиво),</li></ul><ul id="2ab568fa-e39f-8091-8a5d-e6e2bec1262d" class="bulleted-list"><li style="list-style-type:disc">Либо <strong>импортировать</strong> их из <code>app.py</code>.</li></ul><p id="2ab568fa-e39f-80dd-8a07-d11070200911" class="">Мы выберем второй вариант, но важно:</p><ul id="2ab568fa-e39f-80f7-ac18-de9102fe892c" class="bulleted-list"><li style="list-style-type:disc"><code>app.py</code> не должен запускать uvicorn автоматически при импорте.<p id="2ab568fa-e39f-80a6-a441-f3bcccfff553" class="">То есть запуск сервера должен быть только под <code>if __name__ == &quot;__main__&quot;:</code> либо через команду в терминале (как мы делали в 10.1).</p></li></ul><p id="2ab568fa-e39f-8048-8d27-f20a5f599a57" class="">Если ты просто запускал:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801e-b19a-d68713b2b1d4" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">uvicorn app:app --reload --port 8000
+</code></pre><p id="2ab568fa-e39f-8057-b42c-d33189f66268" class="">— то в <code>app.py</code> ничего дополнительно писать не нужно, импорт работает нормально.</p><hr id="2ab568fa-e39f-804c-a041-d4847eb4fe05"/><h2 id="2ab568fa-e39f-8093-83bc-e729bbd75afa" class="">6. Пишем функцию-обёртку для Gradio</h2><p id="2ab568fa-e39f-8000-9e04-ef691177f853" class="">Создадим новый файл <code>ui.py</code>.</p><h3 id="2ab568fa-e39f-80da-93a0-fd3140f7a0a2" class="">6.1. Импортируем нужные штуки</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8016-9a26-c9b98eb05536" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># ui.py
+import gradio as gr
+
+from app import (
+    classify_ticket,
+    summarize_dialog,
+    build_context,
+    build_rag_prompt,
+    generate_reply,
+)
+</code></pre><p id="2ab568fa-e39f-80a0-bc36-e611e529b646" class="">Объяснение:</p><ul id="2ab568fa-e39f-8051-b294-c3c0cc26a4f8" class="bulleted-list"><li style="list-style-type:disc"><code>gradio as gr</code> — основной модуль Gradio.</li></ul><ul id="2ab568fa-e39f-80bc-9404-e4894724d852" class="bulleted-list"><li style="list-style-type:disc"><code>from app import ...</code> — импортируем наши функции. При этом:<ul id="2ab568fa-e39f-8072-a1de-daced5ef8eb3" class="bulleted-list"><li style="list-style-type:circle">модели загрузятся один раз при импорте <code>app</code>,</li></ul><ul id="2ab568fa-e39f-8012-8ec0-c932519d9a50" class="bulleted-list"><li style="list-style-type:circle">мы их повторно используем в Gradio.</li></ul></li></ul><h3 id="2ab568fa-e39f-80c3-9daf-e980e7c81f79" class="">6.2. Функция, которая связывает всё вместе</h3><p id="2ab568fa-e39f-8010-aeeb-fad032620f10" class="">Нам нужна функция, которую Gradio будет вызывать при нажатии кнопки. Пусть она называется <code>support_assistant_interface</code> и возвращает <strong>пять значений</strong> (ровно под пять outputs).</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-934a-cdfa4165282a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def support_assistant_interface(dialog: str, use_rag: bool = True):
+    &quot;&quot;&quot;
+    Главная функция для Gradio:
+    - принимает текст диалога/тикета
+    - флаг: использовать ли RAG
+    - возвращает:
+        label, confidence, summary, context, answer
+    &quot;&quot;&quot;
+    # 1. Класс тикета
+    label, conf = classify_ticket(dialog)
+
+    # 2. Суммаризация диалога
+    summary = summarize_dialog(dialog)
+
+    # 3. Контекст из базы знаний (если RAG включён)
+    context = &quot;&quot;
+    if use_rag:
+        context, _ = build_context(dialog, summary, top_k=3)
+        prompt = build_rag_prompt(dialog, summary, context)
+    else:
+        # Без RAG – классический промпт &quot;User/Support&quot;
+        prompt = f&quot;User: {dialog}\nSupport:&quot;
+
+    # 4. Ответ ассистента
+    answer = generate_reply(prompt)
+
+    return label, conf, summary, context, answer
+</code></pre><p id="2ab568fa-e39f-8084-a093-d9af231f8160" class="">Разбор по шагам:</p><ol type="1" id="2ab568fa-e39f-80a4-a6e6-f4301a5b7b51" class="numbered-list" start="1"><li><code>classify_ticket(dialog)</code> — мы не выделяем отдельный “title”, просто классифицируем весь текст.</li></ol><ol type="1" id="2ab568fa-e39f-80df-942a-e49c635a9a33" class="numbered-list" start="2"><li><code>summarize_dialog(dialog)</code> — коротко сжимаем.</li></ol><ol type="1" id="2ab568fa-e39f-8045-b78f-c48d027ee548" class="numbered-list" start="3"><li>Если <code>use_rag</code>:<ul id="2ab568fa-e39f-8019-88a7-d20ca1b6e68c" class="bulleted-list"><li style="list-style-type:disc"><code>build_context(dialog, summary, top_k=3)</code> — достаем 3 лучших чанка,</li></ul><ul id="2ab568fa-e39f-8043-9d3b-e638aeb0254c" class="bulleted-list"><li style="list-style-type:disc">строим RAG-промпт.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8043-a9bb-fefbe536c3c7" class="numbered-list" start="4"><li>Если не <code>use_rag</code>:<ul id="2ab568fa-e39f-803d-ac99-f41400672661" class="bulleted-list"><li style="list-style-type:disc">просто <code>User: ...\nSupport:</code> — модель отвечает без базы знаний.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-806b-af7c-f85aba899f7f" class="numbered-list" start="5"><li><code>generate_reply(prompt)</code> — Causal LM генерирует ответ.</li></ol><ol type="1" id="2ab568fa-e39f-802d-8266-c64f04c7e517" class="numbered-list" start="6"><li>Возвращаем 5-ку значений в том порядке, в котором потом подключим к outputs.</li></ol><hr id="2ab568fa-e39f-8002-b326-e08a31a9db21"/><h2 id="2ab568fa-e39f-80b0-8eef-cd1743cd3ad8" class="">7. Собираем Gradio Blocks-интерфейс</h2><p id="2ab568fa-e39f-80ee-9225-d6190b81fc29" class="">Теперь опишем сам UI. Используем <code>gr.Blocks()</code> — это декларативный конструктор интерфейсов.</p><h3 id="2ab568fa-e39f-807f-8031-cce46bad74f6" class="">7.1. Каркас Blocks</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8024-b1d3-f76e3b79100b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">with gr.Blocks() as demo:
+    gr.Markdown(&quot;# Support Assistant (Transformers + RAG)&quot;)
+
+    with gr.Row():
+        with gr.Column():
+            ...
+        with gr.Column():
+            ...
+</code></pre><p id="2ab568fa-e39f-80f2-9090-ca5d50890253" class="">Объяснение:</p><ul id="2ab568fa-e39f-8097-b21a-e90637109b55" class="bulleted-list"><li style="list-style-type:disc"><code>with gr.Blocks() as demo:</code> — создаём приложение и называем его <code>demo</code>.</li></ul><ul id="2ab568fa-e39f-8018-8fdf-c8e654a9b64a" class="bulleted-list"><li style="list-style-type:disc"><code>gr.Markdown(...)</code> — заголовок страницы.</li></ul><ul id="2ab568fa-e39f-8066-beb1-c2748db1736d" class="bulleted-list"><li style="list-style-type:disc"><code>gr.Row()</code> — горизонтальный контейнер:<ul id="2ab568fa-e39f-80ff-88e1-c6e792867bcf" class="bulleted-list"><li style="list-style-type:circle">внутри него две колонки:<ul id="2ab568fa-e39f-8007-9da4-e6c0efd600d0" class="bulleted-list"><li style="list-style-type:square">левая — inputs,</li></ul><ul id="2ab568fa-e39f-80db-947e-c64d8673ee8e" class="bulleted-list"><li style="list-style-type:square">правая — outputs.</li></ul></li></ul></li></ul><h3 id="2ab568fa-e39f-8063-b404-d444d0576bf3" class="">7.2. Inputs (левая колонка)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8016-b210-f76b3790e65a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">with gr.Column():
+    dialog_input = gr.Textbox(
+        label=&quot;Диалог / описание тикета&quot;,
+        lines=10,
+        placeholder=&quot;User: Приложение вылетает, когда я открываю галерею...\nSupport: ...&quot;,
+    )
+    use_rag_input = gr.Checkbox(
+        label=&quot;Использовать базу знаний (RAG)&quot;,
+        value=True,
+    )
+    run_btn = gr.Button(&quot;Получить ответ&quot;)
+</code></pre><p id="2ab568fa-e39f-80e8-a5fd-fc4de7edf18a" class="">Компоненты:</p><ul id="2ab568fa-e39f-80ae-b34e-d0b4abe23900" class="bulleted-list"><li style="list-style-type:disc"><code>dialog_input</code>:<ul id="2ab568fa-e39f-805e-a920-ea15cc4ec7c6" class="bulleted-list"><li style="list-style-type:circle"><code>Textbox</code> с <code>lines=10</code> → многострочный ввод.</li></ul><ul id="2ab568fa-e39f-8046-944a-e7ba87190b53" class="bulleted-list"><li style="list-style-type:circle"><code>placeholder</code> — пример, чтобы студентам было понятно, что туда писать.</li></ul></li></ul><ul id="2ab568fa-e39f-805c-951d-fdb23002cb46" class="bulleted-list"><li style="list-style-type:disc"><code>use_rag_input</code>:<ul id="2ab568fa-e39f-8061-9c19-ef38ba7d3930" class="bulleted-list"><li style="list-style-type:circle"><code>Checkbox</code>, по умолчанию <code>True</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-80a7-bc77-f9ae3fb0fc8a" class="bulleted-list"><li style="list-style-type:disc"><code>run_btn</code>:<ul id="2ab568fa-e39f-80a9-bdce-e40a40c16b66" class="bulleted-list"><li style="list-style-type:circle">обычная кнопка, по нажатию запускаем пайплайн.</li></ul></li></ul><h3 id="2ab568fa-e39f-8083-bb4d-e4c130adb100" class="">7.3. Outputs (правая колонка)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804b-a86b-e28800be5f7d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">with gr.Column():
+    label_out = gr.Textbox(label=&quot;Класс тикета&quot;)
+    conf_out = gr.Number(label=&quot;Уверенность классификатора&quot;)
+    summary_out = gr.Textbox(label=&quot;Суммаризация диалога&quot;, lines=5)
+    context_out = gr.Textbox(label=&quot;Использованный контекст из KB&quot;, lines=10)
+    answer_out = gr.Textbox(label=&quot;Ответ ассистента&quot;, lines=5)
+</code></pre><p id="2ab568fa-e39f-8060-8a8a-f77d073fd40f" class="">Замечания:</p><ul id="2ab568fa-e39f-80da-af81-d9839d1a8f41" class="bulleted-list"><li style="list-style-type:disc"><code>label_out</code> — текстбокс (bug/feature/...).</li></ul><ul id="2ab568fa-e39f-8099-9a94-d90420594c99" class="bulleted-list"><li style="list-style-type:disc"><code>conf_out</code> — <code>Number</code>: можем красиво показать уверенность (0–1).</li></ul><ul id="2ab568fa-e39f-8058-a67c-ece379e01564" class="bulleted-list"><li style="list-style-type:disc"><code>summary_out</code> — многострочный текст.</li></ul><ul id="2ab568fa-e39f-800b-a663-c2489f2c7a05" class="bulleted-list"><li style="list-style-type:disc"><code>context_out</code> — довольно длинный текст (чанки KB).</li></ul><ul id="2ab568fa-e39f-80aa-97a3-fb715d7940bb" class="bulleted-list"><li style="list-style-type:disc"><code>answer_out</code> — финальный ответ ассистента.</li></ul><h3 id="2ab568fa-e39f-807d-a798-fd3f102feefd" class="">7.4. Связываем кнопку и функцию</h3><p id="2ab568fa-e39f-80e2-a098-d94fd3c34acf" class="">Теперь нужно сказать Gradio:</p><blockquote id="2ab568fa-e39f-8056-b1a5-e91a44b287f1" class="">когда нажимают run_btn, возьми значения из [dialog_input, use_rag_input],<p id="2ab568fa-e39f-80a3-9540-ce44b7b717e3" class="">вызови <code>support_assistant_interface</code>,</p><p id="2ab568fa-e39f-80a9-83a9-e4462948344d" class="">и результаты запиши в <code>[label_out, conf_out, summary_out, context_out, answer_out]</code>.</p></blockquote><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c2-8e30-fdd2367000b3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">run_btn.click(
+    fn=support_assistant_interface,
+    inputs=[dialog_input, use_rag_input],
+    outputs=[label_out, conf_out, summary_out, context_out, answer_out],
+)
+</code></pre><p id="2ab568fa-e39f-80b6-b5f9-e2a803d7a827" class="">Важно:</p><ul id="2ab568fa-e39f-8093-b245-e2d6cf8e523a" class="bulleted-list"><li style="list-style-type:disc">порядок <code>inputs</code> должен соответствовать аргументам функции:<ul id="2ab568fa-e39f-805d-a34c-c8a2e8f16280" class="bulleted-list"><li style="list-style-type:circle"><code>dialog</code>, <code>use_rag</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-8006-9532-c5f40b7f4e8f" class="bulleted-list"><li style="list-style-type:disc">порядок <code>outputs</code> — порядку return&#x27;а функции:<ul id="2ab568fa-e39f-80dd-9ba7-cacf9019dbae" class="bulleted-list"><li style="list-style-type:circle"><code>label, conf, summary, context, answer</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-80c0-b412-d65ed1484db5" class="">7.5. Запуск приложения</h3><p id="2ab568fa-e39f-80cc-9997-d96d27198ece" class="">В конце файла:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8000-9c4a-db1d3262f5b9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">if __name__ == &quot;__main__&quot;:
+    demo.launch(server_port=7860)
+</code></pre><ul id="2ab568fa-e39f-801b-9479-de3cda4b3706" class="bulleted-list"><li style="list-style-type:disc"><code>demo.launch()</code> — запуск Gradio-сервера.</li></ul><ul id="2ab568fa-e39f-8048-a8fe-d5c92fb7f94b" class="bulleted-list"><li style="list-style-type:disc"><code>server_port=7860</code> — порт (можно не указывать, тогда возьмёт дефолтный 7860).</li></ul><hr id="2ab568fa-e39f-80d2-bed7-c6659c3a1997"/><h2 id="2ab568fa-e39f-80b7-bf18-c31ded1ed912" class="">8. Полный файл <code>ui.py</code> целиком</h2><p id="2ab568fa-e39f-8093-9ad9-c82363aa20c4" class="">Вот всё, собранное в один файл:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8087-82d3-e098a68c0750" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># ui.py
+import gradio as gr
+
+from app import (
+    classify_ticket,
+    summarize_dialog,
+    build_context,
+    build_rag_prompt,
+    generate_reply,
+)
+
+
+def support_assistant_interface(dialog: str, use_rag: bool = True):
+    &quot;&quot;&quot;
+    Главная функция для Gradio:
+    - принимает текст диалога/тикета
+    - флаг: использовать ли RAG
+    - возвращает:
+        label, confidence, summary, context, answer
+    &quot;&quot;&quot;
+    # 1. Классификация тикета
+    label, conf = classify_ticket(dialog)
+
+    # 2. Суммаризация диалога
+    summary = summarize_dialog(dialog)
+
+    # 3. Контекст из базы знаний
+    context = &quot;&quot;
+    if use_rag:
+        context, _ = build_context(dialog, summary, top_k=3)
+        prompt = build_rag_prompt(dialog, summary, context)
+    else:
+        prompt = f&quot;User: {dialog}\nSupport:&quot;
+
+    # 4. Ответ ассистента
+    answer = generate_reply(prompt)
+
+    return label, conf, summary, context, answer
+
+
+with gr.Blocks() as demo:
+    gr.Markdown(&quot;# Support Assistant (Transformers + RAG)&quot;)
+
+    with gr.Row():
+        with gr.Column():
+            dialog_input = gr.Textbox(
+                label=&quot;Диалог / описание тикета&quot;,
+                lines=10,
+                placeholder=(
+                    &quot;User: После обновления приложение вылетает, когда я открываю галерею.\n&quot;
+                    &quot;Support: ...&quot;
+                ),
+            )
+            use_rag_input = gr.Checkbox(
+                label=&quot;Использовать базу знаний (RAG)&quot;,
+                value=True,
+            )
+            run_btn = gr.Button(&quot;Получить ответ&quot;)
+
+        with gr.Column():
+            label_out = gr.Textbox(label=&quot;Класс тикета&quot;)
+            conf_out = gr.Number(label=&quot;Уверенность классификатора&quot;)
+            summary_out = gr.Textbox(label=&quot;Суммаризация диалога&quot;, lines=5)
+            context_out = gr.Textbox(label=&quot;Использованный контекст из KB&quot;, lines=10)
+            answer_out = gr.Textbox(label=&quot;Ответ ассистента&quot;, lines=5)
+
+    # Привязка кнопки к функции
+    run_btn.click(
+        fn=support_assistant_interface,
+        inputs=[dialog_input, use_rag_input],
+        outputs=[label_out, conf_out, summary_out, context_out, answer_out],
+    )
+
+
+if __name__ == &quot;__main__&quot;:
+    demo.launch(server_port=7860)
+</code></pre><hr id="2ab568fa-e39f-8056-9cde-da2f399f0736"/><h2 id="2ab568fa-e39f-800b-83e9-c8944bd56e1a" class="">9. Как запустить и проверить</h2><ol type="1" id="2ab568fa-e39f-80f1-9022-c857d907586e" class="numbered-list" start="1"><li>Убедись, что в проекте есть:<ul id="2ab568fa-e39f-8078-b3bd-f16c5b15d8d0" class="bulleted-list"><li style="list-style-type:disc"><code>app.py</code> с функциями и загруженными моделями (из урока 10.1),</li></ul><ul id="2ab568fa-e39f-8057-9093-cb8623088ebe" class="bulleted-list"><li style="list-style-type:disc"><code>ui.py</code> как выше,</li></ul><ul id="2ab568fa-e39f-80e8-b872-d33d5d69a0c9" class="bulleted-list"><li style="list-style-type:disc">директории с моделями (<code>models/...</code>), которые используются в <code>app.py</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-801f-96b0-c82c47b7e832" class="numbered-list" start="2"><li>Запускаешь Gradio:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c1-b35c-e2275bbb64d1" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">python ui.py
+</code></pre></li></ol><ol type="1" id="2ab568fa-e39f-8081-9f9f-da6f91efcdf6" class="numbered-list" start="3"><li>В консоли увидишь что-то вроде:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8028-9a24-c37f3bc365ec" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Running on local URL:  http://127.0.0.1:7860
+</code></pre></li></ol><ol type="1" id="2ab568fa-e39f-80da-9f4a-d2695e48f9ee" class="numbered-list" start="4"><li>Открываешь браузер → переходишь по этому URL.</li></ol><ol type="1" id="2ab568fa-e39f-80ec-9c00-f71e80640bff" class="numbered-list" start="5"><li>Тест:<ul id="2ab568fa-e39f-808c-93db-fae504aa780c" class="bulleted-list"><li style="list-style-type:disc">В поле “Диалог / описание тикета” вставляешь что-то вроде:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8009-8a67-cc7fc99f22c4" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">User: После последнего обновления приложение вылетает, когда я открываю галерею.
+Я пользуюсь iPhone 13, iOS 17.1, версия приложения 5.2.1.
+</code></pre></li></ul><ul id="2ab568fa-e39f-800b-82ed-f928630a363e" class="bulleted-list"><li style="list-style-type:disc">Галочка “Использовать базу знаний (RAG)” включена.</li></ul><ul id="2ab568fa-e39f-80f3-bfb0-df3fe3d2985b" class="bulleted-list"><li style="list-style-type:disc">Жмёшь “Получить ответ”.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-806a-96b6-f59a0feb67c0" class="numbered-list" start="6"><li>Через несколько секунд:<ul id="2ab568fa-e39f-8086-8906-d4363a7fa595" class="bulleted-list"><li style="list-style-type:disc"><code>Класс тикета</code> — что-то вроде <code>bug</code>,</li></ul><ul id="2ab568fa-e39f-8030-8a8a-dee9073ae909" class="bulleted-list"><li style="list-style-type:disc"><code>Уверенность</code> — число 0.x,</li></ul><ul id="2ab568fa-e39f-8042-9e78-ca5e5b43d88e" class="bulleted-list"><li style="list-style-type:disc"><code>Суммаризация</code> — короткий пересказ,</li></ul><ul id="2ab568fa-e39f-8045-ad23-f41ffcdc217f" class="bulleted-list"><li style="list-style-type:disc"><code>Контекст</code> — если у тебя реально есть kb_index,</li></ul><ul id="2ab568fa-e39f-8064-b94d-c5c619ea3f6b" class="bulleted-list"><li style="list-style-type:disc"><code>Ответ ассистента</code> — предложенный ответ.</li></ul></li></ol><hr id="2ab568fa-e39f-80e3-a43e-d1f63b2d6e34"/><h2 id="2ab568fa-e39f-80e5-a03f-fe64b8b34e70" class="">10. Расширения (если захочешь добить до топ-уровня)</h2><p id="2ab568fa-e39f-801d-9b7c-e26fd506330b" class="">Это уже не обязательная часть урока, но можно рассказать студентам “на будущее”:</p><ol type="1" id="2ab568fa-e39f-800e-ad8f-df0d6efc876e" class="numbered-list" start="1"><li><strong>Chat-режим</strong>:<ul id="2ab568fa-e39f-80ca-a5f3-c978942391e2" class="bulleted-list"><li style="list-style-type:disc">вместо одного большого поля можно использовать <code>gr.Chatbot</code> и писать функцию, которая:<ul id="2ab568fa-e39f-8049-b750-ef5805516481" class="bulleted-list"><li style="list-style-type:circle">принимает историю сообщений,</li></ul><ul id="2ab568fa-e39f-80f6-934a-c794feea71b7" class="bulleted-list"><li style="list-style-type:circle">прокидывает её в твой pipeline (summarize + RAG + генерация),</li></ul><ul id="2ab568fa-e39f-80d8-855e-fe087a9b92e6" class="bulleted-list"><li style="list-style-type:circle">возвращает новое состояние чата.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c6-a2df-e9d2dc90bc6e" class="numbered-list" start="2"><li><strong>Интеграция с FastAPI</strong>:<ul id="2ab568fa-e39f-80d3-9b12-ce5896668749" class="bulleted-list"><li style="list-style-type:disc">сейчас мы дергаем Python-функции напрямую,</li></ul><ul id="2ab568fa-e39f-8063-9d9b-f67b4f19051a" class="bulleted-list"><li style="list-style-type:disc">можно сделать Gradio, который вместо <code>classify_ticket(...)</code> делает HTTP-запросы к FastAPI (через <code>requests</code>),</li></ul><ul id="2ab568fa-e39f-8096-b6ca-e7ecb5109490" class="bulleted-list"><li style="list-style-type:disc">это удобно, если:<ul id="2ab568fa-e39f-80b0-b23b-dacb2c957661" class="bulleted-list"><li style="list-style-type:circle">у тебя много воркеров с моделями,</li></ul><ul id="2ab568fa-e39f-807d-8255-f9dc8c28b6fb" class="bulleted-list"><li style="list-style-type:circle">UI отдельно, модели отдельно.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8058-bee5-c823135c1f85" class="numbered-list" start="3"><li><strong>Опции для продвинутых</strong>:<ul id="2ab568fa-e39f-806d-84bb-e827c3261b3e" class="bulleted-list"><li style="list-style-type:disc">добавить выбор модели из списка,</li></ul><ul id="2ab568fa-e39f-8017-b062-cc7abc1a1f4b" class="bulleted-list"><li style="list-style-type:disc">добавить слайдеры для <code>temperature</code>, <code>top_p</code>, <code>max_new_tokens</code>,</li></ul><ul id="2ab568fa-e39f-8053-a905-deef9eb81fb6" class="bulleted-list"><li style="list-style-type:disc">добавить отображение промпта, который реально отправился в модель.</li></ul></li></ol><hr id="2ab568fa-e39f-80e1-8d6c-d184e734a335"/><h2 id="2ab568fa-e39f-801d-8c99-fd9391460fc2" class="">11. Домашка по уроку 10.2</h2><p id="2ab568fa-e39f-8038-a154-edbad5510242" class="">Чтобы студент реально закрепил материал:</p><ol type="1" id="2ab568fa-e39f-8086-ab50-cccc3c63a760" class="numbered-list" start="1"><li>Реализовать <code>ui.py</code>, как мы написали.</li></ol><ol type="1" id="2ab568fa-e39f-8084-83aa-e331cc7cd5d1" class="numbered-list" start="2"><li>Изменить интерфейс так, чтобы:<ul id="2ab568fa-e39f-8019-8b7f-f280fb2dddc2" class="bulleted-list"><li style="list-style-type:disc">был <code>Checkbox</code> “Показать промпт”,</li></ul><ul id="2ab568fa-e39f-808e-80a9-ee4be4c2b2c1" class="bulleted-list"><li style="list-style-type:disc">если он включён — показывать ещё один <code>Textbox</code>, где выводится <code>prompt</code>, который отправился в модель.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-802e-a222-d52e1fce5056" class="numbered-list" start="3"><li>Добавить ещё один кнопочный сценарий:<ul id="2ab568fa-e39f-8028-87a6-d38f6edad12f" class="bulleted-list"><li style="list-style-type:disc">например, кнопку “Только классификация и summary”, которая:<ul id="2ab568fa-e39f-8059-816a-dc8abbaa055f" class="bulleted-list"><li style="list-style-type:circle">вызывает <code>classify_ticket</code> и <code>summarize_dialog</code>,</li></ul><ul id="2ab568fa-e39f-8076-b2a2-da17aac6a34d" class="bulleted-list"><li style="list-style-type:circle">но <strong>не</strong> генерирует ответ и не трогает RAG.</li></ul></li></ul></li></ol><hr id="2ab568fa-e39f-801e-8c95-faf5d5d1315b"/><p id="2ab568fa-e39f-807f-a302-c79ebfd1fab2" class="">Если хочешь, дальше можно сделать отдельный урок-министраницу прямо по <strong>chat-интерфейсу</strong> (с <code>gr.Chatbot</code>), чтобы у студентов был реальный многоходовый чат с историей поверх того же самого пайплайна.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

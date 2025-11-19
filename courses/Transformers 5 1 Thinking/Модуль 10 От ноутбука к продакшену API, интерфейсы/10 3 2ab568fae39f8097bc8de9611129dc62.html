@@ -1,0 +1,915 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>10.3</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8097-bc8d-e9611129dc62" class="page sans"><header><h1 class="page-title">10.3</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80ac-bce6-f7b52b6891ef" class="">Окей, пришло время научить нашего ассистента работать <strong>как взрослый сервис</strong>, а не как школьник, который делает по одной задаче за раз 😄</p><p id="2ab568fa-e39f-803b-b6b9-d5dd7b0894d4" class="">Это будет <strong>полный урок 10.3</strong>: теория про батчинг, код, плюс объяснение, что там вообще происходит.</p><hr id="2ab568fa-e39f-8047-972d-e6afc455f81f"/><h2 id="2ab568fa-e39f-8053-8250-c54c52c7c724" class="">1. Задача урока 10.3</h2><p id="2ab568fa-e39f-805e-85e1-c6499b290a02" class="">Что мы уже умеем:</p><ul id="2ab568fa-e39f-80c9-ad63-c57358ea9fe5" class="bulleted-list"><li style="list-style-type:disc">В 10.1 — подняли FastAPI над моделями (<code>/classify_ticket</code>, <code>/summarize_dialog</code>, <code>/support_reply</code>).</li></ul><ul id="2ab568fa-e39f-8017-aef2-dfef494828ea" class="bulleted-list"><li style="list-style-type:disc">В 10.2 — сделали Gradio UI поверх этих функций.</li></ul><p id="2ab568fa-e39f-80f9-8df6-cefb440117b4" class="">Но есть проблема:</p><blockquote id="2ab568fa-e39f-806d-afad-f2dc3ddad82b" class="">На каждый запрос — отдельный forward модели.<p id="2ab568fa-e39f-8044-8d19-d97a1b843801" class="">Если запросов много, GPU забивается кучей маленьких запусков → низкий <strong>throughput</strong>.</p></blockquote><p id="2ab568fa-e39f-80b0-8adc-d39895b3d799" class=""><strong>Цель модуля 10.3:</strong></p><ol type="1" id="2ab568fa-e39f-80a5-89ed-c5efe22973df" class="numbered-list" start="1"><li>Понять, что такое батчинг и чем он помогает.</li></ol><ol type="1" id="2ab568fa-e39f-80da-a008-dcc07f71a1b3" class="numbered-list" start="2"><li>Научиться делать <strong>batch-инференс</strong>:<ul id="2ab568fa-e39f-8052-a51f-eb0a123f1bf5" class="bulleted-list"><li style="list-style-type:disc">функция <code>classify_batch(...)</code> вместо 100 раз <code>classify_ticket(...)</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d6-b8fd-f23749e69495" class="numbered-list" start="3"><li>Добавить батч-эндпоинт <code>/classify_batch</code> в FastAPI.</li></ol><ol type="1" id="2ab568fa-e39f-8023-b882-e21df6ec4c16" class="numbered-list" start="4"><li>Показать, как измерить разницу по времени (одиночные vs батч).</li></ol><ol type="1" id="2ab568fa-e39f-80a1-9f23-ef73d663250c" class="numbered-list" start="5"><li>Теоретически разобрать, как выглядит <strong>очередь запросов</strong> в сервисе (high-level схема).</li></ol><hr id="2ab568fa-e39f-80ec-8d7e-c9742cc62c5b"/><h2 id="2ab568fa-e39f-80c8-9ef0-f8a0547c1ec9" class="">2. Теория: почему “по одному запросу” — плохо для нагрузки</h2><h3 id="2ab568fa-e39f-802f-9ff2-d86a6f171832" class="">2.1. Латентность vs пропускная способность</h3><p id="2ab568fa-e39f-8015-a9fd-f6c424814360" class="">Есть две разные метрики:</p><ul id="2ab568fa-e39f-8061-b296-e2c4bb5f8aca" class="bulleted-list"><li style="list-style-type:disc"><strong>Латентность</strong> (latency) — время ответа на <em>один</em> запрос.</li></ul><ul id="2ab568fa-e39f-80f8-81e1-f04536b9790e" class="bulleted-list"><li style="list-style-type:disc"><strong>Пропускная способность</strong> (throughput) — сколько запросов в секунду сервис может обработать в среднем.</li></ul><p id="2ab568fa-e39f-801b-80e4-d685f749f319" class="">Картина:</p><ul id="2ab568fa-e39f-80c0-8c8b-c4bab6d87710" class="bulleted-list"><li style="list-style-type:disc">Если обрабатывать <strong>каждый запрос отдельно</strong>:<ul id="2ab568fa-e39f-80c6-b8b3-ce349eb1cc83" class="bulleted-list"><li style="list-style-type:circle">Латентность может быть норм (100–300 мс),</li></ul><ul id="2ab568fa-e39f-80e1-8092-c206621c7390" class="bulleted-list"><li style="list-style-type:circle">Но GPU будет запускаться 1000 раз по чуть-чуть → много накладных расходов.</li></ul></li></ul><ul id="2ab568fa-e39f-8054-a8e4-f88f93aaed11" class="bulleted-list"><li style="list-style-type:disc">Если <strong>собрать запросы в батч</strong>:<ul id="2ab568fa-e39f-8088-9c1b-e5fd3a89f8cc" class="bulleted-list"><li style="list-style-type:circle">Латентность конкретного запроса <strong>может чуть вырасти</strong> (нужно подождать, пока набьётся батч),</li></ul><ul id="2ab568fa-e39f-8078-b22d-ce03520f8b28" class="bulleted-list"><li style="list-style-type:circle">Зато <strong>throughput</strong> сильно растёт:<ul id="2ab568fa-e39f-80fb-b3c9-c9265828a16d" class="bulleted-list"><li style="list-style-type:square">один большой <code>forward</code> обычно эффективнее, чем 32 маленьких.</li></ul></li></ul></li></ul><h3 id="2ab568fa-e39f-8018-b164-efb770ac1731" class="">2.2. Где батчинг особенно полезен</h3><ul id="2ab568fa-e39f-80b4-8ff4-da9630aee45f" class="bulleted-list"><li style="list-style-type:disc">Классификация (<code>AutoModelForSequenceClassification</code>).</li></ul><ul id="2ab568fa-e39f-8055-9723-e07f18e948e6" class="bulleted-list"><li style="list-style-type:disc">Эмбеддинги (векторный поиск).</li></ul><ul id="2ab568fa-e39f-8026-8305-f4f4933ac288" class="bulleted-list"><li style="list-style-type:disc">Seq2Seq (суммаризация) — тоже, но сложнее по длинам.</li></ul><ul id="2ab568fa-e39f-809d-9c9b-e234b670a73e" class="bulleted-list"><li style="list-style-type:disc">Иногда генерация (LLM) — но там часто сложнее из-за разной длины ответов.</li></ul><p id="2ab568fa-e39f-8004-bc79-d4940520cc52" class="">В этом уроке мы будем показывать <strong>батчинг на классификаторе тикетов</strong> (самый простой и показательный случай).</p><hr id="2ab568fa-e39f-807a-8cc3-c7b32b723718"/><h2 id="2ab568fa-e39f-80be-bb75-d4f4b6f60970" class="">3. Часть 1. Батч-функция для классификации</h2><p id="2ab568fa-e39f-80a7-9d5b-c3e60ab837e1" class="">У нас в <code>app.py</code> из 10.1 уже есть функция:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8086-8cc2-f83090b07d6f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def classify_ticket(text: str):
+    enc = cls_tokenizer(
+        text,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=256,
+    ).to(cls_model.device)
+
+    with torch.no_grad():
+        outputs = cls_model(**enc)
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)[0]
+    pred_id = torch.argmax(probs).item()
+    id2label = cls_model.config.id2label
+
+    return id2label[pred_id], float(probs[pred_id])
+</code></pre><p id="2ab568fa-e39f-808b-8bb8-fe13542ed916" class="">Сейчас она работает только с <strong>одной строкой</strong>.</p><p id="2ab568fa-e39f-8087-a170-c927035af8d9" class="">Сделаем версию, которая принимает <strong>список текстов</strong>.</p><h3 id="2ab568fa-e39f-8005-ae5f-d23bbdb2cf52" class="">3.1. Функция <code>classify_batch</code></h3><p id="2ab568fa-e39f-809f-88f8-d2ed7537240c" class="">Добавляем в <code>app.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8093-9b57-cbb70abbf605" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def classify_batch(texts: list[str]):
+    &quot;&quot;&quot;
+    Батч-классификация списка текстов.
+    Возвращает список словарей:
+        {&quot;text&quot;: ..., &quot;label&quot;: ..., &quot;confidence&quot;: ...}
+    &quot;&quot;&quot;
+    if len(texts) == 0:
+        return []
+
+    # 1. Токенизируем всё сразу
+    enc = cls_tokenizer(
+        texts,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        padding=True,      # важный момент: батч → нужен padding
+        max_length=256,
+    ).to(cls_model.device)
+
+    # 2. Инференс без градиентов
+    with torch.no_grad():
+        outputs = cls_model(**enc)
+
+    logits = outputs.logits             # shape: [batch_size, num_labels]
+    probs = torch.softmax(logits, dim=-1)
+
+    id2label = cls_model.config.id2label
+
+    results = []
+    for i, text in enumerate(texts):
+        p = probs[i]                    # вектор вероятностей для i-го текста
+        pred_id = torch.argmax(p).item()
+        results.append({
+            &quot;text&quot;: text,
+            &quot;label&quot;: id2label[pred_id],
+            &quot;confidence&quot;: float(p[pred_id]),
+        })
+    return results
+</code></pre><p id="2ab568fa-e39f-8042-9b98-e1cda8556870" class="">Разбор:</p><ol type="1" id="2ab568fa-e39f-8019-8594-f9a359747a5c" class="numbered-list" start="1"><li><code>texts: list[str]</code> — список строк.</li></ol><ol type="1" id="2ab568fa-e39f-803f-8c7d-d29c0cf1d005" class="numbered-list" start="2"><li><code>padding=True</code>:<ul id="2ab568fa-e39f-8077-aefc-eddec6a545f9" class="bulleted-list"><li style="list-style-type:disc">так как мы обрабатываем батч, нам нужно выровнять последовательности:<ul id="2ab568fa-e39f-800e-a7df-c2f58dc2e1e6" class="bulleted-list"><li style="list-style-type:circle">короткие дополняются <code>pad_token</code> до длины самой длинной в батче.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8092-905b-ff49551ed3da" class="numbered-list" start="3"><li><code>outputs.logits</code> теперь имеют размер <code>[batch_size, num_labels]</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80c0-9c84-e8b8461fdbf6" class="numbered-list" start="4"><li>Для каждого элемента в батче:<ul id="2ab568fa-e39f-80d5-9756-d14eefd395c0" class="bulleted-list"><li style="list-style-type:disc">берём <code>probs[i]</code>,</li></ul><ul id="2ab568fa-e39f-80f9-b2cc-cc0bb0d4d379" class="bulleted-list"><li style="list-style-type:disc">находим <code>argmax</code>,</li></ul><ul id="2ab568fa-e39f-805b-ac28-dd1e83240eed" class="bulleted-list"><li style="list-style-type:disc">маппим через <code>id2label</code>.</li></ul></li></ol><p id="2ab568fa-e39f-8020-b2bf-fefa357b4a0c" class="">Теперь у нас есть <strong>два уровня API</strong>:</p><ul id="2ab568fa-e39f-8099-983f-fe50e49892bf" class="bulleted-list"><li style="list-style-type:disc"><code>classify_ticket(text: str)</code> — удобно для внутреннего кода.</li></ul><ul id="2ab568fa-e39f-80a2-a6e1-cc4eb7b47a81" class="bulleted-list"><li style="list-style-type:disc"><code>classify_batch(texts: list[str])</code> — удобно для сервисов и батч-обработки.</li></ul><hr id="2ab568fa-e39f-802b-9d9a-cb29249bf84a"/><h2 id="2ab568fa-e39f-80bf-9d12-f5e3f4d782da" class="">4. Часть 2. Batch-эндпоинт в FastAPI</h2><p id="2ab568fa-e39f-80a4-bbc8-d74e31baaf96" class="">Теперь добавим HTTP-эндпоинт <code>/classify_batch</code>, который:</p><ul id="2ab568fa-e39f-8036-b888-f260ef8f9ed5" class="bulleted-list"><li style="list-style-type:disc">принимает JSON с полем <code>texts: List[str]</code>,</li></ul><ul id="2ab568fa-e39f-8094-9a7d-ed127990973a" class="bulleted-list"><li style="list-style-type:disc">возвращает <code>results: List[{label, confidence}]</code>.</li></ul><h3 id="2ab568fa-e39f-8041-86f3-ee7ccce1493a" class="">4.1. Pydantic-схемы для батча</h3><p id="2ab568fa-e39f-802d-b3d4-f9a935c5af95" class="">В <code>app.py</code>, рядом с уже существующими моделями, добавляем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800d-856f-d44d7d30badb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from typing import List  # наверху уже скорее всего есть
+
+class BatchClassifyRequest(BaseModel):
+    texts: List[str]
+
+
+class BatchClassifyItem(BaseModel):
+    label: str
+    confidence: float
+
+
+class BatchClassifyResponse(BaseModel):
+    results: List[BatchClassifyItem]
+</code></pre><p id="2ab568fa-e39f-8013-b220-fbba3af1355a" class="">Почему так:</p><ul id="2ab568fa-e39f-80f7-8679-e2a83a804476" class="bulleted-list"><li style="list-style-type:disc"><code>BatchClassifyRequest</code> — просто список строк.</li></ul><ul id="2ab568fa-e39f-8053-97fc-d15670750a42" class="bulleted-list"><li style="list-style-type:disc"><code>BatchClassifyItem</code> — один элемент результата.</li></ul><ul id="2ab568fa-e39f-80f8-bec6-d7a2f978186b" class="bulleted-list"><li style="list-style-type:disc"><code>BatchClassifyResponse</code> — список таких элементов.</li></ul><p id="2ab568fa-e39f-8060-bbfc-d34f3df89128" class="">(Можно было использовать уже существующий <code>ClassifyResponse</code>, но я делаю отдельный <code>BatchClassifyItem</code>, чтобы было наглядно и явно.)</p><h3 id="2ab568fa-e39f-8046-8341-ca2c6e2295fc" class="">4.2. Эндпоинт <code>/classify_batch</code></h3><p id="2ab568fa-e39f-807e-a549-d6b0e5074c79" class="">Добавляем в конец <code>app.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8059-98b7-f364ba884b1b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/classify_batch&quot;, response_model=BatchClassifyResponse)
+def classify_batch_endpoint(req: BatchClassifyRequest):
+    batch_res = classify_batch(req.texts)
+    # Преобразуем внутренние словари в Pydantic-модели
+    items = [
+        BatchClassifyItem(label=r[&quot;label&quot;], confidence=r[&quot;confidence&quot;])
+        for r in batch_res
+    ]
+    return BatchClassifyResponse(results=items)
+</code></pre><p id="2ab568fa-e39f-801e-8821-ea35bbb833aa" class="">Разбор:</p><ul id="2ab568fa-e39f-80b7-8282-f629cf7af6d3" class="bulleted-list"><li style="list-style-type:disc"><code>req: BatchClassifyRequest</code> — автоматически валидированный объект с <code>texts</code>.</li></ul><ul id="2ab568fa-e39f-80d9-bb64-fedf0c276d09" class="bulleted-list"><li style="list-style-type:disc"><code>batch_res = classify_batch(req.texts)</code> — используем уже написанную батч-функцию.</li></ul><ul id="2ab568fa-e39f-80ce-9b76-edc1a8f550aa" class="bulleted-list"><li style="list-style-type:disc">Собираем <code>BatchClassifyItem</code> для каждого результата.</li></ul><ul id="2ab568fa-e39f-8038-b6c4-f48a60b244b3" class="bulleted-list"><li style="list-style-type:disc">Возвращаем <code>BatchClassifyResponse(results=items)</code>.</li></ul><p id="2ab568fa-e39f-80ae-a0a0-cb555353e60f" class="">Теперь можно отправить запрос вида:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8029-9bed-e9b263479347" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">POST /classify_batch
+{
+  &quot;texts&quot;: [
+    &quot;App crashes when opening gallery&quot;,
+    &quot;How can I change my subscription?&quot;,
+    &quot;I want a new feature: dark mode&quot;
+  ]
+}
+</code></pre><p id="2ab568fa-e39f-803b-803d-f1426636d02d" class="">И получить:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8028-89b4-ddc3e8188351" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;results&quot;: [
+    {&quot;label&quot;: &quot;bug&quot;, &quot;confidence&quot;: 0.93},
+    {&quot;label&quot;: &quot;billing&quot;, &quot;confidence&quot;: 0.88},
+    {&quot;label&quot;: &quot;feature&quot;, &quot;confidence&quot;: 0.91}
+  ]
+}
+</code></pre><hr id="2ab568fa-e39f-801e-aa73-c132041e0ae5"/><h2 id="2ab568fa-e39f-80b4-a85c-f2bcb837fa46" class="">5. Часть 3. Мини-бенчмарк: одиночные vs батч</h2><p id="2ab568fa-e39f-80d9-a524-dd198d32b020" class="">Чтобы не быть голословными, напишем простой скрипт, который:</p><ul id="2ab568fa-e39f-80c4-a2da-e4058543607c" class="bulleted-list"><li style="list-style-type:disc">создаёт N “фиктивных” тикетов,</li></ul><ul id="2ab568fa-e39f-80bb-9f11-d41718958bd4" class="bulleted-list"><li style="list-style-type:disc">прогоняет их:<ul id="2ab568fa-e39f-800e-ba09-db45fd9196db" class="bulleted-list"><li style="list-style-type:circle"><strong>по одному</strong> через <code>classify_ticket</code>,</li></ul><ul id="2ab568fa-e39f-8085-a30b-f138cf797439" class="bulleted-list"><li style="list-style-type:circle"><strong>одним батчем</strong> через <code>classify_batch</code>,</li></ul></li></ul><ul id="2ab568fa-e39f-8024-ba59-ce5856afdb59" class="bulleted-list"><li style="list-style-type:disc">сравнивает время.</li></ul><p id="2ab568fa-e39f-809d-ba01-d322f0b1711e" class="">Сделаем отдельный файл <code>benchmark_batch.py</code> рядом с <code>app.py</code>.</p><h3 id="2ab568fa-e39f-80ae-934b-c94583671a55" class="">5.1. Код мини-бенчмарка</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805d-a627-fa45ca7e076f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># benchmark_batch.py
+import time
+
+from app import classify_ticket, classify_batch
+
+
+def generate_fake_tickets(n: int):
+    base_text = &quot;After the last update the app crashes when I open the gallery.&quot;
+    # Для простоты делаем одинаковые, нам важна скорость, а не смысл
+    return [base_text for _ in range(n)]
+
+
+def benchmark_single(tickets):
+    start = time.time()
+    results = []
+    for t in tickets:
+        label, conf = classify_ticket(t)
+        results.append((label, conf))
+    total_time = time.time() - start
+    return total_time, results
+
+
+def benchmark_batch(tickets):
+    start = time.time()
+    results = classify_batch(tickets)
+    total_time = time.time() - start
+    return total_time, results
+
+
+if __name__ == &quot;__main__&quot;:
+    N = 32  # размер батча
+
+    tickets = generate_fake_tickets(N)
+
+    t_single, res_single = benchmark_single(tickets)
+    t_batch, res_batch = benchmark_batch(tickets)
+
+    print(f&quot;Num samples: {N}&quot;)
+    print(f&quot;Single (per-request) total time: {t_single:.4f} s&quot;)
+    print(f&quot;Batch total time:                {t_batch:.4f} s&quot;)
+
+    if t_batch &gt; 0:
+        print(f&quot;Speedup (single / batch):        {t_single / t_batch:.2f}x&quot;)
+
+    # Можно для контроля вывести первые 3 ответа
+    print(&quot;\nSample predictions (single vs batch):&quot;)
+    for i in range(min(3, N)):
+        print(f&quot;{i}: single={res_single[i]}, batch=({res_batch[i][&#x27;label&#x27;]}, {res_batch[i][&#x27;confidence&#x27;]:.3f})&quot;)
+</code></pre><p id="2ab568fa-e39f-80d2-80df-dce26f3fa41e" class="">Разбор:</p><ul id="2ab568fa-e39f-80e1-ad9f-e8c63d747655" class="bulleted-list"><li style="list-style-type:disc"><code>generate_fake_tickets</code> — просто клонирует одну и ту же строку N раз.</li></ul><ul id="2ab568fa-e39f-80b4-81d8-d00abf07acc9" class="bulleted-list"><li style="list-style-type:disc"><code>benchmark_single</code>:<ul id="2ab568fa-e39f-806e-bbe7-f462d670af59" class="bulleted-list"><li style="list-style-type:circle">запускает N раз <code>classify_ticket</code>,</li></ul><ul id="2ab568fa-e39f-80e7-896b-f87b9d87d559" class="bulleted-list"><li style="list-style-type:circle">суммирует время.</li></ul></li></ul><ul id="2ab568fa-e39f-800a-b1b8-dc844e33de01" class="bulleted-list"><li style="list-style-type:disc"><code>benchmark_batch</code>:<ul id="2ab568fa-e39f-80fc-9f29-eb55baea440a" class="bulleted-list"><li style="list-style-type:circle">один вызов <code>classify_batch</code> на весь список.</li></ul></li></ul><ul id="2ab568fa-e39f-80d9-8bd9-d7fa56b4cb07" class="bulleted-list"><li style="list-style-type:disc">В конце:<ul id="2ab568fa-e39f-801b-9fa1-d71161cc6b85" class="bulleted-list"><li style="list-style-type:circle">печатаем времена,</li></ul><ul id="2ab568fa-e39f-800b-9e93-ccbb27c2a12e" class="bulleted-list"><li style="list-style-type:circle">считаем <code>speedup = t_single / t_batch</code>,</li></ul><ul id="2ab568fa-e39f-8005-9f27-e56b91bdb59e" class="bulleted-list"><li style="list-style-type:circle">выводим несколько примеров, чтобы убедиться, что ответы совпадают.</li></ul></li></ul><p id="2ab568fa-e39f-8014-9b97-d2b18aa6e672" class="">Запуск:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ea-aa2e-c31fbbc54d21" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">python benchmark_batch.py
+</code></pre><p id="2ab568fa-e39f-80d2-9454-cd792b41c86c" class="">Ожидание (примерно, <strong>на нормальном GPU</strong>):</p><ul id="2ab568fa-e39f-806f-8c74-dfc44da500c8" class="bulleted-list"><li style="list-style-type:disc">Batch должен быть в разы быстрее (2–10x, зависит от размеров модели и железа).</li></ul><ul id="2ab568fa-e39f-80bc-8833-d0c1a9ac8ad7" class="bulleted-list"><li style="list-style-type:disc">На CPU разница меньше, но всё равно батч часто выгоднее.</li></ul><hr id="2ab568fa-e39f-807b-a87f-e065a65671f1"/><h2 id="2ab568fa-e39f-8087-a76f-e8da18d4ddcc" class="">6. Часть 4. Теория: очередь запросов и динамический батчинг</h2><p id="2ab568fa-e39f-8074-89f5-d7b3c4e7361a" class="">То, что мы сделали — <strong>ручной батчинг</strong>:</p><ul id="2ab568fa-e39f-802d-bf3c-f528d68a4139" class="bulleted-list"><li style="list-style-type:disc">у нас есть список текстов → мы сами собираем его в список → вызываем модель.</li></ul><p id="2ab568fa-e39f-805c-80ab-cd873e028b81" class="">В реальном сервисе запросы прилетают <strong>асинхронно</strong>, по одному.</p><p id="2ab568fa-e39f-803b-b9ae-c696a5898f7a" class="">Тогда появляется задача:</p><blockquote id="2ab568fa-e39f-806a-839e-e02a847b3fcb" class="">Как автоматически объединять несколько параллельных запросов в батчи<p id="2ab568fa-e39f-8033-9ac2-fad4fba1990f" class="">без того, чтобы всё ломалось?</p></blockquote><h3 id="2ab568fa-e39f-8052-9cc4-e0c269b04e8b" class="">6.1. Идея очереди</h3><p id="2ab568fa-e39f-8087-9783-c0ba8f927b3c" class="">Представь:</p><ul id="2ab568fa-e39f-8012-9d99-e30adb157643" class="bulleted-list"><li style="list-style-type:disc">Есть глобальная очередь <code>Queue</code>.</li></ul><ul id="2ab568fa-e39f-80de-aa8a-f5085af47035" class="bulleted-list"><li style="list-style-type:disc">Каждый HTTP-запрос:<ul id="2ab568fa-e39f-8069-b54c-e4830616975b" class="bulleted-list"><li style="list-style-type:circle">кладёт в очередь объект вида:<ul id="2ab568fa-e39f-8011-aef7-ccfa28406a63" class="bulleted-list"><li style="list-style-type:square">текст,</li></ul><ul id="2ab568fa-e39f-800e-a266-f61d06acbb89" class="bulleted-list"><li style="list-style-type:square">уникальный ID,</li></ul><ul id="2ab568fa-e39f-80b8-8483-eea991b85212" class="bulleted-list"><li style="list-style-type:square">механизм “дождаться результата” (например, <code>asyncio.Future</code>),</li></ul></li></ul><ul id="2ab568fa-e39f-804b-9307-d16325c678ba" class="bulleted-list"><li style="list-style-type:circle">ждёт, пока в этот объект запишут результат.</li></ul></li></ul><ul id="2ab568fa-e39f-80a9-a38b-dcc827d4335e" class="bulleted-list"><li style="list-style-type:disc">Отдельный воркер (background task):<ul id="2ab568fa-e39f-803c-a44d-e89ef49feb08" class="bulleted-list"><li style="list-style-type:circle">в цикле читает из очереди,</li></ul><ul id="2ab568fa-e39f-801c-a88d-f481a61be218" class="bulleted-list"><li style="list-style-type:circle">набирает до <code>batch_size</code> элементов <strong>или</strong> ждёт <code>max_delay_ms</code>,</li></ul><ul id="2ab568fa-e39f-8026-b425-ee1be25b4ce3" class="bulleted-list"><li style="list-style-type:circle">формирует список текстов,</li></ul><ul id="2ab568fa-e39f-8068-8830-eb67f54ce050" class="bulleted-list"><li style="list-style-type:circle">вызывает <code>classify_batch</code>,</li></ul><ul id="2ab568fa-e39f-8037-9cea-c155c6908823" class="bulleted-list"><li style="list-style-type:circle">раскладывает результаты обратно по Future’ам,</li></ul><ul id="2ab568fa-e39f-8096-be17-ea21c171050b" class="bulleted-list"><li style="list-style-type:circle">те Future’ы “просыпаются” и HTTP-запросы получают ответ.</li></ul></li></ul><p id="2ab568fa-e39f-806c-ba1f-c8004340df88" class="">Такой подход называют <strong>динамическим батчингом</strong> (dynamic batching) — батч формируется из “тех, кто успел накопиться за небольшой интервал времени”.</p><hr id="2ab568fa-e39f-809f-9d65-ce50d04af2bf"/><h3 id="2ab568fa-e39f-806b-95f1-ec0d33f11bd4" class="">6.2. Упрощённый пример очереди (концепт на asyncio)</h3><p id="2ab568fa-e39f-80c9-aad8-cdf0f51e1e29" class="">Это уже не “боевой код”, а <strong>учебный скелет</strong>, чтобы понять идею.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806a-a86a-fafc2e98b3ad" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># batch_queue_example.py
+import asyncio
+from typing import List, Any
+from dataclasses import dataclass
+
+from app import classify_batch  # наша батч-функция
+
+
+@dataclass
+class QueueItem:
+    text: str
+    future: asyncio.Future  # сюда положим результат {&quot;label&quot;: ..., &quot;confidence&quot;: ...}
+
+
+class BatchProcessor:
+    def __init__(self, batch_size: int = 16, max_wait_ms: int = 50):
+        self.queue: asyncio.Queue[QueueItem] = asyncio.Queue()
+        self.batch_size = batch_size
+        self.max_wait_ms = max_wait_ms
+
+    async def add_request(self, text: str) -&gt; Any:
+        loop = asyncio.get_event_loop()
+        fut = loop.create_future()
+        item = QueueItem(text=text, future=fut)
+        await self.queue.put(item)
+        # ждём, пока воркер положит результат в future
+        result = await fut
+        return result
+
+    async def worker_loop(self):
+        while True:
+            batch_items: List[QueueItem] = []
+
+            # 1. Блокирующе ждём первый элемент
+            first_item = await self.queue.get()
+            batch_items.append(first_item)
+
+            # 2. Пытаемся собрать ещё элементы до batch_size или до таймаута
+            start = asyncio.get_event_loop().time()
+            while len(batch_items) &lt; self.batch_size:
+                timeout = self.max_wait_ms / 1000.0
+                elapsed = asyncio.get_event_loop().time() - start
+                remaining = timeout - elapsed
+                if remaining &lt;= 0:
+                    break
+                try:
+                    item = await asyncio.wait_for(self.queue.get(), timeout=remaining)
+                    batch_items.append(item)
+                except asyncio.TimeoutError:
+                    break
+
+            # 3. У нас есть batch_items — делаем батч-инференс
+            texts = [it.text for it in batch_items]
+            batch_results = classify_batch(texts)  # синхронная функция, для простоты
+
+            # 4. Раскидываем результаты по future
+            for item, res in zip(batch_items, batch_results):
+                if not item.future.done():
+                    item.future.set_result(res)
+</code></pre><p id="2ab568fa-e39f-80d4-b8ee-f6c9626cea8b" class="">Комментарии:</p><ul id="2ab568fa-e39f-8099-b6fb-c695cf643832" class="bulleted-list"><li style="list-style-type:disc"><code>BatchProcessor</code>:<ul id="2ab568fa-e39f-8095-8f51-d49ff9121020" class="bulleted-list"><li style="list-style-type:circle">хранит <code>queue</code>,</li></ul><ul id="2ab568fa-e39f-80e7-b4d5-dc40372d86f8" class="bulleted-list"><li style="list-style-type:circle">умеет добавлять запрос (через <code>add_request</code>),</li></ul><ul id="2ab568fa-e39f-8088-831b-dbfe2c3917ad" class="bulleted-list"><li style="list-style-type:circle">воркер <code>worker_loop</code>:<ul id="2ab568fa-e39f-8010-bbc6-e835f54c0943" class="bulleted-list"><li style="list-style-type:square">формирует батчи,</li></ul><ul id="2ab568fa-e39f-80e2-b4e6-e86b0ab15638" class="bulleted-list"><li style="list-style-type:square">вызывает <code>classify_batch</code>,</li></ul><ul id="2ab568fa-e39f-80ea-92fb-e02cdf00fc24" class="bulleted-list"><li style="list-style-type:square">кладёт ответы в <code>Future</code>’ы.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-80de-bfb5-e29cf326fdbb" class="bulleted-list"><li style="list-style-type:disc"><code>add_request</code>:<ul id="2ab568fa-e39f-80d5-ba4a-cf3bdaecd063" class="bulleted-list"><li style="list-style-type:circle">кладёт <code>QueueItem</code> в очередь,</li></ul><ul id="2ab568fa-e39f-8033-9624-c8c0449d6614" class="bulleted-list"><li style="list-style-type:circle">ждёт, пока <code>Future</code> будет заполнен результатом.</li></ul></li></ul><p id="2ab568fa-e39f-803e-b99b-da5e6ed26c0a" class="">В FastAPI (асинхронном эндпоинте) ты мог бы сделать:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cb-9c2f-c52871a3cceb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">batch_processor = BatchProcessor(batch_size=16, max_wait_ms=50)
+
+@app.on_event(&quot;startup&quot;)
+async def startup_event():
+    asyncio.create_task(batch_processor.worker_loop())
+
+
+@app.post(&quot;/classify_ticket_batched&quot;)
+async def classify_ticket_batched(req: ClassifyRequest):
+    res = await batch_processor.add_request(req.text)
+    return ClassifyResponse(label=res[&quot;label&quot;], confidence=res[&quot;confidence&quot;])
+</code></pre><p id="2ab568fa-e39f-809f-919b-c4c557462645" class="">Но это <strong>скорее advanced-тема</strong>, которую можно упомянуть в теории и показать скелет, а не требовать от студентов полной реализации.</p><hr id="2ab568fa-e39f-80c5-bdee-e555a5334018"/><h2 id="2ab568fa-e39f-801d-877d-efe344c4b837" class="">7. Домашка по уроку 10.3</h2><p id="2ab568fa-e39f-80d1-97a1-ec7f9da482f2" class="">Минимум, чтобы закрепить:</p><ol type="1" id="2ab568fa-e39f-80d9-8e7b-ea66b7234279" class="numbered-list" start="1"><li><strong>Сделать батч-функцию</strong> <code>classify_batch</code> (как выше) в <code>app.py</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8027-a771-d465749411d7" class="numbered-list" start="2"><li><strong>Добавить эндпоинт</strong> <code>/classify_batch</code> с Pydantic-схемами:<ul id="2ab568fa-e39f-80f8-92ce-f9ee2aa57c42" class="bulleted-list"><li style="list-style-type:disc">запрос: список строк,</li></ul><ul id="2ab568fa-e39f-808f-970c-e9f2e75d5c6f" class="bulleted-list"><li style="list-style-type:disc">ответ: список <code>{label, confidence}</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8058-ad30-fa4f7a854668" class="numbered-list" start="3"><li>Написать <strong>мини-бенчмарк</strong>:<ul id="2ab568fa-e39f-8056-9ea2-e8bd837ce52c" class="bulleted-list"><li style="list-style-type:disc">N = 16 или 32 текстов,</li></ul><ul id="2ab568fa-e39f-80af-8080-deb7a72d4dac" class="bulleted-list"><li style="list-style-type:disc">померить:<ul id="2ab568fa-e39f-80d6-ba0a-ca3361c793f2" class="bulleted-list"><li style="list-style-type:circle">время для N отдельных вызовов <code>classify_ticket</code>,</li></ul><ul id="2ab568fa-e39f-80d6-b3a7-e1bfc5eb57cb" class="bulleted-list"><li style="list-style-type:circle">время одного батч-вызова <code>classify_batch</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-80b0-8d49-dc26bdf0c8ca" class="bulleted-list"><li style="list-style-type:disc">вывести <code>speedup</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8014-90e1-d2e282d835c2" class="numbered-list" start="4"><li>(Опционально) Написать текстом, в чём разница:<ul id="2ab568fa-e39f-802f-967f-eaa0e5a9a506" class="bulleted-list"><li style="list-style-type:disc">когда выгодно использовать батчинг,</li></ul><ul id="2ab568fa-e39f-809e-98f4-d7097a16c279" class="bulleted-list"><li style="list-style-type:disc">какие trade-off’ы у динамического батчинга (слегка выше латентность, зато выше throughput).</li></ul></li></ol><hr id="2ab568fa-e39f-80b0-9d00-f2a729ac804c"/><p id="2ab568fa-e39f-8058-87dd-ca69a35737c7" class="">Если хочешь, следующий шаг (10.4) можно расписать так же подробно:</p><p id="2ab568fa-e39f-8024-95d0-d1ac36f196a7" class="">логи, health-check, и простой offline-eval для проверки, что твой сервис не превратился в генератор бреда после очередного обновления модели 😅</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

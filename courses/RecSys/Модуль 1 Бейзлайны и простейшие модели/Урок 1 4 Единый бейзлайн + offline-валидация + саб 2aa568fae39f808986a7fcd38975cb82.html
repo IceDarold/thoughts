@@ -1,0 +1,860 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.4. Единый бейзлайн + offline-валидация + сабмит</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8089-86a7-fcd38975cb82" class="page sans"><header><h1 class="page-title">Урок 1.4. Единый бейзлайн + offline-валидация + сабмит</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80d8-85fe-dd442e63147b" class="">1. Цели и результат урока</h2><p id="2aa568fa-e39f-80f6-9014-e5ad37292f9c" class=""><strong>После урока студент:</strong></p><ul id="2aa568fa-e39f-8012-a8bf-e81200258ac0" class="bulleted-list"><li style="list-style-type:disc">понимает архитектуру:<ul id="2aa568fa-e39f-80b3-87f6-e6b421632149" class="bulleted-list"><li style="list-style-type:circle"><em>candidate generation</em> (откуда берём список кандидатов);</li></ul><ul id="2aa568fa-e39f-801d-a982-ee8687e2de53" class="bulleted-list"><li style="list-style-type:circle"><em>scoring/ranking</em> (как сортируем);</li></ul><ul id="2aa568fa-e39f-80ec-8cf2-c98e90df2768" class="bulleted-list"><li style="list-style-type:circle"><em>offline evaluation</em> (как измеряем качество);</li></ul></li></ul><ul id="2aa568fa-e39f-80a7-b96a-c20e23a547cc" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2aa568fa-e39f-806d-be3e-dac3ad675f8b" class="bulleted-list"><li style="list-style-type:circle">объединять популярность и item-to-item в один рекоммендер;</li></ul><ul id="2aa568fa-e39f-80e2-83e2-e908e76625c1" class="bulleted-list"><li style="list-style-type:circle">реализовывать простую <strong>time-based</strong> валидацию;</li></ul><ul id="2aa568fa-e39f-8033-ac0b-eb62387fa4d1" class="bulleted-list"><li style="list-style-type:circle">формировать submission-файл (хотя бы локальный).</li></ul></li></ul><ul id="2aa568fa-e39f-80c8-8d24-d4255b9a3fb7" class="bulleted-list"><li style="list-style-type:disc">имеет в репе/ноутбуке:<ul id="2aa568fa-e39f-803b-809a-f9118de49197" class="bulleted-list"><li style="list-style-type:circle">класс/функцию <code>CombinedRecommender</code> или аналог;</li></ul><ul id="2aa568fa-e39f-800d-9690-fb0910a2326f" class="bulleted-list"><li style="list-style-type:circle">offline-метрику HitRate@K/Recall@K для разных вариантов бейзлайна.</li></ul></li></ul><hr id="2aa568fa-e39f-80e4-9b70-f3969359ff28"/><h2 id="2aa568fa-e39f-8029-9a50-efeff6a1f77f" class="">2. Структура урока (90 мин)</h2><p id="2aa568fa-e39f-801c-bc82-f321310c7c0a" class="">Примерный тайминг:</p><ol type="1" id="2aa568fa-e39f-8010-ab2a-fd48f6aa81b7" class="numbered-list" start="1"><li><strong>0–10 мин</strong> — повторяем, что уже есть, и ставим цель урока.</li></ol><ol type="1" id="2aa568fa-e39f-80be-bce8-d18ed577b275" class="numbered-list" start="2"><li><strong>10–30 мин</strong> — теория: candidate generation &amp; scoring, архитектура бейзлайна.</li></ol><ol type="1" id="2aa568fa-e39f-80fb-b25a-df30773498da" class="numbered-list" start="3"><li><strong>30–55 мин</strong> — кодим объединённый рекоммендер.</li></ol><ol type="1" id="2aa568fa-e39f-8041-af99-ef4400c4bc5c" class="numbered-list" start="4"><li><strong>55–80 мин</strong> — делаем простую offline-валидацию (time-based split, HitRate@K).</li></ol><ol type="1" id="2aa568fa-e39f-809f-be33-d5c643447889" class="numbered-list" start="5"><li><strong>80–90 мин</strong> — как превращать это в сабмит + домашка.</li></ol><hr id="2aa568fa-e39f-8069-ac50-e6ad1580cb07"/><h2 id="2aa568fa-e39f-802d-a628-eff6af446c4e" class="">3. Блок 0–10 мин: что уже есть и куда идём</h2><p id="2aa568fa-e39f-80d5-b6a2-cda3f69bf280" class="">Преподаватель напоминает:</p><ul id="2aa568fa-e39f-8008-aa90-c7b5865beab7" class="bulleted-list"><li style="list-style-type:disc">В 1.1:<ul id="2aa568fa-e39f-80cd-9af8-e2aa3b95ec79" class="bulleted-list"><li style="list-style-type:circle">разобрали датасет,</li></ul><ul id="2aa568fa-e39f-8089-935b-e4932cb9a043" class="bulleted-list"><li style="list-style-type:circle">посчитали базовую статистику,</li></ul><ul id="2aa568fa-e39f-806b-b20d-f0d5e7e1450d" class="bulleted-list"><li style="list-style-type:circle">сделали <code>recommend_for_user_dummy</code> (глобальная популярность).</li></ul></li></ul><ul id="2aa568fa-e39f-802f-84ad-debe62589c94" class="bulleted-list"><li style="list-style-type:disc">В 1.2:<ul id="2aa568fa-e39f-8055-b3c8-f6fa68c2bf11" class="bulleted-list"><li style="list-style-type:circle">сделали <strong>segment + time-decayed popularity</strong>;</li></ul><ul id="2aa568fa-e39f-802e-8d4a-d98af85666c1" class="bulleted-list"><li style="list-style-type:circle"><code>recommend_popularity(user_id, k)</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-808c-bbb4-f23bf57c6569" class="bulleted-list"><li style="list-style-type:disc">В 1.3:<ul id="2aa568fa-e39f-8071-acd1-df66386fd7d1" class="bulleted-list"><li style="list-style-type:circle">научились считать co-occurrence;</li></ul><ul id="2aa568fa-e39f-808c-afa4-c19a56a89938" class="bulleted-list"><li style="list-style-type:circle">сделали <code>recommend_item_item(user_id, k)</code>.</li></ul></li></ul><p id="2aa568fa-e39f-80c9-afb0-dc8668d03cd4" class="">Сейчас:</p><blockquote id="2aa568fa-e39f-80c9-b003-c97632728bf0" class="">Собираем единый бейзлайн, который:<ul id="2aa568fa-e39f-80c5-a2e4-cfcc997d0184" class="bulleted-list"><li style="list-style-type:disc">берёт кандидатов от обоих методов,</li></ul><ul id="2aa568fa-e39f-80b8-ace6-fa5f41fd0ab1" class="bulleted-list"><li style="list-style-type:disc">ранжирует их по комбинированному score,</li></ul><ul id="2aa568fa-e39f-8062-9839-edd592269f99" class="bulleted-list"><li style="list-style-type:disc">даёт наш первый «вменяемый» рекоммендер.</li></ul></blockquote><p id="2aa568fa-e39f-80ec-8068-eb38046e0998" class="">Плюс важное:</p><blockquote id="2aa568fa-e39f-80a7-a5b3-cfd1250142f6" class="">Мы перестаём верить leaderboard’у «на слово» и начинаем сами мерить качество через offline-валидацию.</blockquote><hr id="2aa568fa-e39f-8061-8a7f-f0579930de50"/><h2 id="2aa568fa-e39f-80d4-ae4e-fc292472a4fb" class="">4. Блок 10–30 мин: теория — candidate generation и scoring</h2><h3 id="2aa568fa-e39f-80e3-98c9-f4c52fdbb76d" class="">4.1. Архитектура двухэтапного рекоммендера (простая версия)</h3><p id="2aa568fa-e39f-80e9-9c12-f8a9197340c0" class="">Объясняешь:</p><ol type="1" id="2aa568fa-e39f-80cc-8578-fa95fa541352" class="numbered-list" start="1"><li><strong>Candidate generation (retrieval)</strong><ul id="2aa568fa-e39f-80ff-a69b-d437251cc3cb" class="bulleted-list"><li style="list-style-type:disc">Нам нужно быстро выбрать <strong>ограниченное число кандидатов</strong> (например, 200–1000 items из всего каталога).</li></ul><ul id="2aa568fa-e39f-801c-87cb-f2f152166f22" class="bulleted-list"><li style="list-style-type:disc">Источники кандидатов:<ul id="2aa568fa-e39f-80a9-8ded-f0a0c7be8239" class="bulleted-list"><li style="list-style-type:circle">популярные товары;</li></ul><ul id="2aa568fa-e39f-8083-b77f-f2a798cb815f" class="bulleted-list"><li style="list-style-type:circle">item-to-item соседи по последним действиям пользователя;</li></ul><ul id="2aa568fa-e39f-8004-806c-dca4448d829e" class="bulleted-list"><li style="list-style-type:circle">(в будущем: sequence-модели, графы и т.д.).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a7-9cd7-f3f3b26ca087" class="numbered-list" start="2"><li><strong>Scoring &amp; ranking</strong><ul id="2aa568fa-e39f-8019-a81b-d6374f34eedf" class="bulleted-list"><li style="list-style-type:disc">Для каждого кандидата считаем <strong>score</strong> — сколько он «подходит» пользователю.</li></ul><ul id="2aa568fa-e39f-80b8-898f-cb2b3ad39b4c" class="bulleted-list"><li style="list-style-type:disc">В простейшем случае:<ul id="2aa568fa-e39f-80aa-9d55-e21ebe8ac46b" class="bulleted-list"><li style="list-style-type:circle"><code>score = w_pop * pop_score + w_cooc * cooc_score + w_recent * recent_score + ...</code></li></ul></li></ul><ul id="2aa568fa-e39f-8064-8841-f014cf55cf27" class="bulleted-list"><li style="list-style-type:disc">Сортируем по score → берём top-K.</li></ul></li></ol><p id="2aa568fa-e39f-80de-917e-c9be266e0888" class="">Отдельно проговариваешь:</p><ul id="2aa568fa-e39f-80a2-929d-f0c2e95bd11c" class="bulleted-list"><li style="list-style-type:disc">Даже в очень сложных продакшн-системах <strong>архитектура часто похожая</strong>, просто кандидаты и scoring становятся умнее.</li></ul><h3 id="2aa568fa-e39f-802e-b706-dc68ca8b5ee9" class="">4.2. Как генерим кандидатов в нашем бейзлайне</h3><p id="2aa568fa-e39f-8087-bf49-fc3a6204e3c1" class="">Мы уже умеем:</p><ul id="2aa568fa-e39f-80ae-93b1-d6b1b7d0886e" class="bulleted-list"><li style="list-style-type:disc">из популярности:<ul id="2aa568fa-e39f-8006-8995-f2549d90ffee" class="bulleted-list"><li style="list-style-type:circle"><code>popular_items_global</code>,</li></ul><ul id="2aa568fa-e39f-80d5-aa3e-da7d17123dba" class="bulleted-list"><li style="list-style-type:circle">сегментные списки;</li></ul></li></ul><ul id="2aa568fa-e39f-80ee-930b-f53df3fd5379" class="bulleted-list"><li style="list-style-type:disc">из item-to-item:<ul id="2aa568fa-e39f-803d-a3f1-d17955725ceb" class="bulleted-list"><li style="list-style-type:circle"><code>neighbors[item]</code> (список похожих товаров).</li></ul></li></ul><p id="2aa568fa-e39f-80aa-a8d0-c440d1542ec5" class="">Для конкретного пользователя:</p><ol type="1" id="2aa568fa-e39f-80ae-992e-e60613cf2c0c" class="numbered-list" start="1"><li>Вызываем item-to-item:<ul id="2aa568fa-e39f-8061-ad47-d76008e8c69f" class="bulleted-list"><li style="list-style-type:disc">берём его последние N действий;</li></ul><ul id="2aa568fa-e39f-8000-b27c-f0027c9a8481" class="bulleted-list"><li style="list-style-type:disc">собираем топ-<code>M1</code> кандидатов по co-occurrence.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807f-8db3-fe7925fdbd95" class="numbered-list" start="2"><li>Добавляем популярность:<ul id="2aa568fa-e39f-80e6-b812-f1cd1d383cdc" class="bulleted-list"><li style="list-style-type:disc">дополняем список до <code>M_total</code> (например, 200) за счёт:<ul id="2aa568fa-e39f-80c3-9193-c283c724d902" class="bulleted-list"><li style="list-style-type:circle">сегментных популярных;</li></ul><ul id="2aa568fa-e39f-80c9-9341-c0f2c71edfec" class="bulleted-list"><li style="list-style-type:circle">глобальной популярности.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8032-a37b-c387e861c47b" class="numbered-list" start="3"><li>Убираем дубликаты → получаем <code>candidates</code>.</li></ol><h3 id="2aa568fa-e39f-8050-b1a6-d3b2afef8829" class="">4.3. Как считать score для кандидатов</h3><p id="2aa568fa-e39f-80b2-a9b2-d122c6a82142" class="">Простейшая схема:</p><ul id="2aa568fa-e39f-8087-a1b4-c8568ebf2f45" class="bulleted-list"><li style="list-style-type:disc"><code>pop_score(item)</code>:<ul id="2aa568fa-e39f-8075-a531-df4298f3d8d2" class="bulleted-list"><li style="list-style-type:circle">нормализованная глобальная популярность (например, log(1 + count));</li></ul></li></ul><ul id="2aa568fa-e39f-801d-8886-fd9557846bb1" class="bulleted-list"><li style="list-style-type:disc"><code>recent_pop_score(item)</code>:<ul id="2aa568fa-e39f-80ee-9a0b-fc771d16a30d" class="bulleted-list"><li style="list-style-type:circle">нормализованный счётчик только по последнему окну;</li></ul></li></ul><ul id="2aa568fa-e39f-8072-a470-e8ba08426c01" class="bulleted-list"><li style="list-style-type:disc"><code>cooc_score(item)</code>:<ul id="2aa568fa-e39f-808a-bafa-e9dbf6237b2b" class="bulleted-list"><li style="list-style-type:circle">суммарный co-occurrence от последних действий пользователя (мы уже считали в 1.3).</li></ul></li></ul><p id="2aa568fa-e39f-8062-9dfc-c735f3dcef89" class="">Потом:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-803c-b36f-de0a4651c0d0" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">score(item) = w_pop * pop_score(item) + w_recent * recent_pop_score(item) + w_cooc * cooc_score(item)
+</code></pre><p id="2aa568fa-e39f-80c0-8b17-cd57bd2337f2" class="">Где <code>w_pop</code>, <code>w_recent</code>, <code>w_cooc</code> — <strong>ручные гиперпараметры</strong> (мы их подберём по ощущениям и по фейковой offline-метрике).</p><p id="2aa568fa-e39f-80d6-b91b-dbe03b91d1c0" class="">Не обязательно всё нормировать идеально; в первом приближении можно:</p><ul id="2aa568fa-e39f-80cd-a397-f7ec5b57c1e6" class="bulleted-list"><li style="list-style-type:disc">pop_score = просто count;</li></ul><ul id="2aa568fa-e39f-8072-a27d-f232e58fdf30" class="bulleted-list"><li style="list-style-type:disc">recent_pop_score = count в недавнем окне;</li></ul><ul id="2aa568fa-e39f-8088-883e-c77fcd851e11" class="bulleted-list"><li style="list-style-type:disc">cooc_score = cooc от 1.3.</li></ul><p id="2aa568fa-e39f-806b-991c-cd39b63d84a6" class="">Главное — <strong>схема</strong>, не точные значения.</p><hr id="2aa568fa-e39f-8025-9070-f9ad2d668fc9"/><h2 id="2aa568fa-e39f-808d-9b8c-d37bcba784e1" class="">5. Блок 30–55 мин: кодим объединённый рекоммендер</h2><h3 id="2aa568fa-e39f-8034-aa2e-ed7e64ff859b" class="">5.1. Вспоминаем, что уже есть</h3><p id="2aa568fa-e39f-80c0-9d8a-db500d865b0d" class="">Пусть к этому уроку у тебя уже реализовано:</p><ul id="2aa568fa-e39f-801e-9ed6-c594f5bb7443" class="bulleted-list"><li style="list-style-type:disc"><code>popular_items_global</code> + <code>item_popularity_dict</code>;</li></ul><ul id="2aa568fa-e39f-80e1-a672-cf93b15b5074" class="bulleted-list"><li style="list-style-type:disc"><code>item_recent_popularity_dict</code> или <code>weighted_popularity_dict</code>;</li></ul><ul id="2aa568fa-e39f-8081-93db-da464c655bd5" class="bulleted-list"><li style="list-style-type:disc"><code>segment_to_items</code> (или хотя бы просто глобальная популярность);</li></ul><ul id="2aa568fa-e39f-80d0-a06f-ee8d8a41cb8c" class="bulleted-list"><li style="list-style-type:disc"><code>neighbors</code> (item → список (other_item, cooc_value));</li></ul><ul id="2aa568fa-e39f-80c1-abb8-f1272f456f02" class="bulleted-list"><li style="list-style-type:disc"><code>user_history</code> (user → упорядоченный список (item, timestamp)).</li></ul><h3 id="2aa568fa-e39f-80b4-939d-cb4c740eb0c0" class="">5.2. Функция candidate generation</h3><p id="2aa568fa-e39f-802b-b8f8-dd82884a4701" class="">Пишем отдельную функцию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8059-9d35-d27bfe38d4bd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import defaultdict
+
+def generate_candidates(user_id,
+                        n_recent=5,
+                        max_from_i2i=200,
+                        max_total=300):
+    &quot;&quot;&quot;
+    Генерация кандидатов для пользователя:
+    - item-to-item на основе последних n_recent действий
+    - популярность для дотягивания до max_total
+    &quot;&quot;&quot;
+    history = user_history.get(user_id, [])
+    seen_items = set(i for i, _ in history)
+
+    candidates_scores_cooc = defaultdict(float)
+
+    # 1. Item-to-item кандидаты
+    if history:
+        recent_items = [item for item, ts in history[-n_recent:]]
+
+        for idx, item in enumerate(reversed(recent_items)):
+            recency_weight = 0.9 ** idx  # как в 1.3, можно менять
+            for neighbor_item, c in neighbors[item]:
+                candidates_scores_cooc[neighbor_item] += recency_weight * c
+
+    # сортируем item-to-item кандидатов и берем top-N
+    i2i_candidates_sorted = sorted(
+        candidates_scores_cooc.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+    i2i_candidates = [item for item, score in i2i_candidates_sorted[:max_from_i2i]]
+
+    # 2. Добавляем популярных, чтобы расширить список
+    candidates = list(dict.fromkeys(i2i_candidates))  # уникальные, сохраняем порядок
+
+    for popular_item in popular_items_global:
+        if len(candidates) &gt;= max_total:
+            break
+        if popular_item not in candidates:
+            candidates.append(popular_item)
+
+    # убираем уже просмотренные/купленные товары, если нужно по постановке
+    candidates = [item for item in candidates if item not in seen_items]
+
+    return candidates, candidates_scores_cooc  # возвращаем и сырые cooc-score&#x27;ы
+</code></pre><p id="2aa568fa-e39f-8066-a3d5-fbe228316dce" class="">Обсуждаешь:</p><ul id="2aa568fa-e39f-8030-ab20-d6d2ed2ddb5d" class="bulleted-list"><li style="list-style-type:disc">почему полезно возвращать <code>candidates_scores_cooc</code> — для дальнейшего scoring;</li></ul><ul id="2aa568fa-e39f-8083-9f17-e6439290bcf2" class="bulleted-list"><li style="list-style-type:disc">где можно добавить сегментную популярность (перед глобальной).</li></ul><h3 id="2aa568fa-e39f-80c4-80e7-f688891411a8" class="">5.3. Функция scoring и итоговый recommend</h3><p id="2aa568fa-e39f-8072-9b80-f6f840f1f195" class="">Теперь делаем общий <code>score</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80af-98e5-d73225605932" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import math
+
+def pop_score(item_id):
+    return item_popularity_dict.get(item_id, 0)
+
+def recent_pop_score(item_id):
+    return item_recent_popularity_dict.get(item_id, 0)
+
+def score_item(item_id,
+               cooc_scores_dict,
+               w_pop=1.0,
+               w_recent=1.0,
+               w_cooc=1.0):
+    # cooc_score - что мы вернули в candidates_scores_cooc
+    cooc_sc = cooc_scores_dict.get(item_id, 0.0)
+    g = pop_score(item_id)
+    r = recent_pop_score(item_id)
+
+    return w_pop * g + w_recent * r + w_cooc * cooc_sc
+</code></pre><p id="2aa568fa-e39f-807e-a949-fb6e43719798" class="">И финальная функция:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d4-b981-cae43b413863" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_combined(user_id, k=10,
+                       w_pop=1.0, w_recent=1.0, w_cooc=1.0):
+    candidates, cooc_scores = generate_candidates(user_id)
+
+    if not candidates:
+        # совсем нет истории + мало данных -&gt; fallback на популярность
+        return popular_items_global[:k]
+
+    scored = [
+        (item, score_item(item, cooc_scores, w_pop, w_recent, w_cooc))
+        for item in candidates
+    ]
+
+    ranked = sorted(scored, key=lambda x: x[1], reverse=True)
+    recs = [item for item, sc in ranked[:k]]
+    return recs
+</code></pre><h3 id="2aa568fa-e39f-80fb-86be-c979579db6ae" class="">5.4. Мини-практика</h3><p id="2aa568fa-e39f-804a-850b-d99f2100ea5f" class="">Попроси студентов:</p><ol type="1" id="2aa568fa-e39f-801a-8f99-f5f504566725" class="numbered-list" start="1"><li>Взять 5–10 пользователей с заметной историей.</li></ol><ol type="1" id="2aa568fa-e39f-8041-9090-cac2e7dcbb01" class="numbered-list" start="2"><li>Для каждого вывести:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8038-8ac0-e5fe5863c4f6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(&quot;User:&quot;, u)
+print(&quot;History last 5:&quot;, [i for i, _ in user_history[u][-5:]])
+print(&quot;Pop:&quot;, recommend_popularity(u, 10))
+print(&quot;Item2Item:&quot;, recommend_item_item(u, 10))
+print(&quot;Combined:&quot;, recommend_combined(u, 10))
+print()
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-8077-9d91-f9a3d5b4a1ed" class="numbered-list" start="3"><li>Обсудить в парах:<ul id="2aa568fa-e39f-808f-a43b-c12956829110" class="bulleted-list"><li style="list-style-type:disc">Combined часто выглядит как «разумное среднее»?</li></ul><ul id="2aa568fa-e39f-80b7-9d4a-fdee4a45ee8e" class="bulleted-list"><li style="list-style-type:disc">Есть ли случаи, когда он хуже обоих? Почему?</li></ul></li></ol><hr id="2aa568fa-e39f-806f-abd5-e7356991b55d"/><h2 id="2aa568fa-e39f-8089-a11f-f3ece0f0e8a9" class="">6. Блок 55–80 мин: простая offline-валидация</h2><p id="2aa568fa-e39f-80dd-b3e6-cfbadd37ec35" class="">Здесь <strong>не надо делать идеальную ML-статью</strong>, нужно дать:</p><ul id="2aa568fa-e39f-80d0-b931-d4848059080e" class="bulleted-list"><li style="list-style-type:disc">time-based split,</li></ul><ul id="2aa568fa-e39f-80e0-af93-d993aa79ee96" class="bulleted-list"><li style="list-style-type:disc">HitRate@K,</li></ul><ul id="2aa568fa-e39f-808d-b8fb-d08442ea0ee6" class="bulleted-list"><li style="list-style-type:disc">умение сравнивать два бейзлайна.</li></ul><h3 id="2aa568fa-e39f-80ee-8f9a-cfd4b42a1efe" class="">6.1. Time-based split</h3><p id="2aa568fa-e39f-800d-9541-e12a534bc7c1" class="">Идея:</p><ol type="1" id="2aa568fa-e39f-8092-af35-dae6965aa029" class="numbered-list" start="1"><li>Берём всю <code>train</code>таблицу с timestamp.</li></ol><ol type="1" id="2aa568fa-e39f-8028-8873-e9ee79d5af21" class="numbered-list" start="2"><li>Выбираем <code>split_time</code>:<ul id="2aa568fa-e39f-8002-a79d-c1ed40373233" class="bulleted-list"><li style="list-style-type:disc">например, 80-й перцентиль timestamp’ов.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8085-aa1b-d6d226558a05" class="numbered-list" start="3"><li>Разделяем:<ul id="2aa568fa-e39f-803c-b247-d230aa085559" class="bulleted-list"><li style="list-style-type:disc"><code>train_part = train[timestamp &lt; split_time]</code></li></ul><ul id="2aa568fa-e39f-8009-86a2-ede330ee0c60" class="bulleted-list"><li style="list-style-type:disc"><code>val_part = train[timestamp &gt;= split_time]</code></li></ul></li></ol><p id="2aa568fa-e39f-8007-a30a-f8ff972d9bc4" class="">В коде:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8049-901a-c0da0ccf7d07" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">all_events = train.sort_values(&#x27;timestamp&#x27;)
+
+split_time = all_events[&#x27;timestamp&#x27;].quantile(0.8)
+
+train_part = all_events[all_events[&#x27;timestamp&#x27;] &lt; split_time]
+val_part = all_events[all_events[&#x27;timestamp&#x27;] &gt;= split_time]
+</code></pre><p id="2aa568fa-e39f-807f-99b2-c476ea72f557" class="">Важно объяснить:</p><ul id="2aa568fa-e39f-80e4-8316-e88f788e1c6e" class="bulleted-list"><li style="list-style-type:disc"><strong>Модели (популярность, co-occ)</strong> нужно считать только на <code>train_part</code>.</li></ul><ul id="2aa568fa-e39f-8068-96a1-d48c01018680" class="bulleted-list"><li style="list-style-type:disc"><code>val_part</code> используется только для проверки качества.</li></ul><p id="2aa568fa-e39f-80da-a678-da040f89c389" class="">Значит, надо пересчитать:</p><ul id="2aa568fa-e39f-8096-b8b6-c3b95b50ba8f" class="bulleted-list"><li style="list-style-type:disc"><code>item_popularity_dict</code>,</li></ul><ul id="2aa568fa-e39f-8012-bafa-ea6a50d0d797" class="bulleted-list"><li style="list-style-type:disc"><code>item_recent_popularity_dict</code>,</li></ul><ul id="2aa568fa-e39f-80d6-9ab8-eee7e805af80" class="bulleted-list"><li style="list-style-type:disc"><code>neighbors</code>,</li></ul><ul id="2aa568fa-e39f-8033-8ddb-e400d8c396d9" class="bulleted-list"><li style="list-style-type:disc"><code>user_history</code><p id="2aa568fa-e39f-805f-8035-ccfe431e35cf" class=""><strong>на основе </strong><code><strong>train_part</strong></code>, а оффлайн-метрику считать по <code>val_part</code>.</p></li></ul><p id="2aa568fa-e39f-800f-91c4-fb9e96447ffd" class="">(На уроке можно сделать более простую версию и сказать, что «в идеале надо всё пересчитать строго на train_part, домашкой можно дать доработать».)</p><h3 id="2aa568fa-e39f-805b-8343-c1fd1674dcd8" class="">6.2. Простая HitRate@K</h3><p id="2aa568fa-e39f-8035-be6c-deaaff31c16f" class="">Объяснение студентам:</p><blockquote id="2aa568fa-e39f-8037-8844-f662bb1d378c" class="">HitRate@K = доля случаев, когда правильный item оказался в наших top-K рекомендациях.</blockquote><p id="2aa568fa-e39f-8012-b983-d85e20dfb321" class="">Упрощённый сценарий:</p><ul id="2aa568fa-e39f-808f-be54-e07527360f17" class="bulleted-list"><li style="list-style-type:disc">Для каждого пользователя в <code>val_part</code>:<ul id="2aa568fa-e39f-8033-a8c4-c4c86d958e57" class="bulleted-list"><li style="list-style-type:circle">берём какой-то <strong>целевой event</strong> (например, первую покупку после split_time или последний event в val);</li></ul><ul id="2aa568fa-e39f-8020-b0f4-f8275a551ef0" class="bulleted-list"><li style="list-style-type:circle">строим рекомендации по истории до этого события (то есть по train_part);</li></ul><ul id="2aa568fa-e39f-8068-b66e-c07ea25c438e" class="bulleted-list"><li style="list-style-type:circle">проверяем, попал ли target item в top-K.</li></ul></li></ul><p id="2aa568fa-e39f-8003-8711-ee3bea3b4611" class="">Пример (упрощённый):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80ac-b1c7-f3c190317269" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+
+K = 10
+
+def build_user_histories(df):
+    df = df.sort_values(&#x27;timestamp&#x27;)
+    uh = defaultdict(list)
+    for row in df.itertuples():
+        uh[row.user_id].append((row.item_id, row.timestamp))
+    return uh
+
+# пересчитываем user_history только на train_part
+user_history_train = build_user_histories(train_part)
+
+# выбираем по одному target-событию на пользователя из val_part
+val_part_sorted = val_part.sort_values(&#x27;timestamp&#x27;)
+user_targets = val_part_sorted.groupby(&#x27;user_id&#x27;).head(1)  # например, первое событие в val
+
+def hitrate_at_k(recommender_fn, user_history, user_targets, k=10, max_users=1000):
+    hits = 0
+    total = 0
+
+    for row in user_targets.itertuples():
+        user_id = row.user_id
+        target_item = row.item_id
+
+        # история до split: берём из user_history_train
+        history = user_history.get(user_id, [])
+        if not history:
+            continue  # нет истории - пропускаем
+
+        recs = recommender_fn(user_id, k=k)
+
+        if target_item in recs:
+            hits += 1
+        total += 1
+
+        if total &gt;= max_users:  # ограничиваемся для скорости
+            break
+
+    return hits / total if total &gt; 0 else None
+</code></pre><p id="2aa568fa-e39f-805f-95b1-ecb92825bc24" class="">Теперь можно посчитать:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8001-9651-d8bb93c845c2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">hr_pop = hitrate_at_k(recommend_popularity, user_history_train, user_targets, k=10)
+hr_i2i = hitrate_at_k(recommend_item_item, user_history_train, user_targets, k=10)
+hr_comb = hitrate_at_k(recommend_combined, user_history_train, user_targets, k=10)
+
+print(&quot;HitRate@10 Popularity:&quot;, hr_pop)
+print(&quot;HitRate@10 Item2Item:&quot;, hr_i2i)
+print(&quot;HitRate@10 Combined:&quot;, hr_comb)
+</code></pre><p id="2aa568fa-e39f-80e0-aa08-f60e7a9a3bc3" class="">И обсудить:</p><ul id="2aa568fa-e39f-80c6-9742-f476b363ff4f" class="bulleted-list"><li style="list-style-type:disc">часто ли Combined действительно лучший;</li></ul><ul id="2aa568fa-e39f-8016-b5f8-f8626660a424" class="bulleted-list"><li style="list-style-type:disc">сколько вообще получились значения (0.01 vs 0.1 vs 0.3 и т.д.);</li></ul><ul id="2aa568fa-e39f-80f2-9e43-fc656cb5c3f5" class="bulleted-list"><li style="list-style-type:disc">даже если значения маленькие → главное, что можно <strong>сравнивать методы между собой</strong>.</li></ul><hr id="2aa568fa-e39f-800e-ae9c-dff8d7205fe9"/><h2 id="2aa568fa-e39f-8069-8a14-f769c63f7482" class="">7. Блок 80–90 мин: сабмит + домашка</h2><h3 id="2aa568fa-e39f-80c8-a5cd-c7febc70dc84" class="">7.1. Идея сабмита</h3><p id="2aa568fa-e39f-808a-a6d9-f087b58f9856" class="">Важно:</p><ul id="2aa568fa-e39f-802b-b1d7-c6c687465e40" class="bulleted-list"><li style="list-style-type:disc">Формат соревнования может быть любой, но принцип один:<ul id="2aa568fa-e39f-80f9-b8d7-c6707a4995ed" class="bulleted-list"><li style="list-style-type:circle">есть список «сущностей» (user_id / session_id / и т.п.);</li></ul><ul id="2aa568fa-e39f-80a5-8506-fa8c06598736" class="bulleted-list"><li style="list-style-type:circle">для каждой сущности нужно выдать список из K item_id в нужном формате.</li></ul></li></ul><p id="2aa568fa-e39f-80f3-98b8-d2ffff67a53e" class="">Условный пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-802d-a8e7-ea76ba9cf838" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">test = pd.read_csv(&quot;../data/test_interactions.csv&quot;)  # или просто список user_id
+
+unique_users_test = test[&#x27;user_id&#x27;].unique()
+
+rows = []
+for u in unique_users_test:
+    recs = recommend_combined(u, k=10)
+    recs_str = &quot; &quot;.join(map(str, recs))  # если нужно в одну строку
+    rows.append((u, recs_str))
+
+submit_df = pd.DataFrame(rows, columns=[&#x27;user_id&#x27;, &#x27;item_id_list&#x27;])
+submit_df.to_csv(&quot;submission.csv&quot;, index=False)
+</code></pre><p id="2aa568fa-e39f-8092-b687-c355e23331a9" class="">Проговори:</p><ul id="2aa568fa-e39f-800e-ac1e-cd22f93e325e" class="bulleted-list"><li style="list-style-type:disc">Нужно внимательно читать <strong>формат</strong>:<ul id="2aa568fa-e39f-8010-92e7-e60be77683e3" class="bulleted-list"><li style="list-style-type:circle">разделитель списка (пробел/запятая);</li></ul><ul id="2aa568fa-e39f-809f-b50a-c400cde80d7c" class="bulleted-list"><li style="list-style-type:circle">порядок колонок;</li></ul><ul id="2aa568fa-e39f-80fb-8093-f37e65e0853c" class="bulleted-list"><li style="list-style-type:circle">должны ли быть ровно K item’ов;</li></ul><ul id="2aa568fa-e39f-8043-963f-c2a16e5ad3fe" class="bulleted-list"><li style="list-style-type:circle">можно ли повторять item’ы.</li></ul></li></ul><p id="2aa568fa-e39f-803b-b04b-dc41e14c0565" class="">Задача урока — не подогнуться под конкретный контест, а показать схему.</p><hr id="2aa568fa-e39f-80b2-ba19-ec671aa5e0df"/><h3 id="2aa568fa-e39f-8096-8f63-d7ae6471b14f" class="">Домашка 1.4 (итоговая по модулю 1)</h3><p id="2aa568fa-e39f-804c-9bd8-c7fcc2411e18" class=""><strong>Цель:</strong> зафиксировать навык построения бейзлайна и первой offline-валидации.</p><ol type="1" id="2aa568fa-e39f-80d3-a9d9-c03bcc9f2d9c" class="numbered-list" start="1"><li><strong>Ноутбук:</strong><ul id="2aa568fa-e39f-80d4-86d8-edb456e22242" class="bulleted-list"><li style="list-style-type:disc">Привести в порядок:<ul id="2aa568fa-e39f-8012-afb4-f0270eee9176" class="bulleted-list"><li style="list-style-type:circle"><code>generate_candidates</code>;</li></ul><ul id="2aa568fa-e39f-8003-b7dc-dc3f2cb22e1a" class="bulleted-list"><li style="list-style-type:circle"><code>recommend_combined</code>;</li></ul><ul id="2aa568fa-e39f-8065-9a11-de307a2a8b31" class="bulleted-list"><li style="list-style-type:circle">функцию Offline HitRate@K.</li></ul></li></ul><ul id="2aa568fa-e39f-80b0-951c-c16718a558d0" class="bulleted-list"><li style="list-style-type:disc">Посчитать HitRate@K для:<ul id="2aa568fa-e39f-802d-9390-c24cd988b3ed" class="bulleted-list"><li style="list-style-type:circle">чистой популярности;</li></ul><ul id="2aa568fa-e39f-80ff-abf1-db110217cab1" class="bulleted-list"><li style="list-style-type:circle">item-to-item;</li></ul><ul id="2aa568fa-e39f-8002-9a6d-dd0b68ab4f09" class="bulleted-list"><li style="list-style-type:circle">combined.</li></ul></li></ul><ul id="2aa568fa-e39f-806b-8404-c4df777ec67e" class="bulleted-list"><li style="list-style-type:disc">Провести хотя бы один «мини-тюнинг»:<ul id="2aa568fa-e39f-8073-8ce9-ddc999d78eb0" class="bulleted-list"><li style="list-style-type:circle">поиграться с <code>w_pop</code>, <code>w_recent</code>, <code>w_cooc</code>;</li></ul><ul id="2aa568fa-e39f-80d5-805e-ea2f2ea4b057" class="bulleted-list"><li style="list-style-type:circle">посмотреть, меняется ли HitRate@K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a2-9dd2-c6178716bd57" class="numbered-list" start="2"><li><strong>(Если есть реальный контест) Локальный submission:</strong><ul id="2aa568fa-e39f-8000-8544-f2a08d428ca9" class="bulleted-list"><li style="list-style-type:disc">Сделать <code>submission.csv</code> в формате конкурса.</li></ul><ul id="2aa568fa-e39f-80cf-a720-d65f2bc681f1" class="bulleted-list"><li style="list-style-type:disc">Прогнать базовую sanity-проверку:<ul id="2aa568fa-e39f-8048-ac66-cc1b145fa01b" class="bulleted-list"><li style="list-style-type:circle">правильные ли типы (строки/числа),</li></ul><ul id="2aa568fa-e39f-8065-aa8d-c8ea8baa300f" class="bulleted-list"><li style="list-style-type:circle">нет ли NaN,</li></ul><ul id="2aa568fa-e39f-80bb-a278-f1300b722cb5" class="bulleted-list"><li style="list-style-type:circle">равное ли количество строк числу пользователей/сущностей в тесте,</li></ul><ul id="2aa568fa-e39f-805e-bdd4-d613e530ccfb" class="bulleted-list"><li style="list-style-type:circle">в каждом списке ровно K item’ов.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808c-930c-f546de21c659" class="numbered-list" start="3"><li><strong>Короткий отчёт (1–2 страницы или markdown):</strong><ul id="2aa568fa-e39f-809b-ad86-f56a1154da81" class="bulleted-list"><li style="list-style-type:disc">Какие три версии рекоммендера ты сравнивал?</li></ul><ul id="2aa568fa-e39f-80f5-aa2d-e27ef595d142" class="bulleted-list"><li style="list-style-type:disc">Какие HitRate@K у них получились?</li></ul><ul id="2aa568fa-e39f-804a-bdd4-f6572207dc5f" class="bulleted-list"><li style="list-style-type:disc">Какое сочетание весов для combined дало лучший результат (если пробовал)?</li></ul><ul id="2aa568fa-e39f-80ca-ae8f-cda4f9c2e1a0" class="bulleted-list"><li style="list-style-type:disc">Что ты считаешь основными ограничениями своего бейзлайна:<ul id="2aa568fa-e39f-807a-b7e5-f0d8c5c65954" class="bulleted-list"><li style="list-style-type:circle">нет учета контекста;</li></ul><ul id="2aa568fa-e39f-80ba-a80f-e60e2768dcd3" class="bulleted-list"><li style="list-style-type:circle">нет персональных фич пользователя;</li></ul><ul id="2aa568fa-e39f-80fb-bc7f-d2eda621344f" class="bulleted-list"><li style="list-style-type:circle">нет нормальной кросс-валидации и т.д.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-80b0-9d07-ea1ae28b039e"/><p id="2aa568fa-e39f-806d-85dd-df0c3e8e75e2" class="">Если хочешь, дальше мы можем:</p><ul id="2aa568fa-e39f-800d-a0c2-c73ab1010654" class="bulleted-list"><li style="list-style-type:disc">перейти к <strong>Модулю 2 (метрики и нормальная валидация)</strong>,</li></ul><ul id="2aa568fa-e39f-8009-b8f3-fefd3d955671" class="bulleted-list"><li style="list-style-type:disc">или собрать из всего модуля 1 <strong>единый template-репозиторий</strong> с файлами <code>data.py</code>, <code>models.py</code>, <code>offline_eval.py</code>, чтобы студенты сразу чувствовали себя как на «мини-Kaggle-проекте».</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

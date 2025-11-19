@@ -1,0 +1,738 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М11. Фичинжиниринг-системы</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80d8-a0b1-e8804c9ce370" class="page sans"><header><h1 class="page-title">М11. Фичинжиниринг-системы</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8024-8ebc-eccf0568de56" class="">ниже — подробный Модуль 11. Фокус: <strong>системный фичинжиниринг</strong>: как за 5 часов построить воспроизводимую «фабрику признаков», которая даёт стабильный прирост, не ловит утечки и масштабируется на десятки миллионов строк.</p><h2 id="2a8568fa-e39f-80c3-a733-cc497078e4a2" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-80e4-9023-e2be7dddd315" class="bulleted-list"><li style="list-style-type:disc">Спроектировать <strong>Feature Factory</strong>: конфиг-управляемую сборку признаков (groupby/статистики/кодировки/взаимодействия/время).</li></ul><ul id="2a8568fa-e39f-805f-8fca-df88b120fec6" class="bulleted-list"><li style="list-style-type:disc">Встроить <strong>anti-leakage дисциплину</strong>: OOF-генерация, time-aware, контроль дрифта, «паспорт риска» для каждой фичи.</li></ul><ul id="2a8568fa-e39f-80b8-ac4e-fa9e4d7b218b" class="bulleted-list"><li style="list-style-type:disc">Настроить <strong>pipelines производительности</strong>: Polars/Parquet, кэш фич, инкрементальные пересчёты, контроль памяти/времени.</li></ul><ul id="2a8568fa-e39f-8021-b9d2-c75fdc2a96d5" class="bulleted-list"><li style="list-style-type:disc">Поставить <strong>оценку фич</strong>: ablation, null-importance, permutation, SHAP-пакеты, «стоимость→прибавка».</li></ul><ul id="2a8568fa-e39f-8004-9285-e887595f8db5" class="bulleted-list"><li style="list-style-type:disc">Доставить «<strong>рёбра</strong>» в проект: <code>features/registry.yaml</code>, единый интерфейс <code>fit_transform</code>, юнит-тесты на утечки/детерминизм.</li></ul><p id="2a8568fa-e39f-80c7-b613-fb32daf6f65c" class=""><strong>Выход:</strong> рабочая фабрика признаков с реестром, кэшем, тестами и отчётами по вкладу.</p><hr id="2a8568fa-e39f-801f-911e-cd2ec52f8ff2"/><h2 id="2a8568fa-e39f-80e4-950e-c00d9d3ae452" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-805d-b747-d94d3183bc03" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-808c-8f00-c26ddea9be47" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 4–5 часов</strong>.</li></ul><ul id="2a8568fa-e39f-803f-af15-e4c6678c43a1" class="bulleted-list"><li style="list-style-type:disc">Защита: «паспорт фичсета» (1 стр) + таблица «ΔOOF vs стоимость».</li></ul><hr id="2a8568fa-e39f-80ba-a65d-fd1dacf73432"/><h2 id="2a8568fa-e39f-8016-8466-fa1a54cc0766" class="">3) Архитектура Feature Factory</h2><p id="2a8568fa-e39f-809c-971c-c88b33c7a093" class=""><strong>Дерево проекта</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a8568fa-e39f-80f3-88d1-c5fa67e5c755" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">src/features/
+  ├── registry.yaml            # каталог фич и рецептов
+  ├── base.py                  # интерфейсы: Feature, FitTransformFeature
+  ├── groupby.py               # агрегаты по ключам
+  ├── encoders.py              # freq/target/loo/hash/ordered (OOF-safe)
+  ├── interactions.py          # кроссы, полиномы, биннинги, WoE
+  ├── timeseries.py            # лаги/роллинги/decay (time-aware)
+  ├── textlite.py              # лёгкие текстовые числовые фичи (tf/len/char)
+  ├── selectors.py             # отбор по null/perm/mi/shap
+  ├── cache.py                 # кэш+подписи (fingerprints), Parquet
+  ├── validate.py              # анти-утечки, AV/PSI
+  └── build_features.py        # оркестратор (CLI/typer), батчи, профилировка
+</code></pre><p id="2a8568fa-e39f-8095-96e0-f23d052e8026" class=""><strong>Единый интерфейс</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a8568fa-e39f-802e-98d1-c92dc9add88b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class Feature:
+    name: str
+    requires: list[str]   # зависимости (сырые поля/другие фичи)
+    params: dict
+
+    def fit(self, df, y=None, cv=None, time_key=None, groups=None): ...
+    def transform(self, df): ...
+</code></pre><ul id="2a8568fa-e39f-8087-b57b-ca7709192949" class="bulleted-list"><li style="list-style-type:disc">Для OOF/time-aware фич — класс <code>FitTransformFeature</code> с методом <code>fit_oof(...) → oof_values</code>.</li></ul><ul id="2a8568fa-e39f-804e-812d-dc8731730f60" class="bulleted-list"><li style="list-style-type:disc"><strong>Registry</strong> загружает YAML и строит DAG фич (порядок, зависимости, повторное использование).</li></ul><p id="2a8568fa-e39f-8019-872c-fadeced1c4b2" class=""><strong>Конфиг-пример (registry.yaml)</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a8568fa-e39f-80de-97ed-dffecc12c687" class="code code-wrap"><code class="language-YAML" style="white-space:pre-wrap;word-break:break-all">features:
+  - name: grp_user_item_stats
+    kind: groupby
+    params: {keys: [user_id,item_id], aggs: {price: [mean,std]}, min_count: 5}
+    leakage_guard: oof
+  - name: enc_target_item
+    kind: encoder.target_kfold
+    params: {key: item_id, smoothing: &quot;m_estimate&quot;, noise: 0.01}
+    leakage_guard: oof
+  - name: ts_item_rolling
+    kind: ts.rolling
+    params: {entity: item_id, windows: [7,28], stats: [mean,std], lags: [1,7]}
+    leakage_guard: time
+</code></pre><hr id="2a8568fa-e39f-8033-9a7b-f068e51bd0bc"/><h2 id="2a8568fa-e39f-800a-acb4-f073e402a06f" class="">4) Anti-leakage дисциплина (встроено в систему)</h2><ul id="2a8568fa-e39f-8075-9ad9-e5fff31c53f7" class="bulleted-list"><li style="list-style-type:disc"><strong>OOF-режим по умолчанию</strong> для таргет-зависимых фич. Храним <code>fold_map.parquet</code>, генерим OOF-столбцы и <strong>запрещаем</strong> fit на всём train.</li></ul><ul id="2a8568fa-e39f-80a5-87df-f5bfa69b3bab" class="bulleted-list"><li style="list-style-type:disc"><strong>Time-aware</strong> для TS: лаги/роллинги/expanding <strong>только до t</strong>, <code>gap ≥ max_lag</code>.</li></ul><ul id="2a8568fa-e39f-8076-80a9-efff26619439" class="bulleted-list"><li style="list-style-type:disc"><strong>Group-изоляция</strong>: агрегаты/кодировки по ключам — <strong>внутри train-fold</strong>, группы не пересекаются.</li></ul><ul id="2a8568fa-e39f-8005-8c4b-dee48ad1f22a" class="bulleted-list"><li style="list-style-type:disc"><strong>Авто-чек</strong>: <code>validate.py</code> ловит: пересечения индексов, утечки по времени, использование теста, «слив» фичи в AV.</li></ul><hr id="2a8568fa-e39f-809a-9d34-e36a1cf38314"/><h2 id="2a8568fa-e39f-8048-8379-d0781d0ba866" class="">5) Кэш и подписи</h2><ul id="2a8568fa-e39f-8023-a9de-f16fd1780047" class="bulleted-list"><li style="list-style-type:disc"><strong>Fingerprint набора данных</strong>: <code>data_signature = sha1(schema + nrows + head_hash)</code>.</li></ul><ul id="2a8568fa-e39f-8086-bcaf-f43d03e11384" class="bulleted-list"><li style="list-style-type:disc"><strong>Fingerprint рецепта фичи</strong>: <code>feature_signature = sha1(code_version + params + dependencies + fold_map)</code>.</li></ul><ul id="2a8568fa-e39f-8019-aa03-f07f3517d233" class="bulleted-list"><li style="list-style-type:disc">Кладём Parquet в <code>feature_store/{data_sig}/{feature_name}/{feature_sig}.parquet</code>.</li></ul><ul id="2a8568fa-e39f-8034-92c3-c68188b942a7" class="bulleted-list"><li style="list-style-type:disc"><strong>Инкрементальный пересчёт</strong>: если сигнатуры не менялись — берём из кэша; изменился один рецепт — пересчитываем только его и зависимых.</li></ul><hr id="2a8568fa-e39f-8021-9414-f25285d2f2ce"/><h2 id="2a8568fa-e39f-8043-80b0-eb14beb2511b" class="">6) Производительность и память</h2><ul id="2a8568fa-e39f-8014-bc2e-d4fe3e7a48ec" class="bulleted-list"><li style="list-style-type:disc">I/O: <strong>Parquet + PyArrow</strong>, чтение Polars <code>scan_parquet</code> (ленивые вычисления), write zstd, row-group ~128MB.</li></ul><ul id="2a8568fa-e39f-8088-9b91-dd2657b937d3" class="bulleted-list"><li style="list-style-type:disc">Join: сортировка ключей, <strong>asof-join</strong> для time-aware, индексация категорий → <code>Int32</code>.</li></ul><ul id="2a8568fa-e39f-80bd-ba39-e7aae3963f10" class="bulleted-list"><li style="list-style-type:disc">Groupby-рецепты:<ul id="2a8568fa-e39f-8069-a083-ee0716178e56" class="bulleted-list"><li style="list-style-type:circle">Большие аггрегации → <strong>single pass</strong>: несколько стат в одном проходе.</li></ul><ul id="2a8568fa-e39f-8026-9c0f-c717d0488e77" class="bulleted-list"><li style="list-style-type:circle">Кроссы <code>A×B</code> → делать через <strong>hash/freq</strong> либо top-K + rare-bucket.</li></ul></li></ul><ul id="2a8568fa-e39f-80b7-8122-e606913a2118" class="bulleted-list"><li style="list-style-type:disc">Батч-инференс: <code>N</code> строк chunksize, прогресс-бар + отчёт времени.</li></ul><ul id="2a8568fa-e39f-8004-9e4f-ce04729f5159" class="bulleted-list"><li style="list-style-type:disc">Профилировка: лог каждого шага (с) и потребление памяти (МБ).</li></ul><hr id="2a8568fa-e39f-80a8-8d9e-cc84ade6e280"/><h2 id="2a8568fa-e39f-805a-a88b-c29274ae48a9" class="">7) Каталог «обязательных» рецептов (ядро)</h2><h3 id="2a8568fa-e39f-804a-b012-ee4b602cde9f" class="">A. GroupBy-агрегаты (safe)</h3><ul id="2a8568fa-e39f-8022-9648-e7db735e8e85" class="bulleted-list"><li style="list-style-type:disc"><code>count, nunique, mean, std, min, max, median, iqr, q01/q99</code> по ключам: <code>user</code>, <code>item</code>, <code>merchant</code>, <code>geo</code>, <code>session</code>, <code>date-bucket</code>.</li></ul><ul id="2a8568fa-e39f-800d-86e8-f80fe2fbe496" class="bulleted-list"><li style="list-style-type:disc"><strong>Нормировки</strong>: per-entity z-score/robust-z, доли (<code>x/sum_group</code>), <strong>density</strong> (#events/день).</li></ul><ul id="2a8568fa-e39f-80f6-8763-db4967e4c693" class="bulleted-list"><li style="list-style-type:disc"><strong>Recency</strong>: время от последнего события (safe для TS при time-aware).</li></ul><ul id="2a8568fa-e39f-80b0-b8c3-e6a5ee03ee82" class="bulleted-list"><li style="list-style-type:disc"><strong>Rare pooling</strong>: порог покрытия 99% → всё остальное в <code>__RARE__</code>.</li></ul><h3 id="2a8568fa-e39f-801b-b940-c2c445276889" class="">B. Кодировки категорий (controlled)</h3><ul id="2a8568fa-e39f-803d-92f4-efef51d27019" class="bulleted-list"><li style="list-style-type:disc"><strong>freq/count</strong> (safe, OOF не нужен), <strong>target-kfold/LOO</strong> (OOF + сглаживание + шум), <strong>hash/binary</strong> для high-card.</li></ul><ul id="2a8568fa-e39f-8007-a71b-cda5e386362e" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost-ordered</strong> имитация: expanding mean per entity (TS-режим).</li></ul><h3 id="2a8568fa-e39f-80e9-9e8c-f9bdae68fa6e" class="">C. Взаимодействия и трансформы</h3><ul id="2a8568fa-e39f-80f1-bfef-f0d68c2de7ae" class="bulleted-list"><li style="list-style-type:disc">Кроссы <code>A×B</code> → freq/hash; <strong>WoE/IV</strong> для скоринга; <strong>RankGauss/Yeo-Johnson</strong> для числовых с тяжёлыми хвостами.</li></ul><h3 id="2a8568fa-e39f-80f5-8b93-fa272024e5e2" class="">D. Row-wise (анонимки)</h3><ul id="2a8568fa-e39f-80a8-9135-f312433f1c29" class="bulleted-list"><li style="list-style-type:disc"><code>row_sum/mean/std/skew/kurt</code>, <code>n_zero/pos/neg/miss</code>, top-K суммы, кластерные агрегаты по корр-кластерам.</li></ul><h3 id="2a8568fa-e39f-8037-b5e1-d13c8f24c040" class="">E. TimeSeries ядро</h3><ul id="2a8568fa-e39f-8089-8db4-e7aa3150e36f" class="bulleted-list"><li style="list-style-type:disc">Лаги <code>1/7/28</code>, окна <code>[7,14,28,56]</code> → <code>mean/std/min/max</code>, <strong>decay</strong> (EWMA α), сезонные дельты.</li></ul><h3 id="2a8568fa-e39f-8089-b375-c16e1efd2717" class="">F. Text-lite (числовые)</h3><ul id="2a8568fa-e39f-8001-8e59-d111510b041a" class="bulleted-list"><li style="list-style-type:disc">Длины, токены/символы, tf-idf суммы по простому словарю, символьные шинглы (без сложных моделей).</li></ul><hr id="2a8568fa-e39f-805f-b90d-dee71281bcae"/><h2 id="2a8568fa-e39f-80e4-bd95-d447366a9894" class="">8) Отбор и оценка фич</h2><ul id="2a8568fa-e39f-8059-a218-c87f1f3e295a" class="bulleted-list"><li style="list-style-type:disc"><strong>Ablation</strong>: greedy-forward (пачками), фиксированная модель/seed, лог: <code>ΔOOF</code>, <code>time_cost</code>, <code>fit_cost</code>.</li></ul><ul id="2a8568fa-e39f-8055-bcd6-ca45c7bee73c" class="bulleted-list"><li style="list-style-type:disc"><strong>Null-importance</strong>: перемешиваем таргет → распределение важности → отбрасываем «шумовые».</li></ul><ul id="2a8568fa-e39f-808a-8f5a-c35d406be4f3" class="bulleted-list"><li style="list-style-type:disc"><strong>Permutation</strong>: по OOF, с повторениями; <strong>устойчивость</strong> = доля fold’ов с положительной прибавкой.</li></ul><ul id="2a8568fa-e39f-8055-a6f6-e000ae8f514c" class="bulleted-list"><li style="list-style-type:disc"><strong>SHAP-пакеты</strong>: суммарная важность групп фич («агрегаты по user», «ts-ядро» и т.п.).</li></ul><ul id="2a8568fa-e39f-808a-ab42-ea76e466ff1a" class="bulleted-list"><li style="list-style-type:disc"><strong>Matrix «прибавка/стоимость»</strong>: приоритезируем дешёвые и стабильные.</li></ul><hr id="2a8568fa-e39f-808d-bf37-eb7742b17ea6"/><h2 id="2a8568fa-e39f-8021-b6e8-ddd84dd5687e" class="">9) Паспорт фичи (шаблон, 6 строк)</h2><ul id="2a8568fa-e39f-80fb-9790-d105256423f0" class="bulleted-list"><li style="list-style-type:disc"><strong>name / рецепт / параметры</strong></li></ul><ul id="2a8568fa-e39f-80bb-a8a1-e575c445da07" class="bulleted-list"><li style="list-style-type:disc"><strong>источник и ключи</strong> (entity/time)</li></ul><ul id="2a8568fa-e39f-80b0-9bbf-d650d90b283c" class="bulleted-list"><li style="list-style-type:disc"><strong>anti-leakage</strong>: OOF/time/group, gap</li></ul><ul id="2a8568fa-e39f-8094-834f-d452bd63a316" class="bulleted-list"><li style="list-style-type:disc"><strong>стоимость</strong>: время, пик-память</li></ul><ul id="2a8568fa-e39f-8023-985e-c6c3d2434b59" class="bulleted-list"><li style="list-style-type:disc"><strong>прирост</strong>: ΔOOF ± std, устойчивость (fold-win %)</li></ul><ul id="2a8568fa-e39f-8034-bb84-f65e67a975b8" class="bulleted-list"><li style="list-style-type:disc"><strong>риск</strong>: AV-drift (↑/→/↓), комментарий</li></ul><hr id="2a8568fa-e39f-80ef-8846-f772ba1f9a2d"/><h2 id="2a8568fa-e39f-80e6-98e8-d8d8e1be4630" class="">10) Диагностика дрифта и стабильности</h2><ul id="2a8568fa-e39f-80e4-bb0f-eadeeed3c4a3" class="bulleted-list"><li style="list-style-type:disc"><strong>AV (train vs valid)</strong> до/после пачки фич; <strong>PSI/KS</strong> по ключевым.</li></ul><ul id="2a8568fa-e39f-801c-bede-ec1b73ea0577" class="bulleted-list"><li style="list-style-type:disc"><strong>Сплит-стресс</strong>: другой seed/Group/Time → пересчитать ΔOOF; падение &gt; X% → пометить «risky».</li></ul><ul id="2a8568fa-e39f-80f7-a4bb-f8adcbb748a8" class="bulleted-list"><li style="list-style-type:disc"><strong>Seed-инвариантность</strong>: 5 сидов, разброс прироста.</li></ul><hr id="2a8568fa-e39f-8045-b23b-d5429335b0b2"/><h2 id="2a8568fa-e39f-8004-9505-e5ea402ad9e6" class="">11) Мини-практикумы</h2><h3 id="2a8568fa-e39f-805a-8163-f6b088b46dd3" class="">A) «Фич-ядро за 60 минут» (60–90 мин)</h3><ol type="1" id="2a8568fa-e39f-8015-96a2-dcf77d624e20" class="numbered-list" start="1"><li>Заполнить <code>registry.yaml</code> 10–15 safe-рецептами (groupby/freq/row-wise/ts).</li></ol><ol type="1" id="2a8568fa-e39f-806e-bc92-e4d276ff93ae" class="numbered-list" start="2"><li>Собрать фичсет → кэш → бейзлайн → лог времени/памяти.</li></ol><ol type="1" id="2a8568fa-e39f-80cb-b9a5-f341516ee35e" class="numbered-list" start="3"><li>Таблица «ΔOOF vs время».</li></ol><h3 id="2a8568fa-e39f-8012-9797-f7d50ed1d6be" class="">B) «Отбор без самообмана» (60–90 мин)</h3><ol type="1" id="2a8568fa-e39f-80e8-955e-e7dab774b174" class="numbered-list" start="1"><li>Null-importance → срез 30→15 фич.</li></ol><ol type="1" id="2a8568fa-e39f-803d-8927-fa01d29678e9" class="numbered-list" start="2"><li>Permutation на 2 сплитах → финальные 10–12.</li></ol><ol type="1" id="2a8568fa-e39f-80e4-b11d-c968430ad992" class="numbered-list" start="3"><li>SHAP-группы → отчёт.</li></ol><h3 id="2a8568fa-e39f-809e-9c92-c97784921ba3" class="">C) «Дрифт-чек» (45–60 мин)</h3><ol type="1" id="2a8568fa-e39f-80b9-af64-c653e096df12" class="numbered-list" start="1"><li>AV/PSI до и после risk-пачки (target-encoding/TS-аггрегаты).</li></ol><ol type="1" id="2a8568fa-e39f-8034-b1c7-c687b88e27f2" class="numbered-list" start="2"><li>Если AUC(AV) растёт — смягчаем/убираем; повторная оценка.</li></ol><hr id="2a8568fa-e39f-80ab-9f76-cf5446efbc77"/><h2 id="2a8568fa-e39f-8015-81c5-e2ed9c0944ab" class="">12) Самостоятельный 5-часовой спринт</h2><p id="2a8568fa-e39f-8067-a259-f2f39cf0f96c" class=""><strong>Задание:</strong></p><ul id="2a8568fa-e39f-8002-b1be-d9e01ead8b12" class="bulleted-list"><li style="list-style-type:disc">Для выбранной задачи (классификация/регрессия/TS) собрать <strong>фич-ядро</strong> (≥12 safe), добавить 1–2 «смелые» (target/TS), сделать отбор и выдать «паспорт фичсета».</li></ul><p id="2a8568fa-e39f-80a7-9e90-f65b27d4c27d" class=""><strong>Требования:</strong></p><ul id="2a8568fa-e39f-8048-97c8-db3c658a86c8" class="bulleted-list"><li style="list-style-type:disc">Корректный CV (из М1/М6), <strong>zero-leak</strong> дисциплина.</li></ul><ul id="2a8568fa-e39f-808d-b260-dde9fd45194b" class="bulleted-list"><li style="list-style-type:disc">Логи: время/память на шаг, таблица «ΔOOF vs стоимость», AV/PSI отчёт.</li></ul><ul id="2a8568fa-e39f-8070-bf01-c080dd8ef6da" class="bulleted-list"><li style="list-style-type:disc">2 сабмита: базовый и улучшенный фичсет.</li></ul><hr id="2a8568fa-e39f-80c3-b98c-fcc3c3528bd9"/><h2 id="2a8568fa-e39f-8010-b366-fab9b00e3285" class="">13) Чек-лист утечек (версия М11)</h2><ul id="2a8568fa-e39f-8036-a167-db73df1abcce" class="bulleted-list"><li style="list-style-type:disc">Любая статистика по таргету — <strong>только OOF</strong>; TS-агрегаты — <strong>только прошлое</strong> (gap).</li></ul><ul id="2a8568fa-e39f-80f6-9d17-f0deae95c833" class="bulleted-list"><li style="list-style-type:disc">Group-ключи не пересекаются между train/valid; <code>fit</code> не видит valid/test.</li></ul><ul id="2a8568fa-e39f-8023-800c-de251248334a" class="bulleted-list"><li style="list-style-type:disc">Реестр фич содержит поле <code>leakage_guard</code>; оркестратор <strong>фейлит</strong> сборку без него.</li></ul><ul id="2a8568fa-e39f-80d7-9d49-f2a6dabee1c4" class="bulleted-list"><li style="list-style-type:disc">AV/PSI после каждой risk-пачки — обязательный отчёт.</li></ul><hr id="2a8568fa-e39f-8001-9cd5-f791484516ff"/><h2 id="2a8568fa-e39f-8011-9094-d9f4cc1b12db" class="">14) Оценивание</h2><ul id="2a8568fa-e39f-8005-bdfd-f0c7f887fdba" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: отсутствие утечек, валидная CV/time политика.</li></ul><ul id="2a8568fa-e39f-8012-9c5c-c8f333091892" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: устойчивый ΔOOF/ΔLB, низкий std по фолдам, seed-инвариантность.</li></ul><ul id="2a8568fa-e39f-80bc-8529-e71fc8a9080d" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: кэш/подписи, скорость/память, чистые артефакты.</li></ul><ul id="2a8568fa-e39f-807d-85df-d9934dfece63" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: «паспорт фичсета», матрица «прибавка/стоимость», решения по дрифту.</li></ul><hr id="2a8568fa-e39f-80ba-87e4-c9ccf8121d9b"/><h2 id="2a8568fa-e39f-80a5-8d75-dc04435f6003" class="">15) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-800f-b382-f7ab15edd0c4" class="bulleted-list"><li style="list-style-type:disc"><code>features/registry.yaml</code> + шаблоны рецептов.</li></ul><ul id="2a8568fa-e39f-8031-bea5-cca2df8e3337" class="bulleted-list"><li style="list-style-type:disc">Модули: <code>groupby.py</code>, <code>encoders.py</code>, <code>timeseries.py</code>, <code>interactions.py</code>, <code>selectors.py</code>, <code>validate.py</code>, <code>cache.py</code>.</li></ul><ul id="2a8568fa-e39f-80a2-aa12-c0b394dee726" class="bulleted-list"><li style="list-style-type:disc">Оркестратор <code>build_features.py</code> (CLI: выбор профиля/режима OOF/сплита/батча).</li></ul><ul id="2a8568fa-e39f-80e5-b8f9-f36aeb519d42" class="bulleted-list"><li style="list-style-type:disc">Тесты: <strong>determinism</strong>, <strong>no-leak</strong>, <strong>schema-guard</strong>, <strong>time-guard</strong>.</li></ul><ul id="2a8568fa-e39f-809c-935a-f5fec4be1c59" class="bulleted-list"><li style="list-style-type:disc">Шпаргалки: «рецепты на 1 страницу», «OOF-кодировки», «TS-аггрегаты без утечки».</li></ul><hr id="2a8568fa-e39f-804b-baa1-d2706b80b1a5"/><h2 id="2a8568fa-e39f-805d-8b98-c0efc4770075" class="">16) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-8074-b1b7-fc07e40a6fc6" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин:</strong> выбрать профиль (классификация/регрессия/TS), заполнить <code>registry.yaml</code> safe-ядром, прогнать сборку → сабмит_1.</li></ul><ul id="2a8568fa-e39f-804d-8233-defe5dedecf4" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин:</strong> добавить пачку target/TS, OOF/time-guard, пересчёт → ΔOOF.</li></ul><ul id="2a8568fa-e39f-8078-bfec-c80cec4e2588" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> отбор (null→perm), финальный фичсет.</li></ul><ul id="2a8568fa-e39f-80ad-96d3-d4d888fcc62d" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> дрифт-чек (AV/PSI), стресс-сплит, паник-кнопка (урезать risky).</li></ul><ul id="2a8568fa-e39f-80c2-bec0-c04f4c665b21" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> финальный сабмит, «паспорт фичсета», таблица «прибавка/стоимость».</li></ul><p id="2a8568fa-e39f-80e5-af3d-dbdb9da0bedc" class="">Если хочешь, могу сразу накинуть <strong>скелет </strong><code><strong>registry.yaml</strong></code><strong> + каркасы классов </strong><code><strong>Feature</strong></code> под твой текущий темплейт, чтобы команда завтра могла просто дописать рецепты и гонять спринты.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

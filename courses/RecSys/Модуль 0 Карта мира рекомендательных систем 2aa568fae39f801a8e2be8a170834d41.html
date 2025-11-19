@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 0. Карта мира рекомендательных систем</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-801a-8e2b-e8a170834d41" class="page sans"><header><h1 class="page-title">Модуль 0. Карта мира рекомендательных систем</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80ad-bdba-e856b245aae2" class="">0.0. Цели и результаты модуля</h2><p id="2aa568fa-e39f-80a5-8fcf-ec22eadd8f76" class=""><strong>После Модуля 0 студент:</strong></p><ul id="2aa568fa-e39f-80b1-801c-d17edc74784f" class="bulleted-list"><li style="list-style-type:disc">Отличает:<ul id="2aa568fa-e39f-8004-8f3f-e91367351789" class="bulleted-list"><li style="list-style-type:circle">рейтинговые задачи от ранжирования по implicit feedback,</li></ul><ul id="2aa568fa-e39f-800e-8caa-de0f529390af" class="bulleted-list"><li style="list-style-type:circle">user-based сценарии от session-based,</li></ul><ul id="2aa568fa-e39f-8063-b1e2-e1b9536db6a4" class="bulleted-list"><li style="list-style-type:circle">single-objective от multi-objective задач.</li></ul></li></ul><ul id="2aa568fa-e39f-8001-8436-f26481486628" class="bulleted-list"><li style="list-style-type:disc">Понимает, где в реальном мире живут рекомендации: маркетплейсы, видео/музыка, соцсети, игры, финтех и т.д.</li></ul><ul id="2aa568fa-e39f-80b6-9df4-e32eca71ff3f" class="bulleted-list"><li style="list-style-type:disc">Может открыть любой Kaggle/All Cups recsys-конкурс и:<ul id="2aa568fa-e39f-8016-b572-e980162e0be2" class="bulleted-list"><li style="list-style-type:circle">прочитать постановку,</li></ul><ul id="2aa568fa-e39f-80b0-80bd-d29d3ec892d3" class="bulleted-list"><li style="list-style-type:circle">классифицировать задачу,</li></ul><ul id="2aa568fa-e39f-80b8-b3b5-c80ea031ca92" class="bulleted-list"><li style="list-style-type:circle">понять, какие данные даны и какие алгоритмические «семейства» сюда вообще подходят.</li></ul></li></ul><ul id="2aa568fa-e39f-8081-828b-f6fa55594bc0" class="bulleted-list"><li style="list-style-type:disc">Собирает свою первую <strong>мини-карту датасетов</strong> и соревнований, с которыми он будет работать по курсу.</li></ul><hr id="2aa568fa-e39f-80d9-9b9f-dc46f8e5d9a5"/><h2 id="2aa568fa-e39f-8000-981e-fcfe83f65e83" class="">Структура модуля</h2><p id="2aa568fa-e39f-8037-a175-d9c43cf874bf" class="">Предлагаю так:</p><ul id="2aa568fa-e39f-8069-aa88-eb6dbabc0bc0" class="bulleted-list"><li style="list-style-type:disc"><strong>Урок 0.1. Зачем миру рекомендательные системы</strong></li></ul><ul id="2aa568fa-e39f-8008-9835-c3669f3ab047" class="bulleted-list"><li style="list-style-type:disc"><strong>Урок 0.2. Типы задач RecSys</strong></li></ul><ul id="2aa568fa-e39f-8035-b7dd-ec44fd42de6e" class="bulleted-list"><li style="list-style-type:disc"><strong>Урок 0.3. Типы данных и сигналы в RecSys</strong></li></ul><ul id="2aa568fa-e39f-80eb-b672-d078372da1f4" class="bulleted-list"><li style="list-style-type:disc"><strong>Урок 0.4. Обзор реальных соревнований и датасетов + мини-практика</strong></li></ul><p id="2aa568fa-e39f-8099-85ac-daf311a1f1b6" class="">В каждом: теория → мини-практика → домашка.</p><hr id="2aa568fa-e39f-80e8-ad4d-df394e22e35a"/><h2 id="2aa568fa-e39f-8031-b8ea-c5eb1f6cf21d" class="">Урок 0.1. Зачем вообще нужны рекомендательные системы</h2><h3 id="2aa568fa-e39f-8054-bf70-df105d199118" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80b2-a411-fb2eb6c9d2da" class="numbered-list" start="1"><li><strong>Реальные сценарии использования</strong><ul id="2aa568fa-e39f-80a8-9b26-c9db77d16b46" class="bulleted-list"><li style="list-style-type:disc">E-commerce:<ul id="2aa568fa-e39f-809b-a628-c0f9e23b3f79" class="bulleted-list"><li style="list-style-type:circle">«похожие товары»;</li></ul><ul id="2aa568fa-e39f-806d-8c62-c3a231b6ab2a" class="bulleted-list"><li style="list-style-type:circle">«вам также может понравиться»;</li></ul><ul id="2aa568fa-e39f-8015-810b-cc3ec3f623ac" class="bulleted-list"><li style="list-style-type:circle">персонализированная главная;</li></ul><ul id="2aa568fa-e39f-805c-a3c7-fcb98a69b071" class="bulleted-list"><li style="list-style-type:circle">рекомендации в email/пушах.</li></ul></li></ul><ul id="2aa568fa-e39f-800f-afbb-ef83a030b97c" class="bulleted-list"><li style="list-style-type:disc">Контент:<ul id="2aa568fa-e39f-80bf-ba27-d4c98bdeeac6" class="bulleted-list"><li style="list-style-type:circle">ленты соцсетей (TikTok/Instagram Reels/YouTube);</li></ul><ul id="2aa568fa-e39f-803e-899e-f47ce060ec18" class="bulleted-list"><li style="list-style-type:circle">рекомендации видео/музыки/подкастов;</li></ul><ul id="2aa568fa-e39f-802c-a319-ffb8c0e4f48e" class="bulleted-list"><li style="list-style-type:circle">новости и статьи.</li></ul></li></ul><ul id="2aa568fa-e39f-8029-b7b2-c7c0d0c371cf" class="bulleted-list"><li style="list-style-type:disc">Финтех:<ul id="2aa568fa-e39f-808f-8f5b-e1e5bca975dd" class="bulleted-list"><li style="list-style-type:circle">рекомендации продуктов (карты, вклады, кредиты);</li></ul><ul id="2aa568fa-e39f-803f-9b1b-e064fb039a95" class="bulleted-list"><li style="list-style-type:circle">cross-sell/upsell.</li></ul></li></ul><ul id="2aa568fa-e39f-8044-a5c7-f978fc69919d" class="bulleted-list"><li style="list-style-type:disc">Игры:<ul id="2aa568fa-e39f-8007-ad6b-d5f52865b45a" class="bulleted-list"><li style="list-style-type:circle">рекомендация внутриигровых покупок;</li></ul><ul id="2aa568fa-e39f-8004-8230-e899f7172cea" class="bulleted-list"><li style="list-style-type:circle">подбор матчей и тиммейтов (matchmaking).</li></ul></li></ul><ul id="2aa568fa-e39f-8049-ab01-cbc2a991cf2c" class="bulleted-list"><li style="list-style-type:disc">B2B:<ul id="2aa568fa-e39f-806a-b127-d75fdd89d9e1" class="bulleted-list"><li style="list-style-type:circle">рекомендации документов/тасков/репозиториев/коллег.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80fa-8dcc-da4a1016036d" class="numbered-list" start="2"><li><strong>Почему без RecSys всё развалится</strong><ul id="2aa568fa-e39f-80b9-bfae-ef108908a30f" class="bulleted-list"><li style="list-style-type:disc">Количество контента/товаров растёт быстрее, чем внимание пользователя.</li></ul><ul id="2aa568fa-e39f-8022-a2e0-e87e8486387f" class="bulleted-list"><li style="list-style-type:disc">Рекомендации = фильтр шума по интересам + целям бизнеса.</li></ul><ul id="2aa568fa-e39f-804f-bf98-c4988aa53de4" class="bulleted-list"><li style="list-style-type:disc">Основные бизнес-метрики:<ul id="2aa568fa-e39f-80ee-90af-fb2b40642cb6" class="bulleted-list"><li style="list-style-type:circle">CTR, conversion rate (от просмотра к действию);</li></ul><ul id="2aa568fa-e39f-8073-a307-ec96ade559f9" class="bulleted-list"><li style="list-style-type:circle">retention (возвращаемость);</li></ul><ul id="2aa568fa-e39f-80d1-89e2-df085adb82a6" class="bulleted-list"><li style="list-style-type:circle">GMV/выручка;</li></ul><ul id="2aa568fa-e39f-80c1-a769-eca2d86f9abc" class="bulleted-list"><li style="list-style-type:circle">время в продукте.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a7-9a6d-efb98e7a93f6" class="numbered-list" start="3"><li><strong>Грубая карта алгоритмических подходов (без деталей):</strong><ul id="2aa568fa-e39f-8022-bb1e-c2a2280a6e55" class="bulleted-list"><li style="list-style-type:disc">Popularity/easy heuristics.</li></ul><ul id="2aa568fa-e39f-8047-a5e4-c4f092381e11" class="bulleted-list"><li style="list-style-type:disc">Memory-based (CF):<ul id="2aa568fa-e39f-80ef-a807-d1f8279165a1" class="bulleted-list"><li style="list-style-type:circle">user-based, item-based.</li></ul></li></ul><ul id="2aa568fa-e39f-80c5-9de2-c47f195ba552" class="bulleted-list"><li style="list-style-type:disc">Model-based:<ul id="2aa568fa-e39f-8057-b7a9-f570214a20a9" class="bulleted-list"><li style="list-style-type:circle">матричная факторизация, BPR, LightFM, FM/FFM.</li></ul></li></ul><ul id="2aa568fa-e39f-802e-86e8-e12ba8b52560" class="bulleted-list"><li style="list-style-type:disc">Content-based:<ul id="2aa568fa-e39f-801e-9732-e7e6137169b5" class="bulleted-list"><li style="list-style-type:circle">текст/картинки/категории.</li></ul></li></ul><ul id="2aa568fa-e39f-8018-b6c0-d4c6cbcd025f" class="bulleted-list"><li style="list-style-type:disc">Sequence-aware:<ul id="2aa568fa-e39f-80a9-bdf9-f3dea227f370" class="bulleted-list"><li style="list-style-type:circle">RNN/Transformer для сессий.</li></ul></li></ul><ul id="2aa568fa-e39f-801c-9ca9-fbb3e84e54c2" class="bulleted-list"><li style="list-style-type:disc">Graph-based:<ul id="2aa568fa-e39f-809f-b6f9-d7f7aea00031" class="bulleted-list"><li style="list-style-type:circle">LightGCN, PinSage, user–item графы.</li></ul></li></ul><ul id="2aa568fa-e39f-80e7-8488-f3dd4fedcefa" class="bulleted-list"><li style="list-style-type:disc">Multi-objective, бандиты, контекст, re-ranking и т.д.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e6-b763-dcdbb1e55be9" class="numbered-list" start="4"><li><strong>Как будет устроен курс</strong><ul id="2aa568fa-e39f-804e-be7d-f8319d988167" class="bulleted-list"><li style="list-style-type:disc">Каркас: от простых бейзлайнов → к CF/MF → к sequence/graph → к production пайплайнам.</li></ul><ul id="2aa568fa-e39f-80b1-af08-ee191635bd99" class="bulleted-list"><li style="list-style-type:disc">В каждом модуле: <strong>теория → практика на 1–2 реальных датасетах → разбор топ-решений</strong>.</li></ul><ul id="2aa568fa-e39f-809d-a521-c903a6b0db77" class="bulleted-list"><li style="list-style-type:disc">Итог: капстоун-проект уровня «топ-решение для большого соревнования».</li></ul></li></ol><h3 id="2aa568fa-e39f-8079-be54-cb736fbcd852" class="">Мини-практика на уроке</h3><ul id="2aa568fa-e39f-8014-8dd7-f24b279e8c58" class="bulleted-list"><li style="list-style-type:disc">Обсуждение: студенты приводят 2–3 любимых продукта, где явно есть рекомендации, и пытаются описать:<ul id="2aa568fa-e39f-8023-bf54-ff9f92cd6c14" class="bulleted-list"><li style="list-style-type:circle">что именно им рекомендуют;</li></ul><ul id="2aa568fa-e39f-80c6-8ec5-e189f9fb1dcd" class="bulleted-list"><li style="list-style-type:circle">какие сигналы, по их мнению, используются;</li></ul><ul id="2aa568fa-e39f-80a3-85d0-c5e87463a574" class="bulleted-list"><li style="list-style-type:circle">какая цель у продукта (польза vs выручка и т.п.).</li></ul></li></ul><h3 id="2aa568fa-e39f-802a-a9f0-e41f7d985406" class="">Домашка 0.1</h3><ul id="2aa568fa-e39f-8041-9583-ea5965b12800" class="bulleted-list"><li style="list-style-type:disc">Написать короткий текст (1–2 страницы или структурированный список) на тему:<ul id="2aa568fa-e39f-80e4-8f25-f81ad70240b7" class="bulleted-list"><li style="list-style-type:circle">«3 продукта, где я сталкиваюсь с рекомендациями каждый день»;</li></ul><ul id="2aa568fa-e39f-8048-9b04-e0c3d39247b7" class="bulleted-list"><li style="list-style-type:circle">для каждого:<ul id="2aa568fa-e39f-80a8-a7a2-e6517cbb57b6" class="bulleted-list"><li style="list-style-type:square"><strong>что</strong> рекомендуют;</li></ul><ul id="2aa568fa-e39f-80b1-89cf-c450cf54fad8" class="bulleted-list"><li style="list-style-type:square"><strong>на основании чего</strong> (гипотеза);</li></ul><ul id="2aa568fa-e39f-8031-9b54-f0c7895b575c" class="bulleted-list"><li style="list-style-type:square">какая <strong>бизнес-цель</strong> у этих рекомендаций;</li></ul><ul id="2aa568fa-e39f-8045-a1e4-e08f096ab2ca" class="bulleted-list"><li style="list-style-type:square">какие могут быть <strong>риски/минусы</strong> (filter bubble, навязывание, манипуляции).</li></ul></li></ul></li></ul><hr id="2aa568fa-e39f-80c8-8a5c-f9eb1c01641b"/><h2 id="2aa568fa-e39f-8024-92d4-d8aa57deb8f1" class="">Урок 0.2. Типы задач в рекомендательных системах</h2><h3 id="2aa568fa-e39f-8053-8c44-e5b9b3dfee62" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-807a-917a-d3a934aede1b" class="numbered-list" start="1"><li><strong>Rating prediction (explicit feedback)</strong><ul id="2aa568fa-e39f-8005-8a19-df7d2bc26354" class="bulleted-list"><li style="list-style-type:disc">У нас есть оценки (1–5 звёзд, лайки/дизлайки).</li></ul><ul id="2aa568fa-e39f-80ff-aa9a-ecb206ea4b10" class="bulleted-list"><li style="list-style-type:disc">Классическая постановка: предсказать рейтинг.</li></ul><ul id="2aa568fa-e39f-8010-aed5-e90cf84da21b" class="bulleted-list"><li style="list-style-type:disc">Исторически: Netflix Prize, MovieLens.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-802a-99bb-d95f9749a3b1" class="numbered-list" start="2"><li><strong>Implicit feedback</strong><ul id="2aa568fa-e39f-80e5-95e3-c8fc6ade0353" class="bulleted-list"><li style="list-style-type:disc">Нет явных оценок, только события:<ul id="2aa568fa-e39f-80ae-a191-e2cc3b76a7d3" class="bulleted-list"><li style="list-style-type:circle">просмотр, клик, добавление в корзину, покупка, лайк, подписка.</li></ul></li></ul><ul id="2aa568fa-e39f-804f-bb71-e976eaace877" class="bulleted-list"><li style="list-style-type:disc">Логика: «смотрел/кликнул/купил» — сигнал интереса, но с шумом.</li></ul><ul id="2aa568fa-e39f-806b-8280-dd1428a4859e" class="bulleted-list"><li style="list-style-type:disc">Задачи:<ul id="2aa568fa-e39f-8013-9ada-ff94c19ab7fe" class="bulleted-list"><li style="list-style-type:circle">«предсказать вероятность взаимодействия»;</li></ul><ul id="2aa568fa-e39f-809d-b767-daa03bd7aadd" class="bulleted-list"><li style="list-style-type:circle">«выбрать топ-K объектов, максимизирующих какую-то метрику».</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803c-99b8-ed0543f4e2d3" class="numbered-list" start="3"><li><strong>Ranking vs scoring</strong><ul id="2aa568fa-e39f-804b-bff5-f1bd088a4f20" class="bulleted-list"><li style="list-style-type:disc">Про задачи ранжирования:<ul id="2aa568fa-e39f-8029-9688-c2b25d726b12" class="bulleted-list"><li style="list-style-type:circle">не просто предсказать вероятность/рейтинг, а <strong>упорядочить</strong> список кандидатов.</li></ul></li></ul><ul id="2aa568fa-e39f-803b-9d05-d36016cd4418" class="bulleted-list"><li style="list-style-type:disc">Pointwise vs pairwise vs listwise — обзор на уровне идей.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8013-9895-d32dd968b62d" class="numbered-list" start="4"><li><strong>Sequential / session-based рекомендации</strong><ul id="2aa568fa-e39f-807d-a47f-dd942d218ce2" class="bulleted-list"><li style="list-style-type:disc">Next-item prediction:<ul id="2aa568fa-e39f-807e-814a-cb674177d227" class="bulleted-list"><li style="list-style-type:circle">предсказать следующий товар/трек/видео в последовательности.</li></ul></li></ul><ul id="2aa568fa-e39f-805c-acb2-f332e1fed9cb" class="bulleted-list"><li style="list-style-type:disc">Session-based:<ul id="2aa568fa-e39f-80c7-afe4-cebfc6eb69e6" class="bulleted-list"><li style="list-style-type:circle">у нас только сессии, пользователя либо нет, либо он «одноразовый».</li></ul></li></ul><ul id="2aa568fa-e39f-8020-95ee-c114be7cb6eb" class="bulleted-list"><li style="list-style-type:disc">Примеры:<ul id="2aa568fa-e39f-8094-919c-c2c149ed2c3e" class="bulleted-list"><li style="list-style-type:circle">рекомендации товаров в корзину,</li></ul><ul id="2aa568fa-e39f-802b-8e72-c3eef5a8c1a5" class="bulleted-list"><li style="list-style-type:circle">автоплей в видео/музыке,</li></ul><ul id="2aa568fa-e39f-80e0-8417-cb2541078fed" class="bulleted-list"><li style="list-style-type:circle">«люди также смотрели» внутри сессии.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8053-b9f0-ee9931d0884e" class="numbered-list" start="5"><li><strong>Multi-objective / multi-task</strong><ul id="2aa568fa-e39f-80bf-847c-d4839aa8137a" class="bulleted-list"><li style="list-style-type:disc">Несколько действий:<ul id="2aa568fa-e39f-80ac-b41c-fc58e6720dda" class="bulleted-list"><li style="list-style-type:circle">просмотр → клик → добавление в корзину → покупка;</li></ul><ul id="2aa568fa-e39f-8043-81e4-d1557852d77c" class="bulleted-list"><li style="list-style-type:circle">подписка / share / комментарий.</li></ul></li></ul><ul id="2aa568fa-e39f-8047-837f-e93a4817b30c" class="bulleted-list"><li style="list-style-type:disc">Можно:<ul id="2aa568fa-e39f-80d9-b555-f8e65efca944" class="bulleted-list"><li style="list-style-type:circle">оптимизировать один финальный таргет,</li></ul><ul id="2aa568fa-e39f-808d-b46f-fa35e1711a0d" class="bulleted-list"><li style="list-style-type:circle">или строить multi-head модель.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808e-be43-fdd4a9dc5be8" class="numbered-list" start="6"><li><strong>Специальные типы задач:</strong><ul id="2aa568fa-e39f-8049-89a3-db8a84ff7031" class="bulleted-list"><li style="list-style-type:disc">«similar items» / «similar users»;</li></ul><ul id="2aa568fa-e39f-80b6-8d4e-f85d6192173e" class="bulleted-list"><li style="list-style-type:disc">friend recommendation (соцсети);</li></ul><ul id="2aa568fa-e39f-8037-a308-c83be622ad9e" class="bulleted-list"><li style="list-style-type:disc">«related content» (википедия, статьи);</li></ul><ul id="2aa568fa-e39f-8042-8e9b-f82c1f30e811" class="bulleted-list"><li style="list-style-type:disc">mix search + рекомендации (search as a candidate generator).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a9-b2aa-cb8f2bdf750a" class="numbered-list" start="7"><li><strong>Задачи, которые мы точно будем разбирать на курсе:</strong><ul id="2aa568fa-e39f-80c7-b09b-ede92865f8e8" class="bulleted-list"><li style="list-style-type:disc">Предсказание имплицитных взаимодействий (click/interaction);</li></ul><ul id="2aa568fa-e39f-80fe-b344-c17b04d7c2cf" class="bulleted-list"><li style="list-style-type:disc">next-item / session-based;</li></ul><ul id="2aa568fa-e39f-800f-8b8c-e91239292678" class="bulleted-list"><li style="list-style-type:disc">multi-objective e-commerce;</li></ul><ul id="2aa568fa-e39f-80ba-8292-db74318593e8" class="bulleted-list"><li style="list-style-type:disc">«top-N рекомендация» для каталога (типичная production-задача).</li></ul></li></ol><h3 id="2aa568fa-e39f-80ce-bc82-f44473eaa93f" class="">Мини-практика на уроке</h3><ul id="2aa568fa-e39f-8017-8ecf-f9636595cbe1" class="bulleted-list"><li style="list-style-type:disc">Дать студентам 5–6 описаний задач (в стиле текстов с Kaggle/All Cups, но упрощённых) и попросить:<ul id="2aa568fa-e39f-8072-b8b2-fd1b82ccbed3" class="bulleted-list"><li style="list-style-type:circle">классифицировать каждую по:<ul id="2aa568fa-e39f-8025-a082-c83072b5fc84" class="bulleted-list"><li style="list-style-type:square">explicit vs implicit;</li></ul><ul id="2aa568fa-e39f-801c-9a45-f733c3b4f5e6" class="bulleted-list"><li style="list-style-type:square">rating prediction vs ranking vs next-item vs multi-objective;</li></ul></li></ul><ul id="2aa568fa-e39f-80f7-be22-e6925048539b" class="bulleted-list"><li style="list-style-type:circle">указать, какие бизнес-метрики там, скорее всего, важнее всего.</li></ul></li></ul><h3 id="2aa568fa-e39f-80a9-936b-c4f208a85016" class="">Домашка 0.2</h3><ul id="2aa568fa-e39f-8035-86d8-f758becc5a3c" class="bulleted-list"><li style="list-style-type:disc">Выбрать 2–3 реальных соревнования/датасета (список ты им заранее даёшь) и для каждого заполнить шаблон:<ul id="2aa568fa-e39f-8058-80bf-e72db9822de2" class="bulleted-list"><li style="list-style-type:circle">Как называется задача?</li></ul><ul id="2aa568fa-e39f-8097-b685-d1468654a5d4" class="bulleted-list"><li style="list-style-type:circle">Какие есть сущности? (user, item, session, context…)</li></ul><ul id="2aa568fa-e39f-8002-9829-f1c3ea15ba2a" class="bulleted-list"><li style="list-style-type:circle">Какой <strong>таргет</strong>?</li></ul><ul id="2aa568fa-e39f-802c-8c10-dbdb6461fbc2" class="bulleted-list"><li style="list-style-type:circle">Это explicit или implicit?</li></ul><ul id="2aa568fa-e39f-8027-a129-fb1fc74eab76" class="bulleted-list"><li style="list-style-type:circle">Это rating, ranking, next-item, multi-objective?</li></ul><ul id="2aa568fa-e39f-8080-b3ca-c263533f1e5f" class="bulleted-list"><li style="list-style-type:circle">Какие бизнес-метрики могли бы быть важны?</li></ul><ul id="2aa568fa-e39f-8058-bd81-c2e0176a1b8c" class="bulleted-list"><li style="list-style-type:circle">Какие offline-метрики, скорее всего, используются (Recall@K, MAP@K, RMSE и т.д.)?</li></ul></li></ul><hr id="2aa568fa-e39f-80ec-969e-d12b30e830a7"/><h2 id="2aa568fa-e39f-8024-b3b5-d8bb9d449f08" class="">Урок 0.3. Какие бывают данные в RecSys</h2><h3 id="2aa568fa-e39f-808d-b6fe-d2b79748489d" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80ac-a6bc-f5c0575af2b3" class="numbered-list" start="1"><li><strong>User–Item матрица</strong><ul id="2aa568fa-e39f-80f1-8b41-fa5552849be4" class="bulleted-list"><li style="list-style-type:disc">Стандартное представление:<ul id="2aa568fa-e39f-8004-aabc-cdef0e11912d" class="bulleted-list"><li style="list-style-type:circle">строки — пользователи,</li></ul><ul id="2aa568fa-e39f-804f-ba03-fd66f76bc806" class="bulleted-list"><li style="list-style-type:circle">столбцы — предметы,</li></ul><ul id="2aa568fa-e39f-80a1-9632-eeb464cec12b" class="bulleted-list"><li style="list-style-type:circle">значения — признаки взаимодействия (рейтинг, число кликов, бинарный сигнал).</li></ul></li></ul><ul id="2aa568fa-e39f-802c-b13c-f95dad76169e" class="bulleted-list"><li style="list-style-type:disc">Проблема разреженности:<ul id="2aa568fa-e39f-8084-aeaa-f9357421992b" class="bulleted-list"><li style="list-style-type:circle">почти всё — нули;</li></ul><ul id="2aa568fa-e39f-80f7-a729-ece51b5b9b37" class="bulleted-list"><li style="list-style-type:circle">почему эта разреженность и есть главная боль RecSys.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8076-9078-f2051690fd2b" class="numbered-list" start="2"><li><strong>Лог событий</strong><ul id="2aa568fa-e39f-8068-9987-c5e54da5ce3f" class="bulleted-list"><li style="list-style-type:disc">Формат:<ul id="2aa568fa-e39f-808b-a16c-ebb31f951614" class="bulleted-list"><li style="list-style-type:circle">user_id / session_id / item_id / timestamp / type (view/click/cart/order) / device / geo / и т.д.</li></ul></li></ul><ul id="2aa568fa-e39f-8080-b1d3-c3f6ace04d04" class="bulleted-list"><li style="list-style-type:disc">Важность временного порядка и контекста.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8055-b981-fcf70c3d3969" class="numbered-list" start="3"><li><strong>Сайд-фичи пользователя (user features)</strong><ul id="2aa568fa-e39f-80cd-85b7-e1712827bbbd" class="bulleted-list"><li style="list-style-type:disc">Явные:<ul id="2aa568fa-e39f-8038-be58-f05cc8551a72" class="bulleted-list"><li style="list-style-type:circle">возраст, пол, локация, язык, платёжная история и т.д.</li></ul></li></ul><ul id="2aa568fa-e39f-803f-95b4-d24d83d95691" class="bulleted-list"><li style="list-style-type:disc">Латентные/derived:<ul id="2aa568fa-e39f-80e3-8d21-e121e9f5fa26" class="bulleted-list"><li style="list-style-type:circle">кластер интересов (любитель хорроров, фанат электроники);</li></ul><ul id="2aa568fa-e39f-804a-9e52-f5f1cd5234b2" class="bulleted-list"><li style="list-style-type:circle">исторические фичи (сколько покупок, средний чек, время активности).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8056-97e4-d2ebde1077d1" class="numbered-list" start="4"><li><strong>Сайд-фичи предмета (item features)</strong><ul id="2aa568fa-e39f-80dd-8f6a-e81172e05868" class="bulleted-list"><li style="list-style-type:disc">Категорические:<ul id="2aa568fa-e39f-80d1-af7c-c6c2c5c5c675" class="bulleted-list"><li style="list-style-type:circle">категория, бренд, цвет, размер, жанр, автор.</li></ul></li></ul><ul id="2aa568fa-e39f-800d-8b8c-c52e510b2e2e" class="bulleted-list"><li style="list-style-type:disc">Числовые:<ul id="2aa568fa-e39f-80eb-aaea-e22b927c7acc" class="bulleted-list"><li style="list-style-type:circle">цена, скидка, рейтинг, продажи за период.</li></ul></li></ul><ul id="2aa568fa-e39f-802c-86b7-dace6ae2b6f6" class="bulleted-list"><li style="list-style-type:disc">Текст:<ul id="2aa568fa-e39f-80e0-951b-d32f0f5afb0f" class="bulleted-list"><li style="list-style-type:circle">title, description → bag-of-words/TF-IDF/embeddings.</li></ul></li></ul><ul id="2aa568fa-e39f-80bd-b7b3-d68903d4eb81" class="bulleted-list"><li style="list-style-type:disc">Мультимедиа:<ul id="2aa568fa-e39f-8001-80b2-fb632254dcb0" class="bulleted-list"><li style="list-style-type:circle">изображение товара,</li></ul><ul id="2aa568fa-e39f-80b9-aca6-d428821b24cd" class="bulleted-list"><li style="list-style-type:circle">превью видео,</li></ul><ul id="2aa568fa-e39f-807b-bab6-d3b27cab55ec" class="bulleted-list"><li style="list-style-type:circle">аудиофичи треков.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8087-bd83-f825a7e3895e" class="numbered-list" start="5"><li><strong>Контекстные фичи</strong><ul id="2aa568fa-e39f-8037-9f2e-ded9fb9c0445" class="bulleted-list"><li style="list-style-type:disc">Время (час, день недели, праздник/не праздник);</li></ul><ul id="2aa568fa-e39f-80df-a323-faa3a22dceee" class="bulleted-list"><li style="list-style-type:disc">Устройство (mobile/desktop, iOS/Android);</li></ul><ul id="2aa568fa-e39f-8058-9e21-d6ce5ec18b2d" class="bulleted-list"><li style="list-style-type:disc">Канал (органический/рекламный/пуш);</li></ul><ul id="2aa568fa-e39f-8073-93a1-ee3db50def82" class="bulleted-list"><li style="list-style-type:disc">Локация (страна, город, регион).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8097-9755-c97bfbc843aa" class="numbered-list" start="6"><li><strong>Графовое представление</strong><ul id="2aa568fa-e39f-8069-8617-f0a7e9334718" class="bulleted-list"><li style="list-style-type:disc">User–Item граф;</li></ul><ul id="2aa568fa-e39f-8022-8beb-fe4c4aad0f29" class="bulleted-list"><li style="list-style-type:disc">Item–Item граф (ребро = co-view/co-buy);</li></ul><ul id="2aa568fa-e39f-80ce-ac4b-d485755e5f22" class="bulleted-list"><li style="list-style-type:disc">User–User (похожие пользователи);</li></ul><ul id="2aa568fa-e39f-8014-9cb2-fa6b3616e2bb" class="bulleted-list"><li style="list-style-type:disc">Почему графы удобны для:<ul id="2aa568fa-e39f-8094-9f71-f0c2f85adb5b" class="bulleted-list"><li style="list-style-type:circle">эмбеддингов,</li></ul><ul id="2aa568fa-e39f-803a-a5c5-df3602746fb3" class="bulleted-list"><li style="list-style-type:circle">«прогулок» по интересам.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ed-93d2-ec61c36b9c7d" class="numbered-list" start="7"><li><strong>Связь между видом данных и классом моделей</strong><ul id="2aa568fa-e39f-8053-a239-d679b53d3f8c" class="bulleted-list"><li style="list-style-type:disc">Когда достаточно только матрицы (CF/MF).</li></ul><ul id="2aa568fa-e39f-800a-b2d0-ed10c0b501d6" class="bulleted-list"><li style="list-style-type:disc">Когда критичны side-features → гибридные модели.</li></ul><ul id="2aa568fa-e39f-804b-9393-c876f3bbe40a" class="bulleted-list"><li style="list-style-type:disc">Когда появляется явный граф → GNN.</li></ul><ul id="2aa568fa-e39f-8067-a76f-c9f611c4c1f4" class="bulleted-list"><li style="list-style-type:disc">Когда очень важен порядок событий → sequence models.</li></ul></li></ol><h3 id="2aa568fa-e39f-8081-a1ef-e433f898aca1" class="">Мини-практика на уроке</h3><ul id="2aa568fa-e39f-80e0-a17d-faae17fd7a40" class="bulleted-list"><li style="list-style-type:disc">Взять упрощённый лог событий (псевдо-табличку) и:<ul id="2aa568fa-e39f-80f7-8c9c-c7f7d9d440a3" class="bulleted-list"><li style="list-style-type:circle">выделить user–item матрицу;</li></ul><ul id="2aa568fa-e39f-804a-88ae-f9ff79a3819f" class="bulleted-list"><li style="list-style-type:circle">придумать 3 user-фичи и 3 item-фичи, которые можно из него агрегировать;</li></ul><ul id="2aa568fa-e39f-80e3-95d7-c4c94acbcd0c" class="bulleted-list"><li style="list-style-type:circle">придумать хотя бы 2 контекстные фичи.</li></ul></li></ul><h3 id="2aa568fa-e39f-803b-ad5f-cae1eb92023d" class="">Домашка 0.3</h3><ul id="2aa568fa-e39f-8078-8760-e86db7aeee95" class="bulleted-list"><li style="list-style-type:disc">По одному выбранному датасету (из списка курса):<ul id="2aa568fa-e39f-80cb-afc1-cab52c6c1562" class="bulleted-list"><li style="list-style-type:circle">описать:<ul id="2aa568fa-e39f-806b-9497-c3cc21215610" class="bulleted-list"><li style="list-style-type:square">какие сущности есть (user/item/session/context);</li></ul><ul id="2aa568fa-e39f-805d-a3cb-ecf6d015ba10" class="bulleted-list"><li style="list-style-type:square">какие признаки можно сделать:<ul id="2aa568fa-e39f-80ce-ae26-c25270eff19c" class="bulleted-list"><li style="list-style-type:disc">для пользователя;</li></ul><ul id="2aa568fa-e39f-8046-b89e-c0788f04c461" class="bulleted-list"><li style="list-style-type:disc">для товара;</li></ul><ul id="2aa568fa-e39f-8073-9fa3-d980fb22857e" class="bulleted-list"><li style="list-style-type:disc">для взаимодействия (pair features);</li></ul></li></ul><ul id="2aa568fa-e39f-8004-9f23-eeac9dc24f8f" class="bulleted-list"><li style="list-style-type:square">какие графы можно из этого построить (какие вершины и рёбра?).</li></ul></li></ul></li></ul><hr id="2aa568fa-e39f-805d-81cb-c797c1b7952e"/><h2 id="2aa568fa-e39f-806c-b4b9-c0f92b9eafb3" class="">Урок 0.4. Обзор реальных соревнований и мини-практика</h2><h3 id="2aa568fa-e39f-805d-9369-c796d70dcd0c" class="">Теория (обзорно)</h3><ol type="1" id="2aa568fa-e39f-80ad-b30f-f4f6d924a753" class="numbered-list" start="1"><li><strong>Что такое RecSys-соревнование</strong><ul id="2aa568fa-e39f-8057-b41c-f6bb3c498273" class="bulleted-list"><li style="list-style-type:disc">Описание задачи, dataset, evaluation, submission format.</li></ul><ul id="2aa568fa-e39f-807b-93a2-dea87d222849" class="bulleted-list"><li style="list-style-type:disc">Что обычно есть в description:<ul id="2aa568fa-e39f-8083-aee8-fd55f4d1b8ca" class="bulleted-list"><li style="list-style-type:circle">постановка;</li></ul><ul id="2aa568fa-e39f-8071-9778-fbbf1f7ffc9c" class="bulleted-list"><li style="list-style-type:circle">доступные данные;</li></ul><ul id="2aa568fa-e39f-8096-af80-e604574370a9" class="bulleted-list"><li style="list-style-type:circle">метрика;</li></ul><ul id="2aa568fa-e39f-8094-a3e9-db126b9931da" class="bulleted-list"><li style="list-style-type:circle">baseline/стартовый ноутбук;</li></ul><ul id="2aa568fa-e39f-8084-97fc-e23449445951" class="bulleted-list"><li style="list-style-type:circle">ограничения по времени/ресурсам.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8001-90a8-f0f7de6ce6af" class="numbered-list" start="2"><li><strong>Типовой набор реальных RecSys-competitions (Kaggle/All Cups/RecSys Challenge)</strong><ul id="2aa568fa-e39f-8001-9bdb-e17a65b4406f" class="bulleted-list"><li style="list-style-type:disc">Примеры:<ul id="2aa568fa-e39f-809a-ba36-f5a9a8312685" class="bulleted-list"><li style="list-style-type:circle">классические movie/ratings задачи;</li></ul><ul id="2aa568fa-e39f-80d1-83d0-f4aad8d6b84b" class="bulleted-list"><li style="list-style-type:circle">крупные e-commerce конкурсы;</li></ul><ul id="2aa568fa-e39f-80e5-9fa9-f70e9ac6182a" class="bulleted-list"><li style="list-style-type:circle">session-based/next-item;</li></ul><ul id="2aa568fa-e39f-802a-b0b2-c754d199771c" class="bulleted-list"><li style="list-style-type:circle">multi-objective;</li></ul><ul id="2aa568fa-e39f-803d-98e0-e8b42dabb0b9" class="bulleted-list"><li style="list-style-type:circle">контент/новости/музыка.</li></ul></li></ul><ul id="2aa568fa-e39f-80a0-82b6-d0b171eb4815" class="bulleted-list"><li style="list-style-type:disc">Как по описанию быстро:<ul id="2aa568fa-e39f-8079-b70d-f06937620f85" class="bulleted-list"><li style="list-style-type:circle">определить тип задачи (то, чему учились в Уроке 0.2);</li></ul><ul id="2aa568fa-e39f-80c5-99c4-de69610a55c8" class="bulleted-list"><li style="list-style-type:circle">понять структуры данных (то, чему учились в Уроке 0.3).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8025-b4be-eae9754f8dd9" class="numbered-list" start="3"><li><strong>Как мы будем использовать соревнования в курсе</strong><ul id="2aa568fa-e39f-8002-8918-c6c7be2f526e" class="bulleted-list"><li style="list-style-type:disc">Каждый модуль = 1–2 датасета:<ul id="2aa568fa-e39f-80d0-a66a-ee8ae0e829c0" class="bulleted-list"><li style="list-style-type:circle">модуль CF/MF — датасет с рейтингами/implicit feedback;</li></ul><ul id="2aa568fa-e39f-8002-a6f1-d1a46fc5e58d" class="bulleted-list"><li style="list-style-type:circle">модуль sequence — session-based датасет;</li></ul><ul id="2aa568fa-e39f-80fa-92e8-fe2f165c783a" class="bulleted-list"><li style="list-style-type:circle">модуль multi-objective — multi-event датасет;</li></ul><ul id="2aa568fa-e39f-8039-927b-cfc13a8defdd" class="bulleted-list"><li style="list-style-type:circle">модуль graph — датасет, где легко построить граф;</li></ul><ul id="2aa568fa-e39f-8016-9060-d275f609b69a" class="bulleted-list"><li style="list-style-type:circle">финальные модули — крупные промышленные соревнования.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8070-9e05-ccbaa1d56499" class="numbered-list" start="4"><li><strong>Карта курса по датасетам</strong><ul id="2aa568fa-e39f-80e7-865c-d39d45aed1b4" class="bulleted-list"><li style="list-style-type:disc">Прямо рисуешь mindmap:<ul id="2aa568fa-e39f-8081-8f5c-c3782238f571" class="bulleted-list"><li style="list-style-type:circle">ось «тип задачи»;</li></ul><ul id="2aa568fa-e39f-8082-b162-ca9ee0a51add" class="bulleted-list"><li style="list-style-type:circle">ось «датасеты/соревнования»;</li></ul><ul id="2aa568fa-e39f-8027-9cf2-facb8dd03e39" class="bulleted-list"><li style="list-style-type:circle">в каждом модуле потом возвращаешься к этой карте и подсвечиваешь, что мы закрыли.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8034-a695-e85e46ccf57e" class="">Практика на уроке</h3><ul id="2aa568fa-e39f-8065-8597-dbc55346211e" class="bulleted-list"><li style="list-style-type:disc">Разделить студентов на группы, каждой группе выдать <strong>описание соревнования</strong> (можно слегка адаптировать описания реальных).</li></ul><ul id="2aa568fa-e39f-8088-a24d-d017f7a130eb" class="bulleted-list"><li style="list-style-type:disc">Задание:<ul id="2aa568fa-e39f-8004-90d6-ddb5907e21e7" class="bulleted-list"><li style="list-style-type:circle">прочитать постановку;</li></ul><ul id="2aa568fa-e39f-8056-bf50-cc2862c519d1" class="bulleted-list"><li style="list-style-type:circle">заполнить шаблон:<ul id="2aa568fa-e39f-801d-8166-d807ac4d6396" class="bulleted-list"><li style="list-style-type:square">тип задачи (rating/implicit ranking/next-item/multi-objective);</li></ul><ul id="2aa568fa-e39f-8082-a477-c1241ea5e85e" class="bulleted-list"><li style="list-style-type:square">какие доступны фичи (user, item, context);</li></ul><ul id="2aa568fa-e39f-801c-bbaf-e1db2a8df30b" class="bulleted-list"><li style="list-style-type:square">есть ли явная структура сессий;</li></ul><ul id="2aa568fa-e39f-8020-9de0-e9d5f4708a26" class="bulleted-list"><li style="list-style-type:square">что за метрика и что она поощряет;</li></ul></li></ul><ul id="2aa568fa-e39f-801c-8cac-d520cf903463" class="bulleted-list"><li style="list-style-type:circle">сделать краткий питч 3–5 минут: «Почему это интересный RecSys-кейс и чем он опасен/сложен».</li></ul></li></ul><h3 id="2aa568fa-e39f-8063-8dc9-c6b74d1ffb36" class="">Домашка 0.4 (итоговая по модулю)</h3><ul id="2aa568fa-e39f-80d8-8459-f6b46588631d" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>личную карту мира RecSys</strong> в виде mindmap/таблицы:<ol type="1" id="2aa568fa-e39f-8087-bdf1-e6a253a97af5" class="numbered-list" start="1"><li>Столбцы:<ul id="2aa568fa-e39f-8006-8e73-f2f52497e6c8" class="bulleted-list"><li style="list-style-type:disc">Название датасета/соревнования;</li></ul><ul id="2aa568fa-e39f-800c-b368-c0547eb07b47" class="bulleted-list"><li style="list-style-type:disc">Тип задачи;</li></ul><ul id="2aa568fa-e39f-809a-a8e5-e8fa574f8034" class="bulleted-list"><li style="list-style-type:disc">Основные сущности (user/item/session/context);</li></ul><ul id="2aa568fa-e39f-80e0-920e-ea0e40f9553f" class="bulleted-list"><li style="list-style-type:disc">Тип таргета;</li></ul><ul id="2aa568fa-e39f-80bd-9654-d62f3772fa39" class="bulleted-list"><li style="list-style-type:disc">Возможные подходы (по твоей текущей интуиции: popularity/CF/MF/sequence/graph/hybrid);</li></ul><ul id="2aa568fa-e39f-8020-8771-c43b57c8594b" class="bulleted-list"><li style="list-style-type:disc">Основные сложности.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-804e-be0f-db847199f69c" class="numbered-list" start="2"><li>Мини-эссе (0.5–1 страница):<ul id="2aa568fa-e39f-804c-81d3-c82479fa22b9" class="bulleted-list"><li style="list-style-type:disc">«В каких типах задач RecSys мне сейчас субъективно интереснее всего копать и почему?»</li></ul></li></ol></li></ul><hr id="2aa568fa-e39f-80a1-9f3e-dc025a59e29c"/><h2 id="2aa568fa-e39f-8075-8618-ecde89b8ca10" class="">Чекпоинт по окончании Модуля 0</h2><p id="2aa568fa-e39f-80d3-bc06-ceca7dcd567b" class="">Можно сделать маленький тест/квиз + устно/письменно:</p><ol type="1" id="2aa568fa-e39f-80fd-940f-dd43e2bf7ef7" class="numbered-list" start="1"><li><strong>Теория:</strong><ul id="2aa568fa-e39f-80e8-bafb-ef5d821b50e1" class="bulleted-list"><li style="list-style-type:disc">5–10 вопросов на:<ul id="2aa568fa-e39f-8099-a6c1-f23b552d71ba" class="bulleted-list"><li style="list-style-type:circle">распознавание типа задачи по описанию;</li></ul><ul id="2aa568fa-e39f-80aa-8370-c968b241cf19" class="bulleted-list"><li style="list-style-type:circle">различие explicit vs implicit;</li></ul><ul id="2aa568fa-e39f-80af-9b9c-fbe73e623bb9" class="bulleted-list"><li style="list-style-type:circle">что такое user–item матрица;</li></ul><ul id="2aa568fa-e39f-803a-b243-f0e232083a0c" class="bulleted-list"><li style="list-style-type:circle">что такое session-based;</li></ul><ul id="2aa568fa-e39f-8045-8c92-d71300e22ee4" class="bulleted-list"><li style="list-style-type:circle">примеры side-features.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e9-aa10-da45eeb33261" class="numbered-list" start="2"><li><strong>Практика:</strong><ul id="2aa568fa-e39f-808a-8eb4-d428f2582903" class="bulleted-list"><li style="list-style-type:disc">Студент получает короткое описание новой задачи + схему данных и должен:<ul id="2aa568fa-e39f-8085-9b39-db503bcf9f48" class="bulleted-list"><li style="list-style-type:circle">классифицировать задачу;</li></ul><ul id="2aa568fa-e39f-80d7-bd2e-c2f7444bdb7e" class="bulleted-list"><li style="list-style-type:circle">перечислить NO LESS THAN 3 классов моделей, которые потенциально подойдут;</li></ul><ul id="2aa568fa-e39f-8062-918c-fc3e15ccdad5" class="bulleted-list"><li style="list-style-type:circle">объяснить, какие данные/фичи он бы использовал.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-80de-89bf-fa79150628a9"/><p id="2aa568fa-e39f-80f7-a1a0-d43fee8b17ba" class="">Если хочешь, дальше могу сделать:</p><ul id="2aa568fa-e39f-8075-b091-da0d42325dd6" class="bulleted-list"><li style="list-style-type:disc">либо <strong>полный план урока 0.4</strong> с конкретными соревнованиями и ссылками (Kaggle/All Cups),</li></ul><ul id="2aa568fa-e39f-80e5-bf27-e3d2161a2c25" class="bulleted-list"><li style="list-style-type:disc">либо сразу перейти к <strong>Модулю 1</strong> и расписать его уже с конкретными ноутбуками, метриками и бейзлайнами. Что двигаем следующим?</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

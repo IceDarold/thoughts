@@ -1,0 +1,792 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 4.2. Explicit MF: biased MF, регуляризация и связь с топ-K</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-805d-a055-ead4415adbd0" class="page sans"><header><h1 class="page-title">Урок 4.2. Explicit MF: biased MF, регуляризация и связь с топ-K</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80e4-9e55-d3a73dcddf66" class="">1. Цели урока</h2><p id="2aa568fa-e39f-8044-b4f4-ebba0092d6b3" class=""><strong>После урока студент:</strong></p><ul id="2aa568fa-e39f-801d-8a9f-c5c6f5a12d7b" class="bulleted-list"><li style="list-style-type:disc">понимает, зачем нужны:<ul id="2aa568fa-e39f-8016-a342-d18d22259b9b" class="bulleted-list"><li style="list-style-type:circle">глобальное среднее <code>μ</code>,</li></ul><ul id="2aa568fa-e39f-8041-bb5b-f2914f8c4e17" class="bulleted-list"><li style="list-style-type:circle">user-bias <code>b_u</code>,</li></ul><ul id="2aa568fa-e39f-80c4-add9-cd2f9fc9bb3b" class="bulleted-list"><li style="list-style-type:circle">item-bias <code>b_i</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-8030-8eae-c971128c1053" class="bulleted-list"><li style="list-style-type:disc">умеет записать модель:<p id="2aa568fa-e39f-8062-a98a-e6487717c240" class="">[</p><p id="2aa568fa-e39f-8063-b829-c02d5c927ee5" class="">\hat{r}_{u,i} = μ + b_u + b_i + \langle p_u, q_i \rangle</p><p id="2aa568fa-e39f-80ce-a0ab-fdc514b20354" class="">]</p></li></ul><ul id="2aa568fa-e39f-8024-b2a5-f47c9cdbb82d" class="bulleted-list"><li style="list-style-type:disc">понимает функцию потерь biased MF и роль регуляризации:<p id="2aa568fa-e39f-8066-8a28-db68782c33d7" class="">[</p><p id="2aa568fa-e39f-800f-af14-d00068e0d8c2" class="">L = \sum_{(u,i)\in \Omega} (r_{u,i} - \hat{r}_{u,i})^2 + \lambda(|p_u|^2 + |q_i|^2 + b_u^2 + b_i^2)</p><p id="2aa568fa-e39f-807d-a793-e5b00492dc44" class="">]</p></li></ul><ul id="2aa568fa-e39f-80ad-8d06-e8d0dc3437e3" class="bulleted-list"><li style="list-style-type:disc">умеет реализовать <strong>biased MF на SGD</strong> (доработать SimpleMF из 4.1);</li></ul><ul id="2aa568fa-e39f-8035-84c5-e41b53b138ad" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2aa568fa-e39f-80c8-9ff9-d2b3e85218ab" class="bulleted-list"><li style="list-style-type:circle">считать RMSE для ratings;</li></ul><ul id="2aa568fa-e39f-8037-ad4a-fddd3b1e93ff" class="bulleted-list"><li style="list-style-type:circle">посчитать хотя бы одну top-K метрику (например, Recall@K или NDCG@K) поверх предсказанных рейтингов;</li></ul></li></ul><ul id="2aa568fa-e39f-80c7-8a90-ebc1a28bf2d0" class="bulleted-list"><li style="list-style-type:disc">понимает, почему <strong>минимизация RMSE ≠ оптимизация ранжирования</strong>, и как эти вещи могут расходиться.</li></ul><hr id="2aa568fa-e39f-807d-8e42-c9b8eb0445aa"/><h2 id="2aa568fa-e39f-8011-869d-fc3069b34dc2" class="">2. Предварительные знания</h2><p id="2aa568fa-e39f-8079-8612-f39fb54c5df3" class="">Студенты уже умеют:</p><ul id="2aa568fa-e39f-8078-bea6-f72b0f08a850" class="bulleted-list"><li style="list-style-type:disc">работать с матрицей <code>user × item</code>;</li></ul><ul id="2aa568fa-e39f-8097-b2e3-ead114e2fd01" class="bulleted-list"><li style="list-style-type:disc">реализовать простую MF без bias (урок 4.1);</li></ul><ul id="2aa568fa-e39f-8050-aa5c-cd7c8a83d64d" class="bulleted-list"><li style="list-style-type:disc">считать RMSE, Recall@K, NDCG@K (модуль 2);</li></ul><ul id="2aa568fa-e39f-8056-af5c-ca6c39765631" class="bulleted-list"><li style="list-style-type:disc">реализовать бейзлайны: mean per item, item-based CF (модуль 3).</li></ul><hr id="2aa568fa-e39f-8022-a7a5-eb730fff8c46"/><h2 id="2aa568fa-e39f-8000-b510-cb5a5a2539eb" class="">3. План урока (пример на 90 минут)</h2><ol type="1" id="2aa568fa-e39f-80a1-945f-d67fd769e447" class="numbered-list" start="1"><li>Быстрое повторение и мотивация — 10 мин</li></ol><ol type="1" id="2aa568fa-e39f-80d9-ab1f-ced3a638c3f6" class="numbered-list" start="2"><li>Теория: biases, biased MF, роль регуляризации — 25 мин</li></ol><ol type="1" id="2aa568fa-e39f-8065-953b-f3887f68ae5a" class="numbered-list" start="3"><li>Live coding: расширяем SimpleMF → BiasedMF — 30 мин</li></ol><ol type="1" id="2aa568fa-e39f-807b-a7d5-c0f082854137" class="numbered-list" start="4"><li>Простейшая top-K оценка и сравнение моделей — 15 мин</li></ol><ol type="1" id="2aa568fa-e39f-80f0-a026-d4da83420ea8" class="numbered-list" start="5"><li>Резюме + выдача ДЗ — 10 мин</li></ol><hr id="2aa568fa-e39f-801e-b662-d3465381f160"/><h2 id="2aa568fa-e39f-8072-a55c-c376f71b5f5b" class="">4. Теория</h2><h3 id="2aa568fa-e39f-809e-a1c0-ca108ad14db2" class="">4.1. Почему простая MF без bias — не всегда ок</h3><p id="2aa568fa-e39f-800b-89f3-fd48d5d6365b" class="">Проблема: пользователи и товары сильно различаются по «базовости».</p><ul id="2aa568fa-e39f-80cb-87df-ff4803d633d8" class="bulleted-list"><li style="list-style-type:disc">Некоторые пользователи:<ul id="2aa568fa-e39f-8091-a31d-ce0d547ad851" class="bulleted-list"><li style="list-style-type:circle">«добренькие» — почти всем ставят 4–5;</li></ul><ul id="2aa568fa-e39f-80f7-9484-d96141a8e81c" class="bulleted-list"><li style="list-style-type:circle">«злые» — почти всегда 1–3.</li></ul></li></ul><ul id="2aa568fa-e39f-80f2-a31b-efe87945e118" class="bulleted-list"><li style="list-style-type:disc">Некоторые фильмы/товары:<ul id="2aa568fa-e39f-8087-bc89-c1ba70e68764" class="bulleted-list"><li style="list-style-type:circle">«универсально любимые» → даже требовательные ставят им 4–5;</li></ul><ul id="2aa568fa-e39f-80c2-9f2d-d31b3fe5e699" class="bulleted-list"><li style="list-style-type:circle">«проходные» → даже лояльные ставят 2–3.</li></ul></li></ul><p id="2aa568fa-e39f-8037-8962-f54f8361525f" class="">Если игнорировать это и всё объяснять только скалярным произведением <code>p_u^T q_i</code>:</p><ul id="2aa568fa-e39f-8002-8944-c5b5d9e8b17b" class="bulleted-list"><li style="list-style-type:disc">факторы будут пытаться одновременно моделировать:<ul id="2aa568fa-e39f-80ae-98cd-d5e2eb7b8105" class="bulleted-list"><li style="list-style-type:circle">вкус пользователя,</li></ul><ul id="2aa568fa-e39f-80c9-b3f1-d8664fd348b2" class="bulleted-list"><li style="list-style-type:circle">«общую классность» item’а,</li></ul><ul id="2aa568fa-e39f-8059-96ff-f2f71d33ff29" class="bulleted-list"><li style="list-style-type:circle">общую смещённость рейтингов.</li></ul></li></ul><p id="2aa568fa-e39f-8004-a449-c7e504f0881b" class="">Лучше разделить:</p><ul id="2aa568fa-e39f-801f-8a91-ea50812e5e96" class="bulleted-list"><li style="list-style-type:disc">глобальный уровень рейтингов (<code>μ</code>),</li></ul><ul id="2aa568fa-e39f-800a-891f-ead67f647ccc" class="bulleted-list"><li style="list-style-type:disc">«насколько этот пользователь в среднем выше/ниже среднего» (<code>b_u</code>),</li></ul><ul id="2aa568fa-e39f-80f3-a15c-eee7f79244ac" class="bulleted-list"><li style="list-style-type:disc">«насколько этот item в среднем выше/ниже среднего» (<code>b_i</code>),</li></ul><ul id="2aa568fa-e39f-80ed-9bfb-ed489bff4faa" class="bulleted-list"><li style="list-style-type:disc">и уже остаток объяснять латентными факторами.</li></ul><h3 id="2aa568fa-e39f-8091-8bf5-f607f24072d2" class="">4.2. Biased MF: модель</h3><p id="2aa568fa-e39f-800f-9484-d7f83dff7b07" class="">Вводим:</p><ul id="2aa568fa-e39f-80dd-b97e-c2fea3d2645a" class="bulleted-list"><li style="list-style-type:disc"><code>μ</code> — глобальное среднее всех рейтингов в train:<p id="2aa568fa-e39f-8086-b071-f3d6a497bcb7" class="">[</p><p id="2aa568fa-e39f-80ad-8135-eb1195f0f126" class="">μ = \frac{1}{|\Omega|} \sum_{(u,i)\in\Omega} r_{u,i}</p><p id="2aa568fa-e39f-8094-b5c7-cafe6d05f3e4" class="">]</p></li></ul><ul id="2aa568fa-e39f-8077-b6d4-def902132367" class="bulleted-list"><li style="list-style-type:disc"><code>b_u</code> — user-bias: насколько пользователь <code>u</code> обычно выше/ниже <code>μ</code>;</li></ul><ul id="2aa568fa-e39f-8090-a2d2-db2ac93c2fbe" class="bulleted-list"><li style="list-style-type:disc"><code>b_i</code> — item-bias: насколько item <code>i</code> обычно выше/ниже <code>μ</code>.</li></ul><p id="2aa568fa-e39f-8008-8735-e0d6bb7b7d4c" class="">Модель:</p><p id="2aa568fa-e39f-8080-a1bc-e60ca0e5cd68" class="">[</p><p id="2aa568fa-e39f-809a-893e-e3a4ef2ddd15" class="">\hat{r}_{u,i} = μ + b_u + b_i + \langle p_u, q_i \rangle</p><p id="2aa568fa-e39f-806b-897c-ff530d6a5b5c" class="">]</p><p id="2aa568fa-e39f-802c-a495-fe989ad087e6" class="">Интерпретация:</p><ul id="2aa568fa-e39f-803b-9e85-efde71cac353" class="bulleted-list"><li style="list-style-type:disc"><code>μ</code> — «средний рейтинг вообще»;</li></ul><ul id="2aa568fa-e39f-801d-a808-d650adafffec" class="bulleted-list"><li style="list-style-type:disc"><code>b_u</code> — поправка «этот пользователь в среднем +0.3 к среднему»;</li></ul><ul id="2aa568fa-e39f-8066-878b-f8516a1d1f4d" class="bulleted-list"><li style="list-style-type:disc"><code>b_i</code> — «этот фильм в среднем +0.5 к среднему»;</li></ul><ul id="2aa568fa-e39f-80f3-9daf-dd314e29f74b" class="bulleted-list"><li style="list-style-type:disc"><code>p_u^T q_i</code> — «насколько именно этому пользователю именно этот фильм заходит сверх общей тенденции».</li></ul><h3 id="2aa568fa-e39f-807d-ae34-c8f98d7601ff" class="">4.3. Функция потерь</h3><p id="2aa568fa-e39f-8083-92c5-e1b01957e51a" class="">Берём explicit MF и добавляем biases:</p><p id="2aa568fa-e39f-80e5-a608-c116c8f49b46" class="">[</p><p id="2aa568fa-e39f-8098-828c-dbb3b7d169b4" class="">L = \sum_{(u,i)\in\Omega} (r_{u,i} - μ - b_u - b_i - \langle p_u, q_i \rangle)^2 + \lambda \left( \sum_u |p_u|^2 + \sum_i |q_i|^2 + \sum_u b_u^2 + \sum_i b_i^2 \right)</p><p id="2aa568fa-e39f-80bc-8054-c887f74e0ee1" class="">]</p><ul id="2aa568fa-e39f-80c0-8148-e54372a8251e" class="bulleted-list"><li style="list-style-type:disc">Первая часть: MSE на известных рейтингах.</li></ul><ul id="2aa568fa-e39f-8006-b9d9-fcf007179b56" class="bulleted-list"><li style="list-style-type:disc">Вторая часть: регуляризация:<ul id="2aa568fa-e39f-80be-b3c5-f3b45240c76d" class="bulleted-list"><li style="list-style-type:circle">penalize большие <code>p_u</code>, <code>q_i</code> (сложность латентного пространства),</li></ul><ul id="2aa568fa-e39f-80de-905b-cc1f7f48d831" class="bulleted-list"><li style="list-style-type:circle">penalize большие <code>b_u</code>, <code>b_i</code> (смещения тоже не должны раздуваться бесконечно).</li></ul></li></ul><p id="2aa568fa-e39f-80f4-9867-fd4e679371b5" class="">Интуиция регуляризации:</p><ul id="2aa568fa-e39f-8066-85b7-f92de65fa1ad" class="bulleted-list"><li style="list-style-type:disc">без неё модель может подогнаться под шум:<ul id="2aa568fa-e39f-80dd-aabd-fbabf49fbbfd" class="bulleted-list"><li style="list-style-type:circle">каждому пользователю/товару дать «дико специфичный» bias/факторы;</li></ul></li></ul><ul id="2aa568fa-e39f-8097-8acb-c73726ed10cd" class="bulleted-list"><li style="list-style-type:disc">с ней модель предпочитает более «простое» объяснение:<ul id="2aa568fa-e39f-803b-a162-db984ac19551" class="bulleted-list"><li style="list-style-type:circle">ближе к нулю факторы/смещения, если нет сильного сигнала.</li></ul></li></ul><h3 id="2aa568fa-e39f-80ee-ab1a-fd0a3a76d8b2" class="">4.4. SGD-обновления для biased MF</h3><p id="2aa568fa-e39f-80f0-a699-c991968ca278" class="">Для одной пары <code>(u, i, r_ui)</code>:</p><ol type="1" id="2aa568fa-e39f-8075-bf7f-dfedb6432e58" class="numbered-list" start="1"><li>Предсказание:<p id="2aa568fa-e39f-801d-9e2b-f3dd5e6232a6" class="">[</p><p id="2aa568fa-e39f-80a7-a817-dc00277b34f5" class="">\hat{r}_{u,i} = μ + b_u + b_i + \langle p_u, q_i \rangle</p><p id="2aa568fa-e39f-805c-905e-f391b362904a" class="">]</p></li></ol><ol type="1" id="2aa568fa-e39f-800e-8f5b-e5c3d0826791" class="numbered-list" start="2"><li>Ошибка:<p id="2aa568fa-e39f-80f6-ad9e-f16505c3416c" class="">[</p><p id="2aa568fa-e39f-8022-9b26-d19287e5a383" class="">e_{u,i} = r_{u,i} - \hat{r}_{u,i}</p><p id="2aa568fa-e39f-80ec-97dd-fc86328e523a" class="">]</p></li></ol><ol type="1" id="2aa568fa-e39f-8013-abfd-e784fc1458b1" class="numbered-list" start="3"><li>Обновления (learning rate — <code>lr</code>):<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-808a-8022-c8a2790447fb" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">b_u ← b_u + lr * (e_ui - λ * b_u)
+b_i ← b_i + lr * (e_ui - λ * b_i)
+
+p_u ← p_u + lr * (e_ui * q_i - λ * p_u)
+q_i ← q_i + lr * (e_ui * p_u - λ * q_i)
+</code></pre></li></ol><ul id="2aa568fa-e39f-80b3-9223-d339ecdc65b1" class="bulleted-list"><li style="list-style-type:disc"><code>e_ui</code> тянет параметры в сторону уменьшения ошибки.</li></ul><ul id="2aa568fa-e39f-80d0-a71a-dee0cc94e52d" class="bulleted-list"><li style="list-style-type:disc"><code>λ * param</code> — «сила» регуляризации, которая тянет параметр к 0.</li></ul><h3 id="2aa568fa-e39f-806f-9364-e24fce3fb4d4" class="">4.5. Регуляризация, переобучение и early stopping</h3><p id="2aa568fa-e39f-804b-90b7-dbd75b820512" class="">Важно проговорить:</p><ul id="2aa568fa-e39f-80cd-aef1-e05e73a2d257" class="bulleted-list"><li style="list-style-type:disc">Если λ слишком маленький:<ul id="2aa568fa-e39f-8082-a500-d349deeda070" class="bulleted-list"><li style="list-style-type:circle">модель может идеально выучить train, но плохо работать на val;</li></ul></li></ul><ul id="2aa568fa-e39f-802f-baf6-f32d9f3c0034" class="bulleted-list"><li style="list-style-type:disc">Если λ слишком большой:<ul id="2aa568fa-e39f-80c0-9646-d0e0bcb1e97e" class="bulleted-list"><li style="list-style-type:circle">модель слишком «плоская» и плохо описывает данные (undreft).</li></ul></li></ul><p id="2aa568fa-e39f-803a-992a-d674f01899d1" class="">Практика:</p><ul id="2aa568fa-e39f-807b-a6af-ccb1880ab840" class="bulleted-list"><li style="list-style-type:disc">на каждом epoch:<ul id="2aa568fa-e39f-80c0-b000-cf3bda1daee7" class="bulleted-list"><li style="list-style-type:circle">считать RMSE на validation;</li></ul><ul id="2aa568fa-e39f-80c2-b175-d66012ed509c" class="bulleted-list"><li style="list-style-type:circle">можно делать <strong>early stopping</strong>:<ul id="2aa568fa-e39f-80d5-a167-cf8020b432c2" class="bulleted-list"><li style="list-style-type:square">если RMSE_val не улучшается Х эпох подряд — остановиться.</li></ul></li></ul></li></ul><h3 id="2aa568fa-e39f-805a-a2ee-c814f74f58f5" class="">4.6. Как из biased MF сделать топ-K рекомендации</h3><p id="2aa568fa-e39f-80f8-9eb8-c9f75739c4fd" class="">Хотя мы оптимизируем MSE, всё равно можно использовать:</p><ul id="2aa568fa-e39f-809f-9e0b-fa57f42956bf" class="bulleted-list"><li style="list-style-type:disc">для каждого пользователя:<ul id="2aa568fa-e39f-80cd-949b-e7a54e554382" class="bulleted-list"><li style="list-style-type:circle">считаем <code>\hat{r}_{u,i}</code> для всех (или большого поднабора) items;</li></ul><ul id="2aa568fa-e39f-80f9-bb1e-ca4a47a0c720" class="bulleted-list"><li style="list-style-type:circle">сортируем по убыванию;</li></ul><ul id="2aa568fa-e39f-80e6-8fd8-e8706e69379d" class="bulleted-list"><li style="list-style-type:circle">берём top-K;</li></ul></li></ul><ul id="2aa568fa-e39f-802e-91f0-e9187d570070" class="bulleted-list"><li style="list-style-type:disc">считаем <code>Recall@K</code>, <code>NDCG@K</code> по уже знакомому eval-фреймворку.</li></ul><p id="2aa568fa-e39f-807b-905d-c92251cd2e0b" class="">Обсуждение:</p><ul id="2aa568fa-e39f-8080-bc44-e4105303d2ec" class="bulleted-list"><li style="list-style-type:disc">MF под MSE оптимизирует «точность чисел», а не ранжирование:<ul id="2aa568fa-e39f-80dd-9a51-dc3bb26d3bc6" class="bulleted-list"><li style="list-style-type:circle">две модели могут иметь очень близкий RMSE, но давать заметно разные top-K;</li></ul><ul id="2aa568fa-e39f-808c-a0e2-d21c5b0e6da9" class="bulleted-list"><li style="list-style-type:circle">иногда модель с чуть большим RMSE даёт лучшую NDCG@K.</li></ul></li></ul><p id="2aa568fa-e39f-8018-a009-f5ebcabe3da2" class="">Это подводка к тому, зачем нам потом <strong>BPR</strong> (pairwise) — но сегодня просто фиксируем факт.</p><hr id="2aa568fa-e39f-80b0-9994-f3841b23b38c"/><h2 id="2aa568fa-e39f-80e7-83b9-f187aa029592" class="">5. Практика (live coding)</h2><p id="2aa568fa-e39f-80c0-b19a-e3967e4b9a6a" class="">Используем тот же датасет, что на 4.1.</p><h3 id="2aa568fa-e39f-8086-ae4f-ebc9c0be0a68" class="">5.1. Напоминание SimpleMF</h3><p id="2aa568fa-e39f-8026-8a87-f28d8c4fa67d" class="">У нас есть что-то такое:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80e9-b088-d0e6461ba70b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class SimpleMF:
+    def __init__(self, n_users, n_items, n_factors=20, lr=0.01, reg=0.1, n_epochs=10):
+        self.n_users = n_users
+        self.n_items = n_items
+        self.n_factors = n_factors
+        self.lr = lr
+        self.reg = reg
+        self.n_epochs = n_epochs
+
+        self.P = 0.01 * np.random.randn(n_users, n_factors)
+        self.Q = 0.01 * np.random.randn(n_items, n_factors)
+
+    def predict(self, u, i):
+        return np.dot(self.P[u], self.Q[i])
+
+    def fit(self, train_data, val_data=None):
+        ...
+</code></pre><h3 id="2aa568fa-e39f-804d-9d76-f3a338f3a929" class="">5.2. Расширяем до BiasedMF</h3><p id="2aa568fa-e39f-8072-aebc-fe35845abbd9" class="">Шаг 1. Добавляем параметры <code>μ</code>, <code>b_u</code>, <code>b_i</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80a3-9c36-cb286f93c49a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class BiasedMF:
+    def __init__(self, n_users, n_items, n_factors=20, lr=0.01, reg=0.1, n_epochs=10):
+        self.n_users = n_users
+        self.n_items = n_items
+        self.n_factors = n_factors
+        self.lr = lr
+        self.reg = reg
+        self.n_epochs = n_epochs
+
+        self.P = 0.01 * np.random.randn(n_users, n_factors)
+        self.Q = 0.01 * np.random.randn(n_items, n_factors)
+
+        # user/item biases
+        self.b_u = np.zeros(n_users)
+        self.b_i = np.zeros(n_items)
+
+        # global mean
+        self.mu = 0.0
+</code></pre><p id="2aa568fa-e39f-80fd-a3a6-d17f184d6711" class="">Шаг 2. Предсказание:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80fa-a7ed-ebc287e1ec9a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">    def predict(self, u, i):
+        return self.mu + self.b_u[u] + self.b_i[i] + np.dot(self.P[u], self.Q[i])
+</code></pre><p id="2aa568fa-e39f-809e-9f9a-fbb43c62389f" class="">Шаг 3. fit: считаем <code>mu</code>, потом SGD-обучение:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80e5-9e1c-d68bf85c4cee" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">    def fit(self, train_data, val_data=None):
+        # train_data: np.array [N, 3]: (u, i, r)
+
+        # считаем глобальное среднее
+        self.mu = np.mean(train_data[:, 2])
+
+        for epoch in range(self.n_epochs):
+            np.random.shuffle(train_data)
+            for u, i, r in train_data:
+                u = int(u); i = int(i)
+                r_hat = self.predict(u, i)
+                e = r - r_hat
+
+                # обновления biases
+                self.b_u[u] += self.lr * (e - self.reg * self.b_u[u])
+                self.b_i[i] += self.lr * (e - self.reg * self.b_i[i])
+
+                # обновления факторов
+                p_u = self.P[u]
+                q_i = self.Q[i]
+
+                self.P[u] += self.lr * (e * q_i - self.reg * p_u)
+                self.Q[i] += self.lr * (e * p_u - self.reg * q_i)
+
+            if val_data is not None:
+                rmse = self.evaluate_rmse(val_data)
+                print(f&quot;Epoch {epoch+1}/{self.n_epochs}, val RMSE: {rmse:.4f}&quot;)
+
+    def evaluate_rmse(self, data):
+        se = 0.0
+        for u, i, r in data:
+            u = int(u); i = int(i)
+            r_hat = self.predict(u, i)
+            se += (r - r_hat) ** 2
+        return np.sqrt(se / len(data))
+</code></pre><p id="2aa568fa-e39f-80d1-8a2e-cc8b1b5a9e01" class="">На уроке:</p><ul id="2aa568fa-e39f-805f-83fa-d1c0666b3c48" class="bulleted-list"><li style="list-style-type:disc">запускаем обучение на 5–10 эпохах;</li></ul><ul id="2aa568fa-e39f-809a-81a7-d24e8b3f8048" class="bulleted-list"><li style="list-style-type:disc">смотрим, как ведёт себя валидационный RMSE;</li></ul><ul id="2aa568fa-e39f-80c6-a94e-dd7aaff64057" class="bulleted-list"><li style="list-style-type:disc">сравниваем с SimpleMF (без bias):<ul id="2aa568fa-e39f-80b7-8376-fa7d9e228f0b" class="bulleted-list"><li style="list-style-type:circle">biased MF почти всегда даёт ниже RMSE.</li></ul></li></ul><h3 id="2aa568fa-e39f-807b-b394-fd3e49dedf61" class="">5.3. Простая top-K оценка из biased MF</h3><p id="2aa568fa-e39f-80c7-8c1a-c7f9eb41c28c" class="">Для одного пользователя <code>u</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80dc-b6e7-d579d8f95d9c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_top_k(model, user_id, known_items, k=10):
+    # known_items: set item’ов, которые пользователь уже оценивал (чтобы при желании их не рекомендовать)
+    scores = []
+    for i in range(model.n_items):
+        if i in known_items:
+            continue
+        scores.append((i, model.predict(user_id, i)))
+    scores.sort(key=lambda x: x[1], reverse=True)
+    return [i for i, s in scores[:k]]
+</code></pre><p id="2aa568fa-e39f-80fb-a860-ed1977d8fe5a" class="">Дальше:</p><ul id="2aa568fa-e39f-8016-bd94-dcb74f5d134f" class="bulleted-list"><li style="list-style-type:disc">с помощью eval-фреймворка (из модуля 2) считаем Recall@K или NDCG@K для biased MF,</li></ul><ul id="2aa568fa-e39f-80e3-927b-dc58233e2b12" class="bulleted-list"><li style="list-style-type:disc">сравниваем с:<ul id="2aa568fa-e39f-806d-bbb9-e892ce1ddede" class="bulleted-list"><li style="list-style-type:circle">mean per item,</li></ul><ul id="2aa568fa-e39f-80eb-b362-e82bb9cba10c" class="bulleted-list"><li style="list-style-type:circle">item-based CF,</li></ul><ul id="2aa568fa-e39f-805c-837d-f49466277df2" class="bulleted-list"><li style="list-style-type:circle">SimpleMF.</li></ul></li></ul><hr id="2aa568fa-e39f-80b7-9682-d9237dd70831"/><h2 id="2aa568fa-e39f-8047-bb0c-c1702ddba5d1" class="">6. Мини-задания на уроке</h2><p id="2aa568fa-e39f-8021-8d26-cbd129f275e2" class="">Можно дать 10–15 минут самостоятельной работы:</p><ol type="1" id="2aa568fa-e39f-804e-8016-f8a74bf79540" class="numbered-list" start="1"><li><strong>Поиграться с регуляризацией:</strong><ul id="2aa568fa-e39f-80d7-b741-da97e6fa3231" class="bulleted-list"><li style="list-style-type:disc">запустить BiasedMF с:<ul id="2aa568fa-e39f-80e7-af12-f56a06f6319a" class="bulleted-list"><li style="list-style-type:circle"><code>reg = 0.01</code>,</li></ul><ul id="2aa568fa-e39f-801f-8706-ebf732b53fcc" class="bulleted-list"><li style="list-style-type:circle"><code>reg = 0.1</code>,</li></ul><ul id="2aa568fa-e39f-8090-b018-e5e89b6644c8" class="bulleted-list"><li style="list-style-type:circle"><code>reg = 1.0</code>,</li></ul></li></ul><ul id="2aa568fa-e39f-80c0-9933-ddb18b189d2e" class="bulleted-list"><li style="list-style-type:disc">записать val RMSE по эпохам,</li></ul><ul id="2aa568fa-e39f-805a-bf01-ef0905604ced" class="bulleted-list"><li style="list-style-type:disc">заметить:<ul id="2aa568fa-e39f-80d9-884a-fc19f66f560f" class="bulleted-list"><li style="list-style-type:circle">при маленьком <code>reg</code> — возможно переобучение (RMSE_train ↓, RMSE_val растёт/замирает),</li></ul><ul id="2aa568fa-e39f-80dc-b165-d75379a2c73f" class="bulleted-list"><li style="list-style-type:circle">при слишком большом — модель не учится.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8065-a754-c645511a858d" class="numbered-list" start="2"><li><strong>Сравнить SimpleMF и BiasedMF:</strong><ul id="2aa568fa-e39f-8071-9978-def3af40e37c" class="bulleted-list"><li style="list-style-type:disc">для одинаковых <code>n_factors</code>, <code>lr</code>, <code>reg</code>:<ul id="2aa568fa-e39f-80e8-b977-ed7bbfc4b52c" class="bulleted-list"><li style="list-style-type:circle">сравнить RMSE;</li></ul><ul id="2aa568fa-e39f-807e-8742-d1813b2be023" class="bulleted-list"><li style="list-style-type:circle">посчитать Recall@K / NDCG@K на маленьком подмножестве пользователей;</li></ul></li></ul><ul id="2aa568fa-e39f-80c7-82e0-d65b6ac75387" class="bulleted-list"><li style="list-style-type:disc">сделать вывод: насколько сильно помогли biases.</li></ul></li></ol><hr id="2aa568fa-e39f-802a-a1c2-c8ae434066c3"/><h2 id="2aa568fa-e39f-806c-a5b6-d1442cc27860" class="">7. Домашнее задание к уроку 4.2</h2><h3 id="2aa568fa-e39f-8083-90a0-d8758774e6b0" class="">Обязательная часть</h3><ol type="1" id="2aa568fa-e39f-80e2-a703-d9ef69d40528" class="numbered-list" start="1"><li><strong>Сравнение моделей на rating-датасете</strong><p id="2aa568fa-e39f-80c7-bf94-d628028152c3" class="">Взять:</p><ul id="2aa568fa-e39f-80bf-b3d8-d11fd6708ada" class="bulleted-list"><li style="list-style-type:disc">baseline 1: <strong>mean per item</strong>:<ul id="2aa568fa-e39f-8098-ae7c-e9088e7006b4" class="bulleted-list"><li style="list-style-type:circle">предсказывать для каждого <code>(u, i)</code> средний рейтинг item’а по train;</li></ul></li></ul><ul id="2aa568fa-e39f-8064-848d-e4f7f2038699" class="bulleted-list"><li style="list-style-type:disc">baseline 2: <strong>SimpleMF</strong> (без bias);</li></ul><ul id="2aa568fa-e39f-8070-98ee-fc2a8f1e13fd" class="bulleted-list"><li style="list-style-type:disc">модель 3: <strong>BiasedMF</strong>.</li></ul><p id="2aa568fa-e39f-802e-8dc9-f778c240e99e" class="">Для всех трёх:</p><ul id="2aa568fa-e39f-804d-99cd-d7f1c6930552" class="bulleted-list"><li style="list-style-type:disc">посчитать RMSE на validation;</li></ul><ul id="2aa568fa-e39f-802c-81f9-dc309cb8acf1" class="bulleted-list"><li style="list-style-type:disc">посчитать хотя бы одну top-K метрику (например, Recall@10) для пользователей, у которых в val есть хотя бы 1 «релевантный» item (можно считать релевантным rating ≥ 4).</li></ul><p id="2aa568fa-e39f-80cf-a3d5-d21f23543f2f" class="">Оформить табличку:</p><table id="2aa568fa-e39f-8082-bfb9-db18f45589ac" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-80b7-bddf-c9fc543714bd"><th id="dvYI" class="simple-table-header-color simple-table-header">Модель</th><th id="hTtS" class="simple-table-header-color simple-table-header">RMSE (val)</th><th id="f=p;" class="simple-table-header-color simple-table-header">Recall@10</th><th id="=v[^" class="simple-table-header-color simple-table-header">NDCG@10 (опц.)</th><th id="nyNq" class="simple-table-header-color simple-table-header">Комментарий</th></tr></thead><tbody><tr id="2aa568fa-e39f-8054-84eb-db8c70b6dae1"><td id="dvYI" class="">Mean per item</td><td id="hTtS" class=""></td><td id="f=p;" class=""></td><td id="=v[^" class=""></td><td id="nyNq" class=""></td></tr><tr id="2aa568fa-e39f-80ee-9c90-fb38cf96b486"><td id="dvYI" class="">SimpleMF</td><td id="hTtS" class=""></td><td id="f=p;" class=""></td><td id="=v[^" class=""></td><td id="nyNq" class=""></td></tr><tr id="2aa568fa-e39f-8058-9357-e6e24ccc5f3d"><td id="dvYI" class="">BiasedMF</td><td id="hTtS" class=""></td><td id="f=p;" class=""></td><td id="=v[^" class=""></td><td id="nyNq" class=""></td></tr></tbody></table><p id="2aa568fa-e39f-8008-af92-ce497109adbf" class="">И краткий вывод:</p><ul id="2aa568fa-e39f-803e-907f-eda62178e2ba" class="bulleted-list"><li style="list-style-type:disc">кто лучший по RMSE;</li></ul><ul id="2aa568fa-e39f-804d-b5be-c16b60a39ef0" class="bulleted-list"><li style="list-style-type:disc">кто лучший по Recall@10;</li></ul><ul id="2aa568fa-e39f-8027-bdb3-f3c5520050fa" class="bulleted-list"><li style="list-style-type:disc">совпадают ли «лидеры» по RMSE и Recall@10.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8007-9e29-d1b994c00a35" class="numbered-list" start="2"><li><strong>Тюнинг гиперпараметров BiasedMF</strong><ul id="2aa568fa-e39f-80f0-a453-d0489dcec474" class="bulleted-list"><li style="list-style-type:disc">выбрать сетку:<ul id="2aa568fa-e39f-80b7-bcb0-c28fafb96c0a" class="bulleted-list"><li style="list-style-type:circle"><code>n_factors ∈ {10, 20, 50}</code>,</li></ul><ul id="2aa568fa-e39f-8024-9bbf-d3f47110d37d" class="bulleted-list"><li style="list-style-type:circle"><code>reg ∈ {0.01, 0.1, 0.5}</code>,</li></ul></li></ul><ul id="2aa568fa-e39f-8091-afe0-fdb426c72b8e" class="bulleted-list"><li style="list-style-type:disc">протестировать 3–4 комбинации (не обязательно полный грид, чтобы не умереть);</li></ul><ul id="2aa568fa-e39f-804a-86b0-f090a38f6bee" class="bulleted-list"><li style="list-style-type:disc">выбрать лучшую по RMSE_val (или по Recall@10 — в идеале и то, и то);</li></ul><ul id="2aa568fa-e39f-8079-aa4d-f6e6731bb2fb" class="bulleted-list"><li style="list-style-type:disc">записать:<ul id="2aa568fa-e39f-80e8-b76a-f0b4ea625055" class="bulleted-list"><li style="list-style-type:circle">какие гиперпараметры оказались лучшими;</li></ul><ul id="2aa568fa-e39f-8037-9ebd-cdc0a8cca20e" class="bulleted-list"><li style="list-style-type:circle">как сильно они влияли на качество (разница в RMSE/Recall@10).</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-809c-ade8-e9b6cffa6ec1" class="">Продвинутая часть (опционально)</h3><ol type="1" id="2aa568fa-e39f-80bb-9833-eff875ec5df2" class="numbered-list" start="1"><li><strong>Анализ по пользователям:</strong><ul id="2aa568fa-e39f-807e-8ae0-e21b2ced39d2" class="bulleted-list"><li style="list-style-type:disc">Посчитать <strong>персональный RMSE</strong> для части пользователей:<ul id="2aa568fa-e39f-8013-919b-fc55da6441f8" class="bulleted-list"><li style="list-style-type:circle">взять 50–100 user’ов,</li></ul><ul id="2aa568fa-e39f-80f9-a70f-d480e9e6119e" class="bulleted-list"><li style="list-style-type:circle">посчитать RMSE только по их рейтингам;</li></ul></li></ul><ul id="2aa568fa-e39f-806e-b609-cfab4f68d1d4" class="bulleted-list"><li style="list-style-type:disc">посмотреть:<ul id="2aa568fa-e39f-8096-b09d-edb8acc0bc15" class="bulleted-list"><li style="list-style-type:circle">есть ли пользователи, для которых модель очень плохая;</li></ul><ul id="2aa568fa-e39f-8047-b293-cc194ab3ec03" class="bulleted-list"><li style="list-style-type:circle">есть ли связь между RMSE и количеством рейтингов пользователя (разреженность профиля).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d8-9f44-dfc377cfdb05" class="numbered-list" start="2"><li><strong>Top-K качество vs RMSE:</strong><ul id="2aa568fa-e39f-80ec-8c4c-eea0b5f6e803" class="bulleted-list"><li style="list-style-type:disc">Для пары моделей (SimpleMF vs BiasedMF):<ul id="2aa568fa-e39f-80c6-a7be-dea42a8b0e11" class="bulleted-list"><li style="list-style-type:circle">построить scatter-plot (если умеют) или табличку:<ul id="2aa568fa-e39f-8063-87c8-fed39e14bc74" class="bulleted-list"><li style="list-style-type:square">по пользователям:<ul id="2aa568fa-e39f-8006-9b1e-e022277463ed" class="bulleted-list"><li style="list-style-type:disc">RMSE_u,</li></ul><ul id="2aa568fa-e39f-8000-9d8f-c2b888f82ea6" class="bulleted-list"><li style="list-style-type:disc">Recall@10_u;</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-80f5-90cc-ca41c88fb281" class="bulleted-list"><li style="list-style-type:circle">посмотреть, всегда ли меньший RMSE_u → больший Recall@10_u.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-803d-8d09-f24e2b709fa3"/><h2 id="2aa568fa-e39f-80b4-ad57-daeb3ebf86f7" class="">8. Резюме урока</h2><p id="2aa568fa-e39f-80f2-8716-f684bc20eca6" class="">В конце стоит проговорить вслух:</p><ul id="2aa568fa-e39f-80ab-83d7-e80ff78716e2" class="bulleted-list"><li style="list-style-type:disc">Biased MF = Simple MF + глобальное среднее + user/item biases.</li></ul><ul id="2aa568fa-e39f-800f-80c3-c0e1058701b6" class="bulleted-list"><li style="list-style-type:disc">Biases позволяют:<ul id="2aa568fa-e39f-8075-a567-fa176d489f95" class="bulleted-list"><li style="list-style-type:circle">модели не тратить латентные факторы на «банальные» смещения;</li></ul><ul id="2aa568fa-e39f-80ca-a435-ed57f7afe922" class="bulleted-list"><li style="list-style-type:circle">точнее моделировать рейтинги.</li></ul></li></ul><ul id="2aa568fa-e39f-80b6-9c55-e27f61b0e818" class="bulleted-list"><li style="list-style-type:disc">MF по MSE (explicit MF) хорошо оптимизирует RMSE, но:<ul id="2aa568fa-e39f-80fd-9001-fb84c87507a7" class="bulleted-list"><li style="list-style-type:circle">не всегда даёт идеальное ранжирование;</li></ul><ul id="2aa568fa-e39f-80cb-97e3-d22d9d3498d0" class="bulleted-list"><li style="list-style-type:circle">топ-K метрики всё равно нужно измерять отдельно.</li></ul></li></ul><ul id="2aa568fa-e39f-8052-b5fe-ddb32a1c820e" class="bulleted-list"><li style="list-style-type:disc">В следующем уроке мы:<ul id="2aa568fa-e39f-809c-bc42-e2e280026903" class="bulleted-list"><li style="list-style-type:circle">переходим от explicit к <strong>implicit MF (ALS)</strong>;</li></ul><ul id="2aa568fa-e39f-80f2-b1b6-ea1031afa7e4" class="bulleted-list"><li style="list-style-type:circle">учимся работать не с рейтингами, а с логами взаимодействий (view/click/purchase) и confidence weights.</li></ul></li></ul><hr id="2aa568fa-e39f-809f-a031-c3fdd284cc00"/><p id="2aa568fa-e39f-8028-9ca0-f98819428e57" class="">Если хочешь, дальше могу так же детализировать <strong>урок 4.3 (implicit MF + ALS)</strong> или помочь оформить один общий <code>MF_playground.ipynb</code>, где будут и SimpleMF, и BiasedMF, и маленький eval-фреймворк.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 6. Keyword Spotting (KWS) под метрику harmonic(1−FRR,1−FAR)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80b8-bcff-e6bd2bea300b" class="page sans"><header><h1 class="page-title">Модуль 6. Keyword Spotting (KWS) под метрику harmonic(1−FRR,1−FAR)</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8020-b39f-e8b6da9d63e0" class=""><strong>Модуль 6 — Аудио KWS: модель + порог под метрику harmonic(1−FRR, 1−FAR)</strong> на кейсе <strong>«Не слышу тебя» (All Cups, Всерос-2025)</strong>.</p><hr id="2a8568fa-e39f-800f-b0d2-e25e4bd8f1fa"/><h2 id="2a8568fa-e39f-80b5-9997-fab98997fe43" class="">1) Результаты модуля (что должен уметь студент)</h2><ul id="2a8568fa-e39f-8094-bfe4-d8c0eab5466f" class="bulleted-list"><li style="list-style-type:disc">Корректно воспроизвести постановку: бинарная классификация аудиоклипа — <strong>есть ли</strong> в записи фразы «не слышу/не слышно» (1/0), данные в <strong>Opus</strong>, формат ответа <code>id,label</code>.</li></ul><ul id="2a8568fa-e39f-80e3-b8f5-c7216264a3ec" class="bulleted-list"><li style="list-style-type:disc">Считать локально целевую метрику:<p id="2a8568fa-e39f-80ef-ab81-e0f1f036974b" class=""><strong>score = harmonic_mean(1−FRR, 1−FAR)</strong>, где <code>FRR=FN/NUM_POS</code>, <code>FAR=FP/NUM_NEG</code>.</p></li></ul><ul id="2a8568fa-e39f-80cb-b718-c360cbe47f69" class="bulleted-list"><li style="list-style-type:disc">Построить надёжный пайплайн: <strong>декод Opus → препроцесс → признаки (mel/лог-mel) → CNN-базелайн → калибровка порога</strong> под целевую метрику (не accuracy/ROC-AUC).</li></ul><ul id="2a8568fa-e39f-802c-8d11-e075ca95bdb6" class="bulleted-list"><li style="list-style-type:disc">Реализовать <strong>sliding-window инференс</strong> по длинным записям, агрегацию по окну/клипу и стабильный пост-процесс (решение 1/0).</li></ul><ul id="2a8568fa-e39f-8032-b9e6-c6cf3de6da5e" class="bulleted-list"><li style="list-style-type:disc">Сдать валидный сабмит <code>submition.csv</code> (строго по образцу).</li></ul><hr id="2a8568fa-e39f-80fb-a7a2-e4d41041ab43"/><h2 id="2a8568fa-e39f-80a5-a34b-fa8cc6f061a4" class="">2) Теория (90–120 минут)</h2><h3 id="2a8568fa-e39f-801a-9728-da54c77ae29d" class="">A. Постановка, данные, формат</h3><ul id="2a8568fa-e39f-8084-bc1f-e757ac85311b" class="bulleted-list"><li style="list-style-type:disc"><strong>Задача:</strong> определить наличие хотя бы одной целевой фразы («не слышу»/«не слышно») в аудиозаписи звонка. Метка 1 — фразы есть; 0 — нет. Файлы даны пакетами <code>train_data.tar</code>/<code>test_data.tar</code>.</li></ul><ul id="2a8568fa-e39f-80fa-8647-e5af1c1a56cc" class="bulleted-list"><li style="list-style-type:disc"><strong>Структура train:</strong> <code>audio/*.opus</code> + <code>word_bounds.json</code> со временем начала/конца целевой фразы (если отсутствует — запись без фразы). Это позволяет строить <strong>n-секундные положительные окна</strong> вокруг меток и отрицательные окна вне меток.</li></ul><ul id="2a8568fa-e39f-8006-94e3-cbba1ddc60ff" class="bulleted-list"><li style="list-style-type:disc"><strong>Формат сабмита:</strong> <code>submition.csv</code> с колонками <code>id,label</code>, где <code>id</code> — имя файла (без расширения), <code>label∈{0,1}</code>.</li></ul><h3 id="2a8568fa-e39f-80d9-8546-d7734ae8d751" class="">B. Метрика и её импликации</h3><ul id="2a8568fa-e39f-80c2-9046-ca9397fdc2f3" class="bulleted-list"><li style="list-style-type:disc"><strong>Harmonic(1−FRR,1−FAR)</strong> максимизирует баланс <strong>TPR (=1−FRR)</strong> и <strong>TNR (=1−FAR)</strong>.<p id="2a8568fa-e39f-8057-b75c-db7c2b8613bf" class="">Выводы:</p><ol type="1" id="2a8568fa-e39f-80a4-b4f4-c466dcfc58ca" class="numbered-list" start="1"><li>обязательна <strong>калибровка порога</strong> на валидации;</li></ol><ol type="1" id="2a8568fa-e39f-80e2-8c17-e38c7fe377cb" class="numbered-list" start="2"><li>полезен <strong>cost-sensitive</strong> подход/веса классов;</li></ol><ol type="1" id="2a8568fa-e39f-80db-b373-ca5acc2cd2e4" class="numbered-list" start="3"><li>важно контролировать <strong>ложные срабатывания</strong> (шумы/фоновые междометия) и <strong>пропуски</strong> (тихая речь).</li></ol></li></ul><h3 id="2a8568fa-e39f-803f-9277-d6cd83c9c560" class="">C. Сигнальная цепочка и препроцесс</h3><ul id="2a8568fa-e39f-809c-b55a-dc4c59da9503" class="bulleted-list"><li style="list-style-type:disc"><strong>Декод Opus → mono → фиксированный </strong><code><strong>sr</strong></code> (часто 16 kHz) — унификация перед признаками. Формат источника — Opus.</li></ul><ul id="2a8568fa-e39f-8023-ae2c-d1ba5236a451" class="bulleted-list"><li style="list-style-type:disc"><strong>Нормализация амплитуды</strong>, удаление DC, опционально VAD (если даёт выигрыш по времени).</li></ul><ul id="2a8568fa-e39f-80d5-942a-e76d8ca38730" class="bulleted-list"><li style="list-style-type:disc"><strong>Оконное представление (sliding window)</strong>: <code>win=0.96–1.5 c</code>, <code>hop=0.25–0.5 c</code> — баланс детальности/скорости.</li></ul><h3 id="2a8568fa-e39f-805d-8f54-dd7828c90eed" class="">D. Признаки (feature engineering)</h3><ul id="2a8568fa-e39f-8098-9c96-d9132330d15b" class="bulleted-list"><li style="list-style-type:disc"><strong>Log-Mel спектр</strong> (n_mels=64/80, fmin=60–100 Гц, fmax=sr/2), иногда MFCC как дополнительный канал.</li></ul><ul id="2a8568fa-e39f-80ed-a5f6-d342025ad9b0" class="bulleted-list"><li style="list-style-type:disc"><strong>Аугментации:</strong> time-shift, pink/white noise (SNR 5–20 dB), time-stretch (±5–10%), <strong>SpecAugment</strong> (frequency/time masks).</li></ul><ul id="2a8568fa-e39f-80c7-86a8-eaa011243307" class="bulleted-list"><li style="list-style-type:disc"><strong>Баланс классов:</strong> oversample позитивные окна; hard negative mining (ложные срабатывания из вал-окна).</li></ul><h3 id="2a8568fa-e39f-8041-b439-cd8a9fdf170b" class="">E. Разметка обучающих примеров (используя <code>word_bounds.json</code>)</h3><ul id="2a8568fa-e39f-8026-a829-de57c705e602" class="bulleted-list"><li style="list-style-type:disc">Позитивы: окна, <strong>перекрывающие</strong> <code>[start,end]</code> фразы; Негативы: окна в оставшейся части клипа (без пересечения).</li></ul><ul id="2a8568fa-e39f-80ba-a6a7-e3ba087c8c2f" class="bulleted-list"><li style="list-style-type:disc">Важно: <strong>никаких меток из test</strong>; валидация на чистых id, без утечек во времени/окнах.</li></ul><h3 id="2a8568fa-e39f-8012-84e5-d6378255a333" class="">F. Модели</h3><ul id="2a8568fa-e39f-8022-b39f-d382d354ae7c" class="bulleted-list"><li style="list-style-type:disc"><strong>Бейзлайн-CNN:</strong> 3–5 блоков Conv-BN-ReLU-Pool на log-mel, затем Global Max/Avg Pool → FC.</li></ul><ul id="2a8568fa-e39f-802b-aaf0-c536f4db2ac4" class="bulleted-list"><li style="list-style-type:disc"><strong>Более сильные:</strong> CRNN (Conv + BiLSTM/GRU), или компактные AST-варианты/конформеры (если железо/веса доступны).</li></ul><ul id="2a8568fa-e39f-8001-ba60-c4055145ef2a" class="bulleted-list"><li style="list-style-type:disc"><strong>Калибровка:</strong> temperature scaling/Platt по валидации — помогает порогу.</li></ul><h3 id="2a8568fa-e39f-8043-b4b9-dd981f3d07ca" class="">G. Валидация и выбор порога</h3><ul id="2a8568fa-e39f-8064-a31f-c11d366d9c9e" class="bulleted-list"><li style="list-style-type:disc"><strong>CV по записям:</strong> KFold/Stratified по id, а не по окнам (иначе утечка).</li></ul><ul id="2a8568fa-e39f-809e-864a-eca5131b60ec" class="bulleted-list"><li style="list-style-type:disc">Для каждого фолда: снимаем кривую <code>score(τ)</code> по τ∈[0,1] на вал-клипах (агрегируя оконные постериоры) → берём τ*, максимизирующий метрику.</li></ul><ul id="2a8568fa-e39f-80d0-a286-e182dce81d50" class="bulleted-list"><li style="list-style-type:disc">Итоговый <strong>τ_ens</strong>: медиана/среднее по фолдам; при сабмите можно подвинуть τ в ±ε, если hold-out это показывает.</li></ul><h3 id="2a8568fa-e39f-80a0-b7eb-dab2a0ea4866" class="">H. Инференс по целому клипу</h3><ul id="2a8568fa-e39f-80ea-a891-e9011b40895f" class="bulleted-list"><li style="list-style-type:disc">Считаем постериор <code>p(window)</code> для каждого окна → агрегируем в клип:<p id="2a8568fa-e39f-805a-a9d6-da6b8890a745" class=""><code>p(clip)=max_pool</code> (чувствителен к единичным пикам) или <code>top-k mean</code> (устойчивее к шуму).</p></li></ul><ul id="2a8568fa-e39f-80f5-8fc8-d319de0f94c6" class="bulleted-list"><li style="list-style-type:disc">Метка: <code>1[p(clip)≥τ]</code>. Логируем <code>FRR/FAR</code> по валидации, контролируем дисбаланс.</li></ul><h3 id="2a8568fa-e39f-80f4-9c7d-d5e923c26563" class="">I. Скорость и I/O</h3><ul id="2a8568fa-e39f-805c-acf5-d970dedc12e1" class="bulleted-list"><li style="list-style-type:disc">Батчи окон, кэш мел-спектров, распараллеливание декода Opus → WAV/PCM.</li></ul><ul id="2a8568fa-e39f-807c-a0ce-e1d90a3502ae" class="bulleted-list"><li style="list-style-type:disc">Экономия памяти: хранить мел-тензоры в float16 при инференсе.</li></ul><hr id="2a8568fa-e39f-8085-bac6-c4669fb1cc5e"/><h2 id="2a8568fa-e39f-80b6-bb8a-f6364eac35e7" class="">3) Практика (3–4 часа, лабы)</h2><h3 id="2a8568fa-e39f-8005-abfa-e3e0f75949ea" class="">Лаба 1. Декод Opus, EDA, локальная метрика</h3><ol type="1" id="2a8568fa-e39f-80f4-a034-f0bb8ae99561" class="numbered-list" start="1"><li>Распаковать <code>train_data.tar</code>: прочитать список <code>audio/*.opus</code>, <code>word_bounds.json</code>.</li></ol><ol type="1" id="2a8568fa-e39f-805e-8aff-d141ce72dee9" class="numbered-list" start="2"><li>Написать <code>metrics_kws.py</code>:<p id="2a8568fa-e39f-8069-99ce-eb5140d2675d" class=""><code>confusion(y_true,y_pred) → (TP,FP,FN,TN)</code>;</p><p id="2a8568fa-e39f-80ed-8091-f914782c54db" class=""><code>FRR=FN/NUM_POS</code>, <code>FAR=FP/NUM_NEG</code>;</p><p id="2a8568fa-e39f-8044-ab71-d027cc59ecfc" class=""><code>score=harmonic_mean(1−FRR,1−FAR)</code>; проверить на игрушечных наборах.</p></li></ol><ol type="1" id="2a8568fa-e39f-8076-9339-c0481565847f" class="numbered-list" start="3"><li>Быстрый EDA: длины клипов, доля позитивов/негативов, распределение длительности фразы.</li></ol><p id="2a8568fa-e39f-80c5-ba3a-c396ba5ee8f9" class=""><strong>Артефакты:</strong> <code>decode_opus.py</code>, <code>metrics_kws.py</code>, <code>eda_kws.ipynb</code>.</p><hr id="2a8568fa-e39f-8046-b425-e9436eddadef"/><h3 id="2a8568fa-e39f-8021-9c99-dd15ce43af13" class="">Лаба 2. Сбор датасета окон (windows) без утечек</h3><ol type="1" id="2a8568fa-e39f-80b5-9a1b-eac848ba5805" class="numbered-list" start="1"><li>Из <code>word_bounds.json</code> построить позитивные окна (перекрывающие <code>[start,end]</code>) и негативные окна (вне интервала).</li></ol><ol type="1" id="2a8568fa-e39f-8095-bd96-f7488c94bdba" class="numbered-list" start="2"><li>Сохранить индексы окон (start_sec, end_sec), раздельно train/val по id.</li></ol><ol type="1" id="2a8568fa-e39f-80ac-9581-c14d71777914" class="numbered-list" start="3"><li>Сгенерировать log-mel для каждого окна, добавить аугментации.</li></ol><p id="2a8568fa-e39f-8042-b187-cec3a91cf081" class=""><strong>Артефакты:</strong> <code>build_windows.py</code>, <code>features_mel.py</code>, кэш <code>mel_cache/</code>.</p><hr id="2a8568fa-e39f-80bd-8740-f8e53f205434"/><h3 id="2a8568fa-e39f-80e0-9d26-d675b721ce67" class="">Лаба 3. CNN-базелайн и первый порог</h3><ol type="1" id="2a8568fa-e39f-803f-a4fa-ce3379b35141" class="numbered-list" start="1"><li>Архитектура: Conv×4 → GlobalPool → FC; loss — BCE, class weights по дисбалансу.</li></ol><ol type="1" id="2a8568fa-e39f-806c-9451-c7334d219ee6" class="numbered-list" start="2"><li>Валидация по клипам: оконные постериоры → <code>p(clip)=max_pool</code>.</li></ol><ol type="1" id="2a8568fa-e39f-8066-9528-fa1ee2e3f440" class="numbered-list" start="3"><li>Снять <code>score(τ)</code> на вал-клипах, выбрать τ*, зафиксировать baseline.</li></ol><p id="2a8568fa-e39f-8097-a4b1-d606efe078e4" class=""><strong>Артефакты:</strong> <code>train_cnn.py</code>, <code>predict_windows.py</code>, <code>val_threshold.py</code>.</p><hr id="2a8568fa-e39f-8099-b6be-f964bab62af1"/><h3 id="2a8568fa-e39f-807f-ae76-c32cc5d38ba3" class="">Лаба 4. Усиление: аугментации, CRNN/другие аггрегаторы</h3><ol type="1" id="2a8568fa-e39f-8066-86d4-c9ed27ab024c" class="numbered-list" start="1"><li>Добавить SpecAugment (time/freq mask), time-stretch, SNR-noise.</li></ol><ol type="1" id="2a8568fa-e39f-8092-be7f-fe4ac2ed0ea6" class="numbered-list" start="2"><li>Альтернатива: CRNN (Conv → BiGRU → Pool) или <strong>top-k mean</strong> агрегатор вместо max.</li></ol><ol type="1" id="2a8568fa-e39f-8064-b199-e539017e5ba5" class="numbered-list" start="3"><li>Пересчитать метрику, сравнить с baseline.</li></ol><p id="2a8568fa-e39f-80bd-ad16-df5624570d95" class=""><strong>Артефакты:</strong> <code>augment.py</code>, <code>train_crnn.py</code>, <code>ablation_aug.md</code>.</p><hr id="2a8568fa-e39f-805e-a1b6-eb1c9e3d1eee"/><h3 id="2a8568fa-e39f-8087-bbc9-f24c1d55deb4" class="">Лаба 5. Инференс на тесте и сабмит</h3><ol type="1" id="2a8568fa-e39f-80e0-bf27-e2ad11b77c48" class="numbered-list" start="1"><li>Для каждого <code>test/*.opus</code> — sliding window → <code>p(window)</code> → агрегация → <code>p(clip)</code>.</li></ol><ol type="1" id="2a8568fa-e39f-80d7-9635-f4a0d179ef92" class="numbered-list" start="2"><li>Брать τ_ens (медиана по фолдам) → <code>label=1[p(clip)≥τ_ens]</code>.</li></ol><ol type="1" id="2a8568fa-e39f-804a-8ab4-ec3ff0a43b1f" class="numbered-list" start="3"><li>Собрать <code>submition.csv</code> <strong>в точном формате</strong> (<code>id,label</code>), проверить валидатором.</li></ol><p id="2a8568fa-e39f-8046-b9e1-e6e857d73f69" class=""><strong>Артефакты:</strong> <code>infer_clip.py</code>, <code>make_submission.py</code>, <code>submition.csv</code>.</p><hr id="2a8568fa-e39f-80e0-aa1a-e88b3ecece6e"/><h2 id="2a8568fa-e39f-8093-ad3c-dbe0d02ce0cd" class="">4) Критерии сдачи</h2><ul id="2a8568fa-e39f-8007-968b-e46a1ee7fe08" class="bulleted-list"><li style="list-style-type:disc">Есть корректная локальная реализация метрики <strong>harmonic(1−FRR,1−FAR)</strong> и отчёт по FRR/FAR на валидации.</li></ul><ul id="2a8568fa-e39f-8040-b4a7-e02a861a2ba5" class="bulleted-list"><li style="list-style-type:disc">Чёткий протокол <strong>без утечек</strong> (разделение по id; fit на train, валидация на hold-out).</li></ul><ul id="2a8568fa-e39f-80c2-9ada-fa7a94a27e4c" class="bulleted-list"><li style="list-style-type:disc">Улучшение baseline-score за счёт аугментаций/агрегаторов; фикс-seed и воспроизводимость.</li></ul><ul id="2a8568fa-e39f-8005-96db-d71f39d5b229" class="bulleted-list"><li style="list-style-type:disc">Валидный сабмит <code>submition.csv</code> с нужным числом строк и правильными <code>id</code>.</li></ul><hr id="2a8568fa-e39f-8083-b551-fc83d01b087c"/><h2 id="2a8568fa-e39f-80dd-b32b-c6c6c1448a62" class="">5) Домашнее задание</h2><ol type="1" id="2a8568fa-e39f-80bf-afe4-f5fec536878b" class="numbered-list" start="1"><li>Сравнить 3 агрегатора клипа: <code>max_pool</code>, <code>mean_of_top_k</code>, <code>attention-pool</code>; выбрать лучший по метрике.</li></ol><ol type="1" id="2a8568fa-e39f-8024-b234-df4f470bbc9e" class="numbered-list" start="2"><li>Подобрать окно/шаг (<code>win/hop</code>) и показать влияние на итоговый score и скорость.</li></ol><ol type="1" id="2a8568fa-e39f-8028-8236-fed73fc7d2c9" class="numbered-list" start="3"><li>Реализовать <strong>threshold calibration</strong>: τ по каждому фолду + τ_ens; проверить чувствительность к шуму (добавить +3/ +6/ +9 dB).</li></ol><ol type="1" id="2a8568fa-e39f-80c5-9943-fba56ef427a8" class="numbered-list" start="4"><li>Написать <code>kws_report.md</code>: схема разметки, абляции по признакам/модели/агрегатору, кривая <code>score(τ)</code>, выбранный τ и финальная метрика.</li></ol><hr id="2a8568fa-e39f-8068-85f0-ea6adc724f70"/><p id="2a8568fa-e39f-802f-8747-d99c85fedf7b" class="">Хочешь — дальше распишу <strong>Модуль 7 (CV-регрессия «АвтоПрайс», medianAPE: фьюжн фото+табличка, лог-скейл и калибровка)</strong>.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

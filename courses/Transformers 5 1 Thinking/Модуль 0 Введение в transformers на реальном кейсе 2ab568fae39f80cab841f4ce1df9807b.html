@@ -1,0 +1,829 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 0. Введение в transformers на реальном кейсе</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80ca-b841-f4ce1df9807b" class="page sans"><header><h1 class="page-title">Модуль 0. Введение в transformers на реальном кейсе</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80b8-9f56-e28074782bd9" class=""><a href="https://chatgpt.com/share/6916d04e-3110-800c-8add-e5bbac5a26fb">gpt</a></p><figure id="2ab568fa-e39f-808e-9c04-e973d63ae0c7" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%200%20%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%20transformers%20%D0%BD%D0%B0%20%D1%80%D0%B5%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%BC%20%D0%BA%D0%B5%D0%B9%D1%81%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%201%20Pipelines%20%D0%B4%D0%BB%D1%8F%20%D1%80%D0%B0%D0%B7%D0%BD%D1%8B%D1%85%20%D0%B7%D0%B0%D0%B4%D0%B0%D1%87%20%D0%B4%D0%B5%D0%BB%D0%B0%D0%B5%D0%BC%20%D0%BC%D0%B8%D0%BD%D0%B8-NLP%20%202ab568fae39f808e9c04e973d63ae0c7.html">Урок 1. Pipelines для разных задач: делаем мини-NLP ассистента</a></figure><figure id="2ab568fa-e39f-80aa-8d27-c0ebb11934b5" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%200%20%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%20transformers%20%D0%BD%D0%B0%20%D1%80%D0%B5%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%BC%20%D0%BA%D0%B5%D0%B9%D1%81%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%202%20%D0%9F%D0%BE%D0%B4%20%D0%BA%D0%B0%D0%BF%D0%BE%D1%82%D0%BE%D0%BC%20pipeline%20%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B8%D0%B7%D0%B0%D1%82%D0%BE%D1%80%20%D0%B8%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C%20%D0%B2%202ab568fae39f80aa8d27c0ebb11934b5.html">Урок 2. Под капотом pipeline: токенизатор и модель вручную</a></figure><figure id="2ab568fa-e39f-807e-8bef-e05d5d312380" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%200%20%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%20transformers%20%D0%BD%D0%B0%20%D1%80%D0%B5%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%BC%20%D0%BA%D0%B5%D0%B9%D1%81%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%203%20%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9%20fine-tuning%20%D1%81%20Trainer%20%D1%83%D1%87%D0%B8%D0%BC%20%D1%81%D0%B2%D0%BE%D1%8E%20%D0%BC%D0%BE%D0%B4%D0%B5%202ab568fae39f807e8befe05d5d312380.html">Урок 3. Первый fine-tuning с Trainer: учим свою модель тональности</a></figure><figure id="2ab568fa-e39f-8016-b472-ef4a20cad3fd" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%200%20%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B2%20transformers%20%D0%BD%D0%B0%20%D1%80%D0%B5%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%BC%20%D0%BA%D0%B5%D0%B9%D1%81%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%204%20%D0%93%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20seq2seq%20%D1%81%D0%B2%D0%BE%D0%B9%20%D0%BC%D0%B8%D0%BD%D0%B8-summarizer%20%D1%81%20%202ab568fae39f8016b472ef4a20cad3fd.html">Урок 4. Генерация и seq2seq: свой мини-summarizer с Seq2SeqTrainer</a></figure><hr id="2ab568fa-e39f-801a-8e66-fc3126b951ac"/><p id="2ab568fa-e39f-80b4-b3a6-c039dcff15fd" class="">Супер идея — сразу всё объяснять на живом кейсе с кодом.</p><p id="2ab568fa-e39f-80be-b069-fdd658b37b9b" class="">Давай сделаем <strong>модуль 0</strong> вокруг одной простой, но реально полезной задачи:</p><blockquote id="2ab568fa-e39f-808c-b402-daabee1ecf90" class="">Кейс модуля 0: «С нуля подключаем анализ тональности отзывов к продукту за один вечер»</blockquote><p id="2ab568fa-e39f-8014-993c-e75218d1706c" class="">Мы на этом кейсе:</p><ul id="2ab568fa-e39f-8023-8f15-dd09f69b11af" class="bulleted-list"><li style="list-style-type:disc">ставим окружение,</li></ul><ul id="2ab568fa-e39f-809c-8009-eb69fdf2c70a" class="bulleted-list"><li style="list-style-type:disc">знакомимся с экосистемой Hugging Face,</li></ul><ul id="2ab568fa-e39f-801d-a117-d0c1484ed89b" class="bulleted-list"><li style="list-style-type:disc">делаем первый <code>pipeline</code> с sentiment-analysis,</li></ul><ul id="2ab568fa-e39f-80b7-829a-c2295669e7e9" class="bulleted-list"><li style="list-style-type:disc">учимся читать модельные карточки и выбирать модели под задачу.</li></ul><p id="2ab568fa-e39f-801b-b804-d93cdbd45f1c" class="">Ниже — <strong>полное описание модуля 0</strong>: поурочно, с целями, кодом и домашками.</p><hr id="2ab568fa-e39f-800f-8910-e9c09d060460"/><h3 id="2ab568fa-e39f-805c-b8f9-e15feff7cff6" class="">Общий формат</h3><ul id="2ab568fa-e39f-80ac-9f8b-c6b1f94ae0c3" class="bulleted-list"><li style="list-style-type:disc"><strong>Кейс:</strong> есть список текстов-отзывов (про фильм / приложение / товар), нужно быстро определить, какие из них положительные, а какие — нет.</li></ul><ul id="2ab568fa-e39f-8005-bef4-f33cd7a52c16" class="bulleted-list"><li style="list-style-type:disc"><strong>Язык примеров:</strong> в модуле 0 — в основном английский (чтобы взять готовые модели), но покажем как “переключаться” на другие модели (в т.ч. русские).</li></ul><ul id="2ab568fa-e39f-802d-87d3-ca0a1419d80b" class="bulleted-list"><li style="list-style-type:disc"><strong>Инструменты:</strong> <code>transformers</code>, <code>datasets</code> (пока минимально), <code>accelerate</code> для установки (использоваться начнёт позже).</li></ul><hr id="2ab568fa-e39f-80be-842e-f0823b6587c1"/><h2 id="2ab568fa-e39f-80a5-a04e-f56857e425a4" class="">Урок 0.1. Постановка задачи и установка окружения</h2><p id="2ab568fa-e39f-8078-945e-f2b230ffecf1" class=""><strong>Цель урока:</strong></p><p id="2ab568fa-e39f-8006-8448-fe1602daa5dd" class="">Студент понимает, что такое трансформеры на уровне задач, зачем нужна библиотека <code>transformers</code>, и может развернуть рабочее окружение.</p><h3 id="2ab568fa-e39f-80eb-8750-f6d4a2e26170" class="">0.1.1. Кейс урока</h3><blockquote id="2ab568fa-e39f-8035-b372-f17a57487ffc" class="">У нас есть список отзывов о фильме/приложении. Руками их читать долго. Хотим:<ul id="2ab568fa-e39f-805d-81ac-c3248b7a9d36" class="bulleted-list"><li style="list-style-type:disc">дать модели список строк → получить <code>&quot;POSITIVE&quot;</code> / <code>&quot;NEGATIVE&quot;</code> с вероятностями,</li></ul><ul id="2ab568fa-e39f-8063-b8ea-ccc969f3bb2f" class="bulleted-list"><li style="list-style-type:disc">сделать это <strong>без</strong> написания нейросети с нуля.</li></ul></blockquote><h3 id="2ab568fa-e39f-803c-a6e3-d7c26b7d3c32" class="">0.1.2. Теория (очень коротко)</h3><ul id="2ab568fa-e39f-8096-911e-cd82cc8e8666" class="bulleted-list"><li style="list-style-type:disc"><strong>Трансформер как черный ящик:</strong> берёт последовательность токенов → возвращает вектора/предсказания.</li></ul><ul id="2ab568fa-e39f-805c-a390-fb5ab7d5f847" class="bulleted-list"><li style="list-style-type:disc">Задачи, которые уже решаются трансформерами:<ul id="2ab568fa-e39f-80d1-a8df-c675e6683765" class="bulleted-list"><li style="list-style-type:circle">классификация текста (sentiment, токсичность, темы),</li></ul><ul id="2ab568fa-e39f-80e8-bc28-e00c7a358cbe" class="bulleted-list"><li style="list-style-type:circle">извлечение сущностей (NER),</li></ul><ul id="2ab568fa-e39f-80e9-92e5-c97baaa117c9" class="bulleted-list"><li style="list-style-type:circle">QA, суммаризация, перевод, генерация,</li></ul><ul id="2ab568fa-e39f-801e-ac69-da300c43c67d" class="bulleted-list"><li style="list-style-type:circle">картинки, аудио, мультимодальные штуки.</li></ul></li></ul><ul id="2ab568fa-e39f-80f5-9e40-f205e6b3ad05" class="bulleted-list"><li style="list-style-type:disc"><strong>Hugging Face Transformers</strong> = огромная библиотека готовых моделей и удобных API, чтобы:<ul id="2ab568fa-e39f-8004-a7d8-e3e3adc92af6" class="bulleted-list"><li style="list-style-type:circle"><strong>загрузить</strong> готовую модель (<code>from_pretrained</code>),</li></ul><ul id="2ab568fa-e39f-8012-befb-c1354d71a821" class="bulleted-list"><li style="list-style-type:circle"><strong>использовать</strong> (<code>pipeline</code>),</li></ul><ul id="2ab568fa-e39f-8027-917d-e8af114965f7" class="bulleted-list"><li style="list-style-type:circle"><strong>дообучить</strong> её под свои данные.</li></ul></li></ul><h3 id="2ab568fa-e39f-8012-82a2-d808a6b26564" class="">0.1.3. Практический блок: установка и проверка</h3><p id="2ab568fa-e39f-80d2-b0dd-ea68466ed6bc" class=""><strong>Шаг 1. Установка:</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8036-9e24-d3bb04e94870" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install &quot;transformers[torch]&quot; datasets accelerate -U
+</code></pre><p id="2ab568fa-e39f-80d5-9c45-d5610ef4919c" class="">(дополнительно можно сказать: если нет PyTorch — поставить по инструкции с сайта PyTorch).</p><p id="2ab568fa-e39f-8064-8028-e5db5f802587" class=""><strong>Шаг 2. Проверка GPU (опционально, если есть CUDA):</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b1-9450-c05d84ce160f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+
+print(&quot;CUDA available:&quot;, torch.cuda.is_available())
+if torch.cuda.is_available():
+    print(&quot;Device name:&quot;, torch.cuda.get_device_name(0))
+</code></pre><h3 id="2ab568fa-e39f-8031-9d6b-cf5762e49892" class="">0.1.4. Мини-код: проверяем, что всё живое</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8035-ac17-ea64daa992f8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+classifier = pipeline(&quot;sentiment-analysis&quot;)  # пока не указываем модель
+result = classifier(&quot;I absolutely love this course already!&quot;)
+print(result)
+# Пример: [{&#x27;label&#x27;: &#x27;POSITIVE&#x27;, &#x27;score&#x27;: 0.999...}]
+</code></pre><ul id="2ab568fa-e39f-808f-89fe-c1955610cc42" class="bulleted-list"><li style="list-style-type:disc">Объясняем, что:<ul id="2ab568fa-e39f-80bc-842a-d5725a527ab4" class="bulleted-list"><li style="list-style-type:circle"><code>pipeline(&quot;sentiment-analysis&quot;)</code> под капотом:<ul id="2ab568fa-e39f-803e-aa03-dc361da1379f" class="bulleted-list"><li style="list-style-type:square">скачивает <strong>дефолтную модель для тональности</strong> (сейчас это <code>distilbert-base-uncased-finetuned-sst-2-english</code>)</li></ul><ul id="2ab568fa-e39f-8006-b4bf-dbc97fe814fc" class="bulleted-list"><li style="list-style-type:square">автоматически подбирает токенизатор,</li></ul><ul id="2ab568fa-e39f-80d6-afff-c5b3f2d94554" class="bulleted-list"><li style="list-style-type:square">делает препроцесс → модель → постпроцесс.</li></ul></li></ul></li></ul><h3 id="2ab568fa-e39f-801b-9ef3-cbe4b9f6ef77" class="">0.1.5. Домашка к уроку</h3><ol type="1" id="2ab568fa-e39f-8005-8321-ca6416374746" class="numbered-list" start="1"><li>Поставить окружение у себя (локально или в Colab).</li></ol><ol type="1" id="2ab568fa-e39f-8068-8e0f-fa0421993037" class="numbered-list" start="2"><li>Вызвать <code>pipeline(&quot;sentiment-analysis&quot;)</code> на <strong>5 собственных фразах</strong> (англ. или рус. — пока неважно).</li></ol><ol type="1" id="2ab568fa-e39f-803f-8917-e99c152d90e4" class="numbered-list" start="3"><li>Зафиксировать выводы:<ul id="2ab568fa-e39f-80ad-b86a-c3d2a7b42e8b" class="bulleted-list"><li style="list-style-type:disc">какие фразы модель поняла правильно,</li></ul><ul id="2ab568fa-e39f-804b-82d6-d9a77b938d2a" class="bulleted-list"><li style="list-style-type:disc">где вы с ней не согласны.</li></ul></li></ol><hr id="2ab568fa-e39f-807f-8bb1-f6ed70fe6b4d"/><h2 id="2ab568fa-e39f-804b-98bd-e8a082d8e09a" class="">Урок 0.2. Работаем с батчами отзывов и параметрами pipeline</h2><p id="2ab568fa-e39f-8066-9815-fef3bcbc119b" class=""><strong>Цель урока:</strong></p><p id="2ab568fa-e39f-80e9-afe1-fde5ef7c9f9a" class="">Студент умеет прогонять через модель сразу много текстов, понимает базовые настройки <code>pipeline</code> и видит, как подключить GPU.</p><h3 id="2ab568fa-e39f-80a2-9db5-da8cfee88c74" class="">0.2.1. Кейс урока</h3><blockquote id="2ab568fa-e39f-80a4-af40-c895462fc69a" class="">У нас есть список отзывов о приложении (например, из Google Play).<p id="2ab568fa-e39f-80ae-a920-dd5b4c4bf225" class="">Хотим быстро:</p><ul id="2ab568fa-e39f-807f-a9b6-fca6ebe3456d" class="bulleted-list"><li style="list-style-type:disc">получить тональность каждого отзыва,</li></ul><ul id="2ab568fa-e39f-809f-9636-d446b88ca156" class="bulleted-list"><li style="list-style-type:disc">посчитать, какой процент отзывов — позитивный.</li></ul></blockquote><h3 id="2ab568fa-e39f-8052-aafd-f4086984fd54" class="">0.2.2. Теория (на пальцах)</h3><ul id="2ab568fa-e39f-8050-b835-d14d29c12e9d" class="bulleted-list"><li style="list-style-type:disc"><code>pipeline</code> можно кормить <strong>список строк</strong>, а не только одну.</li></ul><ul id="2ab568fa-e39f-807f-8f6e-eec40984d75a" class="bulleted-list"><li style="list-style-type:disc">Важные параметры:<ul id="2ab568fa-e39f-8014-87bb-eeb22906aa09" class="bulleted-list"><li style="list-style-type:circle"><code>batch_size</code> — сколько текстов обрабатываем за один проход,</li></ul><ul id="2ab568fa-e39f-80ff-91b0-cc3e4430042d" class="bulleted-list"><li style="list-style-type:circle"><code>device</code> — куда грузится модель (<code>1</code> — CPU, <code>0</code> — первая GPU),</li></ul><ul id="2ab568fa-e39f-80bb-8df6-d1e0b5638109" class="bulleted-list"><li style="list-style-type:circle"><code>truncation</code>, <code>max_length</code> — что делать с очень длинными текстами.</li></ul></li></ul><h3 id="2ab568fa-e39f-80b8-b668-d72ceca0e5f6" class="">0.2.3. Код занятия: батчевый анализ тональности</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8093-b6f8-d8a9899ff62f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+# Если есть GPU:
+device = 0  # первая видеокарта
+# Если нет GPU:
+# device = -1
+
+classifier = pipeline(
+    &quot;sentiment-analysis&quot;,
+    device=device,
+)
+
+reviews = [
+    &quot;The app is really helpful and easy to use.&quot;,
+    &quot;Terrible experience, it keeps crashing all the time.&quot;,
+    &quot;Pretty decent, but could be faster.&quot;,
+    &quot;I love the new update, everything feels smoother.&quot;,
+    &quot;This is the worst app I&#x27;ve installed this year.&quot;
+]
+
+results = classifier(reviews, batch_size=8)
+for review, res in zip(reviews, results):
+    print(f&quot;TEXT: {review}\nPRED: {res}\n&quot;)
+</code></pre><p id="2ab568fa-e39f-80cc-865b-cb3f0a0e5baa" class="">Обсуждаем структуру <code>res</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808f-9ad7-cda1b102ca40" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{&#x27;label&#x27;: &#x27;NEGATIVE&#x27;, &#x27;score&#x27;: 0.998...}
+</code></pre><h3 id="2ab568fa-e39f-80fd-9835-db15b879f345" class="">0.2.4. Мини-аналитика поверх результатов</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b1-978d-f7d595540901" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">positive = sum(r[&quot;label&quot;] == &quot;POSITIVE&quot; for r in results)
+negative = sum(r[&quot;label&quot;] == &quot;NEGATIVE&quot; for r in results)
+total = len(results)
+
+print(f&quot;Positive: {positive}/{total} ({positive/total:.1%})&quot;)
+print(f&quot;Negative: {negative}/{total} ({negative/total:.1%})&quot;)
+</code></pre><p id="2ab568fa-e39f-80e0-8835-ee52127ea883" class="">Показываем, что уже <strong>после нулевого модуля</strong> можно:</p><ul id="2ab568fa-e39f-8099-888d-f9a3db206f24" class="bulleted-list"><li style="list-style-type:disc">выгрузить отзывы из БД/CSV,</li></ul><ul id="2ab568fa-e39f-809a-925a-da83958bfa03" class="bulleted-list"><li style="list-style-type:disc">прогнать их через модель,</li></ul><ul id="2ab568fa-e39f-809e-a62c-c370debac559" class="bulleted-list"><li style="list-style-type:disc">примерно понять общую картину.</li></ul><h3 id="2ab568fa-e39f-8050-8671-ca608048e7d2" class="">0.2.5. Домашка к уроку</h3><ol type="1" id="2ab568fa-e39f-8066-b4e1-f9ca03592163" class="numbered-list" start="1"><li>Собрать <strong>не менее 20 отзывов/фраз</strong>:<ul id="2ab568fa-e39f-80fd-a741-e8ab0dfd5145" class="bulleted-list"><li style="list-style-type:disc">можно взять комментарии к YouTube-видео, отзывы из магазина приложений, любые тексты.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80bf-95a0-d911c6658228" class="numbered-list" start="2"><li>Прогнать их через <code>pipeline(&quot;sentiment-analysis&quot;)</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8016-9836-cd8725aa9f1b" class="numbered-list" start="3"><li>Посчитать:<ul id="2ab568fa-e39f-80d6-b5df-fedf150e80a9" class="bulleted-list"><li style="list-style-type:disc">долю позитивных/негативных,</li></ul><ul id="2ab568fa-e39f-8074-822a-df5087b1a1b4" class="bulleted-list"><li style="list-style-type:disc">вывести <strong>топ-5 самых “уверенно” позитивных</strong> и <strong>топ-5 негативных</strong> (по <code>score</code>).</li></ul></li></ol><hr id="2ab568fa-e39f-80c0-a85b-e02b1957069e"/><h2 id="2ab568fa-e39f-8009-af3c-c246874d730a" class="">Урок 0.3. Обзор экосистемы Hugging Face на практике</h2><p id="2ab568fa-e39f-80d3-9f42-ee1995d74f4b" class=""><strong>Цель урока:</strong></p><p id="2ab568fa-e39f-80a2-9c20-f92cd1edb541" class="">Студент понимает, что Transformers — это часть большой экосистемы HF, умеет:</p><ul id="2ab568fa-e39f-805d-89aa-d3b867bb2bdf" class="bulleted-list"><li style="list-style-type:disc">заходить на Model Hub,</li></ul><ul id="2ab568fa-e39f-805b-8346-c987d47171e8" class="bulleted-list"><li style="list-style-type:disc">выбирать модель под задачу и язык,</li></ul><ul id="2ab568fa-e39f-8041-afc9-f4edc0d6c6bc" class="bulleted-list"><li style="list-style-type:disc">подставлять её в pipeline.</li></ul><h3 id="2ab568fa-e39f-80fc-8672-cfee8e85ef87" class="">0.3.1. Кейс урока</h3><blockquote id="2ab568fa-e39f-80d3-912d-fd0ae4ee6ec8" class="">Наши отзывы — теперь российские / русскоязычные.<p id="2ab568fa-e39f-80bb-a8e3-ce4310ceba65" class="">Дефолтная английская модель местами тупит. Нужно:</p><ul id="2ab568fa-e39f-80e0-a447-d86f52ae6ade" class="bulleted-list"><li style="list-style-type:disc">найти более подходящую модель для русского,</li></ul><ul id="2ab568fa-e39f-802e-aae6-de44ad2936d9" class="bulleted-list"><li style="list-style-type:disc">подключить её <strong>одной строкой</strong> к <code>pipeline</code>.</li></ul></blockquote><h3 id="2ab568fa-e39f-80bb-868a-c67d9043c966" class="">0.3.2. Теоретический блок</h3><ul id="2ab568fa-e39f-8072-8b61-dbbf7ae68e7a" class="bulleted-list"><li style="list-style-type:disc"><strong>Hugging Face Hub</strong>:<ul id="2ab568fa-e39f-803e-8819-cbe94a9679ad" class="bulleted-list"><li style="list-style-type:circle">сайт, на котором лежат модели, датасеты, спейсы.</li></ul><ul id="2ab568fa-e39f-806e-a2ff-d95753d87faa" class="bulleted-list"><li style="list-style-type:circle">у каждой модели есть:<ul id="2ab568fa-e39f-8009-a425-da3eb48ffc73" class="bulleted-list"><li style="list-style-type:square">название (<code>org/model-name</code>),</li></ul><ul id="2ab568fa-e39f-8061-898d-dd9103a22a24" class="bulleted-list"><li style="list-style-type:square"><strong>задача</strong> (<code>text-classification</code>, <code>token-classification</code>, <code>question-answering</code>, …),</li></ul><ul id="2ab568fa-e39f-8017-9037-ef00ca99dc8c" class="bulleted-list"><li style="list-style-type:square"><strong>языки</strong>, <strong>лицензия</strong>, <strong>пример кода</strong>.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-8045-a907-d8d3fdaede51" class="bulleted-list"><li style="list-style-type:disc">В библиотеке <code>transformers</code> модель идентифицируется <strong>строкой имени чекпоинта</strong>, которую мы передаём в <code>from_pretrained</code> / <code>pipeline</code>.</li></ul><h3 id="2ab568fa-e39f-8098-b53d-d01b0245fb58" class="">0.3.3. Код: подмена модели в pipeline</h3><p id="2ab568fa-e39f-807d-bade-d4e17887677a" class="">Сначала — показываем, что дефолтная модель, скорее всего, англоязычная:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ef-a80e-d8b42dd154e2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+classifier_en = pipeline(&quot;sentiment-analysis&quot;)
+print(classifier_en(&quot;Я обожаю этот курс по трансформерам!&quot;))
+</code></pre><p id="2ab568fa-e39f-8086-8519-e8d94825d393" class="">Обсуждаем, что вывод может быть странным / малоадекватным на русском.</p><p id="2ab568fa-e39f-8014-a7a9-e6bc41b82a5c" class="">Дальше — показываем, как подставить <strong>конкретную модель</strong>. Например, если мы нашли на Hub модель с id <code>model_id = &quot;cointegrated/rubert-tiny-sentiment&quot;</code> (это просто пример; на занятии вы вместе с учениками находите живую модель с нужной задачей и языком).</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80be-9ad7-dc2d86b823b5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+model_id = &quot;cointegrated/rubert-tiny-sentiment&quot;  # пример русской модели для тональности
+ru_classifier = pipeline(
+    &quot;sentiment-analysis&quot;,
+    model=model_id,
+)
+
+texts = [
+    &quot;Я обожаю этот курс по трансформерам!&quot;,
+    &quot;Полная ерунда, зря потратил время.&quot;,
+    &quot;Нормально, но можно лучше.&quot;,
+]
+
+for text, res in zip(texts, ru_classifier(texts)):
+    print(f&quot;TEXT: {text}\nPRED: {res}\n&quot;)
+</code></pre><p id="2ab568fa-e39f-80e2-acb0-e76fed980923" class=""><strong>Важный момент, который объясняем словами:</strong></p><ul id="2ab568fa-e39f-806d-8f6a-f87471ad2093" class="bulleted-list"><li style="list-style-type:disc">Задача — всё та же <code>&quot;sentiment-analysis&quot;</code>.</li></ul><ul id="2ab568fa-e39f-803b-9332-db1f334d3f4f" class="bulleted-list"><li style="list-style-type:disc">Но теперь:<ul id="2ab568fa-e39f-80ed-8e3f-ee40c5739ad6" class="bulleted-list"><li style="list-style-type:circle">модель скачивается <strong>другая</strong>,</li></ul><ul id="2ab568fa-e39f-8079-a9ee-d0f0192c2a22" class="bulleted-list"><li style="list-style-type:circle">заточена под русский,</li></ul><ul id="2ab568fa-e39f-80bd-b76b-cf5d56af870b" class="bulleted-list"><li style="list-style-type:circle">даёт более адекватные результаты.</li></ul></li></ul><h3 id="2ab568fa-e39f-803a-ae6d-cb26639bb591" class="">0.3.4. Экосистема HF: что ещё есть, кроме transformers</h3><p id="2ab568fa-e39f-80a4-a434-c05245c4ea24" class="">Короткий обзор с привязкой к будущим модулям:</p><ul id="2ab568fa-e39f-808e-96be-d59fe22b2586" class="bulleted-list"><li style="list-style-type:disc"><code>transformers</code> — модели и токенизаторы.</li></ul><ul id="2ab568fa-e39f-805c-80ad-c508d3c2b3a9" class="bulleted-list"><li style="list-style-type:disc"><code>datasets</code> — датасеты, загрузка, препроцессинг.</li></ul><ul id="2ab568fa-e39f-8001-a7a2-e8f2dc09d969" class="bulleted-list"><li style="list-style-type:disc"><code>tokenizers</code> — быстрые токенизаторы на Rust (будут позже).</li></ul><ul id="2ab568fa-e39f-8000-a87e-c736f62d375a" class="bulleted-list"><li style="list-style-type:disc"><code>accelerate</code> — удобный multi-GPU/TPU/CPU-тренинг.</li></ul><ul id="2ab568fa-e39f-807f-8e65-de3ad15cf5a2" class="bulleted-list"><li style="list-style-type:disc"><code>peft</code> — parameter-efficient fine-tuning (LoRA и т.п.).</li></ul><ul id="2ab568fa-e39f-8085-8ace-c5bf72df94d1" class="bulleted-list"><li style="list-style-type:disc"><code>trl</code> — RLHF, PPO и прочие радости.</li></ul><p id="2ab568fa-e39f-80e7-9cd7-f2d6c0b4c757" class="">Пока ничего из этого глубоко не трогаем, просто даём картинку того, <strong>куда курс идёт</strong>.</p><h3 id="2ab568fa-e39f-807c-b8bf-fd908fcaa5b1" class="">0.3.5. Домашка к уроку</h3><ol type="1" id="2ab568fa-e39f-8013-b195-cc5b99999bf7" class="numbered-list" start="1"><li>Зайти на <strong>huggingface.co</strong>, найти:<ul id="2ab568fa-e39f-8055-836a-d4ac45417747" class="bulleted-list"><li style="list-style-type:disc">одну модель для sentiment-analysis на английском,</li></ul><ul id="2ab568fa-e39f-808d-adab-f4c163a1660b" class="bulleted-list"><li style="list-style-type:disc">одну — на русском.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8016-a38d-ef57f9ec1009" class="numbered-list" start="2"><li>Для каждой:<ul id="2ab568fa-e39f-805c-86ba-dc9ff66a9a11" class="bulleted-list"><li style="list-style-type:disc">понять, какая у неё <strong>задача</strong>, <strong>язык</strong>, <strong>лицензия</strong>,</li></ul><ul id="2ab568fa-e39f-8099-b053-f82d73121275" class="bulleted-list"><li style="list-style-type:disc">скопировать пример кода из карточки.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8027-987f-f34c94750e8a" class="numbered-list" start="3"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-802e-87b8-e78ef2f7720c" class="bulleted-list"><li style="list-style-type:disc">принимает список текстов <strong>на русском и английском перемешку</strong>,</li></ul><ul id="2ab568fa-e39f-80d0-ae38-f8208a606eb9" class="bulleted-list"><li style="list-style-type:disc">если текст на русском — использует русскую модель, если на английском — англоязычную (язык можно определять “костыльно”: по наличию кириллицы).</li></ul></li></ol><p id="2ab568fa-e39f-8066-91a3-fd8ba7f36b24" class="">Подсказка для определения языка (пример, который можно показать на занятии или оставить в условии):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801d-8d52-e59196ea4f4b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def is_russian(text: str) -&gt; bool:
+    return any(&#x27;а&#x27; &lt;= ch.lower() &lt;= &#x27;я&#x27; for ch in text)
+</code></pre><hr id="2ab568fa-e39f-80bb-973f-daefb11196b9"/><h2 id="2ab568fa-e39f-80d1-a5d9-e47b259336b1" class="">Урок 0.4. Мини-проект модуля: «микро-сервис для анализа отзывов»</h2><p id="2ab568fa-e39f-80f4-bcce-ee70b313c364" class=""><strong>Цель урока:</strong></p><p id="2ab568fa-e39f-8081-b7fb-fc99647615bf" class="">Собрать всё, что было в модуле, в <strong>маленький, но цельный скрипт</strong>, который уже можно встроить куда-то ещё.</p><h3 id="2ab568fa-e39f-800b-88b1-f7ccaff47d47" class="">0.4.1. Кейс урока</h3><blockquote id="2ab568fa-e39f-8040-b9d5-c76f39807c8e" class="">Ты — ML-инженер/олимпиадник/хакатонщик, тебе нужно:<ul id="2ab568fa-e39f-8007-b50b-e6016dac74e9" class="bulleted-list"><li style="list-style-type:disc">получить функцию <code>analyze_reviews(reviews: list[str]) -&gt; list[dict]</code>,</li></ul><ul id="2ab568fa-e39f-8065-9170-fb6107b17094" class="bulleted-list"><li style="list-style-type:disc">которая под капотом использует <code>transformers</code>,</li></ul><ul id="2ab568fa-e39f-80cc-b27a-e1264a9fd4eb" class="bulleted-list"><li style="list-style-type:disc">и умеет работать и с русскими, и с английскими текстами.</li></ul></blockquote><h3 id="2ab568fa-e39f-8012-9c87-da9f93b4617c" class="">0.4.2. Каркас проекта</h3><p id="2ab568fa-e39f-8046-a272-cc124dabc61a" class="">Создаём файл <code>sentiment_service.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806f-87b1-fd31a657afe2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+def is_russian(text: str) -&gt; bool:
+    return any(&#x27;а&#x27; &lt;= ch.lower() &lt;= &#x27;я&#x27; for ch in text)
+
+# Инициализируем два пайплайна один раз при старте
+clf_en = pipeline(&quot;sentiment-analysis&quot;)  # дефолтная английская модель
+clf_ru = pipeline(
+    &quot;sentiment-analysis&quot;,
+    model=&quot;cointegrated/rubert-tiny-sentiment&quot;,  # пример; студенты могут выбрать свою
+)
+
+def analyze_reviews(reviews: list[str]) -&gt; list[dict]:
+    &quot;&quot;&quot;
+    reviews: список строк
+    return: список словарей вида {&quot;text&quot;: ..., &quot;lang&quot;: ..., &quot;label&quot;: ..., &quot;score&quot;: ...}
+    &quot;&quot;&quot;
+    results = []
+
+    # Разделяем русские и английские, чтобы делать батчи
+    ru_texts = [r for r in reviews if is_russian(r)]
+    en_texts = [r for r in reviews if not is_russian(r)]
+
+    ru_preds = clf_ru(ru_texts, batch_size=16) if ru_texts else []
+    en_preds = clf_en(en_texts, batch_size=16) if en_texts else []
+
+    # Собираем обратно
+    ru_iter = iter(ru_preds)
+    en_iter = iter(en_preds)
+
+    for text in reviews:
+        if is_russian(text):
+            pred = next(ru_iter)
+            lang = &quot;ru&quot;
+        else:
+            pred = next(en_iter)
+            lang = &quot;en&quot;
+
+        results.append({
+            &quot;text&quot;: text,
+            &quot;lang&quot;: lang,
+            &quot;label&quot;: pred[&quot;label&quot;],
+            &quot;score&quot;: float(pred[&quot;score&quot;]),
+        })
+
+    return results
+
+
+if __name__ == &quot;__main__&quot;:
+    sample_reviews = [
+        &quot;I really enjoyed using this app.&quot;,
+        &quot;Приложение ужасное, постоянно вылетает.&quot;,
+        &quot;It works fine, but could use some improvements.&quot;,
+        &quot;Лучшее приложение, которое я ставил за последний месяц!&quot;
+    ]
+
+    analyzed = analyze_reviews(sample_reviews)
+    for item in analyzed:
+        print(item)
+</code></pre><p id="2ab568fa-e39f-807b-ab1d-c4d1b8c40ec4" class="">Это уже:</p><ul id="2ab568fa-e39f-805d-90ab-d791fff4c11a" class="bulleted-list"><li style="list-style-type:disc">полноценный <strong>модуль</strong>, который можно импортировать из других скриптов,</li></ul><ul id="2ab568fa-e39f-80a4-b47c-da27fd752de7" class="bulleted-list"><li style="list-style-type:disc">“микро-сервис” без web-обёртки, но логика готова.</li></ul><h3 id="2ab568fa-e39f-80fd-b742-f0b5f40518bd" class="">0.4.3. Что проговариваем в конце модуля</h3><p id="2ab568fa-e39f-80e6-b105-d142d38c025e" class="">К этому моменту студент:</p><ul id="2ab568fa-e39f-8068-8b44-da623ebb2191" class="bulleted-list"><li style="list-style-type:disc">понимает, <strong>что значит “трансформер в проде”</strong> на самом верхнем уровне:<ul id="2ab568fa-e39f-804b-8c83-c6f42f66b799" class="bulleted-list"><li style="list-style-type:circle">есть id модели → загружаем → вызываем → получаем JSON-подобный результат;</li></ul></li></ul><ul id="2ab568fa-e39f-805d-b2e3-c089a017374b" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-801f-8fc1-d996ddab9f79" class="bulleted-list"><li style="list-style-type:circle">ставить <code>transformers</code> и дружить с GPU,</li></ul><ul id="2ab568fa-e39f-804e-95d3-d16a03601a7a" class="bulleted-list"><li style="list-style-type:circle">вызывать <code>pipeline</code> для задачи sentiment-analysis,</li></ul><ul id="2ab568fa-e39f-80d2-9798-d2be6c2d0de7" class="bulleted-list"><li style="list-style-type:circle">обрабатывать списки текстов,</li></ul><ul id="2ab568fa-e39f-80a9-997c-d6fc828f3fbb" class="bulleted-list"><li style="list-style-type:circle">подменять модели под язык/задачу,</li></ul><ul id="2ab568fa-e39f-8022-993c-c93811496b7d" class="bulleted-list"><li style="list-style-type:circle">читать базовые вещи из модельной карточки на Hugging Face;</li></ul></li></ul><ul id="2ab568fa-e39f-801c-8eb8-f3696fff6616" class="bulleted-list"><li style="list-style-type:disc">уже написал <strong>маленький, полезный модуль</strong>, который можно использовать дальше.</li></ul><h3 id="2ab568fa-e39f-809f-96b6-d13f80760a76" class="">0.4.4. Итоговая домашка по модулю 0</h3><ol type="1" id="2ab568fa-e39f-80a8-b096-d89b520150d1" class="numbered-list" start="1"><li>Доделать/отполировать свой <code>sentiment_service.py</code>:<ul id="2ab568fa-e39f-80e6-89ed-fdf3776fae04" class="bulleted-list"><li style="list-style-type:disc">выбрать <strong>свои</strong> модельки (можно другие языки),</li></ul><ul id="2ab568fa-e39f-803a-ac58-e4ce3f2fe53c" class="bulleted-list"><li style="list-style-type:disc">аккуратно обработать возможные ошибки (пустые строки, очень длинный текст и т.п.).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-809c-8f5d-e8a415d3e79c" class="numbered-list" start="2"><li>Написать отдельный скрипт <code>analyze_from_file.py</code>, который:<ul id="2ab568fa-e39f-80d1-80f0-d5d3f105e947" class="bulleted-list"><li style="list-style-type:disc">читает файл <code>reviews.txt</code> (по одной фразе в строке),</li></ul><ul id="2ab568fa-e39f-80b8-bd40-ca9b7447e7c1" class="bulleted-list"><li style="list-style-type:disc">вызывает <code>analyze_reviews</code>,</li></ul><ul id="2ab568fa-e39f-8004-b1c7-ed1fcdcfaa4b" class="bulleted-list"><li style="list-style-type:disc">записывает результат в <code>results.csv</code> с колонками: <code>text,lang,label,score</code>.</li></ul></li></ol><hr id="2ab568fa-e39f-804d-9396-d9478de23f67"/><p id="2ab568fa-e39f-8062-9198-fc6911bbc626" class="">Если хочешь, дальше могу:</p><ul id="2ab568fa-e39f-806b-87e2-e21c37e83541" class="bulleted-list"><li style="list-style-type:disc">аналогично <strong>развернуть модуль 1</strong>: например, углубиться в <code>pipeline</code> для других задач (NER, QA, summarization) на нескольких мини-кейсах,</li></ul><ul id="2ab568fa-e39f-8066-bc2c-ea407b21f862" class="bulleted-list"><li style="list-style-type:disc">или сделать из этого модуля 0 прямо готовые ноутбуки-скелеты (<code>00_setup.ipynb</code>, <code>01_pipelines_sentiment.ipynb</code>, <code>02_project_sentiment_service.ipynb</code>).</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

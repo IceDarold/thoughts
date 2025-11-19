@@ -1,0 +1,727 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М13. Скорость и боевой режим (инженерия, профилировка, паковка)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8032-b849-e575d0864c79" class="page sans"><header><h1 class="page-title">М13. Скорость и боевой режим (инженерия, профилировка, паковка)</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-808a-b796-d5a6b82a87cf" class="">ниже — подробный Модуль 13. Фокус: <strong>скорость, инженерия производительности и “боевой режим 5 часов”</strong>. Как уложить весь цикл (бейзлайн → фичи → валидация → ансамбль → сабмиты) в жёсткий лимит времени/памяти и не потерять воспроизводимость.</p><h2 id="2a8568fa-e39f-8095-8576-eba50ab01a26" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-8058-9aca-e6e3ef11ab3d" class="bulleted-list"><li style="list-style-type:disc">Зафиксировать <strong>боевой скелет репо</strong> и “panic-кнопки”, чтобы выпускать предсказуемый результат за ≤5 часов.</li></ul><ul id="2a8568fa-e39f-8056-a2f1-c7e278243d41" class="bulleted-list"><li style="list-style-type:disc">Научиться <strong>профилировать</strong> (время/память/узкие места) и целенаправленно ускорять критические шаги (I/O, join, groupby, CV, инференс).</li></ul><ul id="2a8568fa-e39f-8011-b572-d403239ab617" class="bulleted-list"><li style="list-style-type:disc">Снизить <strong>память</strong> (dtype-дисциплина, категориальные коды, sparsity) и <strong>диск I/O</strong> (Parquet/Polars, кэш).</li></ul><ul id="2a8568fa-e39f-80ef-aea4-d9d6e20f86c5" class="bulleted-list"><li style="list-style-type:disc">Настроить <strong>детерминизм и воспроизводимость</strong> (seeds, версии, подписи данных), сборку “одной кнопкой”.</li></ul><ul id="2a8568fa-e39f-80d5-b733-c52e66361930" class="bulleted-list"><li style="list-style-type:disc">Уметь <strong>упаковать решение</strong> под разные среды: Kaggle Notebook (CPU/T4), локальная машина, headless-_runner.</li></ul><p id="2a8568fa-e39f-8098-9e39-de173f6ba686" class=""><strong>Выход:</strong> папка <code>ops/</code> с <code>profiler.py</code>, <code>io_utils.py</code>, <code>memguard.py</code>, <code>runner.py</code>, <code>speed_presets.yaml</code>, <code>panic_plan.md</code>, make/CLI для одного вызова.</p><hr id="2a8568fa-e39f-809d-9d30-c9cc8e1f254d"/><h2 id="2a8568fa-e39f-805f-a278-e3d597fb24cc" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-8084-aee1-c1b84f4b1e53" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-803b-89da-c509f82384aa" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 3–4 часа</strong> (ускорение своего пайплайна на реальных данных).</li></ul><ul id="2a8568fa-e39f-8055-b6f5-f841ae15a8bf" class="bulleted-list"><li style="list-style-type:disc">Мини-защита: отчёт «до/после» (время, память, Δметрики, изменения).</li></ul><hr id="2a8568fa-e39f-802c-8c77-ea8788186d8e"/><h2 id="2a8568fa-e39f-8029-b5f1-d2ed40573f64" class="">3) Карта решений за ≤10 минут (что ускоряем в первую очередь)</h2><ol type="1" id="2a8568fa-e39f-8066-911c-c3accc27b7f1" class="numbered-list" start="1"><li><strong>I/O и формат данных:</strong> CSV → Parquet (zstd), Polars (ленивая загрузка <code>scan_*</code>), выбор столбцов, ранняя <em>downcast dtypes</em>.</li></ol><ol type="1" id="2a8568fa-e39f-80fd-ac2c-e9e39c30ed5d" class="numbered-list" start="2"><li><strong>Join/groupby:</strong> сортированные ключи, “однопроходные” агрегаты, редукция кардинальности до join (map-коды), избегать <code>one-hot</code> для high-card.</li></ol><ol type="1" id="2a8568fa-e39f-806c-864f-e97b0ad4f11b" class="numbered-list" start="3"><li><strong>CV и обучение:</strong> меньше фолдов (3–4), компактные пресеты, <code>early_stopping</code>, <code>feature_fraction/bagging</code> ↑, <code>min_data_in_leaf</code> ↑.</li></ol><ol type="1" id="2a8568fa-e39f-80c0-b3c0-fa982d565d1e" class="numbered-list" start="4"><li><strong>Фичи:</strong> рассчитывать <strong>ядро</strong> (top-12 безопасных), остальное — по профилю времени (<code>speed_presets.yaml</code>).</li></ol><ol type="1" id="2a8568fa-e39f-80ac-9a9b-e4dccaa7b98d" class="numbered-list" start="5"><li><strong>Инференс:</strong> float32, батчи, предикт по Parquet, отключить лишние постпроцедуры.</li></ol><hr id="2a8568fa-e39f-8018-b752-ee5b3f7e87e9"/><h2 id="2a8568fa-e39f-807c-8f69-cf503755c0de" class="">4) Структура репозитория (боевой скелет)</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a8568fa-e39f-8021-a8e2-c1e1b05cd4d0" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">src/
+  data/                   # симлинки/путь к сырью (read-only)
+  features/               # фабрика фич (см. М11)
+  models/                 # train/predict, пресеты
+  cv/                     # сплиты (Group/Time/Purged)
+  ensembles/              # бленды/стекинг (см. М12)
+  ops/
+    runner.py             # один вход: build→train→oof→test→submit
+    profiler.py           # тайминги/память/CPU
+    io_utils.py           # parquet i/o, чтение батчами, dtype-map
+    memguard.py           # downcast, sparse, memory budget
+    speed_presets.yaml    # профили: fast/standard/max
+    seed_guard.py         # детерминизм/фиксация сидов
+  configs/
+    task.yaml             # пути/метрики/ключи id/time/group
+    model_*.yaml          # лёгкие пресеты под тип задачи
+  outputs/
+    logs/, oof/, preds/, submit/
+Makefile / taskfile.yml   # цели: prepare, fe, train, oof, test, blend, submit
+requirements.lock
+</code></pre><hr id="2a8568fa-e39f-8030-be14-c8ccb93f3aee"/><h2 id="2a8568fa-e39f-80f6-a526-ceb1c8ae869e" class="">5) Профилирование и метрики производительности</h2><ul id="2a8568fa-e39f-806a-898c-d800c9010052" class="bulleted-list"><li style="list-style-type:disc"><strong>Тайминги:</strong> хронометраж каждого шага (I/O, FE, CV-folds, train, pred), отчёт в <code>outputs/logs/timings.json</code>.</li></ul><ul id="2a8568fa-e39f-80c5-844c-f62a7492c0c9" class="bulleted-list"><li style="list-style-type:disc"><strong>Память:</strong> пиковое потребление (psutil), отчёт по dataframes (строки, столбцы, dtypes, размер в МБ).</li></ul><ul id="2a8568fa-e39f-80fb-870b-c5b7e935fc3d" class="bulleted-list"><li style="list-style-type:disc"><strong>I/O счётчики:</strong> объём прочитанных/записанных байт, число файлов, row-groups.</li></ul><ul id="2a8568fa-e39f-80b6-a7a6-d19bb7b1eac5" class="bulleted-list"><li style="list-style-type:disc"><strong>Цель:</strong> ≥40% времени уйти на обучение/валид, ≤30% — на FE+I/O, остальное — ансамбль/сабмиты.</li></ul><hr id="2a8568fa-e39f-807e-b4fc-d75453520d39"/><h2 id="2a8568fa-e39f-8049-ade1-db7cef9960cc" class="">6) Дисциплина dtypes и память</h2><ul id="2a8568fa-e39f-809f-8524-ca75653224ad" class="bulleted-list"><li style="list-style-type:disc">Числа: <code>int8/16/32</code>, <code>float32</code>; <strong>никогда</strong> <code>float64</code>, если не требуется.</li></ul><ul id="2a8568fa-e39f-8018-afc9-ebbbe877a9a7" class="bulleted-list"><li style="list-style-type:disc">Категории: <code>.astype(&#x27;category&#x27;)</code> → <code>.cat.codes.astype(&#x27;int32&#x27;)</code> в моделях LGBM/XGB; хранить словари кодов.</li></ul><ul id="2a8568fa-e39f-805d-80bf-fa0df7413ca9" class="bulleted-list"><li style="list-style-type:disc">Sparse: бинарные/редкие фичи → SciPy/CSR (если модель поддерживает) или <code>pandas.SparseDtype</code>.</li></ul><ul id="2a8568fa-e39f-8057-9909-e2060c1f2ab0" class="bulleted-list"><li style="list-style-type:disc">Стратегии снижения кардинальности: top-K + <code>__RARE__</code>, hashing для текстовых категорий.</li></ul><ul id="2a8568fa-e39f-800d-a4a3-d1cfec20f2ce" class="bulleted-list"><li style="list-style-type:disc"><strong>Membudget:</strong> <code>memguard.py</code> фейлит сборку, если прогноз памяти превышает порог (например, 12 ГБ).</li></ul><hr id="2a8568fa-e39f-80ba-8af9-d6032f2ad378"/><h2 id="2a8568fa-e39f-8006-852e-f5152ea71490" class="">7) I/O и кэш</h2><ul id="2a8568fa-e39f-8081-bd48-f762b70ac591" class="bulleted-list"><li style="list-style-type:disc"><strong>Parquet + zstd</strong>, row_group ~128MB, <code>use_statistics=True</code>.</li></ul><ul id="2a8568fa-e39f-80a0-bdcf-c2e6c52d7cdc" class="bulleted-list"><li style="list-style-type:disc"><strong>Polars</strong>: ленивый <code>scan_parquet</code> → фильтры/выбор столбцов применяются до чтения.</li></ul><ul id="2a8568fa-e39f-80df-bcca-f6e79f3c070d" class="bulleted-list"><li style="list-style-type:disc"><strong>Кэш фич</strong>: ключ <code>data_signature + feature_signature</code> (см. М11); кэш для OOF и test отдельно.</li></ul><ul id="2a8568fa-e39f-800b-8032-d8e4ab377a2e" class="bulleted-list"><li style="list-style-type:disc"><strong>Batch-инференс:</strong> <code>predict(batch_size= N_rows*cols_size_limit)</code> с прогрессом.</li></ul><hr id="2a8568fa-e39f-803f-af0e-fd680deed431"/><h2 id="2a8568fa-e39f-8090-b2b7-d846d1ad08bf" class="">8) Быстрые пресеты моделей (универсальные)</h2><ul id="2a8568fa-e39f-8002-a283-cb5a4093f2cf" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost (класс/рег):</strong> <code>depth 6–8</code>, <code>l2 3–10</code>, <code>rsm 0.6–0.8</code>, <code>learning_rate 0.03–0.08</code>, <code>iterations 2–5k</code>, <code>early_stopping 200</code>.</li></ul><ul id="2a8568fa-e39f-803a-9855-f4555add5187" class="bulleted-list"><li style="list-style-type:disc"><strong>LightGBM:</strong> <code>num_leaves 63–127</code>, <code>feature_fraction 0.6–0.9</code>, <code>bagging_fraction 0.6–0.9</code>, <code>min_data_in_leaf 64–256</code>, <code>lambda_l2 1–10</code>.</li></ul><ul id="2a8568fa-e39f-800e-a9c4-e2bd622ea045" class="bulleted-list"><li style="list-style-type:disc"><strong>XGBoost:</strong> <code>max_depth 6–9</code>, <code>eta 0.03–0.1</code>, <code>subsample/colsample 0.6–0.9</code>, <code>nrounds 1–3k</code>.</li></ul><ul id="2a8568fa-e39f-804e-97f9-fd37591d7812" class="bulleted-list"><li style="list-style-type:disc"><strong>Линейки (Ridge/Elastic):</strong> быстрые бленды/стекинг, дешёвые и ортогональные.</li></ul><p id="2a8568fa-e39f-8079-baa2-f8fb85e97ba2" class=""><code>speed_presets.yaml</code> хранит 3 профиля:</p><ul id="2a8568fa-e39f-802c-b4bf-e8822d96e83c" class="bulleted-list"><li style="list-style-type:disc"><strong>fast:</strong> 3 фолда, 1 модель, ядро-фичей (≤12), без ансамбля.</li></ul><ul id="2a8568fa-e39f-800b-9737-eb7670f27846" class="bulleted-list"><li style="list-style-type:disc"><strong>standard:</strong> 4 фолда, 2 модели, ядро + “средний риск”, лёгкий бленд.</li></ul><ul id="2a8568fa-e39f-80c4-8944-dc48c6000803" class="bulleted-list"><li style="list-style-type:disc"><strong>max:</strong> 5 фолдов, 3–4 модели, бленд/стекинг, но с time guard.</li></ul><hr id="2a8568fa-e39f-8096-91a7-d8878854697d"/><h2 id="2a8568fa-e39f-80aa-a196-d6ca28a90e15" class="">9) CV-ускорение и честность</h2><ul id="2a8568fa-e39f-806d-95ad-f9844f262fde" class="bulleted-list"><li style="list-style-type:disc">Меньше фолдов, но <strong>правильный тип</strong> (Group/Time/Purged).</li></ul><ul id="2a8568fa-e39f-80fb-a8bf-e27f6471493d" class="bulleted-list"><li style="list-style-type:disc"><strong>Реюз OOF-фолдов</strong> между моделями (общая <code>fold_map.parquet</code>).</li></ul><ul id="2a8568fa-e39f-8081-9a81-cb9dc240c82b" class="bulleted-list"><li style="list-style-type:disc">Ранняя остановка, обучение в параллель по фолдам, но OOF-сбор — последовательно (контроль памяти).</li></ul><ul id="2a8568fa-e39f-801e-acc8-ed6b17c5185a" class="bulleted-list"><li style="list-style-type:disc">Для TS — <code>gap ≥ max_lag</code> жёстко вшит в конфиг.</li></ul><hr id="2a8568fa-e39f-8031-a6f6-d26136c5a178"/><h2 id="2a8568fa-e39f-8045-8039-e52b9f45c60c" class="">10) Panic-план (кнопки «за 30–90 минут до конца»)</h2><ul id="2a8568fa-e39f-8056-8c1c-fe107c740116" class="bulleted-list"><li style="list-style-type:disc">Переключить <code>speed_presets=fast</code>.</li></ul><ul id="2a8568fa-e39f-8013-9e3b-cf9bfaab4e2b" class="bulleted-list"><li style="list-style-type:disc">Срезать risk-фичи: оставить только <strong>safe-ядро</strong> (groupby/freq/rowwise + 1–2 кодировки).</li></ul><ul id="2a8568fa-e39f-801c-adbb-f69f995fc478" class="bulleted-list"><li style="list-style-type:disc">Снизить K фолдов, отключить GLMM/проекции/KNN/KDE.</li></ul><ul id="2a8568fa-e39f-802f-a621-ceceac40e70b" class="bulleted-list"><li style="list-style-type:disc">В Cat/LGBM поднять <code>learning_rate</code>, сократить итерации, включить сильный L2.</li></ul><ul id="2a8568fa-e39f-80fd-9d32-dd3c2321b0d3" class="bulleted-list"><li style="list-style-type:disc">В ансамбле — только <strong>mean/logit-avg</strong> 2–3 базовых, без L2 стекинга.</li></ul><ul id="2a8568fa-e39f-806a-b65e-cdd02a82b99e" class="bulleted-list"><li style="list-style-type:disc">Форсировать <code>float32</code>, отключить лишние логи/SHAP.</li></ul><p id="2a8568fa-e39f-803e-87f0-c8e424f1f8b3" class=""><code>panic_plan.md</code> — чек-лист переключений + таблица, что именно отключать в каждом модуле.</p><hr id="2a8568fa-e39f-808a-9429-e562b97aff23"/><h2 id="2a8568fa-e39f-80d1-a8cd-d5517549cadb" class="">11) Детерминизм и окружение</h2><ul id="2a8568fa-e39f-80a3-a02a-c62eb7981b0b" class="bulleted-list"><li style="list-style-type:disc"><strong>Seeding:</strong> фиксируем <code>PYTHONHASHSEED</code>, NumPy/Random/LightGBM/Cat/XGB сиды; выключить nondeterministic опции.</li></ul><ul id="2a8568fa-e39f-8060-a126-de5972c96a07" class="bulleted-list"><li style="list-style-type:disc"><strong>Lock зависимостей:</strong> <code>requirements.lock</code> (или <code>uv.lock/poetry.lock</code>), версионирование моделей.</li></ul><ul id="2a8568fa-e39f-803a-a37b-fbe625de7daf" class="bulleted-list"><li style="list-style-type:disc"><strong>Подписи данных:</strong> <code>data_signature.json</code> (schema, нстрок, head-hash).</li></ul><ul id="2a8568fa-e39f-807b-a24e-e989b120f0e0" class="bulleted-list"><li style="list-style-type:disc"><strong>Sanity-check:</strong> проверка совпадения id-порядка между OOF/test перед блендом.</li></ul><hr id="2a8568fa-e39f-8093-8e0a-ec8ca83c061a"/><h2 id="2a8568fa-e39f-8032-b565-d3332d572a7c" class="">12) Паковка под Kaggle/экзамен</h2><ul id="2a8568fa-e39f-8058-9be8-dd001281230b" class="bulleted-list"><li style="list-style-type:disc">Один файл <code>runner.py</code> с CLI:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a8568fa-e39f-8008-b9db-d508a5338b04" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">python -m ops.runner --preset fast --config configs/task.yaml
+</code></pre></li></ul><ul id="2a8568fa-e39f-80ca-b3e5-d841937c7457" class="bulleted-list"><li style="list-style-type:disc">Авто-детект GPU/CPU, треды/память; фолбэк на CPU.</li></ul><ul id="2a8568fa-e39f-803d-a09d-d1ae2be8fd70" class="bulleted-list"><li style="list-style-type:disc"><strong>Без интернета</strong>: все assets локально, никаких внешних скачиваний.</li></ul><ul id="2a8568fa-e39f-80b8-a486-ddfa8067e7f7" class="bulleted-list"><li style="list-style-type:disc">Ограничение на время: <code>-time_budget_min</code> → graceful-degrade (panic-план).</li></ul><hr id="2a8568fa-e39f-80d1-9f9a-e276c13a451d"/><h2 id="2a8568fa-e39f-8047-a14a-d65f35fb0d87" class="">13) Логи и отчёт</h2><ul id="2a8568fa-e39f-8099-a583-e93294ffc1c1" class="bulleted-list"><li style="list-style-type:disc"><code>timings.json</code> (по шагам), <code>memory.json</code>, <code>cv_report.json</code> (по фолдам), <code>lb_tracker.csv</code> (сабмиты, метрики, сплит).</li></ul><ul id="2a8568fa-e39f-80f0-9449-ee3a31f56be7" class="bulleted-list"><li style="list-style-type:disc">Скрипт <code>ops/report.py</code> → однотабличный отчёт “до/после” ускорения.</li></ul><hr id="2a8568fa-e39f-8078-9ea4-e4974673d62e"/><h2 id="2a8568fa-e39f-8016-90f2-e1609781230c" class="">14) Мини-практикум A (60–90 мин): “-40% времени за час”</h2><p id="2a8568fa-e39f-8027-9b98-fa7b994f05bc" class=""><strong>Цель:</strong> ускорить свой текущий пайп.</p><p id="2a8568fa-e39f-802b-b09e-e99a4e101110" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-803d-9ff3-e4ca41bb78d9" class="numbered-list" start="1"><li>Снять профили (timings/memory).</li></ol><ol type="1" id="2a8568fa-e39f-8015-80e4-f103871c087b" class="numbered-list" start="2"><li>CSV→Parquet, downcast dtypes, Polars <code>scan</code>.</li></ol><ol type="1" id="2a8568fa-e39f-8055-ba3a-da14b6c1c03d" class="numbered-list" start="3"><li>Сжать фичсет до ядра, пересобрать.</li></ol><ol type="1" id="2a8568fa-e39f-805d-acbb-cead24d04c3f" class="numbered-list" start="4"><li>Отчёт «до/после».</li></ol><hr id="2a8568fa-e39f-807c-9237-eba0109a79c0"/><h2 id="2a8568fa-e39f-80bc-b1e3-c97645f3f04c" class="">15) Мини-практикум B (60–90 мин): память и join</h2><p id="2a8568fa-e39f-8086-9b57-e6ab0e95090b" class=""><strong>Цель:</strong> уместиться в бюджет (например, 12 ГБ).</p><p id="2a8568fa-e39f-806d-8684-d1e9e725ab28" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-80c4-89f0-e3ad358927e0" class="numbered-list" start="1"><li>Кодирование категорий (int32), rare-pooling, hashing для длинных.</li></ol><ol type="1" id="2a8568fa-e39f-803d-b59f-d5a3244913f5" class="numbered-list" start="2"><li>Сортированные merge по ключам, “однопроходные” groupby-агрегаты.</li></ol><ol type="1" id="2a8568fa-e39f-80f9-b813-fd69204eafd8" class="numbered-list" start="3"><li>Проверка memguard → зелёный.</li></ol><hr id="2a8568fa-e39f-805d-a305-d31efa4ec1fa"/><h2 id="2a8568fa-e39f-80c7-ace4-f92032202fbf" class="">16) Мини-практикум C (45–60 мин): fast-CV + быстрый ансамбль</h2><p id="2a8568fa-e39f-800c-82d1-c753e5f63846" class=""><strong>Цель:</strong> честная, но дешевая валидация и финальный прирост.</p><p id="2a8568fa-e39f-80f0-b0b9-f9af9163d72f" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-80df-bfe6-d940cf161afc" class="numbered-list" start="1"><li>3-fold Group/Time (общая fold_map), ранняя остановка.</li></ol><ol type="1" id="2a8568fa-e39f-80bd-91de-fd3f665ab283" class="numbered-list" start="2"><li>Cat/LGBM базовые → logit-avg/mean бленд.</li></ol><ol type="1" id="2a8568fa-e39f-8020-81b4-f2914697ca63" class="numbered-list" start="3"><li>ΔOOF и время vs single-model.</li></ol><hr id="2a8568fa-e39f-80ac-be22-fef7348738bd"/><h2 id="2a8568fa-e39f-808e-a882-cbdecaacc5ed" class="">17) Самостоятельный мини-спринт (3–4 часа)</h2><ul id="2a8568fa-e39f-8082-8079-f93eeb756ddd" class="bulleted-list"><li style="list-style-type:disc">Применить М13 к любому из модулей М2–М12:<ul id="2a8568fa-e39f-801b-a1e7-e7c79d34fa2f" class="bulleted-list"><li style="list-style-type:circle">Снять профили → ускорить ≥30% времени и ≥30% памяти, удержать или улучшить OOF.</li></ul><ul id="2a8568fa-e39f-8055-9ef5-d85c155a149a" class="bulleted-list"><li style="list-style-type:circle">Подготовить сабмит до и после ускорения.</li></ul><ul id="2a8568fa-e39f-80c1-a3c5-eafef42e7e4f" class="bulleted-list"><li style="list-style-type:circle">Сдать <code>panic_plan.md</code> и <code>timings/memory</code> отчёты.</li></ul></li></ul><hr id="2a8568fa-e39f-8050-8bb0-f7c56d61bb98"/><h2 id="2a8568fa-e39f-80ba-bfcb-ce41bf606883" class="">18) Чек-лист качества (версия М13)</h2><ul id="2a8568fa-e39f-8055-8991-f518b9419f5e" class="bulleted-list"><li style="list-style-type:disc"><strong>Zero-leak</strong> сохранён (сплиты/embargo как в конфиге).</li></ul><ul id="2a8568fa-e39f-8074-b617-e25cf3bb2cf7" class="bulleted-list"><li style="list-style-type:disc">Детерминизм: повторный запуск даёт тот же OOF (±1e-6).</li></ul><ul id="2a8568fa-e39f-80fb-8b78-e55cc700fee1" class="bulleted-list"><li style="list-style-type:disc">Память в бюджете, <code>memguard</code> зелёный.</li></ul><ul id="2a8568fa-e39f-80c8-8837-d4b19487aad3" class="bulleted-list"><li style="list-style-type:disc">Время каждого шага зафиксировано, общая длительность в лимите.</li></ul><ul id="2a8568fa-e39f-802b-966b-e5aae6fe840b" class="bulleted-list"><li style="list-style-type:disc">Сабмит валиден, id-порядок корректный.</li></ul><hr id="2a8568fa-e39f-8046-9907-eb9eff4aa173"/><h2 id="2a8568fa-e39f-801c-b2f2-e344080b2063" class="">19) Оценивание</h2><ul id="2a8568fa-e39f-8054-97b4-d9f061422072" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: сохранение честной CV и отсутствие утечек.</li></ul><ul id="2a8568fa-e39f-80d1-98db-d885c43ff164" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: ускорение и/или экономия памяти при неизменном/лучшем OOF.</li></ul><ul id="2a8568fa-e39f-8027-aaae-c056e24ae0f2" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: чистый скелет, кэш, логирование, panic-план.</li></ul><ul id="2a8568fa-e39f-8072-b666-d03133692827" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: “до/после” с числами и краткими выводами.</li></ul><hr id="2a8568fa-e39f-80c5-a49d-e54d041dba27"/><h2 id="2a8568fa-e39f-808e-b5ca-dd47085b038b" class="">20) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-8024-b0fd-d845af5be459" class="bulleted-list"><li style="list-style-type:disc"><code>ops/runner.py</code>, <code>profiler.py</code>, <code>io_utils.py</code>, <code>memguard.py</code>, <code>seed_guard.py</code>.</li></ul><ul id="2a8568fa-e39f-8079-9ba1-e26997e8c5cd" class="bulleted-list"><li style="list-style-type:disc"><code>speed_presets.yaml</code> (fast/standard/max), <code>panic_plan.md</code> (шаблон).</li></ul><ul id="2a8568fa-e39f-80f1-9687-dd21894b4920" class="bulleted-list"><li style="list-style-type:disc">Шаблоны Make/Taskfile для одного вызова.</li></ul><ul id="2a8568fa-e39f-804b-a310-d9d9c6d722f4" class="bulleted-list"><li style="list-style-type:disc">Готовые сниппеты: Polars-ленивое чтение, Parquet-параметры, downcast-таблица dtypes.</li></ul><hr id="2a8568fa-e39f-80b0-83ae-eebca791f465"/><h2 id="2a8568fa-e39f-8057-8d81-c6ba4b2928bb" class="">21) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-80cd-9aab-d67004a97f27" class="bulleted-list"><li style="list-style-type:disc"><strong>0–20 мин:</strong> загрузить пресет <code>fast</code>, прогнать бейзлайн end-to-end (сабмит_1).</li></ul><ul id="2a8568fa-e39f-806a-9523-f4ab79820186" class="bulleted-list"><li style="list-style-type:disc"><strong>20–90 мин:</strong> профилировать и починить I/O/dtypes/join (-30–40%).</li></ul><ul id="2a8568fa-e39f-805d-ab02-c68d3ea6c19c" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> собрать ядро-фич и быструю CV (3-fold), сабмит_2.</li></ul><ul id="2a8568fa-e39f-8049-a1fd-c3a9492a3130" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> лёгкий бленд (mean/logit-avg), sanity-checks.</li></ul><ul id="2a8568fa-e39f-80ac-84d6-d1a6a8c8c461" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> финальная упаковка, отчёт “до/после”, готовность к panic-плану.</li></ul><p id="2a8568fa-e39f-807a-a66c-eec3c3b75a99" class="">Если хочешь, соберу тебе <code>ops/</code> под твой текущий темплейт (CLI, пресеты, guard’ы) — подключишь за 10–15 минут и дальше будешь просто крутить профили <code>fast/standard/max</code>.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

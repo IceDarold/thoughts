@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Теория</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8066-95c0-d86aaffd1efc" class="page sans"><header><h1 class="page-title">Теория</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8089-8bd4-dabb0023bf64" class="">ниже — «полная теория» для М2. Это не туториал, а опорный конспект: определения, формулы, анти-утечки, когда что работает и почему. В конце — боевой чек-лист под 5-часовой спринт.</p><h2 id="2a8568fa-e39f-8069-9a97-f426de7b79c5" class="">1) Что такое «категориальные» (и почему это сложно)</h2><p id="2a8568fa-e39f-8053-a6b9-c8e3452eb8eb" class=""><strong>Типы:</strong></p><ul id="2a8568fa-e39f-8029-b578-fa976d64c759" class="bulleted-list"><li style="list-style-type:disc"><strong>Номинальные</strong> (color, city): нет порядка.</li></ul><ul id="2a8568fa-e39f-809e-ad76-ef8bcc2c8180" class="bulleted-list"><li style="list-style-type:disc"><strong>Порядковые / ранговые</strong> (education_level): порядок есть.</li></ul><ul id="2a8568fa-e39f-800e-8679-c2ebf36a88c2" class="bulleted-list"><li style="list-style-type:disc"><strong>Высокая кардинальность</strong> (user_id, item_id, merchant_id).</li></ul><ul id="2a8568fa-e39f-80ea-a952-f1208563484d" class="bulleted-list"><li style="list-style-type:disc"><strong>Мультизначные</strong> (tags = {“sport”, “kids”}).</li></ul><ul id="2a8568fa-e39f-8019-8141-f78c80b53802" class="bulleted-list"><li style="list-style-type:disc"><strong>Иерархические</strong> (city→region→country).</li></ul><p id="2a8568fa-e39f-8000-99fb-cbddad35f9af" class=""><strong>Риски:</strong></p><ul id="2a8568fa-e39f-8005-8da0-d1b1614b760f" class="bulleted-list"><li style="list-style-type:disc">Взрыв размерности (one-hot).</li></ul><ul id="2a8568fa-e39f-8001-a04c-d7a2c7907658" class="bulleted-list"><li style="list-style-type:disc"><strong>Утечки</strong> при таргет-энкодингах.</li></ul><ul id="2a8568fa-e39f-8094-a71d-d15e0c68e0bf" class="bulleted-list"><li style="list-style-type:disc">Неизвестные/редкие категории на тесте.</li></ul><ul id="2a8568fa-e39f-80c8-9fe4-ffa5aba3317f" class="bulleted-list"><li style="list-style-type:disc">Спуриа (случайные совпадения в высоких картах).</li></ul><hr id="2a8568fa-e39f-8071-a32e-e30b54e809e9"/><h2 id="2a8568fa-e39f-80b7-94f3-ddf72f099e92" class="">2) Зависимость от модели (что «ест» ваша модель)</h2><ul id="2a8568fa-e39f-808d-a0e7-d357fcbd272e" class="bulleted-list"><li style="list-style-type:disc"><strong>Деревья/GBDT (LightGBM/XGBoost/CatBoost):</strong><ul id="2a8568fa-e39f-801b-a1c0-e76cddc0a4de" class="bulleted-list"><li style="list-style-type:circle"><em>CatBoost</em> имеет нативные CTR/ordered-статистики → лучший выбор для high-card c минимальной болью.</li></ul><ul id="2a8568fa-e39f-806f-8215-e42b39785609" class="bulleted-list"><li style="list-style-type:circle"><em>LightGBM</em> умеет <code>categorical_feature</code>: сортирует категории по статистике и режет по порядку (без one-hot); безопасно при честном CV.</li></ul><ul id="2a8568fa-e39f-80db-9784-dfa4db614b96" class="bulleted-list"><li style="list-style-type:circle"><em>XGBoost</em>: чаще используют one-hot/hash/target. (Если есть нативные cats — всё равно проверяйте CV.)</li></ul></li></ul><ul id="2a8568fa-e39f-80a5-9f0b-f284f348cdeb" class="bulleted-list"><li style="list-style-type:disc"><strong>Линейные/логистические/GLM:</strong> нужны численные кодировки без нелинейной магии: one-hot, WOE, таргет-энкодинг с сильным сглаживанием.</li></ul><ul id="2a8568fa-e39f-80d5-a4a8-f3256966e7d7" class="bulleted-list"><li style="list-style-type:disc"><strong>NN/табличные трансформеры:</strong> entity-эмбеддинги + нормальные числовые фичи.</li></ul><hr id="2a8568fa-e39f-80f0-b457-eb034d73ea9f"/><h2 id="2a8568fa-e39f-80d0-954e-f2cb3f69d3e2" class="">3) Базовые кодировки</h2><h3 id="2a8568fa-e39f-8084-a899-db3ac65e1751" class="">3.1 One-Hot (OHE)</h3><ul id="2a8568fa-e39f-80b5-979d-d44f2411de05" class="bulleted-list"><li style="list-style-type:disc">(x \in {a_1,\dots,a_K} \Rightarrow \mathbf{1}[x=a_k]).</li></ul><ul id="2a8568fa-e39f-80c3-b058-f3156f57fa41" class="bulleted-list"><li style="list-style-type:disc"><strong>Плюсы:</strong> простая, честная, интерпретируемая, отлично с линейками.</li></ul><ul id="2a8568fa-e39f-80ba-96af-c2be5aaec0d8" class="bulleted-list"><li style="list-style-type:disc"><strong>Минусы:</strong> при (K\gg 10^3) взрывает память; редкие категории бесполезны.</li></ul><ul id="2a8568fa-e39f-80d9-8229-ec235f65e5f2" class="bulleted-list"><li style="list-style-type:disc"><strong>Приёмы:</strong> top-K + <code>__RARE__</code>, отдельная категория <code>__UNK__</code> для новых значений.</li></ul><h3 id="2a8568fa-e39f-80d1-9a31-f3c3262b47dc" class="">3.2 Частоты/счёты (Frequency/Count)</h3><ul id="2a8568fa-e39f-80d5-bc12-f1dc24cd9584" class="bulleted-list"><li style="list-style-type:disc">(\mathrm{freq}(c)=\frac{n_c}{N}), (\mathrm{count}(c)=n_c).</li></ul><ul id="2a8568fa-e39f-8054-abaf-c3d55f292e2e" class="bulleted-list"><li style="list-style-type:disc"><strong>Плюсы:</strong> дёшево, всегда полезно деревьям, нулевая утечка.</li></ul><ul id="2a8568fa-e39f-8066-b45d-f032942b702f" class="bulleted-list"><li style="list-style-type:disc"><strong>Минусы:</strong> не учитывает таргет.</li></ul><h3 id="2a8568fa-e39f-805a-a252-f86939260099" class="">3.3 Хеш-трик (Feature Hashing)</h3><ul id="2a8568fa-e39f-80e7-93ea-f27d28ace7da" class="bulleted-list"><li style="list-style-type:disc">(h(c)\in{1,\dots,d}), иногда со знаком ((\pm1)).</li></ul><ul id="2a8568fa-e39f-8071-b353-ff477ce6dd4c" class="bulleted-list"><li style="list-style-type:disc"><strong>Плюсы:</strong> фиксированный размер, быстрый, защитный от «новых» категорий.</li></ul><ul id="2a8568fa-e39f-803c-84ba-e0dd0ca090a4" class="bulleted-list"><li style="list-style-type:disc"><strong>Минусы:</strong> коллизии (смещение/шум); выбирайте (d) из бюджета памяти, типично (2^{12}\dots2^{18}).</li></ul><h3 id="2a8568fa-e39f-809c-b781-c140de831b24" class="">3.4 Бинарная/Хельмерт/Суммовая</h3><ul id="2a8568fa-e39f-804f-8ce4-d760c80cc73a" class="bulleted-list"><li style="list-style-type:disc">Компактные кодировки для средних K (бинарная ≈ (\lceil \log_2 K\rceil)).</li></ul><ul id="2a8568fa-e39f-8098-b8d3-deae231ad4b2" class="bulleted-list"><li style="list-style-type:disc">Полезно для линейных, но обычно проигрывают таргет-кодировкам.</li></ul><hr id="2a8568fa-e39f-8055-a645-ca6c8f43b14c"/><h2 id="2a8568fa-e39f-8051-9be7-e692e6f707ef" class="">4) Таргет-кодировки (mean/likelihood/WOE) — теория и защита</h2><h3 id="2a8568fa-e39f-801a-add0-f6468d96d737" class="">4.1 Mean/Target Encoding (регрессия/классификация)</h3><p id="2a8568fa-e39f-8023-9735-c29d3ef13664" class=""><strong>Идея:</strong> заменить категорию на ожидаемое значение таргета для этой категории.</p><p id="2a8568fa-e39f-80c8-8e03-d3939b2291aa" class=""><strong>M-estimate (сглаживание):</strong></p><p id="2a8568fa-e39f-8002-9fde-ccb7dd4e282d" class="">[</p><p id="2a8568fa-e39f-809f-af2f-e77f6994a4d4" class="">\mathrm{TE}(c) ;=; \frac{\sum_{i: x_i=c} y_i + m\cdot \mu}{n_c + m}</p><p id="2a8568fa-e39f-80a6-808e-d09dade9c4da" class="">]</p><p id="2a8568fa-e39f-80da-9b88-cec13e34f8a9" class="">где (\mu) — глобальное среднее, (m) — «сила» приора (сколько «виртуальных наблюдений»).</p><p id="2a8568fa-e39f-80fe-9e89-ed6658356eea" class=""><strong>Бета-сглаживание (для Bernoulli (y)):</strong></p><p id="2a8568fa-e39f-80a1-a942-ff209fa8d44b" class="">[</p><p id="2a8568fa-e39f-8093-aed1-f1dfd9241389" class="">\mathrm{TE}(c) ;=; \frac{\alpha + \sum y}{\alpha + \beta + n_c}</p><p id="2a8568fa-e39f-8070-a435-eac56b4db559" class="">]</p><p id="2a8568fa-e39f-80e2-955f-dbb0e9da391c" class="">(\alpha,\beta) — параметры приора.</p><p id="2a8568fa-e39f-80c0-8f0c-ce3b8d9adaad" class=""><strong>Для регрессии с heavy-tail:</strong> используйте Huber-среднее или winsorize.</p><p id="2a8568fa-e39f-8000-b697-e1309c8fcc69" class=""><strong>Ключ: избегать утечки.</strong> Нельзя считать TE по всем данным и затем обучаться на этих значениях — модель «видит» таргет.</p><p id="2a8568fa-e39f-8055-acdb-cf7999fd42dc" class=""><strong>Три безопасных режима:</strong></p><ul id="2a8568fa-e39f-80e1-8e39-e8853ce8da34" class="bulleted-list"><li style="list-style-type:disc"><strong>K-Fold OOF:</strong> для каждого фолда TE считается <strong>только на train-части</strong>; применяем к валу этого фолда.</li></ul><ul id="2a8568fa-e39f-80d9-bd22-ea2875fcd147" class="bulleted-list"><li style="list-style-type:disc"><strong>Leave-One-Out (LOO):</strong> (\frac{\sum y - y_i}{n_c-1}); добавляйте шум (\mathcal{N}(0,\sigma)) или (\times(1+\epsilon)). Работает, но при малых (n_c) шумнее.</li></ul><ul id="2a8568fa-e39f-8019-b754-fed8659349ed" class="bulleted-list"><li style="list-style-type:disc"><strong>Ordered/Expanding (время):</strong> сортируем по времени/перестановке и считаем <strong>expanding-mean из прошлого</strong>.</li></ul><p id="2a8568fa-e39f-8020-b2df-eec5ef8317b0" class=""><strong>Смягчение утечки:</strong></p><ul id="2a8568fa-e39f-80c3-b003-cbd28481da88" class="bulleted-list"><li style="list-style-type:disc">Шум (Gaussian/Multiplicative) на TE в train.</li></ul><ul id="2a8568fa-e39f-80ae-9417-ebe5ae82f819" class="bulleted-list"><li style="list-style-type:disc">Ограничить влияние редких (порог (n_c&lt;r \Rightarrow) <code>__RARE__</code>).</li></ul><ul id="2a8568fa-e39f-8085-aee2-ec12623504d0" class="bulleted-list"><li style="list-style-type:disc">Для multi-class: либо K столбцов TE (per class), либо <strong>response coding</strong> (логиты классов).</li></ul><h3 id="2a8568fa-e39f-80c1-b089-ff5b24525b64" class="">4.2 WOE (Weight of Evidence) — бинарная классификация</h3><p id="2a8568fa-e39f-8087-900f-dad3b975ecc9" class="">[</p><p id="2a8568fa-e39f-809d-bf8d-d8d896984733" class="">\mathrm{WOE}(c)=\ln\frac{\Pr(c \mid y=1)}{\Pr(c \mid y=0)} ;=; \ln \frac{\frac{n_{c,1}}{N_1}}{\frac{n_{c,0}}{N_0}}</p><p id="2a8568fa-e39f-806b-8ef4-c4d096b62ff7" class="">]</p><ul id="2a8568fa-e39f-8053-83ed-c2cb928ae594" class="bulleted-list"><li style="list-style-type:disc"><strong>Плюсы:</strong> линейные модели получают <strong>монотонный</strong> сигнал, хорошо «садится» в логистику, интерпретируемый, устойчив к дисбалансу.</li></ul><ul id="2a8568fa-e39f-8098-b350-cd9ae8aab87e" class="bulleted-list"><li style="list-style-type:disc"><strong>Минусы:</strong> требует OOF/ordered расчёта; для малых (n_{c,\cdot}) — сглаживание (аддитивная лапласовская постоянная).</li></ul><h3 id="2a8568fa-e39f-8025-b239-d315150be52d" class="">4.3 GLMM-encoding (random effects)</h3><ul id="2a8568fa-e39f-80a5-b65a-c0565e173b72" class="bulleted-list"><li style="list-style-type:disc">Считайте категорию как <strong>случайный эффект</strong> (u_c \sim \mathcal{N}(0,\tau^2)) в регрессии (y = X\beta + u_c + \epsilon).</li></ul><ul id="2a8568fa-e39f-806f-b66a-cee11db56797" class="bulleted-list"><li style="list-style-type:disc">На практике — «бейзийский» TE с shrinkage к глобали. Делается через OOF-оценку эффекта; даёт аккуратное сглаживание при высоких картах.</li></ul><hr id="2a8568fa-e39f-80f6-9788-f70d542129da"/><h2 id="2a8568fa-e39f-802c-836b-da3cda01fdaf" class="">5) Время, группы и честная валидация (главный источник боли)</h2><p id="2a8568fa-e39f-807a-958a-c772fccf3f49" class=""><strong>Правило:</strong> где таргет участвует в расчёте признака — обязателен <strong>OOF/time-aware</strong> протокол.</p><ul id="2a8568fa-e39f-8021-adfc-de6bbb07d6b4" class="bulleted-list"><li style="list-style-type:disc"><strong>GroupKFold:</strong> не делим одну сущность (user_id/merchant_id) между train/valid при генерации TE.</li></ul><ul id="2a8568fa-e39f-800b-b770-f3d2ea6c7e1a" class="bulleted-list"><li style="list-style-type:disc"><strong>Time/Purged/Embargo:</strong> если есть время, используем rolling/expanding, <strong>gap ≥ max_lag</strong>.</li></ul><ul id="2a8568fa-e39f-8077-a10e-cecfee74ae11" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность:</strong> фиксируйте <code>fold_map.parquet</code>; любые TE пересчитываются по нему.</li></ul><hr id="2a8568fa-e39f-805d-93cd-f07145d2ffe7"/><h2 id="2a8568fa-e39f-8040-9de9-c97a6018ec81" class="">6) Редкие/невиданные категории</h2><p id="2a8568fa-e39f-800f-96a7-daf2eb83751b" class="">Стратегии:</p><ul id="2a8568fa-e39f-80b0-8d59-ff598db9fab3" class="bulleted-list"><li style="list-style-type:disc"><strong>Top-K + </strong><code><strong>__RARE__</strong></code>: всё, что реже порога — в одну корзину.</li></ul><ul id="2a8568fa-e39f-80fd-a3a0-cce162d00882" class="bulleted-list"><li style="list-style-type:disc"><strong>Поисправленная TE:</strong> при (n_c &lt; r) используем более сильный приор (большой (m)).</li></ul><ul id="2a8568fa-e39f-80ed-b447-c4d09a582af7" class="bulleted-list"><li style="list-style-type:disc"><strong>Иерархический бек-офф:</strong> city→region→country: если нет сигнала на city — берём TE(region), затем TE(country), затем (\mu).</li></ul><ul id="2a8568fa-e39f-808a-91b1-dd6b3c3a0db6" class="bulleted-list"><li style="list-style-type:disc"><code><strong>__UNK__</strong></code> для новых на тесте: код как (\mu) или TE родительского уровня.</li></ul><hr id="2a8568fa-e39f-80ff-8552-e658b53bfdd2"/><h2 id="2a8568fa-e39f-80c9-b584-ef22809674fe" class="">7) Перекрёстия (feature crosses) и мультимодальные cats</h2><ul id="2a8568fa-e39f-8035-a475-dcd042a34ef2" class="bulleted-list"><li style="list-style-type:disc"><strong>A×B:</strong> полезно, но экспоненциально растёт. Спасает:<ul id="2a8568fa-e39f-80c5-9bbd-e458a8b3df32" class="bulleted-list"><li style="list-style-type:circle">ограничение на топ-комбинации;</li></ul><ul id="2a8568fa-e39f-80e4-8bef-fd4175e94812" class="bulleted-list"><li style="list-style-type:circle"><strong>hashing</strong> пар (двойной хеш: (h(a,b)=h_1(a)\oplus h_2(b))).</li></ul></li></ul><ul id="2a8568fa-e39f-8007-b229-f2b10cca5edb" class="bulleted-list"><li style="list-style-type:disc"><strong>Мультизначные</strong> (tags): bag-of-categories или TF-IDF по словарю тегов; для деревьев — сумма/среднее TE по тегам.</li></ul><hr id="2a8568fa-e39f-8054-ae14-dca3dedeedb0"/><h2 id="2a8568fa-e39f-804b-9a9e-d99c09736d3b" class="">8) Эмбеддинги категорий (entity embeddings)</h2><ul id="2a8568fa-e39f-8024-9601-cb334da39adb" class="bulleted-list"><li style="list-style-type:disc">Для категории с (K) уникальных значений обучаем эмбеддинг (\mathbf{e}_c \in \mathbb{R}^d).</li></ul><ul id="2a8568fa-e39f-80b2-af1d-eba876d95fa4" class="bulleted-list"><li style="list-style-type:disc">Эвристика для размерности: (d \in [\min(50,\lfloor 1.6\cdot K^{0.56}\rfloor), \min(100, \lfloor \sqrt{K}\rfloor)]); на практике 8–32 часто достаточно.</li></ul><ul id="2a8568fa-e39f-808d-a257-ff22ec10da80" class="bulleted-list"><li style="list-style-type:disc">Обучаем простой MLP на задаче, берём эмбеддинги как фичи для GBDT. Обязательно <strong>OOF-извлечение</strong> или отдельный fit на train-окне каждого фолда.</li></ul><ul id="2a8568fa-e39f-80e1-994f-c4e60c5dad2f" class="bulleted-list"><li style="list-style-type:disc"><strong>Плюсы:</strong> компактно, ловит неявные сходства; <strong>Минусы:</strong> нужен NN-контур и дисциплина OOF.</li></ul><hr id="2a8568fa-e39f-80b7-8dc8-e2c5a07d3e68"/><h2 id="2a8568fa-e39f-8046-ac67-de64eb102598" class="">9) Специфика фреймворков</h2><h3 id="2a8568fa-e39f-8080-88eb-da88074e0046" class="">CatBoost</h3><ul id="2a8568fa-e39f-8065-ac73-d4bde5e19a6d" class="bulleted-list"><li style="list-style-type:disc">«Ordered boosting»: считает CTR/TE <strong>по префиксу</strong> перестановки — встроенная защита от утечек.</li></ul><ul id="2a8568fa-e39f-8007-8cde-f2d24bf33d68" class="bulleted-list"><li style="list-style-type:disc">Параметры: <code>one_hot_max_size</code> (мелкие — OHE), <code>max_ctr_complexity</code> (перекрёстия), <code>l2_leaf_reg</code> ↑ для устойчивости.</li></ul><ul id="2a8568fa-e39f-8098-80d3-f255e99dc958" class="bulleted-list"><li style="list-style-type:disc">Практика: <strong>не делайте внешний TE</strong> — доверьтесь CatBoost, добавляйте только частоты/счёты/иерархический бек-офф как независимые фичи.</li></ul><h3 id="2a8568fa-e39f-8079-b513-c01098495564" class="">LightGBM</h3><ul id="2a8568fa-e39f-8080-95c9-e6bbea766b8a" class="bulleted-list"><li style="list-style-type:disc">Указывайте <code>categorical_feature</code> и <strong>не превращайте в произвольные int-коды</strong> без флага — иначе модель введёт ложный порядок.</li></ul><ul id="2a8568fa-e39f-80f5-aa57-c524c4d05e25" class="bulleted-list"><li style="list-style-type:disc">При очень больших K: freq/hash/TE(O O F) + оставить часть полей как <code>categorical_feature</code> с <code>max_cat_threshold</code>.</li></ul><h3 id="2a8568fa-e39f-80ee-a70d-d4449fbc1169" class="">XGBoost</h3><ul id="2a8568fa-e39f-80fc-beb5-fdc6d1b5d336" class="bulleted-list"><li style="list-style-type:disc">Если без нативных cats: OHE/freq/hash/TE(OOF). Следите за шириной матрицы (sparse CSR помогает).</li></ul><ul id="2a8568fa-e39f-8010-80dc-ee92fba64bdc" class="bulleted-list"><li style="list-style-type:disc">Регуляризация: <code>min_child_weight</code> и <code>lambda</code> выше для TE-фич.</li></ul><h3 id="2a8568fa-e39f-80f7-9ca5-fdb5fa8635c2" class="">Линейные/GLM</h3><ul id="2a8568fa-e39f-803e-9f4b-e850deaa07fe" class="bulleted-list"><li style="list-style-type:disc">OHE/WOE/TE(сильное сглаживание). Для WOE можно добавить <strong>монотонные ограничения</strong> во внешних методах (или биннинг + сплайн).</li></ul><hr id="2a8568fa-e39f-8090-8998-ecbdd6432f83"/><h2 id="2a8568fa-e39f-80bc-9d65-f4eacf9bdd13" class="">10) Диагностика и стабильность</h2><ul id="2a8568fa-e39f-801a-a34a-f841472c5122" class="bulleted-list"><li style="list-style-type:disc"><strong>Пермутационная важность</strong> по фолдам: TE-фичи не должны давать «чудес» на одном фолде и провал на другом.</li></ul><ul id="2a8568fa-e39f-8054-98c1-db44e33fb87e" class="bulleted-list"><li style="list-style-type:disc"><strong>AV/PSI</strong> (train vs valid/test) по TE-фичам: резкий сдвиг — признак подгона.</li></ul><ul id="2a8568fa-e39f-8021-8d20-dcb68c89d6f2" class="bulleted-list"><li style="list-style-type:disc"><strong>Leak-unit-tests:</strong> любой TE должен падать, если попробовать «fit на всём train и применить на нём же».</li></ul><hr id="2a8568fa-e39f-8051-b6b1-ce0ff3c93c68"/><h2 id="2a8568fa-e39f-8066-8aea-d22063999983" class="">11) Типовые рецепты (когда что брать)</h2><ul id="2a8568fa-e39f-8022-8ecb-c5e50ab908a9" class="bulleted-list"><li style="list-style-type:disc"><strong>High-card ID + деревья:</strong> CatBoost (нативно) <strong>или</strong> LGBM с freq/count + OOF-TE (m-estimate) + hash-cross A×B.</li></ul><ul id="2a8568fa-e39f-802f-994f-d0802236ad8f" class="bulleted-list"><li style="list-style-type:disc"><strong>Линейки:</strong> OHE для малых K; WOE/TE(OOF) для больших; обязательно регуляризация и контроль коллинеарности.</li></ul><ul id="2a8568fa-e39f-80ed-abb5-cdb015154660" class="bulleted-list"><li style="list-style-type:disc"><strong>Time-series спрос/продажи:</strong> <strong>ordered/expanding TE</strong> только из прошлого, с decay-весами.</li></ul><ul id="2a8568fa-e39f-80f9-91ef-f20f5c57838f" class="bulleted-list"><li style="list-style-type:disc"><strong>Фрод/скоры с дисбалансом:</strong> WOE (биннинг по стабильным границам) + OOF-TE; оценка по PR-AUC.</li></ul><ul id="2a8568fa-e39f-80ea-a1ae-f3db19ea2141" class="bulleted-list"><li style="list-style-type:disc"><strong>Recsys (user_id, item_id):</strong> эмбеддинги (OOF-извлечение) + freq/recency; для re-rank — TE на item×user-срезах, но строго OOF.</li></ul><hr id="2a8568fa-e39f-80a0-8b72-d5d53a44c19c"/><h2 id="2a8568fa-e39f-8049-a936-fe4b0eb9ccce" class="">12) Формулы/детали, о которых часто спрашивают</h2><p id="2a8568fa-e39f-80e1-9794-e7476776ad33" class=""><strong>Шум к TE (уменьшить переобучение):</strong></p><p id="2a8568fa-e39f-8072-ad94-f8dcdc2bf763" class="">[</p><p id="2a8568fa-e39f-8067-9ab3-ecb92e818fd1" class="">\tilde{v} ;=; v \cdot (1 + \epsilon), \quad \epsilon \sim \mathcal{N}(0,\sigma^2);; \text{или};; \tilde{v}=v+\epsilon</p><p id="2a8568fa-e39f-808d-887d-c4b6f9e39667" class="">]</p><p id="2a8568fa-e39f-8035-8000-f9517df99375" class="">Типично (\sigma\in[0.01, 0.05]).</p><p id="2a8568fa-e39f-807b-a792-ec89a024aa6d" class=""><strong>LOO-исправления на малых (n_c):</strong></p><p id="2a8568fa-e39f-8020-a9d4-fef3bfae486a" class="">[</p><p id="2a8568fa-e39f-809b-af6a-c08e6317241d" class="">\mathrm{TE}_{\text{LOO}}(i) ;=; \frac{S_c - y_i + m\mu}{(n_c - 1) + m}</p><p id="2a8568fa-e39f-80d0-a399-e0509b1c91ef" class="">]</p><p id="2a8568fa-e39f-805b-9dca-cd98b24b053b" class=""><strong>Иерархический бек-офф (рекурсивно):</strong></p><p id="2a8568fa-e39f-80e9-8e08-d53e21378289" class="">[</p><p id="2a8568fa-e39f-80a8-b3ad-f094f705308f" class="">\mathrm{TE}(city) \leftarrow</p><p id="2a8568fa-e39f-80cc-ac9a-f3bc90b9ef3a" class="">\begin{cases}</p><p id="2a8568fa-e39f-8035-82a8-cbba3be15f93" class="">\mathrm{TE}<em>{\text{own}}, &amp; n</em>{city}\ge r\</p><p id="2a8568fa-e39f-800c-b2f4-df8121a953d4" class="">\lambda \cdot \mathrm{TE}(region) + (1-\lambda)\cdot \mu, &amp; n_{city}&lt;r</p><p id="2a8568fa-e39f-8001-add2-d377ea672d14" class="">\end{cases}</p><p id="2a8568fa-e39f-800c-9be2-e938957bc070" class="">]</p><p id="2a8568fa-e39f-8026-b02b-f603323e6304" class=""><strong>TF-IDF для мультизначных cats:</strong></p><p id="2a8568fa-e39f-8007-a92d-d2fefe89342f" class="">[</p><p id="2a8568fa-e39f-80fd-ab8e-fefff6c3ddce" class="">\mathrm{tfidf}(t,i) = \mathrm{tf}(t,i)\cdot \log\frac{N}{df(t)}</p><p id="2a8568fa-e39f-80e5-ae43-cabc011f1116" class="">]</p><p id="2a8568fa-e39f-808f-b0d2-ce6ae038dd4e" class="">где «терм» — тег, «документ» — объект/сессия.</p><hr id="2a8568fa-e39f-8045-8d4b-fed5c3fb6a97"/><h2 id="2a8568fa-e39f-80d2-9b85-ea55003dba7b" class="">13) Типичные ошибки</h2><ul id="2a8568fa-e39f-80cf-a5e3-c5d0049e7d89" class="bulleted-list"><li style="list-style-type:disc">Присвоили категориям <strong>произвольные int-коды</strong> и отдали линейной модели → ложний порядок.</li></ul><ul id="2a8568fa-e39f-804a-8f80-f89db91a9074" class="bulleted-list"><li style="list-style-type:disc">Посчитали TE <strong>на всём train</strong> и обучились на нём же.</li></ul><ul id="2a8568fa-e39f-8046-93b1-c8f7e6b57a58" class="bulleted-list"><li style="list-style-type:disc">Смешали группы (user_id) между train/valid при TE.</li></ul><ul id="2a8568fa-e39f-80b4-8819-dadbadae773d" class="bulleted-list"><li style="list-style-type:disc">Положили редкие категории в OHE → 99% нулей, overfit по шуму.</li></ul><ul id="2a8568fa-e39f-8093-af90-f1f54da46c10" class="bulleted-list"><li style="list-style-type:disc">Забыли <code>__UNK__/__RARE__</code> → провал на тесте.</li></ul><ul id="2a8568fa-e39f-8083-9126-f8491e268150" class="bulleted-list"><li style="list-style-type:disc">Не зафиксировали <strong>fold_map</strong> → TE «плавает» между перезапусками.</li></ul><hr id="2a8568fa-e39f-8031-b4df-f59c0612371e"/><h2 id="2a8568fa-e39f-80f8-9b60-f92892889f96" class="">14) Боевой чек-лист под 5-часовой спринт</h2><p id="2a8568fa-e39f-801d-82a3-ecb98dfc1ffe" class=""><strong>Выбор:</strong></p><ol type="1" id="2a8568fa-e39f-803d-af5e-c7db1bf0d513" class="numbered-list" start="1"><li>Модель деревьев? → CatBoost (нативно) <strong>или</strong> LGBM + <code>categorical_feature</code>.</li></ol><ol type="1" id="2a8568fa-e39f-8016-af2c-ff20718a97a0" class="numbered-list" start="2"><li>Карта &gt; 5k? → freq/count + OOF-TE (m-estimate), top-K + <code>__RARE__/__UNK__</code>, hash для A×B.</li></ol><ol type="1" id="2a8568fa-e39f-8084-bc92-e3e427aec2b7" class="numbered-list" start="3"><li>Есть время? → добавьте 1–2 эмбеддинга (OOF-извлечение) для самых больших ID.</li></ol><p id="2a8568fa-e39f-809f-9396-c5f0907034a0" class=""><strong>Анти-утечки:</strong></p><ul id="2a8568fa-e39f-80d9-a1cb-eeadab69b803" class="bulleted-list"><li style="list-style-type:disc">Зафиксируйте сплит (Group/Time/Purged).</li></ul><ul id="2a8568fa-e39f-80d0-9425-d500bacb277c" class="bulleted-list"><li style="list-style-type:disc">TE — <strong>только OOF/ordered</strong>; для TS — expanding с gap.</li></ul><ul id="2a8568fa-e39f-80ff-875e-e3541419fa38" class="bulleted-list"><li style="list-style-type:disc">Добавьте шум и сильное сглаживание для редких.</li></ul><p id="2a8568fa-e39f-80f3-a717-f9e3d1b72e2b" class=""><strong>Устойчивость:</strong></p><ul id="2a8568fa-e39f-803e-9b6a-cd19137d7703" class="bulleted-list"><li style="list-style-type:disc">Пермутационная важность по фолдам, AV/PSI на TE-фичах.</li></ul><ul id="2a8568fa-e39f-807e-ac61-f82467b59620" class="bulleted-list"><li style="list-style-type:disc">Альт-сплит: TE должны держать знак/вклад.</li></ul><p id="2a8568fa-e39f-8077-9380-e5072a553d4e" class=""><strong>Независимые фичи (всегда можно успеть):</strong></p><ul id="2a8568fa-e39f-803e-ac22-e66de27dcdfd" class="bulleted-list"><li style="list-style-type:disc">freq/count, доли по группе, длина множества тегов, «новизна»/возраст категории, иерархический уровень.</li></ul><hr id="2a8568fa-e39f-8074-8ca4-d56342b33cbc"/><h2 id="2a8568fa-e39f-80d0-9683-ccfbb2f5e23c" class="">15) Мини-таблица «когда что взять»</h2><ul id="2a8568fa-e39f-80db-a542-e77d3bdae625" class="bulleted-list"><li style="list-style-type:disc"><strong>Малый K (≤30):</strong> OHE (+ порядковая кодировка, если реально порядок), всё просто.</li></ul><ul id="2a8568fa-e39f-80e2-8328-e6526007eff7" class="bulleted-list"><li style="list-style-type:disc"><strong>Средний K (30–1000):</strong> OHE для топ-K, остальное <code>__RARE__</code> + freq; при линейках — WOE/TE(OOF).</li></ul><ul id="2a8568fa-e39f-8069-9ac8-dc89e492d253" class="bulleted-list"><li style="list-style-type:disc"><strong>Высокий K (≥1000):</strong> CatBoost нативно <strong>или</strong> freq + OOF-TE + hash-cross; эмбеддинги при наличии NN-контуров.</li></ul><ul id="2a8568fa-e39f-805c-942e-e6691d2b72fa" class="bulleted-list"><li style="list-style-type:disc"><strong>Мультизначные:</strong> TF-IDF/сумма TE по тегам + hash-bag.</li></ul><ul id="2a8568fa-e39f-801f-ab1f-ead33d90d760" class="bulleted-list"><li style="list-style-type:disc"><strong>Time-series:</strong> только ordered/expanding TE с gap.</li></ul><hr id="2a8568fa-e39f-80da-a0c9-cd4c0a2db8bb"/><h2 id="2a8568fa-e39f-8034-a00d-f573fd2f2bb8" class="">16) Что фиксировать в отчёте (перед сабмитом)</h2><ul id="2a8568fa-e39f-80aa-ae99-c03dcb7c86fc" class="bulleted-list"><li style="list-style-type:disc">Какой тип CV/сплит и <strong>как</strong> считались TE (K-Fold OOF / LOO / Ordered).</li></ul><ul id="2a8568fa-e39f-804a-bc74-f13cb273000f" class="bulleted-list"><li style="list-style-type:disc">Значения (m), (\alpha,\beta), (\sigma) шума; пороги rare/top-K.</li></ul><ul id="2a8568fa-e39f-80c2-b64f-d9d9d312f265" class="bulleted-list"><li style="list-style-type:disc">Наличие <code>__UNK__/__RARE__</code> и иерархического бек-оффа.</li></ul><ul id="2a8568fa-e39f-80c1-93a1-daa266b717da" class="bulleted-list"><li style="list-style-type:disc">Проверки AV/PSI на TE-фичах и стабильность на альтернативном сплите.</li></ul><hr id="2a8568fa-e39f-8014-8dbd-d728dd40703a"/><p id="2a8568fa-e39f-808a-bc5e-e4699df0a932" class="">Если нужно, могу к этой теории быстро приложить два «боевых» рецепта:</p><p id="2a8568fa-e39f-8011-9d12-f4d70a1c5f33" class="">а) минимальный OOF-таргет-энкодер (m-estimate + шум) с поддержкой Group/Time;</p><p id="2a8568fa-e39f-8068-9025-ce0d9fd9bb9e" class="">б) шаблон иерархического бек-оффа (city→region→country) — под твой пайплайн.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

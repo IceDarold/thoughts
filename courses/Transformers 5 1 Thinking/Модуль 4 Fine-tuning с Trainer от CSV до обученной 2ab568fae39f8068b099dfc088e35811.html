@@ -1,0 +1,1029 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 4. Fine-tuning с Trainer: от CSV до обученной модели</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8068-b099-dfc088e35811" class="page sans"><header><h1 class="page-title">Модуль 4. Fine-tuning с Trainer: от CSV до обученной модели</h1><p class="page-description"></p></header><div class="page-body"><figure id="2ab568fa-e39f-8027-bb10-fb01aacea7f7" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20Fine-tuning%20%D1%81%20Trainer%20%D0%BE%D1%82%20CSV%20%D0%B4%D0%BE%20%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9/%D0%A3%D1%80%D0%BE%D0%BA%204%201%20%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9%20%D0%B7%D0%B0%D0%BF%D1%83%D1%81%D0%BA%20Trainer%20%D0%BE%D0%B1%D1%83%D1%87%D0%B0%D0%B5%D0%BC%20%D0%BF%D1%80%D0%BE%D1%81%D1%82%D1%83%D1%8E%20%D0%BC%D0%BE%D0%B4%202ab568fae39f8027bb10fb01aacea7f7.html">Урок 4.1. Первый запуск Trainer: обучаем простую модель</a></figure><figure id="2ab568fa-e39f-8079-9b9a-c85293a8fd15" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20Fine-tuning%20%D1%81%20Trainer%20%D0%BE%D1%82%20CSV%20%D0%B4%D0%BE%20%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9/%D0%A3%D1%80%D0%BE%D0%BA%204%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8,%20accuracy%20F1%20%D0%B8%20%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%D0%BB%D1%83%D1%87%D1%88%D0%B5%D0%B9%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%202ab568fae39f80799b9ac85293a8fd15.html">Урок 4.2. Метрики, accuracy/F1 и выбор лучшей модели</a></figure><figure id="2ab568fa-e39f-804f-a1d8-d76bb677f320" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20Fine-tuning%20%D1%81%20Trainer%20%D0%BE%D1%82%20CSV%20%D0%B4%D0%BE%20%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9/%D0%A3%D1%80%D0%BE%D0%BA%204%203%20%D0%9B%D0%BE%D0%B3%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5,%20%D0%BF%D0%BE%D0%B4%D0%B1%D0%BE%D1%80%20%D0%B3%D0%B8%D0%BF%D0%B5%D1%80%D0%BF%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2%20%D0%B8%20%D0%BE%D1%82%D0%BB%202ab568fae39f804fa1d8d76bb677f320.html">Урок 4.3. Логирование, подбор гиперпараметров и отладка обучения</a></figure><figure id="2ab568fa-e39f-805f-85b4-d55033c5d32a" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20Fine-tuning%20%D1%81%20Trainer%20%D0%BE%D1%82%20CSV%20%D0%B4%D0%BE%20%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9/%D0%A3%D1%80%D0%BE%D0%BA%204%204%20%D0%A4%D0%B8%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20training-%D0%BF%D0%B0%D0%B9%D0%BF%D0%BB%D0%B0%D0%B9%D0%BD%20train%20%E2%86%92%20save%20%202ab568fae39f805f85b4d55033c5d32a.html">Урок 4.4. Финальный training-пайплайн: train → save → inference</a></figure><hr id="2ab568fa-e39f-8071-9100-d91e64cabb02"/><p id="2ab568fa-e39f-800c-8797-ca1e25ebc0ca" class="">Погнали к самому приятному — <strong>модель наконец-то начнёт обучаться</strong>, а не просто красиво смотреть на данные 😎</p><p id="2ab568fa-e39f-80ae-8c1b-ffa10bddfea1" class="">Модуль 4 — это про <strong>fine-tuning через </strong><code><strong>Trainer</strong></code> для нашей задачи классификации тикетов (bug/feature/billing/other).</p><p id="2ab568fa-e39f-80ba-b656-c1f9a5256bdc" class="">Опираемся на:</p><ul id="2ab568fa-e39f-8091-8285-db7f48caec2f" class="bulleted-list"><li style="list-style-type:disc">модуль 2 — понимание <code>AutoModelForSequenceClassification</code>, <code>config</code>, <code>label2id/id2label</code>;</li></ul><ul id="2ab568fa-e39f-8062-bd7a-eda69f53ae96" class="bulleted-list"><li style="list-style-type:disc">модуль 3 — <code>DatasetDict</code> + токенизация + <code>DataCollatorWithPadding</code> в <code>data_pipeline.py</code>.</li></ul><p id="2ab568fa-e39f-803e-b0a9-dd5a72e84dfc" class="">Сделаем <strong>4 урока</strong>:</p><ol type="1" id="2ab568fa-e39f-8030-baba-d45cdf673837" class="numbered-list" start="1"><li>Базовый fine-tuning с <code>Trainer</code>.</li></ol><ol type="1" id="2ab568fa-e39f-805e-8abc-ec7f35c59e64" class="numbered-list" start="2"><li>Метрики, валидация, сохранение лучшей модели.</li></ol><ol type="1" id="2ab568fa-e39f-80ee-9faf-cf8ff98b1054" class="numbered-list" start="3"><li>Логирование, подбор гиперпараметров и отладка.</li></ol><ol type="1" id="2ab568fa-e39f-80ac-8651-d2c0aec21c5e" class="numbered-list" start="4"><li>Полный тренинг-скрипт “под прод”: тренинг → сохранение → инференс.</li></ol><hr id="2ab568fa-e39f-80d1-8a56-c643ff9641bd"/><h2 id="2ab568fa-e39f-808b-9bc3-e68eec94b313" class="">Урок 4.1. Первый запуск Trainer: обучаем простую модель</h2><p id="2ab568fa-e39f-805c-96e1-ff3273dbee09" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-805a-87c7-fde022c622fb" class="">Собрать минимальный, но рабочий fine-tuning:</p><ul id="2ab568fa-e39f-8091-829a-e34a7b2bcaf4" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForSequenceClassification</code> с нашими <code>label2id/id2label</code>,</li></ul><ul id="2ab568fa-e39f-80ab-ab83-e9682d93383d" class="bulleted-list"><li style="list-style-type:disc"><code>TrainingArguments</code>,</li></ul><ul id="2ab568fa-e39f-8007-adf6-d1b825007b28" class="bulleted-list"><li style="list-style-type:disc"><code>Trainer.train()</code> — и первые лоссы бегут по экрану.</li></ul><h3 id="2ab568fa-e39f-803b-a6c1-dae222ba5271" class="">4.1.1. Кейс</h3><blockquote id="2ab568fa-e39f-80c3-979f-f00b1be4010c" class="">У нас есть:<ul id="2ab568fa-e39f-80da-9492-e319d62f0ed0" class="bulleted-list"><li style="list-style-type:disc"><code>tickets.csv</code> с колонками <code>text,label</code>,</li></ul><ul id="2ab568fa-e39f-80ac-a3c4-f78cf06f2ef9" class="bulleted-list"><li style="list-style-type:disc">функция <code>load_and_prepare_data</code> из <code>data_pipeline.py</code> (модуль 3),</li></ul><ul id="2ab568fa-e39f-80d0-b8c6-f7c4301c7583" class="bulleted-list"><li style="list-style-type:disc">мы хотим обучить модель DistilBERT под наши классы тикетов.</li></ul></blockquote><h3 id="2ab568fa-e39f-8062-bb82-e53b3bcf202f" class="">4.1.2. Быстрый recap: что такое Trainer</h3><p id="2ab568fa-e39f-8055-ba70-d0bbc0fbfdd0" class="">Очень коротко:</p><ul id="2ab568fa-e39f-80f2-8a37-e2131587d8a7" class="bulleted-list"><li style="list-style-type:disc"><code>TrainingArguments</code> — всё про обучение: лернинг-рейт, батч-сайзы, логирование, чекпоинты и т.д.</li></ul><ul id="2ab568fa-e39f-8094-9bbb-d6576b495c05" class="bulleted-list"><li style="list-style-type:disc"><code>Trainer</code>:<ul id="2ab568fa-e39f-8030-a79c-f60aa4ddd1cf" class="bulleted-list"><li style="list-style-type:circle">берёт <code>model</code>, <code>args</code>, <code>train_dataset</code>, <code>eval_dataset</code>,</li></ul><ul id="2ab568fa-e39f-800f-95e5-d862baa312e7" class="bulleted-list"><li style="list-style-type:circle">сам создаёт DataLoader’ы,</li></ul><ul id="2ab568fa-e39f-80ee-9804-c7684afb09d8" class="bulleted-list"><li style="list-style-type:circle">сам запускает обучение, шаги, eval и сохранение.</li></ul></li></ul><h3 id="2ab568fa-e39f-80aa-bf51-ee1a734e4e36" class="">4.1.3. Код: минимальный скрипт fine-tuning</h3><p id="2ab568fa-e39f-8076-8786-f9bd8a545d2c" class="">Файл <code>train_tickets_basic.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8075-ae72-ce7886e6cfe9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+    Trainer,
+)
+from data_pipeline import load_and_prepare_data  # из модуля 3
+
+
+def main():
+    csv_path = &quot;tickets.csv&quot;
+    model_name = &quot;distilbert-base-uncased&quot;
+
+    # 1. Грузим и готовим данные
+    tokenized_dataset, label2id, id2label, tokenizer, data_collator = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    # 2. Инициализируем модель под наши лейблы
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    # 3. Настраиваем TrainingArguments
+    training_args = TrainingArguments(
+        output_dir=&quot;checkpoints/tickets_basic&quot;,
+        evaluation_strategy=&quot;epoch&quot;,   # делаем eval в конце каждой эпохи
+        save_strategy=&quot;epoch&quot;,
+        learning_rate=2e-5,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=32,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        logging_steps=50,
+        load_best_model_at_end=True,
+        metric_for_best_model=&quot;accuracy&quot;,  # настроим позже
+        save_total_limit=2,  # не копим миллионы чекпоинтов
+    )
+
+    # 4. Создаём Trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset[&quot;train&quot;],
+        eval_dataset=tokenized_dataset[&quot;validation&quot;],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        # compute_metrics добавим в уроке 4.2
+    )
+
+    # 5. Запускаем обучение
+    trainer.train()
+
+    # 6. Сохраняем финальную модель
+    trainer.save_model(&quot;models/tickets_classifier&quot;)
+    tokenizer.save_pretrained(&quot;models/tickets_classifier&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-8032-83d2-d1949e1f3761" class=""><strong>Что пояснить ученикам:</strong></p><ul id="2ab568fa-e39f-8012-b16c-e6b928549dbc" class="bulleted-list"><li style="list-style-type:disc"><code>output_dir</code> — место, куда Trainer складывает логи и чекпоинты.</li></ul><ul id="2ab568fa-e39f-8006-ad66-c8a59a00952e" class="bulleted-list"><li style="list-style-type:disc"><code>evaluation_strategy=&quot;epoch&quot;</code> — eval после каждой эпохи (можно и по шагам).</li></ul><ul id="2ab568fa-e39f-80a3-82cd-faab6e1a2340" class="bulleted-list"><li style="list-style-type:disc"><code>save_strategy=&quot;epoch&quot;</code> — сохраняем чекпоинты по эпохам.</li></ul><ul id="2ab568fa-e39f-806b-aa68-de44fcbd31a1" class="bulleted-list"><li style="list-style-type:disc"><code>load_best_model_at_end=True</code> — в конце возьмём лучший чекпоинт по выбранной метрике (пока мы её не задали — это станет важным в 4.2).</li></ul><ul id="2ab568fa-e39f-80f5-b48b-cead481dcc4e" class="bulleted-list"><li style="list-style-type:disc"><code>Trainer</code> сам:<ul id="2ab568fa-e39f-8000-bdcd-ff7ed7fb3272" class="bulleted-list"><li style="list-style-type:circle">делает backprop,</li></ul><ul id="2ab568fa-e39f-8077-8d6a-c98f205265f3" class="bulleted-list"><li style="list-style-type:circle">шаги оптимизатора,</li></ul><ul id="2ab568fa-e39f-80ae-bb51-dcf3c917dac4" class="bulleted-list"><li style="list-style-type:circle">логгирует loss.</li></ul></li></ul><h3 id="2ab568fa-e39f-807d-ac75-f32b4e917531" class="">4.1.4. Домашка 4.1</h3><ol type="1" id="2ab568fa-e39f-80bb-89d5-f72e5c4c95b0" class="numbered-list" start="1"><li>Запустить <code>train_tickets_basic.py</code> на своём <code>tickets.csv</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80af-ba90-e3d0b17dff67" class="numbered-list" start="2"><li>Посмотреть:<ul id="2ab568fa-e39f-8068-a8dc-fa414a4f2419" class="bulleted-list"><li style="list-style-type:disc">как меняется train loss по шагам,</li></ul><ul id="2ab568fa-e39f-807e-8966-f3624e3e5a5e" class="bulleted-list"><li style="list-style-type:disc">как (примерно) ведёт себя eval loss по эпохам (даже без метрик).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8005-907b-ea88ddd41fc5" class="numbered-list" start="3"><li>Поиграть с:<ul id="2ab568fa-e39f-8036-9a5c-f88c765be386" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs</code> (2/3/5),</li></ul><ul id="2ab568fa-e39f-80bb-bd24-d4a3a8826b74" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate</code> (2e-5 vs 5e-5),</li></ul><ul id="2ab568fa-e39f-8063-8a09-f6717d5cf1f5" class="bulleted-list"><li style="list-style-type:disc">посмотреть, как меняется финальный eval loss.</li></ul></li></ol><hr id="2ab568fa-e39f-8095-99fd-c65e4e9139df"/><h2 id="2ab568fa-e39f-8046-8cb0-fc8e56bbdcce" class="">Урок 4.2. Метрики, accuracy/F1 и выбор лучшей модели</h2><p id="2ab568fa-e39f-806f-a308-dc8ff4061dba" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8038-ae48-ef238821038b" class="">Научить:</p><ul id="2ab568fa-e39f-806b-9862-f1ede783f857" class="bulleted-list"><li style="list-style-type:disc">считать accuracy/F1 с помощью <code>compute_metrics</code>,</li></ul><ul id="2ab568fa-e39f-8046-bf3e-f2992604ecd4" class="bulleted-list"><li style="list-style-type:disc">мониторить их во время тренинга,</li></ul><ul id="2ab568fa-e39f-80ae-b694-d2c8a9e09e54" class="bulleted-list"><li style="list-style-type:disc">выбирать лучшую модель по нужной метрике.</li></ul><h3 id="2ab568fa-e39f-80d9-8b75-f4348619b58a" class="">4.2.1. Теория: compute_metrics</h3><p id="2ab568fa-e39f-80ba-b4ed-f5557e3e3ff2" class="">Trainer при eval вызывает:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806e-b2a2-e8d9ccb7ed41" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">preds = model(batch)
+compute_metrics(preds)
+</code></pre><p id="2ab568fa-e39f-800c-9098-dc92af42da1f" class="">Точнее, он передаёт в <code>compute_metrics</code> объект <code>EvalPrediction</code>:</p><ul id="2ab568fa-e39f-8021-98d2-e01c62d32ccc" class="bulleted-list"><li style="list-style-type:disc"><code>pred.predictions</code> — logits (или уже вероятности),</li></ul><ul id="2ab568fa-e39f-807e-aeac-c9aa8aa2eb79" class="bulleted-list"><li style="list-style-type:disc"><code>pred.label_ids</code> — истинные labels.</li></ul><p id="2ab568fa-e39f-80fc-a242-ef46f5eacc32" class="">Мы должны:</p><ul id="2ab568fa-e39f-80aa-b833-f8faaefc5670" class="bulleted-list"><li style="list-style-type:disc">превратить <code>predictions</code> → предсказания классов,</li></ul><ul id="2ab568fa-e39f-80c0-a946-ea43e1268842" class="bulleted-list"><li style="list-style-type:disc">посчитать accuracy, F1, precision, recall и т.д.</li></ul><h3 id="2ab568fa-e39f-8048-9f40-f10032c09015" class="">4.2.2. Код: добавляем метрики</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-80c9-fc84dbabedfa" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
+from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+    Trainer,
+)
+from data_pipeline import load_and_prepare_data
+
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    # logits shape: [num_samples, num_labels]
+    preds = np.argmax(logits, axis=-1)
+
+    acc = accuracy_score(labels, preds)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels, preds, average=&quot;weighted&quot;, zero_division=0
+    )
+
+    return {
+        &quot;accuracy&quot;: acc,
+        &quot;f1&quot;: f1,
+        &quot;precision&quot;: precision,
+        &quot;recall&quot;: recall,
+    }
+
+
+def main():
+    csv_path = &quot;tickets.csv&quot;
+    model_name = &quot;distilbert-base-uncased&quot;
+
+    tokenized_dataset, label2id, id2label, tokenizer, data_collator = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    training_args = TrainingArguments(
+        output_dir=&quot;checkpoints/tickets_metrics&quot;,
+        evaluation_strategy=&quot;epoch&quot;,
+        save_strategy=&quot;epoch&quot;,
+        learning_rate=2e-5,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=32,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        logging_steps=50,
+        load_best_model_at_end=True,
+        metric_for_best_model=&quot;f1&quot;,
+        greater_is_better=True,
+    )
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset[&quot;train&quot;],
+        eval_dataset=tokenized_dataset[&quot;validation&quot;],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+    )
+
+    trainer.train()
+
+    metrics = trainer.evaluate()
+    print(&quot;Final eval metrics:&quot;, metrics)
+
+    trainer.save_model(&quot;models/tickets_classifier_f1&quot;)
+    tokenizer.save_pretrained(&quot;models/tickets_classifier_f1&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-80d4-85d0-cd0b5d84bab9" class=""><strong>Объяснения:</strong></p><ul id="2ab568fa-e39f-809b-8dd4-c32bc8ea73eb" class="bulleted-list"><li style="list-style-type:disc">В <code>compute_metrics</code> мы сами выбираем, какие метрики считать.</li></ul><ul id="2ab568fa-e39f-80ef-920a-da608df62d3e" class="bulleted-list"><li style="list-style-type:disc">В <code>TrainingArguments</code>:<ul id="2ab568fa-e39f-800e-b395-e1a55b7c6b19" class="bulleted-list"><li style="list-style-type:circle"><code>metric_for_best_model=&quot;f1&quot;</code> — какой ключ из <code>compute_metrics</code> считать целевым,</li></ul><ul id="2ab568fa-e39f-804f-9a54-fbbabfed9a1e" class="bulleted-list"><li style="list-style-type:circle"><code>greater_is_better=True</code> — чем больше, тем лучше.</li></ul></li></ul><ul id="2ab568fa-e39f-809c-836a-e322a6b95328" class="bulleted-list"><li style="list-style-type:disc"><code>load_best_model_at_end=True</code> гарантирует, что внутри <code>trainer.model</code> будет именно лучший чекпоинт по F1, а не последний.</li></ul><h3 id="2ab568fa-e39f-800f-b9f8-e98016387732" class="">4.2.3. Домашка 4.2</h3><ol type="1" id="2ab568fa-e39f-8089-bc3a-e83b435e601b" class="numbered-list" start="1"><li>Реализовать свой <code>compute_metrics</code>, который:<ul id="2ab568fa-e39f-8093-a5d6-e7ee67662158" class="bulleted-list"><li style="list-style-type:disc">считает:<ul id="2ab568fa-e39f-801a-9bef-e119873c6b27" class="bulleted-list"><li style="list-style-type:circle">accuracy,</li></ul><ul id="2ab568fa-e39f-8083-be74-e639227eccbd" class="bulleted-list"><li style="list-style-type:circle">macro-F1,</li></ul><ul id="2ab568fa-e39f-8019-b550-f11b0af584d7" class="bulleted-list"><li style="list-style-type:circle">weighted-F1,</li></ul></li></ul><ul id="2ab568fa-e39f-8004-90d0-f5db77d9a4ad" class="bulleted-list"><li style="list-style-type:disc">выводит оба F1 (либо возвращает три значения).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808d-98ad-c6907d212831" class="numbered-list" start="2"><li>Провести эксперимент:<ul id="2ab568fa-e39f-8097-9ec6-e8b6e28ee236" class="bulleted-list"><li style="list-style-type:disc">однажды с <code>metric_for_best_model=&quot;accuracy&quot;</code>,</li></ul><ul id="2ab568fa-e39f-80ab-90b4-ed6a47bf4b0c" class="bulleted-list"><li style="list-style-type:disc">однажды с <code>&quot;f1&quot;</code>,</li></ul><ul id="2ab568fa-e39f-80e4-ad7f-e4d5599a30d9" class="bulleted-list"><li style="list-style-type:disc">сравнить, насколько отличается модель (особенно если классы несбалансированы).</li></ul></li></ol><hr id="2ab568fa-e39f-802f-9a3e-c6ec6a6be6c6"/><h2 id="2ab568fa-e39f-80f3-abe9-e537615bc223" class="">Урок 4.3. Логирование, подбор гиперпараметров и отладка обучения</h2><p id="2ab568fa-e39f-8029-9b4a-d104872528d9" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8063-b320-fd07d831ab91" class="">Научить:</p><ul id="2ab568fa-e39f-803f-9178-e8b48a8f61e3" class="bulleted-list"><li style="list-style-type:disc">логировать кривые лосса/метрик (TensorBoard или просто консоль),</li></ul><ul id="2ab568fa-e39f-8036-8713-ca6cca8384bb" class="bulleted-list"><li style="list-style-type:disc">трогать ключевые гиперпараметры (batch_size, lr, epochs, weight_decay, warmup),</li></ul><ul id="2ab568fa-e39f-8028-8f45-e9086d4dcd41" class="bulleted-list"><li style="list-style-type:disc">понимать, когда модель переобучается / недообучается.</li></ul><h3 id="2ab568fa-e39f-806b-a7d4-d0df7480a706" class="">4.3.1. Теория: основные гиперпараметры</h3><p id="2ab568fa-e39f-80d4-8af9-f9d816ebceb7" class="">Быстрый чек-лист:</p><ul id="2ab568fa-e39f-80f9-97a5-eff4a627e250" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate</code> — слишком большой → обучение взрывается, слишком маленький → всё очень медленно.</li></ul><ul id="2ab568fa-e39f-809b-9584-c2644c3bc476" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs</code> — маловато → недообучение; слишком много → переобучение.</li></ul><ul id="2ab568fa-e39f-80db-9abc-e59f24165f15" class="bulleted-list"><li style="list-style-type:disc"><code>per_device_train_batch_size</code> — влияет на стабильность и скорость, а также на градиенты.</li></ul><ul id="2ab568fa-e39f-8086-93bc-ceee9522666e" class="bulleted-list"><li style="list-style-type:disc"><code>warmup_ratio</code> или <code>warmup_steps</code> — разогрев лернинга.</li></ul><ul id="2ab568fa-e39f-809b-8ee0-e0c081b2ec57" class="bulleted-list"><li style="list-style-type:disc"><code>weight_decay</code> — L2-регуляризация.</li></ul><h3 id="2ab568fa-e39f-8074-b2c9-d6dc5947d78d" class="">4.3.2. Логирование в TensorBoard (или просто в файлы)</h3><p id="2ab568fa-e39f-8055-b7ae-d7b56a877ac3" class="">В <code>TrainingArguments</code> можно добавить:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8070-a0c7-e3d693782ca2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/tickets_logs&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    logging_strategy=&quot;steps&quot;,
+    logging_steps=10,
+    report_to=[&quot;tensorboard&quot;],  # или [&quot;none&quot;], [&quot;wandb&quot;] и т.п.
+    # остальное как раньше...
+)
+</code></pre><p id="2ab568fa-e39f-809a-8b5a-d0816f81c120" class="">Тогда можно открыть:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805a-a345-dc64d6cfc20b" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">tensorboard --logdir checkpoints/tickets_logs
+</code></pre><p id="2ab568fa-e39f-8025-8ae6-ff4bbf459a93" class="">И смотреть:</p><ul id="2ab568fa-e39f-803f-bf92-c398bdaa3af7" class="bulleted-list"><li style="list-style-type:disc">train loss по шагам,</li></ul><ul id="2ab568fa-e39f-8024-b342-dd45f90b1343" class="bulleted-list"><li style="list-style-type:disc">eval loss/metrics по эпохам.</li></ul><p id="2ab568fa-e39f-804c-a1cb-ee59498874f3" class="">Если TensorBoard не нужен, можно:</p><ul id="2ab568fa-e39f-805e-b914-ded7bd042cbf" class="bulleted-list"><li style="list-style-type:disc">оставить <code>report_to=[&quot;none&quot;]</code>,</li></ul><ul id="2ab568fa-e39f-809f-8a12-f48db16f1bb8" class="bulleted-list"><li style="list-style-type:disc">Trainer всё равно будет писать в stdout.</li></ul><h3 id="2ab568fa-e39f-8064-ae9f-e40263f2b41d" class="">4.3.3. Пример: настройка warmup</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804a-96ff-c6d123624809" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/tickets_tuned&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=3e-5,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=32,
+    num_train_epochs=4,
+    warmup_ratio=0.1,        # 10% шагов — разогрев
+    weight_decay=0.01,
+    logging_steps=20,
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;f1&quot;,
+    report_to=[&quot;tensorboard&quot;],
+)
+</code></pre><p id="2ab568fa-e39f-8035-9db9-c1f652dc82e4" class="">Объясняем:</p><ul id="2ab568fa-e39f-802e-ae0b-ca56647fc8ca" class="bulleted-list"><li style="list-style-type:disc">warmup = постепенное увеличение lr от 0 до <code>learning_rate</code> в начале —<p id="2ab568fa-e39f-8098-a8b6-ee06e5050d2d" class="">помогает стабилизировать обучение, особенно на маленьких датасетах.</p></li></ul><h3 id="2ab568fa-e39f-8081-b306-dfb956961740" class="">4.3.4. Базовый анализ обучения</h3><p id="2ab568fa-e39f-808e-834d-efa3f5ffc694" class="">Учим студентов на уровне “глазами посмотреть”:</p><ul id="2ab568fa-e39f-8023-82b5-c051d5b90998" class="bulleted-list"><li style="list-style-type:disc">если train loss ↓, eval loss тоже ↓ и метрики ↑ → всё норм.</li></ul><ul id="2ab568fa-e39f-800f-a4e3-d0d3f7e93432" class="bulleted-list"><li style="list-style-type:disc">если train loss ↓, а eval loss ↑ (после какой-то эпохи) → начинается переобучение, может имеет смысл уменьшить эпохи.</li></ul><ul id="2ab568fa-e39f-80ef-b1d9-c2b24659afb0" class="bulleted-list"><li style="list-style-type:disc">если и train, и eval loss почти не падают → lr слишком маленький / мало эпох / совсем мало данных.</li></ul><h3 id="2ab568fa-e39f-8001-9618-e2cfc1009189" class="">4.3.5. Домашка 4.3</h3><ol type="1" id="2ab568fa-e39f-8085-af54-cb3346210b62" class="numbered-list" start="1"><li>Запустить обучение с разными настройками:<ul id="2ab568fa-e39f-80b1-b3aa-d742f94ae17d" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs=2, 4, 6</code>,</li></ul><ul id="2ab568fa-e39f-80c5-beb5-d1373b8d8e92" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate</code> = 2e-5 и 5e-5.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8021-950e-d7fe70be2400" class="numbered-list" start="2"><li>Для каждого варианта:<ul id="2ab568fa-e39f-80a9-addf-ff8264985d43" class="bulleted-list"><li style="list-style-type:disc">сохранить финальные eval-метрики,</li></ul><ul id="2ab568fa-e39f-80e4-9b01-fa9457603f5e" class="bulleted-list"><li style="list-style-type:disc">если используете TensorBoard — посмотреть графики.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8013-a3ab-ef56da157b23" class="numbered-list" start="3"><li>Описать в текстовом виде:<ul id="2ab568fa-e39f-803c-8de8-f610e29f1e56" class="bulleted-list"><li style="list-style-type:disc">у какого варианта лучше всего accuracy/F1,</li></ul><ul id="2ab568fa-e39f-80f8-984a-efacbe32e831" class="bulleted-list"><li style="list-style-type:disc">есть ли признаки переобучения,</li></ul><ul id="2ab568fa-e39f-8024-af61-dafcb14b6a3d" class="bulleted-list"><li style="list-style-type:disc">какие настройки выбрали бы для боевой модели.</li></ul></li></ol><hr id="2ab568fa-e39f-80c8-9682-c929fa710e42"/><h2 id="2ab568fa-e39f-80e2-a264-ec729367fdac" class="">Урок 4.4. Финальный training-пайплайн: train → save → inference</h2><p id="2ab568fa-e39f-8088-97f2-cc3112a87047" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8085-b769-e703e2454c4e" class="">Собрать <strong>один цельный скрипт</strong>, который:</p><ol type="1" id="2ab568fa-e39f-80f0-a1c3-dba40fad3296" class="numbered-list" start="1"><li>Загружает и готовит данные (<code>data_pipeline</code>).</li></ol><ol type="1" id="2ab568fa-e39f-8087-8771-c9080b4492df" class="numbered-list" start="2"><li>Обучает модель с метриками и логированием.</li></ol><ol type="1" id="2ab568fa-e39f-8079-a2a1-c3870cbbaa2b" class="numbered-list" start="3"><li>Сохраняет лучшую модель.</li></ol><ol type="1" id="2ab568fa-e39f-8052-95fe-fd2e2398cb98" class="numbered-list" start="4"><li>Показывает, как потом использовать эту модель в инференсе (без Trainer).</li></ol><h3 id="2ab568fa-e39f-8063-806b-c518ad24a5c9" class="">4.4.1. Каркас <code>train_and_infer.py</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8066-af65-deedea9ddbff" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, precision_recall_fscore_support
+
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    TrainingArguments,
+    Trainer,
+)
+
+from data_pipeline import load_and_prepare_data
+
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    preds = np.argmax(logits, axis=-1)
+
+    acc = accuracy_score(labels, preds)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels, preds, average=&quot;weighted&quot;, zero_division=0
+    )
+
+    return {
+        &quot;accuracy&quot;: acc,
+        &quot;f1&quot;: f1,
+        &quot;precision&quot;: precision,
+        &quot;recall&quot;: recall,
+    }
+
+
+def train_model(
+    csv_path: str,
+    base_model_name: str = &quot;distilbert-base-uncased&quot;,
+    output_dir: str = &quot;checkpoints/tickets_final&quot;,
+    num_epochs: int = 4,
+    learning_rate: float = 3e-5,
+):
+    # 1. Данные
+    tokenized_dataset, label2id, id2label, tokenizer, data_collator = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=base_model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    # 2. Модель
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        base_model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    # 3. Аргументы обучения
+    training_args = TrainingArguments(
+        output_dir=output_dir,
+        evaluation_strategy=&quot;epoch&quot;,
+        save_strategy=&quot;epoch&quot;,
+        learning_rate=learning_rate,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=32,
+        num_train_epochs=num_epochs,
+        weight_decay=0.01,
+        warmup_ratio=0.1,
+        logging_steps=20,
+        load_best_model_at_end=True,
+        metric_for_best_model=&quot;f1&quot;,
+        greater_is_better=True,
+        report_to=[&quot;none&quot;],  # можно поменять на [&quot;tensorboard&quot;]
+    )
+
+    # 4. Trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset[&quot;train&quot;],
+        eval_dataset=tokenized_dataset[&quot;validation&quot;],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+    )
+
+    # 5. Обучение
+    trainer.train()
+
+    # 6. Финальная оценка
+    metrics = trainer.evaluate()
+    print(&quot;Final metrics:&quot;, metrics)
+
+    # 7. Сохраняем лучшую модель в отдельную папку (для продакшена)
+    final_model_dir = &quot;models/tickets_classifier_final&quot;
+    trainer.save_model(final_model_dir)
+    tokenizer.save_pretrained(final_model_dir)
+
+    return final_model_dir
+
+
+def predict_single(text: str, model_dir: str):
+    # Инференс после обучения
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+
+    enc = tokenizer(
+        text,
+        return_tensors=&quot;pt&quot;,
+        padding=True,
+        truncation=True,
+        max_length=128,
+    )
+
+    import torch
+    with torch.no_grad():
+        outputs = model(**enc)
+
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)[0]
+    pred_id = torch.argmax(probs).item()
+
+    id2label = model.config.id2label
+    label = id2label[pred_id]
+    confidence = probs[pred_id].item()
+
+    return {
+        &quot;text&quot;: text,
+        &quot;label&quot;: label,
+        &quot;confidence&quot;: confidence,
+    }
+
+
+if __name__ == &quot;__main__&quot;:
+    # 1. Обучаем модель
+    model_dir = train_model(csv_path=&quot;tickets.csv&quot;)
+
+    # 2. Пробуем инференс
+    test_tickets = [
+        &quot;The app crashes when I try to log in.&quot;,
+        &quot;I would like to upgrade my plan to Pro.&quot;,
+        &quot;Why was I billed twice this month?&quot;,
+    ]
+
+    for t in test_tickets:
+        res = predict_single(t, model_dir)
+        print(res)
+</code></pre><h3 id="2ab568fa-e39f-807b-8da8-c7b5bb7b70c5" class="">4.4.2. Объяснение структуры</h3><ul id="2ab568fa-e39f-80c7-83c4-f3462052fc1d" class="bulleted-list"><li style="list-style-type:disc"><code>train_model</code> — <strong>функция</strong>, которую можно вызывать:<ul id="2ab568fa-e39f-8029-ab1b-f3167313534c" class="bulleted-list"><li style="list-style-type:circle">из другой части кода,</li></ul><ul id="2ab568fa-e39f-8049-a7fe-e8530f43e155" class="bulleted-list"><li style="list-style-type:circle">из скрипта CLI,</li></ul><ul id="2ab568fa-e39f-80c0-bddb-eafeb9c9506c" class="bulleted-list"><li style="list-style-type:circle">из ноутбука.</li></ul></li></ul><ul id="2ab568fa-e39f-80d6-9db7-cbeeb1e4e0be" class="bulleted-list"><li style="list-style-type:disc"><code>predict_single</code> показывает, как использовать <strong>сохранённую модель</strong>:<ul id="2ab568fa-e39f-806c-9020-dc2c0d3eabaa" class="bulleted-list"><li style="list-style-type:circle">без Trainer,</li></ul><ul id="2ab568fa-e39f-809c-b33c-ee79cb1a3008" class="bulleted-list"><li style="list-style-type:circle">просто через <code>AutoTokenizer.from_pretrained</code> + <code>AutoModelForSequenceClassification.from_pretrained</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-804b-ac77-f91d0066aee2" class="">4.4.3. Домашка 4.4 (итоговая по модулю)</h3><ol type="1" id="2ab568fa-e39f-80d8-835b-fe349433730b" class="numbered-list" start="1"><li>Собрать у себя <strong>полный пайплайн</strong>:<ul id="2ab568fa-e39f-803b-8632-d41d836dedc6" class="bulleted-list"><li style="list-style-type:disc"><code>data_pipeline.py</code> (модуль 3),</li></ul><ul id="2ab568fa-e39f-80df-9659-c91a50edbede" class="bulleted-list"><li style="list-style-type:disc"><code>train_and_infer.py</code> (модуль 4).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8068-902b-d64a386d3c76" class="numbered-list" start="2"><li>Обучить модель на своём <code>tickets.csv</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80ac-8279-f8b8dff02e8c" class="numbered-list" start="3"><li>Сделать небольшой “демо-скрипт” <code>demo.py</code>, который:<ul id="2ab568fa-e39f-80e5-b6e3-dbcdc28abe03" class="bulleted-list"><li style="list-style-type:disc">читает текст тикета с консоли (<code>input()</code>),</li></ul><ul id="2ab568fa-e39f-80b9-963d-d3dc6fd932b1" class="bulleted-list"><li style="list-style-type:disc">вызывает <code>predict_single</code>,</li></ul><ul id="2ab568fa-e39f-8083-82e3-f13cdb435bc9" class="bulleted-list"><li style="list-style-type:disc">печатает класс и уверенность.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8076-850f-eb44e80c1223" class="numbered-list" start="4"><li>(Опционально) Добавить:<ul id="2ab568fa-e39f-80c7-9e93-e70380031d0c" class="bulleted-list"><li style="list-style-type:disc">возможность выбрать модель/чекпоинт через аргументы командной строки,</li></ul><ul id="2ab568fa-e39f-80cc-8e52-daecb18f8e26" class="bulleted-list"><li style="list-style-type:disc">или несколько базовых моделей (DistilBERT, BERT, RuBERT и т.п.) и сравнить качество/скорость.</li></ul></li></ol><hr id="2ab568fa-e39f-8096-ba8f-db36c370978e"/><h2 id="2ab568fa-e39f-80ff-ad2c-e3d448e0ff19" class="">Что ученик умеет после модуля 4</h2><p id="2ab568fa-e39f-80cc-8f04-c5ded20674d4" class="">На этом этапе человек уже умеет:</p><ul id="2ab568fa-e39f-80d2-890b-f1e4416011c1" class="bulleted-list"><li style="list-style-type:disc">брать CSV с текстами и метками,</li></ul><ul id="2ab568fa-e39f-80d3-9755-f5737883232d" class="bulleted-list"><li style="list-style-type:disc">превращать его в <code>DatasetDict</code> с токенами + labels (модуль 3),</li></ul><ul id="2ab568fa-e39f-80a8-bc77-e70372211f3e" class="bulleted-list"><li style="list-style-type:disc">поднимать <code>AutoModelForSequenceClassification</code> под свои классы,</li></ul><ul id="2ab568fa-e39f-80eb-b5d1-d19152977fc7" class="bulleted-list"><li style="list-style-type:disc">настраивать <code>TrainingArguments</code> и <code>Trainer</code>,</li></ul><ul id="2ab568fa-e39f-80c3-ac97-f54506ac7078" class="bulleted-list"><li style="list-style-type:disc">считать accuracy/F1/precision/recall,</li></ul><ul id="2ab568fa-e39f-8018-940f-ead7cd262574" class="bulleted-list"><li style="list-style-type:disc">логировать обучение, следить за переобучением,</li></ul><ul id="2ab568fa-e39f-8047-b88c-c2df81b2caf3" class="bulleted-list"><li style="list-style-type:disc">сохранять и загружать обученную модель,</li></ul><ul id="2ab568fa-e39f-80ca-a56b-c402d1ff7a71" class="bulleted-list"><li style="list-style-type:disc">запускать инференс <strong>без</strong> pipeline, используя только <code>AutoTokenizer</code> и <code>AutoModelForSequenceClassification</code>.</li></ul><p id="2ab568fa-e39f-8085-8ef6-eee91471c088" class="">Дальше логично идти в:</p><ul id="2ab568fa-e39f-80df-a50f-f5894769bc40" class="bulleted-list"><li style="list-style-type:disc"><strong>Модуль 5:</strong> Seq2Seq / генерация (суммаризация, перевод) + <code>Seq2SeqTrainer</code>,</li></ul><ul id="2ab568fa-e39f-80f8-8d77-d0b80b693d2a" class="bulleted-list"><li style="list-style-type:disc">или <strong>Модуль “Advanced”</strong>: PEFT/LoRA, <code>accelerate</code>, multi-GPU, quantization, distillation.</li></ul><p id="2ab568fa-e39f-80c1-9f40-cf9b4049b859" class="">Если хочешь, могу:</p><ul id="2ab568fa-e39f-8035-82fb-dcdd84220814" class="bulleted-list"><li style="list-style-type:disc">расписать следующий модуль (про seq2seq и <code>Seq2SeqTrainer</code>) в таком же стиле,</li></ul><ul id="2ab568fa-e39f-8042-9cfe-fe43f24d5a82" class="bulleted-list"><li style="list-style-type:disc">или помочь тебе собрать <strong>общую структуру курса</strong> с модулями 0–4 в виде программы с темами+домашками в компактном виде (типа syllabus на landing).</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

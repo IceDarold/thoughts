@@ -1,0 +1,799 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 3.2. Item-based CF и выбор метрик сходства</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8028-a7c4-eaa456d7efc4" class="page sans"><header><h1 class="page-title">Урок 3.2. Item-based CF и выбор метрик сходства</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80f6-80a9-d640722fe87d" class="">1. Цели урока</h2><p id="2aa568fa-e39f-8060-b169-dfb980ab1aff" class="">После урока студент должен уметь:</p><ol type="1" id="2aa568fa-e39f-8084-8027-e7ad7b4b17ab" class="numbered-list" start="1"><li>Объяснить идею <strong>item-based collaborative filtering</strong> и отличие от user-based.</li></ol><ol type="1" id="2aa568fa-e39f-80d2-accc-f9fafd06ad80" class="numbered-list" start="2"><li>Строить <strong>вектора товаров</strong> и считать сходство между ними:<ul id="2aa568fa-e39f-8031-b8aa-f58227815ebb" class="bulleted-list"><li style="list-style-type:disc">cosine similarity;</li></ul><ul id="2aa568fa-e39f-80cf-8ebc-e3cf6cbfb9f0" class="bulleted-list"><li style="list-style-type:disc">Jaccard для бинарных взаимодействий;</li></ul><ul id="2aa568fa-e39f-802f-b73c-f9b7f0c8c1bc" class="bulleted-list"><li style="list-style-type:disc">понимать идею adjusted cosine (центровка по пользователям).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801d-b997-f4c5802172ae" class="numbered-list" start="3"><li>Реализовать <strong>item-based CF</strong>:<ul id="2aa568fa-e39f-800c-b6d3-e092106811c3" class="bulleted-list"><li style="list-style-type:disc">предсказание рейтинга/скора для (u, i);</li></ul><ul id="2aa568fa-e39f-80df-bdde-ea7210e1127f" class="bulleted-list"><li style="list-style-type:disc">генерацию top-K рекомендаций для пользователя.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-804f-bfe1-fd0fb9ef6f2a" class="numbered-list" start="4"><li>Понимать, <strong>почему item-based CF часто практичнее</strong>: кеш, масштаб, стабильность каталога.</li></ol><ol type="1" id="2aa568fa-e39f-80e7-9b58-f8765f2c6a24" class="numbered-list" start="5"><li>Сравнить item-based и user-based CF на своих данных (по метрикам из модуля 2).</li></ol><hr id="2aa568fa-e39f-8000-9860-fbf7f44b521b"/><h2 id="2aa568fa-e39f-80d9-96c6-f7c95ce17155" class="">2. Структура урока (пример на 90–120 минут)</h2><ol type="1" id="2aa568fa-e39f-80fe-aab0-efce52d2e579" class="numbered-list" start="1"><li>Recap user-based CF и мотивация для item-based — 10–15 мин</li></ol><ol type="1" id="2aa568fa-e39f-80b3-a090-c2d7dbb93369" class="numbered-list" start="2"><li>Формализация: вектора items, co-рейтинги, множества пользователей — 10–15 мин</li></ol><ol type="1" id="2aa568fa-e39f-8095-8e84-d1499c735355" class="numbered-list" start="3"><li>Метрики сходства между items (cosine, Jaccard, adjusted cosine) — 20–25 мин</li></ol><ol type="1" id="2aa568fa-e39f-80ff-904b-da0b64e8161d" class="numbered-list" start="4"><li>Формулы предсказания рейтинга/скора item-based CF — 15–20 мин</li></ol><ol type="1" id="2aa568fa-e39f-8078-9eb1-e597e57eb5e2" class="numbered-list" start="5"><li>Код в ноутбуке: построить <code>item → похожие items</code> и рекомендатель — 20–30 мин</li></ol><ol type="1" id="2aa568fa-e39f-80f4-a443-c7cc2c14ca64" class="numbered-list" start="6"><li>Сравнение user-based vs item-based, обсуждение — 10–15 мин</li></ol><ol type="1" id="2aa568fa-e39f-8069-8955-dfe67d5f9a36" class="numbered-list" start="7"><li>Объяснение домашки — 5 мин</li></ol><hr id="2aa568fa-e39f-8065-afb3-c3a74abf6b7e"/><h2 id="2aa568fa-e39f-8090-8cb4-de7eb0fc4d53" class="">3. Recap: почему item-based вообще нужен</h2><h3 id="2aa568fa-e39f-80c0-901d-f36409613023" class="">3.1. Связка с предыдущим уроком</h3><p id="2aa568fa-e39f-8021-b894-f66025c43db9" class="">Кратко напоминаешь:</p><ul id="2aa568fa-e39f-801b-a643-f18c3a6ffcea" class="bulleted-list"><li style="list-style-type:disc">User-based CF:<ul id="2aa568fa-e39f-806c-aa2d-fb6a8c2a9b5e" class="bulleted-list"><li style="list-style-type:circle">ищем похожих пользователей;</li></ul><ul id="2aa568fa-e39f-803c-bd83-eb0df05effd6" class="bulleted-list"><li style="list-style-type:circle">аггрегируем их оценки, чтобы предсказать отношение к item.</li></ul></li></ul><ul id="2aa568fa-e39f-80bb-9ea3-c37a6e32f260" class="bulleted-list"><li style="list-style-type:disc">Но:<ul id="2aa568fa-e39f-80ad-be3a-c7d0693fded0" class="bulleted-list"><li style="list-style-type:circle">пользователей может быть очень много;</li></ul><ul id="2aa568fa-e39f-8055-81eb-e633756ffcec" class="bulleted-list"><li style="list-style-type:circle">они постоянно приходят/уходят;</li></ul><ul id="2aa568fa-e39f-8046-b4ee-dd469972c781" class="bulleted-list"><li style="list-style-type:circle">профили пользователей часто более разреженные, чем профили товаров.</li></ul></li></ul><h3 id="2aa568fa-e39f-807a-89b5-f8898e56be87" class="">3.2. Основная идея item-based CF</h3><p id="2aa568fa-e39f-80f0-8360-f03f2c025a42" class="">Фраза, которую нужно, чтобы студент интуитивно ухватил:</p><blockquote id="2aa568fa-e39f-809e-bb40-fdba680e4249" class="">«Скажи мне, какие товары человек смотрел/любил,<p id="2aa568fa-e39f-808e-98c4-f3f42c9804fc" class="">и я посоветую ему другие товары, <strong>похожие на эти</strong>».</p></blockquote><p id="2aa568fa-e39f-8011-b154-c3ed9e607a55" class="">То есть:</p><ul id="2aa568fa-e39f-80ba-9a3f-fabc698e9af6" class="bulleted-list"><li style="list-style-type:disc">если два товара часто выбирают <strong>одни и те же пользователи</strong>,<p id="2aa568fa-e39f-8019-94d1-e1907c8f2791" class="">у них «похожая аудитория» → они похожи.</p></li></ul><p id="2aa568fa-e39f-80d0-bf2f-cc3fc0075a53" class="">Примеры:</p><ul id="2aa568fa-e39f-80d0-ab37-d269a34a0948" class="bulleted-list"><li style="list-style-type:disc">В фильмах:<ul id="2aa568fa-e39f-803b-a2d1-fe015ae50bf7" class="bulleted-list"><li style="list-style-type:circle">люди, которые любят <code>Inception</code>, часто любят <code>Interstellar</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-80d6-a3a0-d0a181b7a44e" class="bulleted-list"><li style="list-style-type:disc">В одежде:<ul id="2aa568fa-e39f-807d-ba45-c342940d4610" class="bulleted-list"><li style="list-style-type:circle">люди, покупающие минималистичные чёрные кроссовки, часто интересуются похожими моделями;</li></ul></li></ul><ul id="2aa568fa-e39f-8068-89e2-e02a43402da9" class="bulleted-list"><li style="list-style-type:disc">В маркетплейсах:<ul id="2aa568fa-e39f-8090-8b2d-ea1b77ad033e" class="bulleted-list"><li style="list-style-type:circle">если пользователь купил смартфон X, ему логично показать похожие смартфоны/аксессуары.</li></ul></li></ul><hr id="2aa568fa-e39f-805e-98c7-e7e58d9804d2"/><h2 id="2aa568fa-e39f-807e-b537-edda20f2813a" class="">4. Формализация: вектора товаров и множества пользователей</h2><h3 id="2aa568fa-e39f-80b1-998a-c85e4d63134a" class="">4.1. Матрица <code>R</code> (как в 3.1, но взгляд с другой стороны)</h3><p id="2aa568fa-e39f-8075-b263-f8617d8ac95f" class="">Та же матрица:</p><ul id="2aa568fa-e39f-803d-b2e2-d1c2379fa938" class="bulleted-list"><li style="list-style-type:disc"><code>R[u, i]</code> — рейтинг или сигнал взаимодействия.</li></ul><ul id="2aa568fa-e39f-8089-897b-f653c2d514e9" class="bulleted-list"><li style="list-style-type:disc">Теперь смотрим <strong>по столбцам</strong>:<ul id="2aa568fa-e39f-8027-923f-f71d20047896" class="bulleted-list"><li style="list-style-type:circle">столбец <code>R[:, i]</code> — вектор товара <code>i</code><p id="2aa568fa-e39f-809f-8a40-ce23b0e4273b" class="">(как его «оценивает мир пользователей»).</p></li></ul></li></ul><h3 id="2aa568fa-e39f-802a-a7f8-c8a20fda6508" class="">4.2. Обозначения</h3><ul id="2aa568fa-e39f-80ac-a445-d321f38aca82" class="bulleted-list"><li style="list-style-type:disc"><code>U(i)</code> — множество пользователей, взаимодействовавших с item <code>i</code>.</li></ul><ul id="2aa568fa-e39f-8065-89fd-fd9a43e552fd" class="bulleted-list"><li style="list-style-type:disc"><code>I(u)</code> — как раньше, множество items пользователя <code>u</code>.</li></ul><ul id="2aa568fa-e39f-80aa-9adf-e644b38f7c45" class="bulleted-list"><li style="list-style-type:disc"><code>sim(i, j)</code> — сходство товаров <code>i</code> и <code>j</code>.</li></ul><ul id="2aa568fa-e39f-8071-99be-e47ab5846ff4" class="bulleted-list"><li style="list-style-type:disc"><code>N_k(i)</code> — k ближайших соседей товара <code>i</code>.</li></ul><hr id="2aa568fa-e39f-80a9-a8dc-c3a84a51c9e0"/><h2 id="2aa568fa-e39f-80c6-8839-e3e979849216" class="">5. Метрики сходства между товарами</h2><h3 id="2aa568fa-e39f-8043-bf4b-f9bbe4322574" class="">5.1. Косинусное сходство (опять, но теперь для items)</h3><p id="2aa568fa-e39f-80e0-9fb0-fbacde74e23a" class="">Формула та же, но с точкой зрения товаров:</p><p id="2aa568fa-e39f-800f-90f5-fcf674b0ec63" class="">[</p><p id="2aa568fa-e39f-8079-a59b-c790805d05e2" class="">sim_{\cos}(i, j) = \frac{\sum_{u \in U(i) \cap U(j)} R[u, i] \cdot R[u, j]}{\sqrt{\sum_{u \in U(i) \cap U(j)} R[u, i]^2} \cdot \sqrt{\sum_{u \in U(i) \cap U(j)} R[u, j]^2}}</p><p id="2aa568fa-e39f-8023-809a-cef8117304d4" class="">]</p><p id="2aa568fa-e39f-80bb-acac-d117ff9a9dbe" class="">Интерпретация:</p><ul id="2aa568fa-e39f-80f9-bcc6-ee4e059eb37f" class="bulleted-list"><li style="list-style-type:disc">1 → товары нравятся/используются одним и тем же людям примерно одинаково;</li></ul><ul id="2aa568fa-e39f-8037-80ab-c440dae16082" class="bulleted-list"><li style="list-style-type:disc">0 → общих пользователей нет;</li></ul><ul id="2aa568fa-e39f-8076-8b2f-e5415b86bc0e" class="bulleted-list"><li style="list-style-type:disc">отрицательные значения возможны, если есть отклонения от среднего (например, кто-то любит i, но не любит j).</li></ul><h3 id="2aa568fa-e39f-80da-84ed-c7ab99b51035" class="">5.2. Jaccard similarity (для бинарных взаимодействий)</h3><p id="2aa568fa-e39f-80b2-b260-fe9e479bb57b" class="">Когда у нас <strong>implicit</strong> данные (0/1: был клик/просмотр/покупка):</p><ul id="2aa568fa-e39f-80bd-be7f-f8e6925d9953" class="bulleted-list"><li style="list-style-type:disc">Можно отбросить силы сигналов и просто смотреть на множества.</li></ul><p id="2aa568fa-e39f-801f-8c37-f9111b14c23c" class="">[</p><p id="2aa568fa-e39f-809f-b5d0-f36f4a0004c9" class="">J(i, j) = \frac{|U(i) \cap U(j)|}{|U(i) \cup U(j)|}</p><p id="2aa568fa-e39f-808d-b17d-fa5ee3fbf4f7" class="">]</p><ul id="2aa568fa-e39f-80c8-b578-de0c6bbf3e13" class="bulleted-list"><li style="list-style-type:disc"><code>U(i)</code> — пользователи товара i;</li></ul><ul id="2aa568fa-e39f-80e7-99d3-e0d64cdfd2e8" class="bulleted-list"><li style="list-style-type:disc"><code>U(j)</code> — пользователи товара j.</li></ul><p id="2aa568fa-e39f-80fd-ba17-cf6785582c76" class="">Интуиция:</p><ul id="2aa568fa-e39f-803e-a3d9-e72c4ef89200" class="bulleted-list"><li style="list-style-type:disc">Jaccard высок, если <strong>много пользователей совпадают</strong>;</li></ul><ul id="2aa568fa-e39f-80e0-80c7-fa5695292888" class="bulleted-list"><li style="list-style-type:disc">подавляет эффект суперпопулярных товаров:<ul id="2aa568fa-e39f-80e5-8bb4-d8b102b43531" class="bulleted-list"><li style="list-style-type:circle">если товар смотрят все, его множества будут огромными, и он будет «похож на всех» по co-count, но Jaccard это нормирует.</li></ul></li></ul><h3 id="2aa568fa-e39f-80d6-84b5-ff34d04b5764" class="">5.3. Adjusted cosine / centered cosine</h3><p id="2aa568fa-e39f-80ad-b46e-f93f753fd552" class="">Проблема: разные пользователи склонны к разным «уровням».</p><ul id="2aa568fa-e39f-809d-be76-c14388a75523" class="bulleted-list"><li style="list-style-type:disc">Один всё время ставит 5, если понравилось.</li></ul><ul id="2aa568fa-e39f-801c-926a-c66cf1a39dcc" class="bulleted-list"><li style="list-style-type:disc">Другой вообще не ставит 5, максимум 4.</li></ul><p id="2aa568fa-e39f-80d3-9140-e48042c1f7a1" class="">Идея adjusted cosine:</p><ul id="2aa568fa-e39f-808b-a3d6-f5560f07f40a" class="bulleted-list"><li style="list-style-type:disc">вычитаем средний рейтинг каждого пользователя,<p id="2aa568fa-e39f-80a5-8ba5-da624ab35984" class="">чтобы сравнивать <strong>отклонения от типичного поведения</strong>.</p></li></ul><p id="2aa568fa-e39f-80c1-9b59-df44ba45ad60" class="">[</p><p id="2aa568fa-e39f-80aa-9395-dd85fd59563e" class="">sim_{\text{adj}}(i, j) =</p><p id="2aa568fa-e39f-807e-83a6-d8e41a807623" class="">\frac{</p><p id="2aa568fa-e39f-8003-9cc5-d1172c009868" class="">\sum_{u \in U(i) \cap U(j)} (R[u, i] - \bar{R}_u) (R[u, j] - \bar{R}<em>u)<br/>}{<br/>\sqrt{\sum</em>{u \in U(i) \cap U(j)} (R[u, i] - \bar{R}<em>u)^2}<br/>\sqrt{\sum</em>{u \in U(i) \cap U(j)} (R[u, j] - \bar{R}_u)^2}<br/>}<br/>]</p><p id="2aa568fa-e39f-8040-92dd-dd93808e4b11" class="">где <code>\bar{R}_u</code> — средний рейтинг пользователя <code>u</code>.</p><p id="2aa568fa-e39f-80f7-a875-fccc864875f0" class=""><strong>Где это использовать:</strong></p><ul id="2aa568fa-e39f-8039-8620-d6f38411bc4f" class="bulleted-list"><li style="list-style-type:disc">в задачах с explicit рейтингами;</li></ul><ul id="2aa568fa-e39f-8014-9924-f61bad21905a" class="bulleted-list"><li style="list-style-type:disc">если хотим учитывать именно «насколько выше/ниже среднего» воспринимают товар.</li></ul><h3 id="2aa568fa-e39f-80a9-89fa-e540cbdb9bf3" class="">5.4. Практические моменты</h3><ul id="2aa568fa-e39f-8030-a49a-c64750543fa5" class="bulleted-list"><li style="list-style-type:disc">Минимум общих пользователей:<ul id="2aa568fa-e39f-80d4-9f6c-fb0922939d72" class="bulleted-list"><li style="list-style-type:circle">если <code>|U(i) ∩ U(j)|</code> маленький (например, &lt; 3–5), similarity шумный;</li></ul></li></ul><ul id="2aa568fa-e39f-8070-94d3-d2deb8ec41ce" class="bulleted-list"><li style="list-style-type:disc">Фильтр по популярности:<ul id="2aa568fa-e39f-801b-bc8a-c58ed4b51acd" class="bulleted-list"><li style="list-style-type:circle">слишком популярные товары:<ul id="2aa568fa-e39f-80a7-9406-cf9bc1b64f1e" class="bulleted-list"><li style="list-style-type:square">могут быть похожими «со всеми» → стоит нормировать/ограничивать.</li></ul></li></ul></li></ul><hr id="2aa568fa-e39f-8026-ab23-f824720574e9"/><h2 id="2aa568fa-e39f-8021-b0af-d66c2418427b" class="">6. Предсказание рейтинга/скора item-based CF</h2><h3 id="2aa568fa-e39f-80a4-9575-f79934ccda7c" class="">6.1. Формула без учёта средних</h3><p id="2aa568fa-e39f-80c5-9729-d0576eb330eb" class="">Простой вариант (особенно для implicit):</p><p id="2aa568fa-e39f-802e-a14e-f7c016bdbbd0" class="">[</p><p id="2aa568fa-e39f-80ed-afa6-f86c719d3256" class="">\hat{r}<em>{u, i} =<br/>\frac{<br/>\sum\limits</em>{j \in I(u)} sim(i, j) \cdot R[u, j]<br/>}{<br/>\sum\limits_{j \in I(u)} |sim(i, j)|<br/>}<br/>]</p><ul id="2aa568fa-e39f-8053-bd47-cbf05c9dedb0" class="bulleted-list"><li style="list-style-type:disc"><code>I(u)</code> — items, с которыми взаимодействовал пользователь <code>u</code>;</li></ul><ul id="2aa568fa-e39f-8020-a4d3-f341d7457c99" class="bulleted-list"><li style="list-style-type:disc">учитываем только те <code>j</code>, для которых <code>sim(i, j)</code> не ноль.</li></ul><h3 id="2aa568fa-e39f-804c-a50f-d38f68ece50f" class="">6.2. Формула с учётом средних (explicit)</h3><p id="2aa568fa-e39f-80ab-83eb-efde62e6e698" class="">Если есть рейтинги, можно сделать как в user-based:</p><p id="2aa568fa-e39f-80c8-8763-ddcb82983eae" class="">[</p><p id="2aa568fa-e39f-8005-91bb-c335857811c4" class="">\hat{r}_{u, i} =</p><p id="2aa568fa-e39f-80f7-ae8f-ef6c046633fc" class="">\bar{R}<em>u +<br/>\frac{<br/>\sum\limits</em>{j \in I(u)} sim(i, j) \cdot (R[u, j] - \bar{R}<em>u)<br/>}{<br/>\sum\limits</em>{j \in I(u)} |sim(i, j)|<br/>}<br/>]</p><p id="2aa568fa-e39f-80de-b3ad-d0d2660ccb29" class="">Идея:</p><ul id="2aa568fa-e39f-8013-a41f-e940f5c32193" class="bulleted-list"><li style="list-style-type:disc">«мы смотрим, насколько товары j понравились пользователю u<p id="2aa568fa-e39f-8051-92f6-c26d592f2605" class="">относительно его привычного уровня,</p><p id="2aa568fa-e39f-80c1-8997-fa8d1f136169" class="">и переносим это через сходство на новый item i».</p></li></ul><h3 id="2aa568fa-e39f-80ba-90c4-dc322ca957fd" class="">6.3. Top-K рекомендации</h3><p id="2aa568fa-e39f-8024-8b0d-ef4d8634efcd" class="">Для пользователя <code>u</code>:</p><ol type="1" id="2aa568fa-e39f-80de-9d54-d762d5ed7575" class="numbered-list" start="1"><li>Берём его историю <code>I(u)</code> (например, последние N товаров).</li></ol><ol type="1" id="2aa568fa-e39f-8027-aed6-eb56241131f8" class="numbered-list" start="2"><li>Для каждого <code>j ∈ I(u)</code>:<ul id="2aa568fa-e39f-808c-ba58-ff684380b1b4" class="bulleted-list"><li style="list-style-type:disc">берём <code>N_k(j)</code> — ближайшие товары.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801a-89ea-f3f8f9acc1b8" class="numbered-list" start="3"><li>Объединяем кандидатов:<ul id="2aa568fa-e39f-804c-a952-edd0b2f467a8" class="bulleted-list"><li style="list-style-type:disc"><code>C(u) = ∪_{j ∈ I(u)} N_k(j) \ I(u)</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803b-bf93-d71355890fb3" class="numbered-list" start="4"><li>Для каждого <code>i ∈ C(u)</code> считаем <code>\hat{r}_{u, i}</code>.</li></ol><ol type="1" id="2aa568fa-e39f-803b-a37b-c63c6d63eff1" class="numbered-list" start="5"><li>Сортируем и берём top-K.</li></ol><ol type="1" id="2aa568fa-e39f-8093-9f23-cfec74f5406a" class="numbered-list" start="6"><li>Применяем фильтры/бизнес-правила, если нужно.</li></ol><hr id="2aa568fa-e39f-8082-8c9f-e99410048d87"/><h2 id="2aa568fa-e39f-80fe-9c05-d1dad708769e" class="">7. Кодовая часть урока (ноутбук)</h2><h3 id="2aa568fa-e39f-80cb-9422-f100344ca85e" class="">7.1. Подготовка: матрица и индексы</h3><p id="2aa568fa-e39f-8006-9e8d-d16e385dffe1" class="">Предполагаем, что:</p><ul id="2aa568fa-e39f-80b2-b823-da4129a9186d" class="bulleted-list"><li style="list-style-type:disc">есть матрица <code>R</code> размера <code>(num_users, num_items)</code> (может быть sparse, но для урока можно dense на подвыборке);</li></ul><ul id="2aa568fa-e39f-8026-8e1e-c4c44f43ebd6" class="bulleted-list"><li style="list-style-type:disc">есть <code>user_id_to_idx</code> и <code>item_id_to_idx</code>.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d5-a56d-f8fcf01ba6ab" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+from collections import defaultdict
+</code></pre><h3 id="2aa568fa-e39f-8028-8eb6-d7624583f4c1" class="">7.2. Косинусное сходство между двумя items</h3><p id="2aa568fa-e39f-808e-b5bf-ddacb1568315" class="">(аналогично user-based, только по строкам/столбцам айтемов):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-803e-b4a9-fdd4dd556c23" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def cosine_similarity_items(R, i_idx, j_idx):
+    # R: (num_users, num_items)
+    i_vec = R[:, i_idx]
+    j_vec = R[:, j_idx]
+
+    mask = (i_vec != 0) &amp; (j_vec != 0)
+    if not np.any(mask):
+        return 0.0
+
+    i_masked = i_vec[mask]
+    j_masked = j_vec[mask]
+
+    num = np.dot(i_masked, j_masked)
+    den = np.linalg.norm(i_masked) * np.linalg.norm(j_masked)
+    if den == 0:
+        return 0.0
+    return num / den
+</code></pre><h3 id="2aa568fa-e39f-8038-bdbb-f0b792c978cd" class="">7.3. Jaccard для items (если implicit)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8083-bace-d2ac63777931" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def jaccard_items(R_bin, i_idx, j_idx):
+    # R_bin: (num_users, num_items), 0/1
+    i_vec = R_bin[:, i_idx].astype(bool)
+    j_vec = R_bin[:, j_idx].astype(bool)
+
+    intersection = np.sum(i_vec &amp; j_vec)
+    union = np.sum(i_vec | j_vec)
+    if union == 0:
+        return 0.0
+    return intersection / union
+</code></pre><p id="2aa568fa-e39f-803a-8756-ca34c7578094" class="">На уроке можно прямо на игрушечном примере показать, как Jaccard «штрафует» мегапопулярные товары.</p><h3 id="2aa568fa-e39f-80a9-8d92-fa616844502c" class="">7.4. Поиск N ближайших соседей для каждого товара</h3><p id="2aa568fa-e39f-8056-a221-e98f50fcabc2" class="">Наивный вариант (для подвыборки):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80be-9f72-cce327f527b8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def compute_item_neighbors(R, k=50, metric=&quot;cosine&quot;):
+    num_users, num_items = R.shape
+    neighbors = [[] for _ in range(num_items)]
+
+    for i_idx in range(num_items):
+        sims = []
+        for j_idx in range(num_items):
+            if j_idx == i_idx:
+                continue
+
+            if metric == &quot;cosine&quot;:
+                sim = cosine_similarity_items(R, i_idx, j_idx)
+            else:
+                raise NotImplementedError
+
+            sims.append((sim, j_idx))
+
+        sims.sort(reverse=True, key=lambda x: x[0])
+        neighbors[i_idx] = sims[:k]
+    return neighbors
+</code></pre><p id="2aa568fa-e39f-8021-90f3-e6a8af9766db" class="">Сразу проговариваешь:</p><ul id="2aa568fa-e39f-8026-af7a-cdcefa1e987a" class="bulleted-list"><li style="list-style-type:disc">это O(I²) и медленно на больших данных, поэтому <strong>только для обучения</strong>;</li></ul><ul id="2aa568fa-e39f-801f-9399-c65a9b084631" class="bulleted-list"><li style="list-style-type:disc">в реале будем:<ul id="2aa568fa-e39f-80f2-ab0d-eef5235aec9b" class="bulleted-list"><li style="list-style-type:circle">ограничивать items по популярности;</li></ul><ul id="2aa568fa-e39f-80ad-90cd-c897084c3bd2" class="bulleted-list"><li style="list-style-type:circle">использовать sparse/ANN.</li></ul></li></ul><h3 id="2aa568fa-e39f-80d5-9e8b-e152fa9397c0" class="">7.5. Функции предсказания и рекомендации</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8091-b833-ed5c41b6d75c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def predict_rating_item_based(user_idx, item_idx, R, item_neighbors, k_neighbors=50):
+    # item_neighbors: список длины num_items, в каждом — [(sim, j_idx), ...]
+    neighbors = item_neighbors[item_idx][:k_neighbors]
+
+    user_ratings = R[user_idx]
+    num = 0.0
+    den = 0.0
+    for sim, j_idx in neighbors:
+        r_uj = user_ratings[j_idx]
+        if r_uj == 0:
+            continue
+        num += sim * r_uj
+        den += abs(sim)
+
+    if den == 0:
+        return 0.0  # fallback: средний рейтинг по item или пользователю
+    return num / den
+</code></pre><p id="2aa568fa-e39f-808c-b1dd-ddb3b62cc55b" class="">Рекомендации:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80f7-a861-f52740087ffb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_item_based(user_idx, R, item_neighbors, k_recs=10, k_neighbors=50):
+    user_ratings = R[user_idx]
+    user_items = np.where(user_ratings != 0)[0]
+    user_items_set = set(user_items)
+
+    candidate_scores = defaultdict(float)
+    candidate_weights = defaultdict(float)
+
+    for j_idx in user_items:
+        for sim, i_idx in item_neighbors[j_idx][:k_neighbors]:
+            if i_idx in user_items_set:
+                continue
+            if sim &lt;= 0:
+                continue
+            candidate_scores[i_idx] += sim * user_ratings[j_idx]
+            candidate_weights[i_idx] += abs(sim)
+
+    scores = []
+    for i_idx, num in candidate_scores.items():
+        den = candidate_weights[i_idx]
+        if den == 0:
+            continue
+        score = num / den
+        scores.append((score, i_idx))
+
+    scores.sort(reverse=True, key=lambda x: x[0])
+    return scores[:k_recs]
+</code></pre><p id="2aa568fa-e39f-807e-a45d-c9498dd9f070" class="">На занятии:</p><ul id="2aa568fa-e39f-8049-a8fb-d742672cc360" class="bulleted-list"><li style="list-style-type:disc">вызвать <code>recommend_item_based</code> для нескольких <code>user_idx</code>;</li></ul><ul id="2aa568fa-e39f-801f-b712-e25ae43cf235" class="bulleted-list"><li style="list-style-type:disc">показать, какие товары предлагаются;</li></ul><ul id="2aa568fa-e39f-80de-a483-e5a17ee7ff65" class="bulleted-list"><li style="list-style-type:disc">сравнить с популярностным и user-based CF для тех же пользователей (если уже реализовано).</li></ul><hr id="2aa568fa-e39f-80a4-81fd-e3aeb1faecdf"/><h2 id="2aa568fa-e39f-80a6-9928-e51e45e21a6e" class="">8. Сравнение user-based vs item-based</h2><p id="2aa568fa-e39f-80c1-acbd-e06974e54201" class="">Краткий блок обсуждения (можно на доске/вопросами группе):</p><ol type="1" id="2aa568fa-e39f-80f5-902a-dda468834839" class="numbered-list" start="1"><li><strong>Кто масштабируется лучше?</strong><ul id="2aa568fa-e39f-80df-b774-e48a42090494" class="bulleted-list"><li style="list-style-type:disc">Users много, items меньше:<ul id="2aa568fa-e39f-8036-a0b3-f01f9208a821" class="bulleted-list"><li style="list-style-type:circle">хранить <code>sim(i, j)</code> проще, чем <code>sim(u, v)</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-80ad-b85e-e21fbdcad184" class="bulleted-list"><li style="list-style-type:disc">товары меняются медленнее → их соседство стабильно.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ee-b8da-cc1c75f55540" class="numbered-list" start="2"><li><strong>Где проще кешировать?</strong><ul id="2aa568fa-e39f-8056-aef2-cb4f93fccabb" class="bulleted-list"><li style="list-style-type:disc">precompute: <code>item → top-N похожих items</code><p id="2aa568fa-e39f-8092-ac39-f72d02094209" class="">и потом использовать в онлайне:</p><p id="2aa568fa-e39f-8082-8f4d-f215bcd759f7" class="">пользователь → история → похожие товары.</p></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e8-a7ea-d703a9b78e23" class="numbered-list" start="3"><li><strong>Качество:</strong><ul id="2aa568fa-e39f-80db-947e-f3fef59000bc" class="bulleted-list"><li style="list-style-type:disc">user-based:<ul id="2aa568fa-e39f-80f0-8acc-ef7e3353f03f" class="bulleted-list"><li style="list-style-type:circle">может лучше улавливать вкусы, если профили плотные;</li></ul></li></ul><ul id="2aa568fa-e39f-80a5-9a10-e604cbc4e442" class="bulleted-list"><li style="list-style-type:disc">item-based:<ul id="2aa568fa-e39f-802b-9e35-c8b25bd6c255" class="bulleted-list"><li style="list-style-type:circle">часто стабильнее и меньше шумит на редких пользователях.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8061-ba61-e0de4c90a082" class="numbered-list" start="4"><li><strong>Итог:</strong><ul id="2aa568fa-e39f-804a-b964-cf12f15a0559" class="bulleted-list"><li style="list-style-type:disc">в проде часто:<ul id="2aa568fa-e39f-8073-abb2-c734035f1bab" class="bulleted-list"><li style="list-style-type:circle"><strong>item-based CF</strong> + дополнительные модели/гибриды;</li></ul><ul id="2aa568fa-e39f-80ff-8c5a-d77389664099" class="bulleted-list"><li style="list-style-type:circle">user-based — либо вспомогательно, либо не используется напрямую.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-807b-9d6b-f0109ccd0014"/><h2 id="2aa568fa-e39f-8072-8986-c217ba7dc1bb" class="">9. Практика на уроке (структура)</h2><p id="2aa568fa-e39f-801c-84b2-ea65ae71dcf4" class=""><strong>На ноутбуке:</strong></p><ol type="1" id="2aa568fa-e39f-802b-b1a9-f464676d47b7" class="numbered-list" start="1"><li>Взять уже подготовленную подвыборку <code>R</code>:<ul id="2aa568fa-e39f-807b-b0a7-e04d71a1ffde" class="bulleted-list"><li style="list-style-type:disc">сформировать бинарную версию <code>R_bin</code> для Jaccard (если нужно).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80bb-b74a-df0d4765aba7" class="numbered-list" start="2"><li>Для 3–5 выбранных товаров:<ul id="2aa568fa-e39f-8082-9bbf-d47820241b24" class="bulleted-list"><li style="list-style-type:disc">посчитать:<ul id="2aa568fa-e39f-8007-b2e5-f79a2112e7ff" class="bulleted-list"><li style="list-style-type:circle">cosine similarity со всеми остальными;</li></ul><ul id="2aa568fa-e39f-80a5-b827-deaf8f2232f2" class="bulleted-list"><li style="list-style-type:circle">Jaccard similarity;</li></ul></li></ul><ul id="2aa568fa-e39f-8053-bc04-c962871b6e17" class="bulleted-list"><li style="list-style-type:disc">вывести топ-10 соседей:<ul id="2aa568fa-e39f-80b9-acac-d10844c3f289" class="bulleted-list"><li style="list-style-type:circle">отдельно по cosine;</li></ul><ul id="2aa568fa-e39f-8094-b802-f7cb681ba2bd" class="bulleted-list"><li style="list-style-type:circle">отдельно по Jaccard;</li></ul></li></ul><ul id="2aa568fa-e39f-802f-840d-f66bd800fe19" class="bulleted-list"><li style="list-style-type:disc">обсудить:<ul id="2aa568fa-e39f-808d-93ce-e6b16250cb95" class="bulleted-list"><li style="list-style-type:circle">какие соседи выглядят более адекватными.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8037-bfd2-cd99ad2d614b" class="numbered-list" start="3"><li>Построить <code>item_neighbors</code> (хотя бы на кусочке):<ul id="2aa568fa-e39f-806d-985e-c876566c8d6c" class="bulleted-list"><li style="list-style-type:disc"><code>k = 20–50</code> соседей на товар.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8088-8a3d-c48477e3a96f" class="numbered-list" start="4"><li>Реализовать <code>recommend_item_based</code>:<ul id="2aa568fa-e39f-803b-bec4-c3c1ec3b62bd" class="bulleted-list"><li style="list-style-type:disc">посмотреть рекомендации для нескольких пользователей;</li></ul><ul id="2aa568fa-e39f-807b-af2d-ff3e5d21c08d" class="bulleted-list"><li style="list-style-type:disc">субъективно оценить:<ul id="2aa568fa-e39f-8009-bd53-e7978e3df2fe" class="bulleted-list"><li style="list-style-type:circle">насколько они логичнее, чем у popularity / user-based.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-808c-b536-db080b536f2c"/><h2 id="2aa568fa-e39f-805d-b6e7-f0bfe5badbbf" class="">10. Домашка к уроку 3.2</h2><h3 id="2aa568fa-e39f-8091-9b02-cc8af85d32cb" class="">Обязательная часть</h3><ol type="1" id="2aa568fa-e39f-801b-8411-fe43c15cc860" class="numbered-list" start="1"><li><strong>Реализовать item-based CF</strong> для своего датасета:<ul id="2aa568fa-e39f-80cf-90ce-f6c6dcc8d5f0" class="bulleted-list"><li style="list-style-type:disc">выбрать метрику сходства (cosine или Jaccard);</li></ul><ul id="2aa568fa-e39f-80a5-886a-c246a03c4e7a" class="bulleted-list"><li style="list-style-type:disc">построить <code>item_neighbors</code> (хотя бы для части каталога);</li></ul><ul id="2aa568fa-e39f-80e8-a85a-de51d8088759" class="bulleted-list"><li style="list-style-type:disc">реализовать <code>recommend_item_based(user_idx, ...)</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-802f-9cbd-e4b39695b51a" class="numbered-list" start="2"><li>Для 10 случайных пользователей:<ul id="2aa568fa-e39f-8050-b409-ceddafa415e7" class="bulleted-list"><li style="list-style-type:disc">вывести top-K рекомендаций (например, K=10);</li></ul><ul id="2aa568fa-e39f-803b-b033-cdf83128c363" class="bulleted-list"><li style="list-style-type:disc">сравнить:<ul id="2aa568fa-e39f-80ec-8330-d807f552cd78" class="bulleted-list"><li style="list-style-type:circle">с популярностными рекомендациями;</li></ul><ul id="2aa568fa-e39f-8036-85d9-cbcbe7b0bec6" class="bulleted-list"><li style="list-style-type:circle">с user-based рекомендациями (из ДЗ 3.1, если готово);</li></ul></li></ul><ul id="2aa568fa-e39f-80f5-bf1d-c68ff563073c" class="bulleted-list"><li style="list-style-type:disc">кратко описать:<ul id="2aa568fa-e39f-80af-a918-f33f3efff104" class="bulleted-list"><li style="list-style-type:circle">где item-based выглядит лучше;</li></ul><ul id="2aa568fa-e39f-800c-bd0b-d678694a15d2" class="bulleted-list"><li style="list-style-type:circle">где user-based/популярность ведут себя адекватнее.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801d-b32d-e2c8816d0173" class="numbered-list" start="3"><li>Встроить item-based CF в <code>evaluate(...)</code> (из модуля 2):<ul id="2aa568fa-e39f-802e-a726-f4a13d361193" class="bulleted-list"><li style="list-style-type:disc">посчитать Recall@K / MAP@K / NDCG@K;</li></ul><ul id="2aa568fa-e39f-8036-9ad2-edf14b43ba0d" class="bulleted-list"><li style="list-style-type:disc">сравнить с популярностью и user-based:<ul id="2aa568fa-e39f-80e1-bc31-ce65533d2e8b" class="bulleted-list"><li style="list-style-type:circle">сделать таблицу/график результатов.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8075-97c4-c8adfa70244c" class="">Дополнительная часть (для желающих угореть)</h3><ol type="1" id="2aa568fa-e39f-801f-a046-e45e31133bc9" class="numbered-list" start="1"><li>Реализовать Jaccard-сходство и:<ul id="2aa568fa-e39f-80bd-9422-c414c89a71f8" class="bulleted-list"><li style="list-style-type:disc">построить <code>item_neighbors_jaccard</code>;</li></ul><ul id="2aa568fa-e39f-8022-bd4c-d05f90f2c545" class="bulleted-list"><li style="list-style-type:disc">сделать рекомендации через Jaccard и сравнить метрики с cosine.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809d-b013-e8d82f6705ef" class="numbered-list" start="2"><li>Попробовать <strong>комбинировать item-based CF и популярность</strong>:<ul id="2aa568fa-e39f-8019-b6ce-d003b2440ff0" class="bulleted-list"><li style="list-style-type:disc">score = <code>α * CF_score + (1 – α) * popularity_score</code>;</li></ul><ul id="2aa568fa-e39f-800a-bc15-fd7719bbd5bd" class="bulleted-list"><li style="list-style-type:disc">погонять разные <code>α</code> (0, 0.25, 0.5, 0.75, 1.0);</li></ul><ul id="2aa568fa-e39f-80d1-8efa-c13b32bb6d6d" class="bulleted-list"><li style="list-style-type:disc">посмотреть, где метрики максимальны.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8078-9fbb-f6d88c058eff" class="numbered-list" start="3"><li>Короткий отчёт (0.5–1 страница):<ul id="2aa568fa-e39f-8094-a15b-dda8793ed81c" class="bulleted-list"><li style="list-style-type:disc">какая комбинация методов даёт лучший offline результат;</li></ul><ul id="2aa568fa-e39f-80f6-90fd-ee8c82d71fec" class="bulleted-list"><li style="list-style-type:disc">какие ограничения item-based CF видны уже сейчас;</li></ul><ul id="2aa568fa-e39f-80d0-8e7a-fbf031bb09b3" class="bulleted-list"><li style="list-style-type:disc">какие идеи по улучшению (намёк на MF/ALS/BPR → Модуль 4).</li></ul></li></ol><hr id="2aa568fa-e39f-801c-b0b7-e5dafb71659c"/><p id="2aa568fa-e39f-80b7-bf15-daca28ffaf33" class="">Дальше естественный шаг — Модуль 3.3 (implicit CF и топ-K) ты уже видел в структуре, а за ним — <strong>Модуль 4 с матричной факторизацией</strong>. Если хочешь, могу либо:</p><ul id="2aa568fa-e39f-8043-9f02-df7090fa03f7" class="bulleted-list"><li style="list-style-type:disc">расписать следующий урок (3.3) в таком же формате,</li></ul><ul id="2aa568fa-e39f-802a-abfc-f920c3309f0c" class="bulleted-list"><li style="list-style-type:disc">либо помочь упаковать уроки 3.1–3.2 в шаблоны ноутбуков/скелеты кода для студентов.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

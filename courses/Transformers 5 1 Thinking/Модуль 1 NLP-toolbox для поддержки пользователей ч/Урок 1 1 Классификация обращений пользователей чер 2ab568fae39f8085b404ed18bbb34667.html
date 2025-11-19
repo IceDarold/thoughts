@@ -1,0 +1,903 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.1. Классификация обращений пользователей через pipeline</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8085-b404-ed18bbb34667" class="page sans"><header><h1 class="page-title">Урок 1.1. Классификация обращений пользователей через <code>pipeline</code></h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8037-a861-e188fa7db718" class="">Окей, давай сделаем из урока 1.1 реально законченный блок, который можно просто брать и читать/вести 🧑‍🏫</p><p id="2ab568fa-e39f-8030-a61d-f8d50dc325dd" class="">Напомню идею модуля: мы строим <strong>NLP-toolbox для саппорта</strong>, а в 1.1 учимся решать задачи <strong>классификации текста</strong> через <code>pipeline</code>.</p><hr id="2ab568fa-e39f-80bb-b8a3-d0e5d579cc4c"/><h2 id="2ab568fa-e39f-8066-92f0-db8da1e75f53" class="">1. Цель урока (что должно уметь тело после конца занятия)</h2><p id="2ab568fa-e39f-80ef-a0ca-ff26737929c3" class="">К концу урока студент:</p><ul id="2ab568fa-e39f-8097-8565-c545867c7361" class="bulleted-list"><li style="list-style-type:disc">понимает, что такое <strong>single-label</strong> и <strong>multi-label</strong> классификация текста;</li></ul><ul id="2ab568fa-e39f-807c-a6ce-e25da3fc0ec8" class="bulleted-list"><li style="list-style-type:disc">знает, что делает <code>pipeline(&quot;text-classification&quot;)</code> и чем он отличается от <code>pipeline(&quot;sentiment-analysis&quot;)</code>;</li></ul><ul id="2ab568fa-e39f-8071-b491-c443535bd7ab" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-80bc-88b0-f3ca4b44fbc2" class="bulleted-list"><li style="list-style-type:circle">классифицировать <strong>один текст</strong> и <strong>батч текстов</strong>;</li></ul><ul id="2ab568fa-e39f-80ec-8318-f0c90765b5c7" class="bulleted-list"><li style="list-style-type:circle">управлять <code>device</code>, <code>batch_size</code>, <code>top_k</code>, <code>return_all_scores</code>;</li></ul><ul id="2ab568fa-e39f-800d-a1e8-ee56a867d1b5" class="bulleted-list"><li style="list-style-type:circle">использовать <strong>multi-label модель эмоций</strong> и выделять несколько меток для одного текста;</li></ul></li></ul><ul id="2ab568fa-e39f-80a5-8ba5-cd675cdf0b20" class="bulleted-list"><li style="list-style-type:disc">собрал маленькую утилиту: <code>classify_tickets(...)</code> для обращений пользователей.</li></ul><hr id="2ab568fa-e39f-8062-afee-c043fde5a0a5"/><h2 id="2ab568fa-e39f-8034-8582-f02c1d410b1a" class="">2. Мотивация и постановка задачи (5–10 минут)</h2><p id="2ab568fa-e39f-8002-bc48-fca7aabf48b8" class=""><strong>Кейс:</strong> У нас есть обращения в поддержку (тикеты, отзывы, письма):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808d-92f1-d1d7bd382b13" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">&quot;The app crashes when I upload a photo.&quot;
+&quot;I was charged twice this month.&quot;
+&quot;Could you add dark mode to the mobile app?&quot;
+&quot;Great job, the last update fixed many issues!&quot;
+</code></pre><p id="2ab568fa-e39f-80b5-b94c-c8d0b65a0701" class="">Хотим:</p><ul id="2ab568fa-e39f-80af-96e2-fdb4fcd60932" class="bulleted-list"><li style="list-style-type:disc">быстро понимать <strong>тональность</strong>: позитив/негатив;</li></ul><ul id="2ab568fa-e39f-802e-9479-f83122447a90" class="bulleted-list"><li style="list-style-type:disc">(чуть сложнее) понимать <strong>эмоции</strong>: anger, joy, gratitude и т.д. — и их может быть несколько сразу.</li></ul><p id="2ab568fa-e39f-80dd-9cf8-f08a266b7da1" class="">Важно честно проговорить:</p><ul id="2ab568fa-e39f-80d9-93f4-daeadc31e03f" class="bulleted-list"><li style="list-style-type:disc">Сейчас мы <strong>не будем</strong> учить свою модель под классы <code>bug/feature/billing</code> — до этого мы дойдём позже (fine-tuning).</li></ul><ul id="2ab568fa-e39f-80a9-baab-e5ec1fcd20ce" class="bulleted-list"><li style="list-style-type:disc">В этом уроке мы:<ul id="2ab568fa-e39f-8096-9a7f-ed42eee9ac62" class="bulleted-list"><li style="list-style-type:circle">берём <strong>готовую модель тональности</strong> (single-label) (<a href="https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english?utm_source=chatgpt.com">Hugging Face</a>)</li></ul><ul id="2ab568fa-e39f-805e-bd69-ca23eda9ea95" class="bulleted-list"><li style="list-style-type:circle">берём <strong>готовую multi-label модель эмоций</strong> (GoEmotions) (<a href="https://huggingface.co/cirimus/modernbert-base-go-emotions?utm_source=chatgpt.com">Hugging Face</a>)</li></ul><ul id="2ab568fa-e39f-802e-ac46-d8b341262b4e" class="bulleted-list"><li style="list-style-type:circle">тренируемся на них пользоваться <code>pipeline</code>.</li></ul></li></ul><hr id="2ab568fa-e39f-80eb-95ca-db7abd4aede2"/><h2 id="2ab568fa-e39f-803f-b20c-d52a9839af24" class="">3. Теория: классификация текста и <code>pipeline</code> (15–20 минут)</h2><h3 id="2ab568fa-e39f-8004-a7e3-e0f72c0f938f" class="">3.1. Что такое text classification</h3><p id="2ab568fa-e39f-80b2-9242-fa59eeebf657" class=""><strong>Классификация текста</strong> = у нас есть текст и фиксированный набор меток, нужно предсказать, какие метки к нему относятся.</p><ul id="2ab568fa-e39f-80d8-87c2-ffef69714b9c" class="bulleted-list"><li style="list-style-type:disc"><strong>Single-label классификация</strong>:<ul id="2ab568fa-e39f-8039-83ea-dc4b223364e0" class="bulleted-list"><li style="list-style-type:circle">ровно <strong>одна</strong> метка на текст;</li></ul><ul id="2ab568fa-e39f-80ba-bf5d-dd25a1fb9530" class="bulleted-list"><li style="list-style-type:circle">пример: sentiment → <code>POSITIVE</code> <strong>или</strong> <code>NEGATIVE</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-8093-a00c-ee7a14a12e6e" class="bulleted-list"><li style="list-style-type:disc"><strong>Multi-label классификация</strong>:<ul id="2ab568fa-e39f-808e-8097-c81b708ed57a" class="bulleted-list"><li style="list-style-type:circle"><strong>несколько</strong> меток на текст;</li></ul><ul id="2ab568fa-e39f-8020-a57f-e44ef752a7bb" class="bulleted-list"><li style="list-style-type:circle">пример: эмоции → текст может быть одновременно <code>anger</code>, <code>disappointment</code>, <code>sadness</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-805c-8b9b-d8af18978938" class="">3.2. <code>pipeline(&quot;sentiment-analysis&quot;)</code> vs <code>pipeline(&quot;text-classification&quot;)</code></h3><p id="2ab568fa-e39f-8082-a71e-ceddd8361763" class="">В <code>transformers</code> есть удобный верхнеуровневый интерфейс — <code>pipeline</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8061-a078-c066333ab617" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+clf = pipeline(&quot;sentiment-analysis&quot;)
+</code></pre><p id="2ab568fa-e39f-8086-a081-cba53d778624" class="">Фишки:</p><ul id="2ab568fa-e39f-805b-9b96-f49d0abbe678" class="bulleted-list"><li style="list-style-type:disc"><code>pipeline(&quot;sentiment-analysis&quot;)</code> — это частный случай <code>text-classification</code>, заточенный под тональность;<p id="2ab568fa-e39f-8030-a5ad-c9e363493785" class="">по умолчанию он использует модель <code>distilbert/distilbert-base-uncased-finetuned-sst-2-english</code> для английского (<a href="https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english?utm_source=chatgpt.com">Hugging Face</a>);</p></li></ul><ul id="2ab568fa-e39f-80a1-8d1a-e8b52c3c5eb2" class="bulleted-list"><li style="list-style-type:disc"><code>pipeline(&quot;text-classification&quot;)</code> — более общий вариант:<ul id="2ab568fa-e39f-8068-b2e2-d4371ecc2fa6" class="bulleted-list"><li style="list-style-type:circle">можно бросить <strong>любую</strong> модель для классификации текста (в т.ч. multi-label),</li></ul><ul id="2ab568fa-e39f-802a-a0a5-c8b1d1fe8ca8" class="bulleted-list"><li style="list-style-type:circle">используется, когда задача не обязательно “позитив/негатив”.</li></ul></li></ul><p id="2ab568fa-e39f-801a-ac9d-c436df2b76e4" class="">Мы в уроке будем использовать <strong>оба</strong>:</p><ul id="2ab568fa-e39f-8035-be6a-ee2816175585" class="bulleted-list"><li style="list-style-type:disc">для тональности — <code>sentiment-analysis</code> (как быстрый вход),</li></ul><ul id="2ab568fa-e39f-80ba-9443-d0216e210b88" class="bulleted-list"><li style="list-style-type:disc">для эмоций — <code>text-classification</code> с конкретной multi-label моделью.</li></ul><h3 id="2ab568fa-e39f-8087-943a-c59da41fc2b6" class="">3.3. Важные аргументы <code>pipeline</code> для классификации</h3><p id="2ab568fa-e39f-8013-90e3-f25701a5b178" class="">Те, с которыми студент обязательно должен познакомиться:</p><ul id="2ab568fa-e39f-8093-b533-f3c12f718806" class="bulleted-list"><li style="list-style-type:disc"><code>task</code> — <code>&quot;sentiment-analysis&quot;</code> или <code>&quot;text-classification&quot;</code>;</li></ul><ul id="2ab568fa-e39f-80db-b3ed-c1cc5e3761ff" class="bulleted-list"><li style="list-style-type:disc"><code>model</code> — строковый id модели на Hugging Face Hub, например:<ul id="2ab568fa-e39f-807a-9b1b-df319327c962" class="bulleted-list"><li style="list-style-type:circle"><code>&quot;distilbert/distilbert-base-uncased-finetuned-sst-2-english&quot;</code> для тональности,</li></ul><ul id="2ab568fa-e39f-8089-84ac-c08d08e816d8" class="bulleted-list"><li style="list-style-type:circle"><code>&quot;codewithdark/bert-Gomotions&quot;</code> / <code>&quot;SamLowe/roberta-base-go_emotions&quot;</code> и т.п. для эмоций (<a href="https://huggingface.co/models?other=multi-label-classification&amp;utm_source=chatgpt.com">Hugging Face</a>);</li></ul></li></ul><ul id="2ab568fa-e39f-804d-8454-fe402035e001" class="bulleted-list"><li style="list-style-type:disc"><code>device</code>:<ul id="2ab568fa-e39f-80ac-b367-da6ff9a14512" class="bulleted-list"><li style="list-style-type:circle"><code>1</code> — CPU,</li></ul><ul id="2ab568fa-e39f-801e-b979-f3b9c78f5f80" class="bulleted-list"><li style="list-style-type:circle"><code>0</code> — первая GPU;</li></ul></li></ul><ul id="2ab568fa-e39f-80cd-92b3-f949c59c8a7f" class="bulleted-list"><li style="list-style-type:disc">при вызове:<ul id="2ab568fa-e39f-8040-a121-d7a7ccdc69cf" class="bulleted-list"><li style="list-style-type:circle"><code>batch_size</code> — размер батча,</li></ul><ul id="2ab568fa-e39f-80a2-b5e4-ef942135d1f3" class="bulleted-list"><li style="list-style-type:circle"><code>top_k</code> — сколько лучших меток вернуть,</li></ul><ul id="2ab568fa-e39f-804d-9ced-ff7b9c985b6e" class="bulleted-list"><li style="list-style-type:circle"><code>return_all_scores</code> — если <code>True</code>, вернёт все вероятности.</li></ul></li></ul><hr id="2ab568fa-e39f-80df-bb10-dd605651ed91"/><h2 id="2ab568fa-e39f-80e3-a0c5-d62d9488679a" class="">4. Практика. Часть 1: Single-label классификация (тональность) (20–25 минут)</h2><h3 id="2ab568fa-e39f-808a-a8d2-e7eab2e9cc76" class="">4.1. Первый запуск: один текст</h3><p id="2ab568fa-e39f-8096-a602-c3cf68f50c59" class="">Код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804e-bf43-cb73538576bc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+# Создаём пайплайн для анализа тональности
+sentiment_clf = pipeline(&quot;sentiment-analysis&quot;)
+
+text = &quot;I really love this app, it’s fast and easy to use.&quot;
+
+result = sentiment_clf(text)
+print(result)
+</code></pre><p id="2ab568fa-e39f-80a9-b028-ef0a31557d55" class=""><strong>Разбор:</strong></p><ul id="2ab568fa-e39f-80cc-ac2b-f48b49ea37c2" class="bulleted-list"><li style="list-style-type:disc"><code>pipeline(&quot;sentiment-analysis&quot;)</code>:<ul id="2ab568fa-e39f-80bb-acc9-ee9c3b14058d" class="bulleted-list"><li style="list-style-type:circle">автоматически скачает модель и токенизатор с Hugging Face Hub (по умолчанию — DistilBERT для SST-2) (<a href="https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english?utm_source=chatgpt.com">Hugging Face</a>);</li></ul><ul id="2ab568fa-e39f-80b2-af52-e38b06945a5b" class="bulleted-list"><li style="list-style-type:circle">настроит препроцесс (токенизация), прогонит через модель, сделает постпроцесс (softmax + маппинг id → label).</li></ul></li></ul><ul id="2ab568fa-e39f-8008-ba09-dce08cd67693" class="bulleted-list"><li style="list-style-type:disc"><code>sentiment_clf(text)</code>:<ul id="2ab568fa-e39f-8081-87a4-c1d115da60c4" class="bulleted-list"><li style="list-style-type:circle">на вход — строка,</li></ul><ul id="2ab568fa-e39f-8017-afe9-cea11d6503fc" class="bulleted-list"><li style="list-style-type:circle">на выход — список из одного словаря:</li></ul></li></ul><p id="2ab568fa-e39f-80dc-8783-fdcd75fe22a7" class="">Пример вывода:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8048-9f9c-e0ef3caf859b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[{&#x27;label&#x27;: &#x27;POSITIVE&#x27;, &#x27;score&#x27;: 0.9991}]
+</code></pre><p id="2ab568fa-e39f-8078-9c37-d387c32003c1" class="">Объясняем:</p><ul id="2ab568fa-e39f-803d-a031-e95dd703e88c" class="bulleted-list"><li style="list-style-type:disc"><code>label</code> — предсказанный класс;</li></ul><ul id="2ab568fa-e39f-80a9-89d1-c98f944d79bb" class="bulleted-list"><li style="list-style-type:disc"><code>score</code> — уверенность модели (от 0 до 1, по сути softmax probability).</li></ul><h3 id="2ab568fa-e39f-803e-9a7b-e8791a45e0b8" class="">4.2. Батч текстов</h3><p id="2ab568fa-e39f-8084-b5e5-eedb5976313f" class="">Теперь те же действия, но на списке заявок/отзывов:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809d-898d-faa5b43a8104" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tickets = [
+    &quot;The app crashes when I try to upload a photo.&quot;,
+    &quot;I was charged twice for my subscription.&quot;,
+    &quot;Could you add dark mode to the mobile app?&quot;,
+    &quot;Great job, the last update fixed many issues!&quot;,
+]
+
+results = sentiment_clf(tickets)  # можно передавать список строк
+for text, res in zip(tickets, results):
+    print(f&quot;TEXT: {text}\nPRED: {res}\n&quot;)
+</code></pre><p id="2ab568fa-e39f-809c-b0d5-d70b5b9412d2" class="">Тут важно закрепить:</p><ul id="2ab568fa-e39f-80c0-98cb-c8334e211aa4" class="bulleted-list"><li style="list-style-type:disc"><code>pipeline</code> прозрачно работает и с одной строкой, и со списком;</li></ul><ul id="2ab568fa-e39f-8078-89a9-c694244dc336" class="bulleted-list"><li style="list-style-type:disc">на выходе будет <strong>список предсказаний</strong> той же длины, что и вход.</li></ul><h3 id="2ab568fa-e39f-8011-a613-c7846b3fabe7" class="">4.3. Настройка <code>device</code> и <code>batch_size</code></h3><p id="2ab568fa-e39f-8054-9c82-f40c1ee9a3c3" class="">Допиливаем код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e9-aa1e-efe5f2865160" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+# выберем девайс
+device = 0  # если есть GPU
+# device = -1  # если GPU нет
+
+sentiment_clf = pipeline(
+    &quot;sentiment-analysis&quot;,
+    device=device,
+)
+
+tickets = [
+    &quot;The app crashes when I try to upload a photo.&quot;,
+    &quot;I was charged twice for my subscription.&quot;,
+    &quot;Could you add dark mode to the mobile app?&quot;,
+    &quot;Great job, the last update fixed many issues!&quot;,
+] * 10  # для демонстрации батча
+
+results = sentiment_clf(tickets, batch_size=16)
+
+print(f&quot;Got {len(results)} predictions&quot;)
+print(results[0])
+</code></pre><p id="2ab568fa-e39f-80fc-9363-ca483d4f7f5a" class="">Объяснение:</p><ul id="2ab568fa-e39f-80b5-9aa7-ec06f07cbf0c" class="bulleted-list"><li style="list-style-type:disc"><code>device=device</code>:<ul id="2ab568fa-e39f-802f-a6c4-e065630eefa4" class="bulleted-list"><li style="list-style-type:circle">если <code>0</code> — модель и тензоры будут на GPU, ускорение в разы;</li></ul><ul id="2ab568fa-e39f-8014-b9c8-e3c783c5a0f6" class="bulleted-list"><li style="list-style-type:circle">если <code>1</code> — всё на CPU, но код тот же.</li></ul></li></ul><ul id="2ab568fa-e39f-808f-9481-d4664ba98072" class="bulleted-list"><li style="list-style-type:disc"><code>batch_size=16</code>:<ul id="2ab568fa-e39f-80d9-9b86-f08cc4c71c02" class="bulleted-list"><li style="list-style-type:circle">сколько примеров обрабатываем за один проход модели;</li></ul><ul id="2ab568fa-e39f-80d1-b103-ddc6c221e45d" class="bulleted-list"><li style="list-style-type:circle">слишком маленький батч = медленно,</li></ul><ul id="2ab568fa-e39f-80b1-8284-dc9ed2c15fb0" class="bulleted-list"><li style="list-style-type:circle">слишком большой = не влезет в память → OOM.</li></ul></li></ul><p id="2ab568fa-e39f-8035-a0f5-c54b1a3e1b95" class="">Здесь полезно прямо проговорить: «Запомните: размер батча — одна из первых ручек оптимизации скорости».</p><h3 id="2ab568fa-e39f-8006-98f4-f4909ddf06f8" class="">4.4. Получаем <em>все</em> вероятности (<code>return_all_scores</code>)</h3><p id="2ab568fa-e39f-8010-b9bb-ed20017ac671" class="">По умолчанию <code>pipeline(&quot;sentiment-analysis&quot;)</code> отдаёт только <strong>лучший класс</strong>. Но иногда хочется:</p><ul id="2ab568fa-e39f-807b-a07f-f4de0dfdbf6f" class="bulleted-list"><li style="list-style-type:disc">посмотреть, насколько модель уверена во втором классе;</li></ul><ul id="2ab568fa-e39f-8065-bc24-cdb4cb72e5ff" class="bulleted-list"><li style="list-style-type:disc">понимать, где она сомневается.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808a-a49e-fb632699dcb5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+sentiment_clf_all = pipeline(
+    &quot;sentiment-analysis&quot;,
+    return_all_scores=True,  # теперь вернём все классы
+)
+
+text = &quot;The app is okay, but could be much better.&quot;
+
+results = sentiment_clf_all(text)
+print(results)
+</code></pre><p id="2ab568fa-e39f-80ba-a377-f7eed2d9ebf8" class="">Пример вывода:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80fa-8c37-e10dd3909626" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[[{&#x27;label&#x27;: &#x27;NEGATIVE&#x27;, &#x27;score&#x27;: 0.35},
+  {&#x27;label&#x27;: &#x27;POSITIVE&#x27;, &#x27;score&#x27;: 0.65}]]
+</code></pre><p id="2ab568fa-e39f-80b4-a282-e7800993bf4b" class="">Разбор:</p><ul id="2ab568fa-e39f-808f-b70d-f4831951a908" class="bulleted-list"><li style="list-style-type:disc">снаружи — список по батчу,</li></ul><ul id="2ab568fa-e39f-8079-8480-ce57d2b9e017" class="bulleted-list"><li style="list-style-type:disc">внутри — список словарей по каждому классу.</li></ul><p id="2ab568fa-e39f-8065-9388-d2515d4dff3b" class="">Можно сделать свою “интерпретацию”:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8058-977d-d3975334c746" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">probs = {d[&quot;label&quot;]: d[&quot;score&quot;] for d in results[0]}
+print(probs)
+# {&#x27;NEGATIVE&#x27;: 0.35, &#x27;POSITIVE&#x27;: 0.65}
+</code></pre><hr id="2ab568fa-e39f-80ca-b5fe-ebd5f8ec18de"/><h2 id="2ab568fa-e39f-8082-a5d6-f750cb280a1e" class="">5. Практика. Часть 2: Multi-label эмоции (GoEmotions) (25–30 минут)</h2><p id="2ab568fa-e39f-8017-87df-e2953d2c5a16" class="">Теперь усложняем: <strong>один текст → несколько эмоций</strong>.</p><h3 id="2ab568fa-e39f-80bf-9d14-cc100a52f0f1" class="">5.1. Модель эмоций (GoEmotions)</h3><p id="2ab568fa-e39f-80d1-a453-c32a4f347e2e" class="">На Hugging Face есть куча моделей, обученных на датасете <strong>GoEmotions</strong> (28 эмоций, multi-label). Например, <code>codewithdark/bert-Gomotions</code> или другие варианты, которые явно описаны как multi-label text classification. (<a href="https://huggingface.co/models?other=multi-label-classification&amp;utm_source=chatgpt.com">Hugging Face</a>)</p><p id="2ab568fa-e39f-807e-a397-d07345aed079" class="">Мы будем использовать <code>pipeline(&quot;text-classification&quot;, model=..., top_k=None, return_all_scores=True)</code> — это стандартный паттерн для multi-label моделей.</p><h3 id="2ab568fa-e39f-80fe-8900-db7cfd790624" class="">5.2. Первый запуск multi-label классификатора</h3><p id="2ab568fa-e39f-80a3-bf46-e4555ae213dc" class="">Код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8049-9f86-f32d8da3e356" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+emotion_model_id = &quot;codewithdark/bert-Gomotions&quot;  # пример multi-label модели
+
+emotion_clf = pipeline(
+    &quot;text-classification&quot;,
+    model=emotion_model_id,
+    top_k=None,             # вернуть все классы
+    return_all_scores=True  # с вероятностями
+)
+
+text = &quot;I&#x27;m so happy today, but also a bit nervous about the presentation.&quot;
+
+raw_preds = emotion_clf(text)[0]  # список словарей для каждой эмоции
+print(&quot;Number of labels:&quot;, len(raw_preds))
+print(&quot;First 5 entries:&quot;)
+for p in raw_preds[:5]:
+    print(p)
+</code></pre><p id="2ab568fa-e39f-80d3-9879-e75cc6aa2fce" class="">Объясняем:</p><ul id="2ab568fa-e39f-804e-8dd8-dca151d5058c" class="bulleted-list"><li style="list-style-type:disc"><code>top_k=None</code> + <code>return_all_scores=True</code>:<ul id="2ab568fa-e39f-8028-8b51-e4602e7677f5" class="bulleted-list"><li style="list-style-type:circle">мы говорим пайплайну: <em>“Верни мне весь вектор вероятностей по всем эмоциям”</em>;</li></ul></li></ul><ul id="2ab568fa-e39f-80b4-abae-de38c2f56471" class="bulleted-list"><li style="list-style-type:disc">каждый элемент <code>p</code>:<ul id="2ab568fa-e39f-8039-86d1-e5e3579feb8f" class="bulleted-list"><li style="list-style-type:circle"><code>p[&quot;label&quot;]</code> — название эмоции (<code>&quot;Joy&quot;</code>, <code>&quot;Nervousness&quot;</code>, <code>&quot;Admiration&quot;</code>, …),</li></ul><ul id="2ab568fa-e39f-8013-8cfd-dca478a194d7" class="bulleted-list"><li style="list-style-type:circle"><code>p[&quot;score&quot;]</code> — вероятность (после <code>sigmoid</code>, если модель multi-label).</li></ul></li></ul><h3 id="2ab568fa-e39f-80b9-999b-e24a9dd344cd" class="">5.3. Постпроцессинг: выбираем “активные” эмоции по порогу</h3><p id="2ab568fa-e39f-80bb-b701-e88c30c74c6e" class="">Наша задача — выбрать <strong>несколько эмоций</strong>, а не одну. Обычная стратегия: берём все эмоции, где <code>score &gt;= threshold</code>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ab-9c50-e8b4c69d12b7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def pick_emotions(raw_scores, threshold=0.3, top_k=None):
+    &quot;&quot;&quot;
+    raw_scores: список словарей {&quot;label&quot;: ..., &quot;score&quot;: ...}
+    threshold: минимальный score, чтобы выбрать эмоцию
+    top_k: если задано, берём не больше top_k эмоций с наибольшим score
+    &quot;&quot;&quot;
+    # отсортируем по убыванию score
+    sorted_scores = sorted(raw_scores, key=lambda x: x[&quot;score&quot;], reverse=True)
+
+    if top_k is not None:
+        sorted_scores = sorted_scores[:top_k]
+
+    picked = [d for d in sorted_scores if d[&quot;score&quot;] &gt;= threshold]
+    return picked
+
+picked = pick_emotions(raw_preds, threshold=0.3, top_k=5)
+print(&quot;Picked emotions:&quot;)
+for p in picked:
+    print(f&quot;{p[&#x27;label&#x27;]}: {p[&#x27;score&#x27;]:.3f}&quot;)
+</code></pre><p id="2ab568fa-e39f-80a0-ba71-e3a084d0c3b0" class="">Объяснение:</p><ul id="2ab568fa-e39f-805f-a3e4-f5435fd9a21b" class="bulleted-list"><li style="list-style-type:disc"><code>sorted_scores</code> — сначала сортируем эмоции по уверенности;</li></ul><ul id="2ab568fa-e39f-80e1-a192-f5b805e7cc2b" class="bulleted-list"><li style="list-style-type:disc"><code>top_k</code> — можем ограничить максимум 3–5 эмоций;</li></ul><ul id="2ab568fa-e39f-801b-836e-d482a1bcd6b3" class="bulleted-list"><li style="list-style-type:disc"><code>threshold</code> — определяем “усилие” для попадания в список:<ul id="2ab568fa-e39f-80a4-b97d-c69161642459" class="bulleted-list"><li style="list-style-type:circle"><code>0.5</code> — строгий порог,</li></ul><ul id="2ab568fa-e39f-8084-b99e-fee6e57a4ec6" class="bulleted-list"><li style="list-style-type:circle"><code>0.2–0.3</code> — более “мягкий”.</li></ul></li></ul><p id="2ab568fa-e39f-8089-b2f2-c4d9b9d4a7e7" class="">Можно обсудить, что выбор порога — это по сути <strong>гиперпараметр</strong>, который на практике подбирают под конкретные метрики (F1, recall и т.п.).</p><h3 id="2ab568fa-e39f-8047-a35e-ea2d25231eb8" class="">5.4. Применяем к обращениям пользователей</h3><p id="2ab568fa-e39f-8072-8657-e01eef77303b" class="">Возьмём несколько тикетов:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8083-a723-f14a065f1c3e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tickets = [
+    &quot;The app crashes every time I open the gallery. This is so annoying.&quot;,
+    &quot;Thanks a lot for the latest update, I really appreciate the new features!&quot;,
+    &quot;I&#x27;m a bit confused about how to change my billing address.&quot;,
+    &quot;I feel sad that there is no Linux version, but the Windows app is great.&quot;,
+]
+</code></pre><p id="2ab568fa-e39f-801b-8956-de3882eab2f1" class="">Прогоняем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802e-a391-d70e311317a3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def classify_ticket_emotions(tickets, clf, threshold=0.3, top_k=5):
+    results = []
+    raw_all = clf(tickets, batch_size=8)  # список по текстам
+
+    for text, raw_scores in zip(tickets, raw_all):
+        picked = pick_emotions(raw_scores, threshold=threshold, top_k=top_k)
+        results.append({
+            &quot;text&quot;: text,
+            &quot;emotions&quot;: picked,
+        })
+    return results
+
+ticket_emotions = classify_ticket_emotions(tickets, emotion_clf, threshold=0.35, top_k=5)
+
+for item in ticket_emotions:
+    print(&quot;TEXT:&quot;, item[&quot;text&quot;])
+    print(&quot;EMOTIONS:&quot;)
+    for e in item[&quot;emotions&quot;]:
+        print(f&quot;  - {e[&#x27;label&#x27;]}: {e[&#x27;score&#x27;]:.3f}&quot;)
+    print()
+</code></pre><p id="2ab568fa-e39f-80cf-81f0-ea8b3925d3aa" class="">Теперь у нас есть список словарей, где для каждого обращения мы знаем:</p><ul id="2ab568fa-e39f-802c-a964-fd4ed77a83b6" class="bulleted-list"><li style="list-style-type:disc">какие эмоции модель видит,</li></ul><ul id="2ab568fa-e39f-80b3-a7f3-c40c025ec8f3" class="bulleted-list"><li style="list-style-type:disc">насколько она в них уверена.</li></ul><p id="2ab568fa-e39f-8060-84ac-cc4b3e19c431" class="">Это уже можно использовать:</p><ul id="2ab568fa-e39f-800c-b0f0-ed708b01db5c" class="bulleted-list"><li style="list-style-type:disc">для аналитики (какие эмоции доминируют в саппорте),</li></ul><ul id="2ab568fa-e39f-8048-a066-fc73f7978578" class="bulleted-list"><li style="list-style-type:disc">для приоритизации (сильный <code>anger</code> → быстрее отработать).</li></ul><hr id="2ab568fa-e39f-8089-9d2d-c99c2f6a4d5b"/><h2 id="2ab568fa-e39f-80ea-88ec-f04fd283a333" class="">6. Мини-функция <code>classify_tickets</code> (объединяем всё) (10–15 минут)</h2><p id="2ab568fa-e39f-80e6-bb3c-d05c95ccbfd4" class="">Чтобы завершить урок, собираем всё в одну удобную функцию/модуль, который:</p><ul id="2ab568fa-e39f-80d5-ba5c-da3eddd61a87" class="bulleted-list"><li style="list-style-type:disc">сначала определяет <strong>тональность</strong> обращений,</li></ul><ul id="2ab568fa-e39f-80a7-a319-e92a45b54695" class="bulleted-list"><li style="list-style-type:disc">затем добавляет <strong>эмоции</strong>.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808f-91f1-e444e703461e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+# 1) Пайплайн тональности
+sentiment_clf = pipeline(&quot;sentiment-analysis&quot;)
+
+# 2) Пайплайн эмоций (multi-label)
+emotion_model_id = &quot;codewithdark/bert-Gomotions&quot;
+emotion_clf = pipeline(
+    &quot;text-classification&quot;,
+    model=emotion_model_id,
+    top_k=None,
+    return_all_scores=True,
+)
+
+def pick_emotions(raw_scores, threshold=0.3, top_k=5):
+    sorted_scores = sorted(raw_scores, key=lambda x: x[&quot;score&quot;], reverse=True)
+    if top_k is not None:
+        sorted_scores = sorted_scores[:top_k]
+    picked = [d for d in sorted_scores if d[&quot;score&quot;] &gt;= threshold]
+    return picked
+
+def classify_tickets(tickets: list[str]) -&gt; list[dict]:
+    &quot;&quot;&quot;
+    На вход: список текстов обращений
+    На выход: список словарей:
+    {
+      &quot;text&quot;: ...,
+      &quot;sentiment&quot;: {&quot;label&quot;: ..., &quot;score&quot;: ...},
+      &quot;emotions&quot;: [{&quot;label&quot;: ..., &quot;score&quot;: ...}, ...]
+    }
+    &quot;&quot;&quot;
+    # 1) Тональность
+    sentiment_preds = sentiment_clf(tickets, batch_size=16)
+
+    # 2) Эмоции
+    emotion_raw = emotion_clf(tickets, batch_size=8)
+
+    results = []
+    for text, sent, emo_raw in zip(tickets, sentiment_preds, emotion_raw):
+        emotions = pick_emotions(emo_raw, threshold=0.3, top_k=5)
+        results.append({
+            &quot;text&quot;: text,
+            &quot;sentiment&quot;: {
+                &quot;label&quot;: sent[&quot;label&quot;],
+                &quot;score&quot;: float(sent[&quot;score&quot;]),
+            },
+            &quot;emotions&quot;: [
+                {&quot;label&quot;: e[&quot;label&quot;], &quot;score&quot;: float(e[&quot;score&quot;])}
+                for e in emotions
+            ]
+        })
+    return results
+
+
+if __name__ == &quot;__main__&quot;:
+    tickets = [
+        &quot;The app crashes every time I open the gallery. This is so annoying.&quot;,
+        &quot;Thanks a lot for the latest update, I really appreciate the new features!&quot;,
+        &quot;I&#x27;m a bit confused about how to change my billing address.&quot;,
+    ]
+
+    classified = classify_tickets(tickets)
+    for item in classified:
+        print(&quot;TEXT:&quot;, item[&quot;text&quot;])
+        print(&quot;SENTIMENT:&quot;, item[&quot;sentiment&quot;])
+        print(&quot;EMOTIONS:&quot;, item[&quot;emotions&quot;])
+        print(&quot;-&quot; * 50)
+</code></pre><p id="2ab568fa-e39f-8032-a61d-dd71715fb1fd" class="">Разбор:</p><ul id="2ab568fa-e39f-805b-9421-cb623a458c34" class="bulleted-list"><li style="list-style-type:disc">мы <strong>никакой модели не тренировали</strong>;</li></ul><ul id="2ab568fa-e39f-802f-bf8b-faa98d4b5f53" class="bulleted-list"><li style="list-style-type:disc">мы просто:<ul id="2ab568fa-e39f-801f-b134-ec472f195382" class="bulleted-list"><li style="list-style-type:circle">использовали две готовых модели через <code>pipeline</code>,</li></ul><ul id="2ab568fa-e39f-803b-b6a0-ffc4f9300bfb" class="bulleted-list"><li style="list-style-type:circle">сделали минимальный постпроцессинг;</li></ul></li></ul><ul id="2ab568fa-e39f-804a-8a1d-e42f7196bda9" class="bulleted-list"><li style="list-style-type:disc">итог — очень похож на то, что реально делают в ранних прототипах продуктов:<ul id="2ab568fa-e39f-8070-a212-ecd14dcd8c49" class="bulleted-list"><li style="list-style-type:circle">быстро проверить, даёт ли это пользу бизнесу,</li></ul><ul id="2ab568fa-e39f-8081-9641-cfc90f730fcc" class="bulleted-list"><li style="list-style-type:circle">прежде чем лезть в кастомный тренинг.</li></ul></li></ul><hr id="2ab568fa-e39f-8047-95e8-f62ccf6932fe"/><h2 id="2ab568fa-e39f-80f1-917f-cbbfda2bcc39" class="">7. Домашнее задание по уроку 1.1</h2><p id="2ab568fa-e39f-8033-9ffd-db41bd5e73c7" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-80ef-bc5e-d86ee3ba7919" class="numbered-list" start="1"><li>Собрать минимум <strong>20–30 реальных текстов</strong>:<ul id="2ab568fa-e39f-803c-b437-d2bd5b584f8d" class="bulleted-list"><li style="list-style-type:disc">тикеты в поддержку, отзывы, комментарии и т.п.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-809a-8047-e41c2b80489f" class="numbered-list" start="2"><li>Запустить на них свою функцию <code>classify_tickets</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80c2-96e5-d26b4fa34437" class="numbered-list" start="3"><li>Сделать простой анализ:<ul id="2ab568fa-e39f-8082-9097-e32d024cf24a" class="bulleted-list"><li style="list-style-type:disc">посчитать, сколько обращений модель считает NEGATIVE/ POSITIVE;</li></ul><ul id="2ab568fa-e39f-80fb-9d5c-faa22a440f08" class="bulleted-list"><li style="list-style-type:disc">какие эмоции чаще всего появляются;</li></ul><ul id="2ab568fa-e39f-8082-b90d-fe97cbad99e9" class="bulleted-list"><li style="list-style-type:disc">привести 3–5 примеров, где вы <strong>не согласны</strong> с моделью (и подумать почему).</li></ul></li></ol><p id="2ab568fa-e39f-8048-8a6a-f7c10688cf47" class=""><strong>Продвинутая часть (по желанию):</strong></p><ol type="1" id="2ab568fa-e39f-8008-811b-ed7ac0bc5bc4" class="numbered-list" start="1"><li>Завести простую табличку (CSV) вида:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ec-97b2-d8b565656de7" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">text,sentiment_label,sentiment_score,emotions
+...
+</code></pre></li></ol><ol type="1" id="2ab568fa-e39f-801b-8460-f74feffc124a" class="numbered-list" start="2"><li>Визуализировать в ноутбуке:<ul id="2ab568fa-e39f-803e-8cd0-ccf8151a1063" class="bulleted-list"><li style="list-style-type:disc">гистограмму по sentiment (сколько NEGATIVE/ POSITIVE);</li></ul><ul id="2ab568fa-e39f-807c-8938-dd25b4ce893d" class="bulleted-list"><li style="list-style-type:disc">столбчатую диаграмму по топ-10 эмоций.</li></ul></li></ol><hr id="2ab568fa-e39f-8021-bd03-ec95af254160"/><p id="2ab568fa-e39f-80da-b144-c5f16ac8066b" class="">Если хочешь, дальше можем:</p><ul id="2ab568fa-e39f-80cf-84d6-c36708268b23" class="bulleted-list"><li style="list-style-type:disc">так же подробно расписать <strong>урок 1.2 по NER</strong> (с подсветкой сущностей в текстах),</li></ul><ul id="2ab568fa-e39f-8027-b0b8-f383b350ece9" class="bulleted-list"><li style="list-style-type:disc">или сразу перейти к <strong>модулю 2</strong> (где мы снимаем “магическую обёртку” <code>pipeline</code> и разобираем <code>AutoTokenizer</code> + <code>AutoModelForSequenceClassification</code> вручную).</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

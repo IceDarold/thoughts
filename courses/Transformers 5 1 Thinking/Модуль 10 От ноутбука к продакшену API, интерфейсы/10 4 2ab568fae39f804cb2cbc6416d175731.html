@@ -1,0 +1,995 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>10.4</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-804c-b2cb-c6416d175731" class="page sans"><header><h1 class="page-title">10.4</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80d9-9e00-d9c84d4fc7d6" class="">Финальный штрих: учим нашего ассистента <strong>жить в реальном мире</strong> — логироваться, проверять своё здоровье и адекватность 💊📈</p><p id="2ab568fa-e39f-8085-809c-eb987c3726ce" class="">Ниже — полный <strong>урок 10.4</strong>: теория → код → объяснения.</p><hr id="2ab568fa-e39f-80ab-9ab8-eb0d4519edc8"/><h2 id="2ab568fa-e39f-8033-962c-e479f1bf77cd" class="">1. Что мы хотим в этом уроке</h2><p id="2ab568fa-e39f-8007-a562-c9e5fbc11d23" class="">Цели:</p><ol type="1" id="2ab568fa-e39f-8078-a656-f44324b36999" class="numbered-list" start="1"><li><strong>Логирование</strong><p id="2ab568fa-e39f-800e-b193-f153f6b56e79" class="">Сохранять запросы и ответы моделей — чтобы:</p><ul id="2ab568fa-e39f-8022-b54a-d5dbf449128b" class="bulleted-list"><li style="list-style-type:disc">разбирать баги,</li></ul><ul id="2ab568fa-e39f-807a-a617-cbe3aaf70245" class="bulleted-list"><li style="list-style-type:disc">собирать сложные кейсы для дообучения,</li></ul><ul id="2ab568fa-e39f-8067-92ba-c3c2d4a284f4" class="bulleted-list"><li style="list-style-type:disc">смотреть, как сервис ведёт себя “в дикой природе”.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f5-9359-e2d6bae5d04a" class="numbered-list" start="2"><li><strong>Offline-оценка качества</strong><p id="2ab568fa-e39f-80d1-bf98-d11fe2bcef27" class="">Запускать локальные скрипты, которые:</p><ul id="2ab568fa-e39f-806b-b66d-d3168ea5897f" class="bulleted-list"><li style="list-style-type:disc">гоняют наши модели по фиксированным датасетам,</li></ul><ul id="2ab568fa-e39f-8052-a82f-f2fe0a44822c" class="bulleted-list"><li style="list-style-type:disc">считают метрики (accuracy/F1/ROUGE),</li></ul><ul id="2ab568fa-e39f-80d0-b736-faf03250d3d5" class="bulleted-list"><li style="list-style-type:disc">помогают понять, что стало лучше/хуже после новой версии.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-801c-98e3-f66e9d4ae279" class="numbered-list" start="3"><li><strong>Health-check</strong><p id="2ab568fa-e39f-800f-80e5-e1363a986b2b" class="">Иметь простой эндпоинт <code>/health</code>, который:</p><ul id="2ab568fa-e39f-80f7-a473-e0436fa67523" class="bulleted-list"><li style="list-style-type:disc">проверяет, что базовые вещи работают,</li></ul><ul id="2ab568fa-e39f-8046-b976-e2049b263e25" class="bulleted-list"><li style="list-style-type:disc">используется мониторингом/оркестратором (k8s, docker-compose) для проверки “жив ли сервис”.</li></ul></li></ol><p id="2ab568fa-e39f-8068-a804-eb322aff16f0" class="">Будем работать поверх того же <code>app.py</code>, который сделали в 10.1–10.3.</p><hr id="2ab568fa-e39f-80cf-895f-f13c91a4d20e"/><h2 id="2ab568fa-e39f-8057-9a4b-c8b72dce1dc9" class="">2. Теория: зачем всё это</h2><h3 id="2ab568fa-e39f-8076-a9c1-e9e14a112ab1" class="">2.1. Логирование</h3><p id="2ab568fa-e39f-8032-8fcc-e2f9cdc909b8" class="">Без логов ты:</p><ul id="2ab568fa-e39f-80dc-b3ac-d351efd59f7e" class="bulleted-list"><li style="list-style-type:disc">не знаешь, что реально спрашивают пользователи,</li></ul><ul id="2ab568fa-e39f-8071-a4e4-f6c95f7eaf0a" class="bulleted-list"><li style="list-style-type:disc">не можешь воспроизвести баг,</li></ul><ul id="2ab568fa-e39f-809e-8b55-fd3bac25cb91" class="bulleted-list"><li style="list-style-type:disc">не можешь понять, <strong>где</strong> и <strong>почему</strong> модель облажалась.</li></ul><p id="2ab568fa-e39f-8063-bd5d-ce82813f6d2f" class="">Простейший формат для старта: <strong>JSONL</strong>-файлы:</p><ul id="2ab568fa-e39f-80f7-96fa-c7554f78e6d9" class="bulleted-list"><li style="list-style-type:disc">одна строка = один запрос+ответ,</li></ul><ul id="2ab568fa-e39f-80e0-8b9b-cfa5e204146e" class="bulleted-list"><li style="list-style-type:disc">строка — валидный JSON:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80dc-9208-c8514f9e98ab" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{&quot;timestamp&quot;: &quot;...&quot;, &quot;endpoint&quot;: &quot;support_reply&quot;, &quot;request&quot;: {...}, &quot;response&quot;: {...}}
+</code></pre></li></ul><ul id="2ab568fa-e39f-80c4-af0a-f26c7a574f23" class="bulleted-list"><li style="list-style-type:disc">удобно потом:<ul id="2ab568fa-e39f-8017-a189-c8c20f8c22ef" class="bulleted-list"><li style="list-style-type:circle">парсить через <code>pandas</code> / Python,</li></ul><ul id="2ab568fa-e39f-802d-b9c2-cc72b0bad41e" class="bulleted-list"><li style="list-style-type:circle">фильтровать/группировать по endpoint, времени, полям.</li></ul></li></ul><h3 id="2ab568fa-e39f-8009-8ddf-eb448f0e2b2f" class="">2.2. Offline-оценка</h3><p id="2ab568fa-e39f-806c-b342-cccdbf32dbe0" class="">Идея:</p><ul id="2ab568fa-e39f-80c0-9516-d83a31fae685" class="bulleted-list"><li style="list-style-type:disc">держим <strong>отдельный тестовый датасет</strong>, который не использовали при обучении;</li></ul><ul id="2ab568fa-e39f-80ea-8c08-ed228de6c662" class="bulleted-list"><li style="list-style-type:disc">периодически:<ul id="2ab568fa-e39f-8047-b568-ee34b5e22c1a" class="bulleted-list"><li style="list-style-type:circle">запускаем на нём текущие модели,</li></ul><ul id="2ab568fa-e39f-806d-a84f-ebe86958d76f" class="bulleted-list"><li style="list-style-type:circle">считаем метрики,</li></ul><ul id="2ab568fa-e39f-80cd-9b6e-c3831f3c4ad7" class="bulleted-list"><li style="list-style-type:circle">сравниваем с прошлой версией.</li></ul></li></ul><p id="2ab568fa-e39f-80a1-8b08-eed64c8e6166" class="">Для нас:</p><ul id="2ab568fa-e39f-800b-8874-f90dc250bf5d" class="bulleted-list"><li style="list-style-type:disc">Классификатор тикетов → <code>accuracy</code>, <code>F1</code>, confusion matrix.</li></ul><ul id="2ab568fa-e39f-8009-ad70-eaec6e4d5572" class="bulleted-list"><li style="list-style-type:disc">Суммаризатор → ROUGE (хотя бы ROUGE-1/2/L).</li></ul><ul id="2ab568fa-e39f-80ee-8475-f32f70256877" class="bulleted-list"><li style="list-style-type:disc">Ответы ассистента → на практике <strong>human eval</strong>; но в рамках курса можно:<ul id="2ab568fa-e39f-80e9-9291-c7479460f08c" class="bulleted-list"><li style="list-style-type:circle">посмотреть ROUGE / BLEU,</li></ul><ul id="2ab568fa-e39f-809d-a65d-e6955c1bcbf3" class="bulleted-list"><li style="list-style-type:circle">или хотя бы отбирать примеры для ручной проверки.</li></ul></li></ul><h3 id="2ab568fa-e39f-80f5-9c80-f5e55f36ef38" class="">2.3. Health-check</h3><p id="2ab568fa-e39f-8047-97c7-cffdd929ca85" class="">Health-check нужен, чтобы:</p><ul id="2ab568fa-e39f-804c-9879-d27b4fb0d5bf" class="bulleted-list"><li style="list-style-type:disc">оркестратор (k8s, load balancer, uptime robot, etc.) понимал:<ul id="2ab568fa-e39f-800e-a09a-dd0bc4e25130" class="bulleted-list"><li style="list-style-type:circle">сервис жив или упал,</li></ul></li></ul><ul id="2ab568fa-e39f-8054-8224-dc745f5cb184" class="bulleted-list"><li style="list-style-type:disc">разработчик мог быстро понять:<ul id="2ab568fa-e39f-8065-882c-d1918c7cabe8" class="bulleted-list"><li style="list-style-type:circle">что ломается — инфраструктура или модель.</li></ul></li></ul><p id="2ab568fa-e39f-8082-95d6-f93cf27af923" class="">Минимум:</p><ul id="2ab568fa-e39f-80e4-b4c2-d6daa3c03f1a" class="bulleted-list"><li style="list-style-type:disc">эндпоинт <code>/health</code>, который:<ul id="2ab568fa-e39f-8031-83e3-c6b5418f3680" class="bulleted-list"><li style="list-style-type:circle">пытается выполнить мини-инференс (очень дешёвый),</li></ul><ul id="2ab568fa-e39f-801e-8937-d4414f1b917a" class="bulleted-list"><li style="list-style-type:circle">возвращает <code>{&quot;status&quot;: &quot;ok&quot;}</code> или <code>{&quot;status&quot;: &quot;error&quot;, &quot;detail&quot;: &quot;...&quot;}</code>.</li></ul></li></ul><hr id="2ab568fa-e39f-8058-8402-c1cd45875c24"/><h2 id="2ab568fa-e39f-80c8-84ac-ebd2e21df62d" class="">3. Логирование запросов/ответов в файлы</h2><p id="2ab568fa-e39f-80c5-809d-e4f6a8717399" class="">Добавим в <code>app.py</code>:</p><ul id="2ab568fa-e39f-8029-869f-efb39ee541c2" class="bulleted-list"><li style="list-style-type:disc">папку <code>logs/</code></li></ul><ul id="2ab568fa-e39f-8060-a008-fa1c3ec44a3c" class="bulleted-list"><li style="list-style-type:disc">функцию <code>log_interaction(endpoint, request_data, response_data)</code></li></ul><ul id="2ab568fa-e39f-80aa-bbb7-ccb9b3ad349a" class="bulleted-list"><li style="list-style-type:disc">вызовы логирования в основных эндпоинтах.</li></ul><h3 id="2ab568fa-e39f-807f-af48-f79f3a296b80" class="">3.1. Настроим директорию и функцию логирования</h3><p id="2ab568fa-e39f-80cf-8995-dc2b2c12539c" class="">В начале <code>app.py</code> добавим импорты:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c7-a38b-db0b089598c3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import json
+from datetime import datetime
+from pathlib import Path
+</code></pre><p id="2ab568fa-e39f-80a2-8237-ed8f02054e4d" class="">Создадим папку и функцию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8054-b613-c14b10e0faba" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># === Логирование ===
+
+LOG_PATH = Path(&quot;logs&quot;)
+LOG_PATH.mkdir(exist_ok=True)
+
+
+def log_interaction(endpoint: str, request_data: dict, response_data: dict):
+    &quot;&quot;&quot;
+    Логируем один запрос/ответ в файл вида logs/{endpoint}.log
+    Формат строки: JSON + перенос строки (JSONL).
+    &quot;&quot;&quot;
+    record = {
+        &quot;timestamp&quot;: datetime.utcnow().isoformat(),
+        &quot;endpoint&quot;: endpoint,
+        &quot;request&quot;: request_data,
+        &quot;response&quot;: response_data,
+    }
+    log_file = LOG_PATH / f&quot;{endpoint}.log&quot;
+    with open(log_file, &quot;a&quot;, encoding=&quot;utf-8&quot;) as f:
+        f.write(json.dumps(record, ensure_ascii=False) + &quot;\n&quot;)
+</code></pre><p id="2ab568fa-e39f-8022-ba9d-e29af06d7d0b" class="">Разбор:</p><ul id="2ab568fa-e39f-8099-8f1f-d645ac46d7c9" class="bulleted-list"><li style="list-style-type:disc"><code>LOG_PATH.mkdir(exist_ok=True)</code> — создаёт папку, если её нет.</li></ul><ul id="2ab568fa-e39f-80a7-9f27-d77740db498c" class="bulleted-list"><li style="list-style-type:disc"><code>record</code> — словарь с:<ul id="2ab568fa-e39f-808a-9255-cd41dca07854" class="bulleted-list"><li style="list-style-type:circle">временной меткой (<code>UTC</code>),</li></ul><ul id="2ab568fa-e39f-80f2-a84b-c88f5e02b79f" class="bulleted-list"><li style="list-style-type:circle">именем эндпоинта,</li></ul><ul id="2ab568fa-e39f-80c7-af33-ebbb11c07a30" class="bulleted-list"><li style="list-style-type:circle">запросом (<code>request_data</code>),</li></ul><ul id="2ab568fa-e39f-8097-8a70-f5e491693945" class="bulleted-list"><li style="list-style-type:circle">ответом (<code>response_data</code>).</li></ul></li></ul><ul id="2ab568fa-e39f-8091-89ca-fb979202e484" class="bulleted-list"><li style="list-style-type:disc"><code>ensure_ascii=False</code> — чтобы русский текст не превращался в <code>\u041f...</code>.</li></ul><blockquote id="2ab568fa-e39f-806b-a1dc-e30a5354ba03" class="">⚠️ В реальном проде нужно думать о:<ul id="2ab568fa-e39f-8019-b88e-f838cc3f295b" class="bulleted-list"><li style="list-style-type:disc">PII (персональные данные),</li></ul><ul id="2ab568fa-e39f-80c7-a6d3-c6369cf05e10" class="bulleted-list"><li style="list-style-type:disc">ретенции логов,</li></ul><ul id="2ab568fa-e39f-80ab-aec4-f7bdee729f30" class="bulleted-list"><li style="list-style-type:disc">лог-рутейшене.<p id="2ab568fa-e39f-804a-addd-ea830034f71c" class="">Для курса можно это просто упомянуть.</p></li></ul></blockquote><h3 id="2ab568fa-e39f-8060-8dcd-ddf17953ce60" class="">3.2. Подключаем логирование к <code>/classify_ticket</code></h3><p id="2ab568fa-e39f-8015-b737-fdc04de29721" class="">Было:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a6-afec-fe486da6d884" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/classify_ticket&quot;, response_model=ClassifyResponse)
+def classify_ticket_endpoint(req: ClassifyRequest):
+    label, conf = classify_ticket(req.text)
+    return ClassifyResponse(label=label, confidence=conf)
+</code></pre><p id="2ab568fa-e39f-80dd-b4b6-d4279abada5b" class="">Станет:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8078-b84c-e4de1628e671" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/classify_ticket&quot;, response_model=ClassifyResponse)
+def classify_ticket_endpoint(req: ClassifyRequest):
+    label, conf = classify_ticket(req.text)
+    resp = ClassifyResponse(label=label, confidence=conf)
+
+    log_interaction(
+        endpoint=&quot;classify_ticket&quot;,
+        request_data=req.dict(),
+        response_data=resp.dict(),
+    )
+
+    return resp
+</code></pre><p id="2ab568fa-e39f-8011-9a4b-ca0297d8328c" class="">Разбор:</p><ul id="2ab568fa-e39f-806b-b76c-f071b003bcad" class="bulleted-list"><li style="list-style-type:disc"><code>req.dict()</code> — превращает Pydantic-модель запроса в обычный dict.</li></ul><ul id="2ab568fa-e39f-8056-b417-dde44277dda4" class="bulleted-list"><li style="list-style-type:disc"><code>resp.dict()</code> — то же самое для ответа.</li></ul><ul id="2ab568fa-e39f-80cd-a1c6-f87bcccf3ee5" class="bulleted-list"><li style="list-style-type:disc">В <code>logs/classify_ticket.log</code> пойдёт одна строка на запрос.</li></ul><h3 id="2ab568fa-e39f-8095-966b-f1b660585201" class="">3.3. Логирование <code>/summarize_dialog</code></h3><p id="2ab568fa-e39f-8059-8180-d11de4dde751" class="">Было:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804d-830d-c5e4d4908727" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/summarize_dialog&quot;, response_model=SummarizeResponse)
+def summarize_dialog_endpoint(req: SummarizeRequest):
+    summary = summarize_dialog(req.dialog, max_new_tokens=req.max_new_tokens)
+    return SummarizeResponse(summary=summary)
+</code></pre><p id="2ab568fa-e39f-8076-808a-f376046e3c40" class="">Станет:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cf-a92e-dacf3d8329fd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/summarize_dialog&quot;, response_model=SummarizeResponse)
+def summarize_dialog_endpoint(req: SummarizeRequest):
+    summary = summarize_dialog(req.dialog, max_new_tokens=req.max_new_tokens)
+    resp = SummarizeResponse(summary=summary)
+
+    log_interaction(
+        endpoint=&quot;summarize_dialog&quot;,
+        request_data=req.dict(),
+        response_data=resp.dict(),
+    )
+
+    return resp
+</code></pre><h3 id="2ab568fa-e39f-80a6-9518-d4e769889050" class="">3.4. Логирование <code>/support_reply</code></h3><p id="2ab568fa-e39f-8048-a523-fc26182badd4" class="">Было (из 10.1–10.2):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b8-9f0f-fbc64348e7c5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/support_reply&quot;, response_model=SupportResponse)
+def support_reply_endpoint(req: SupportRequest):
+    label, conf = classify_ticket(req.dialog)
+    summary = summarize_dialog(req.dialog)
+
+    context = None
+    if req.use_rag:
+        context, retrieved = build_context(req.dialog, summary, top_k=req.top_k)
+        prompt = build_rag_prompt(req.dialog, summary, context)
+    else:
+        prompt = f&quot;User: {req.dialog}\nSupport:&quot;
+
+    answer = generate_reply(prompt)
+
+    return SupportResponse(
+        summary=summary,
+        answer=answer,
+        label=label,
+        confidence=conf,
+        context=context,
+    )
+</code></pre><p id="2ab568fa-e39f-800b-8e95-f0f1ab0ea7bf" class="">Станет:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-a215-c022646d67ad" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/support_reply&quot;, response_model=SupportResponse)
+def support_reply_endpoint(req: SupportRequest):
+    label, conf = classify_ticket(req.dialog)
+    summary = summarize_dialog(req.dialog)
+
+    context = None
+    if req.use_rag:
+        context, retrieved = build_context(req.dialog, summary, top_k=req.top_k)
+        prompt = build_rag_prompt(req.dialog, summary, context)
+    else:
+        prompt = f&quot;User: {req.dialog}\nSupport:&quot;
+
+    answer = generate_reply(prompt)
+
+    resp = SupportResponse(
+        summary=summary,
+        answer=answer,
+        label=label,
+        confidence=conf,
+        context=context,
+    )
+
+    log_interaction(
+        endpoint=&quot;support_reply&quot;,
+        request_data=req.dict(),
+        response_data=resp.dict(),
+    )
+
+    return resp
+</code></pre><p id="2ab568fa-e39f-80b5-856a-ce2edcc5bb29" class="">При каждом вызове <code>/support_reply</code> появится строка в <code>logs/support_reply.log</code>, где уже есть:</p><ul id="2ab568fa-e39f-80d4-af5b-ef013f2b2b0f" class="bulleted-list"><li style="list-style-type:disc">исходный диалог,</li></ul><ul id="2ab568fa-e39f-8071-ab38-eb4c0140d97f" class="bulleted-list"><li style="list-style-type:disc">флаг use_rag/top_k,</li></ul><ul id="2ab568fa-e39f-80e7-b565-f98bb2652d8e" class="bulleted-list"><li style="list-style-type:disc">summary,</li></ul><ul id="2ab568fa-e39f-8005-b8ca-d99fdea95a13" class="bulleted-list"><li style="list-style-type:disc">предсказанный класс,</li></ul><ul id="2ab568fa-e39f-8067-9544-fbedbb4dec48" class="bulleted-list"><li style="list-style-type:disc">контекст,</li></ul><ul id="2ab568fa-e39f-804f-96e4-ff53133a687f" class="bulleted-list"><li style="list-style-type:disc">ответ.</li></ul><p id="2ab568fa-e39f-8097-9bbc-da9674d41e8f" class="">Это золото для последующей отладки и анализа.</p><h3 id="2ab568fa-e39f-80cd-b9d0-eae3407829e2" class="">3.5. (Опционально) Логирование <code>/classify_batch</code></h3><p id="2ab568fa-e39f-80ea-86cf-cf01df7b48d2" class="">Если у тебя из 10.3 есть батч-эндпоинт, можно тоже добавить:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8054-b0f2-ec13f40e2ea5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/classify_batch&quot;, response_model=BatchClassifyResponse)
+def classify_batch_endpoint(req: BatchClassifyRequest):
+    batch_res = classify_batch(req.texts)
+    items = [
+        BatchClassifyItem(label=r[&quot;label&quot;], confidence=r[&quot;confidence&quot;])
+        for r in batch_res
+    ]
+    resp = BatchClassifyResponse(results=items)
+
+    log_interaction(
+        endpoint=&quot;classify_batch&quot;,
+        request_data=req.dict(),
+        response_data=resp.dict(),
+    )
+
+    return resp
+</code></pre><hr id="2ab568fa-e39f-80f0-8017-ec5064476aa9"/><h2 id="2ab568fa-e39f-80ad-9ef4-d743fd9bfa4f" class="">4. Offline-оценка: отдельные скрипты для проверки моделей</h2><p id="2ab568fa-e39f-803c-96ad-eac3748877dc" class="">Теперь сделаем <strong>отдельные скрипты</strong> (НЕ в <code>app.py</code>), которые можно запускать руками или из CI.</p><h3 id="2ab568fa-e39f-80ac-8538-dc432d260915" class="">4.1. Оценка классификатора тикетов</h3><p id="2ab568fa-e39f-8037-ae06-d041705034c1" class="">Предположим, у нас есть файл <code>eval_tickets.jsonl</code> такого вида:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d4-9c99-fa2c977d1692" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{&quot;dialog&quot;: &quot;App crashes when opening gallery&quot;, &quot;expected_label&quot;: &quot;bug&quot;}
+{&quot;dialog&quot;: &quot;How can I change my subscription plan?&quot;, &quot;expected_label&quot;: &quot;billing&quot;}
+{&quot;dialog&quot;: &quot;I want new feature: dark mode&quot;, &quot;expected_label&quot;: &quot;feature&quot;}
+...
+</code></pre><p id="2ab568fa-e39f-80cd-84d7-e58be99a92e3" class="">Скрипт <code>eval_classifier.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804e-8d90-cba784481bb8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># eval_classifier.py
+import json
+from pathlib import Path
+
+from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
+
+from app import classify_ticket  # импортируем функцию и модели
+
+
+def load_eval_data(path: str):
+    data = []
+    with open(path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+        for line in f:
+            if not line.strip():
+                continue
+            item = json.loads(line)
+            data.append(item)
+    return data
+
+
+def evaluate_classifier(eval_path: str = &quot;eval_tickets.jsonl&quot;):
+    data = load_eval_data(eval_path)
+
+    y_true = []
+    y_pred = []
+
+    for item in data:
+        dialog = item[&quot;dialog&quot;]
+        true_label = item[&quot;expected_label&quot;]
+        pred_label, conf = classify_ticket(dialog)
+
+        y_true.append(true_label)
+        y_pred.append(pred_label)
+
+    acc = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred, average=&quot;weighted&quot;)
+
+    print(f&quot;Num samples: {len(data)}&quot;)
+    print(f&quot;Accuracy: {acc:.4f}&quot;)
+    print(f&quot;F1 (weighted): {f1:.4f}&quot;)
+    print(&quot;\nClassification report:&quot;)
+    print(classification_report(y_true, y_pred))
+    print(&quot;\nConfusion matrix:&quot;)
+    print(confusion_matrix(y_true, y_pred))
+
+
+if __name__ == &quot;__main__&quot;:
+    evaluate_classifier()
+</code></pre><p id="2ab568fa-e39f-80db-ada0-cbef4ad98a6d" class="">Разбор:</p><ul id="2ab568fa-e39f-8009-8630-feda8138fc44" class="bulleted-list"><li style="list-style-type:disc"><code>load_eval_data</code> читает JSONL.</li></ul><ul id="2ab568fa-e39f-80e6-a76d-ca87f0bff260" class="bulleted-list"><li style="list-style-type:disc"><code>classify_ticket</code> — тот же, что использует сервис.</li></ul><ul id="2ab568fa-e39f-80c9-94aa-f45ba2e8f715" class="bulleted-list"><li style="list-style-type:disc"><code>sklearn.metrics</code>:<ul id="2ab568fa-e39f-8020-87f5-fe88eb0cf722" class="bulleted-list"><li style="list-style-type:circle"><code>accuracy_score</code>,</li></ul><ul id="2ab568fa-e39f-80af-9565-ebef154854e5" class="bulleted-list"><li style="list-style-type:circle"><code>f1_score</code> (weighted, чтобы учитывать разбаланс по классам),</li></ul><ul id="2ab568fa-e39f-80d5-8393-cfbc6e4386e1" class="bulleted-list"><li style="list-style-type:circle"><code>classification_report</code> — красивый текст.</li></ul><ul id="2ab568fa-e39f-8036-9f3e-cf2fbf580ec4" class="bulleted-list"><li style="list-style-type:circle"><code>confusion_matrix</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8028-9ca8-e18b53581f20" class="">Запуск:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c2-8bbc-ebfb9d0de66e" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">python eval_classifier.py
+</code></pre><p id="2ab568fa-e39f-8029-b57f-e8ad7e0b13d5" class="">Это даёт тебе “снэпшот качества” на фиксированном тесте.</p><hr id="2ab568fa-e39f-806a-932d-ee71b837c1dc"/><h3 id="2ab568fa-e39f-803c-88d2-e49c4ad0e875" class="">4.2. Оценка суммаризатора (ROUGE)</h3><p id="2ab568fa-e39f-804d-9123-df6a92ea61a7" class="">Файл <code>eval_summaries.jsonl</code> с форматом:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b0-941e-fcab012b891f" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{&quot;dialog&quot;: &quot;User: ...&quot;, &quot;reference_summary&quot;: &quot;App crashes on opening gallery.&quot;}
+...
+</code></pre><p id="2ab568fa-e39f-80a8-9950-f5bb1203515a" class="">Скрипт <code>eval_summarizer.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806a-bbd2-c518e63a4265" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># eval_summarizer.py
+import json
+
+import numpy as np
+import evaluate  # pip install evaluate
+
+from app import summarize_dialog  # используем модель суммаризации
+
+
+def load_eval_summaries(path: str = &quot;eval_summaries.jsonl&quot;):
+    data = []
+    with open(path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+        for line in f:
+            if not line.strip():
+                continue
+            item = json.loads(line)
+            data.append(item)
+    return data
+
+
+def evaluate_summarizer(eval_path: str = &quot;eval_summaries.jsonl&quot;):
+    data = load_eval_summaries(eval_path)
+
+    preds = []
+    refs = []
+
+    for item in data:
+        dialog = item[&quot;dialog&quot;]
+        ref_summary = item[&quot;reference_summary&quot;]
+
+        pred_summary = summarize_dialog(dialog, max_new_tokens=64)
+
+        preds.append(pred_summary.strip())
+        refs.append(ref_summary.strip())
+
+    rouge = evaluate.load(&quot;rouge&quot;)
+    result = rouge.compute(predictions=preds, references=refs, use_stemmer=True)
+
+    # result: dict with rouge1/rouge2/rougeL/rougeLsum
+    print(f&quot;Num samples: {len(data)}&quot;)
+    for k, v in result.items():
+        # v - объект с precision/recall/fmeasure, но evaluate даёт сразу числа (или mid)
+        print(f&quot;{k}: {v:.4f}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    evaluate_summarizer()
+</code></pre><p id="2ab568fa-e39f-80f6-8e50-e27f35433e4d" class="">Это уже “нулевой” eval, но для курса — норм.</p><hr id="2ab568fa-e39f-803b-8bbf-e9641655ee5d"/><h3 id="2ab568fa-e39f-8019-894f-e9cbfd453e73" class="">4.3. Что с оценкой ответов ассистента?</h3><p id="2ab568fa-e39f-80cb-88d8-c3350d2e1460" class="">Здесь всё сложнее:</p><ul id="2ab568fa-e39f-80b7-852e-c0f879f33891" class="bulleted-list"><li style="list-style-type:disc">Модель может правильно ответить <strong>разными формулировками</strong>.</li></ul><ul id="2ab568fa-e39f-8036-b1b0-fb4c30a45a80" class="bulleted-list"><li style="list-style-type:disc">Автоматические метрики (ROUGE/BLEU) плохо коррелируют с качеством для диалогов.</li></ul><p id="2ab568fa-e39f-8013-a8c6-ece4e73f3b9b" class="">Что можно сделать в рамках курса:</p><ol type="1" id="2ab568fa-e39f-8058-91e6-e029e40ea790" class="numbered-list" start="1"><li>Собрать файл <code>eval_support.jsonl</code>, где:<ul id="2ab568fa-e39f-8042-b880-c7fd36e7bd87" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code>,</li></ul><ul id="2ab568fa-e39f-80d4-9b10-f191153f704c" class="bulleted-list"><li style="list-style-type:disc"><code>reference_answer</code> — эталон (человеческий) ответ.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-809f-aabe-d747bbcd4348" class="numbered-list" start="2"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-80aa-a84a-e1f3e63434a8" class="bulleted-list"><li style="list-style-type:disc">генерирует <code>model_answer</code> через <code>support_reply_endpoint</code> (или напрямую),</li></ul><ul id="2ab568fa-e39f-8070-8d8a-f663b9c17e28" class="bulleted-list"><li style="list-style-type:disc">считает ROUGE/BLEU,</li></ul><ul id="2ab568fa-e39f-80fa-ab33-ee0cf1307145" class="bulleted-list"><li style="list-style-type:disc">сохраняет тройки <code>(dialog, reference_answer, model_answer)</code> в отдельный файл для ручной проверки.</li></ul></li></ol><p id="2ab568fa-e39f-8043-ac65-cdc0b12a73c5" class="">Но это уже больше “исследовательская” штука. Главное — донести идею: <strong>для ассистентов лучше human eval, а оффлайн-метрики — вспомогательные.</strong></p><hr id="2ab568fa-e39f-80c9-9959-d00888c231cf"/><h2 id="2ab568fa-e39f-80d7-9a3e-dde3691801d1" class="">5. Health-check эндпоинт</h2><p id="2ab568fa-e39f-80d3-b715-fb7c82342bc8" class="">Теперь добавим эндпоинт <code>/health</code> в <code>app.py</code>.</p><h3 id="2ab568fa-e39f-8016-9001-c3ef57683170" class="">5.1. Базовая реализация</h3><p id="2ab568fa-e39f-80bb-9da8-e4ff69491843" class="">В конце <code>app.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808b-97e3-cf1cc17b483f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.get(&quot;/health&quot;)
+def health_check():
+    &quot;&quot;&quot;
+    Простой health-check:
+    - пробуем запустить самый дешёвый возможный путь через модели,
+    - если всё ок, возвращаем status=ok,
+    - если что-то падает, ловим исключение и возвращаем status=error.
+    &quot;&quot;&quot;
+    try:
+        # 1. Классификатор: маленький тест
+        _ = classify_ticket(&quot;test ticket&quot;)
+
+        # 2. Суммаризатор: маленький тест
+        _ = summarize_dialog(&quot;Short dialog for health check.&quot;, max_new_tokens=16)
+
+        # 3. Бот: очень короткий промпт
+        _ = generate_reply(&quot;User: test\nSupport:&quot;, max_new_tokens=8)
+
+        # Можно добавить проверку, что kb_index нормально загружен
+        kb_ok = (
+            kb_index[&quot;embeddings&quot;] is not None
+            and len(kb_index[&quot;chunks&quot;]) &gt; 0
+        )
+
+        return {
+            &quot;status&quot;: &quot;ok&quot;,
+            &quot;kb_loaded&quot;: kb_ok,
+        }
+
+    except Exception as e:
+        return {
+            &quot;status&quot;: &quot;error&quot;,
+            &quot;detail&quot;: str(e),
+        }
+</code></pre><p id="2ab568fa-e39f-80ca-b860-df1abdfab60d" class="">Разбор:</p><ul id="2ab568fa-e39f-8063-81f2-ccd27e9be0af" class="bulleted-list"><li style="list-style-type:disc"><code>classify_ticket(&quot;test ticket&quot;)</code> — дешёвый прогон через классификатор.</li></ul><ul id="2ab568fa-e39f-80d1-b3ad-d202c9cdc701" class="bulleted-list"><li style="list-style-type:disc"><code>summarize_dialog(&quot;Short dialog...&quot;, max_new_tokens=16)</code> — короткий run, без большой длины.</li></ul><ul id="2ab568fa-e39f-80f1-82cd-dd25211d006d" class="bulleted-list"><li style="list-style-type:disc"><code>generate_reply(&quot;User: test\nSupport:&quot;, max_new_tokens=8)</code> — минимальнейшая проверка, что боту не плохо.</li></ul><ul id="2ab568fa-e39f-8028-b2c9-eff60d33bb2d" class="bulleted-list"><li style="list-style-type:disc"><code>kb_ok</code> — флаг, загружен ли индекс KB (если ты его вообще используешь).</li></ul><ul id="2ab568fa-e39f-8058-8056-ea77c8fbc95a" class="bulleted-list"><li style="list-style-type:disc">В случае проблемы:<ul id="2ab568fa-e39f-8096-8bdd-e539a3ef5779" class="bulleted-list"><li style="list-style-type:circle">любое исключение словим,</li></ul><ul id="2ab568fa-e39f-8034-8130-e5bc7230752a" class="bulleted-list"><li style="list-style-type:circle">вернём <code>status=&quot;error&quot;</code> и текст ошибки.</li></ul></li></ul><blockquote id="2ab568fa-e39f-80ac-8ffc-d3534afeb267" class="">В проде обычно:<ul id="2ab568fa-e39f-8012-9614-d77ffedb1142" class="bulleted-list"><li style="list-style-type:disc">health-check не делает heavy inference (чтобы лишний раз не нагружать GPU),</li></ul><ul id="2ab568fa-e39f-80e8-acf6-c3eaf38ab70e" class="bulleted-list"><li style="list-style-type:disc">иногда просто проверяет: модели загружены, девайс доступен, нет критических ошибок.</li></ul></blockquote><h3 id="2ab568fa-e39f-80a4-a0a6-e049635dab88" class="">5.2. Как это использовать</h3><ul id="2ab568fa-e39f-80f8-b0cd-ec9a49557365" class="bulleted-list"><li style="list-style-type:disc">Локально — можно просто зайти на <code>http://localhost:8000/health</code>.</li></ul><ul id="2ab568fa-e39f-80df-86e3-cacd0899a5fb" class="bulleted-list"><li style="list-style-type:disc">В любом мониторинге:<ul id="2ab568fa-e39f-80ef-b803-f07f6e6c47fa" class="bulleted-list"><li style="list-style-type:circle">задать периодический GET на <code>/health</code>,</li></ul><ul id="2ab568fa-e39f-8081-9b5a-f2dfb3c31b8f" class="bulleted-list"><li style="list-style-type:circle">ожидать <code>{&quot;status&quot;:&quot;ok&quot;}</code>,</li></ul><ul id="2ab568fa-e39f-802e-9ed1-e1cfecf3999b" class="bulleted-list"><li style="list-style-type:circle">если приходит <code>error</code> или 5xx — писать в алерты.</li></ul></li></ul><hr id="2ab568fa-e39f-800d-bd45-ca3190759d19"/><h2 id="2ab568fa-e39f-800b-bcfd-dda0e33d965b" class="">6. Итоговый вид <code>app.py</code> с новыми фичами</h2><p id="2ab568fa-e39f-80f0-a7d9-d7a9e9d67e62" class="">Новые вещи, которые мы добавили:</p><ol type="1" id="2ab568fa-e39f-8026-a56a-cf79d930ac98" class="numbered-list" start="1"><li>Импорты:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8050-9959-c174fa22fff7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import json
+from datetime import datetime
+from pathlib import Path
+</code></pre><ol type="1" id="2ab568fa-e39f-804b-b770-fe817f30b53a" class="numbered-list" start="1"><li>Логи:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8037-9fea-c4a0dce96fc0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">LOG_PATH = Path(&quot;logs&quot;)
+LOG_PATH.mkdir(exist_ok=True)
+
+def log_interaction(endpoint: str, request_data: dict, response_data: dict):
+    record = {
+        &quot;timestamp&quot;: datetime.utcnow().isoformat(),
+        &quot;endpoint&quot;: endpoint,
+        &quot;request&quot;: request_data,
+        &quot;response&quot;: response_data,
+    }
+    log_file = LOG_PATH / f&quot;{endpoint}.log&quot;
+    with open(log_file, &quot;a&quot;, encoding=&quot;utf-8&quot;) as f:
+        f.write(json.dumps(record, ensure_ascii=False) + &quot;\n&quot;)
+</code></pre><ol type="1" id="2ab568fa-e39f-80f0-9cdb-fe73bbbbef9c" class="numbered-list" start="1"><li>Вызовы <code>log_interaction(...)</code> в:</li></ol><ul id="2ab568fa-e39f-8072-b11c-d29c57410c2e" class="bulleted-list"><li style="list-style-type:disc"><code>/classify_ticket</code></li></ul><ul id="2ab568fa-e39f-8082-bf63-c64f7a1b7f8d" class="bulleted-list"><li style="list-style-type:disc"><code>/summarize_dialog</code></li></ul><ul id="2ab568fa-e39f-8017-99ad-ef6bf7fcb1b6" class="bulleted-list"><li style="list-style-type:disc"><code>/support_reply</code></li></ul><ul id="2ab568fa-e39f-8006-879c-f13e624517b0" class="bulleted-list"><li style="list-style-type:disc">(опционально) <code>/classify_batch</code></li></ul><ol type="1" id="2ab568fa-e39f-80e3-9365-d1ee7aedb667" class="numbered-list" start="1"><li>Эндпоинт <code>/health</code>:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c1-8e7e-f8d7f4ab056a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.get(&quot;/health&quot;)
+def health_check():
+    try:
+        _ = classify_ticket(&quot;test ticket&quot;)
+        _ = summarize_dialog(&quot;Short dialog for health check.&quot;, max_new_tokens=16)
+        _ = generate_reply(&quot;User: test\nSupport:&quot;, max_new_tokens=8)
+
+        kb_ok = (
+            kb_index[&quot;embeddings&quot;] is not None
+            and len(kb_index[&quot;chunks&quot;]) &gt; 0
+        )
+
+        return {&quot;status&quot;: &quot;ok&quot;, &quot;kb_loaded&quot;: kb_ok}
+    except Exception as e:
+        return {&quot;status&quot;: &quot;error&quot;, &quot;detail&quot;: str(e)}
+</code></pre><hr id="2ab568fa-e39f-8090-b20c-fae4f5773721"/><h2 id="2ab568fa-e39f-80c7-85e0-e6a48fb3205f" class="">7. Домашка по уроку 10.4</h2><p id="2ab568fa-e39f-8051-bb00-ffeaa6c5f801" class="">Чтобы студент реально руками почувствовал всё:</p><ol type="1" id="2ab568fa-e39f-8044-a35a-ec0ac9ea0c53" class="numbered-list" start="1"><li><strong>Логи</strong><ul id="2ab568fa-e39f-802f-aba5-e2c153b106fa" class="bulleted-list"><li style="list-style-type:disc">Добавить <code>log_interaction</code> в свой <code>app.py</code>.</li></ul><ul id="2ab568fa-e39f-803c-86f6-fbc627fea8d6" class="bulleted-list"><li style="list-style-type:disc">Пошлёпать по <code>/support_reply</code> 3–5 запросов (через Swagger UI / curl).</li></ul><ul id="2ab568fa-e39f-801a-b77f-d747115b4e43" class="bulleted-list"><li style="list-style-type:disc">Открыть <code>logs/support_reply.log</code> и посмотреть, что там лежит.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-800d-b620-c7a6551a1c7c" class="numbered-list" start="2"><li><strong>Offline-eval для классификатора</strong><ul id="2ab568fa-e39f-8019-ac15-f5627a2859c3" class="bulleted-list"><li style="list-style-type:disc">Собрать <code>eval_tickets.jsonl</code> минимум из 20 примеров.</li></ul><ul id="2ab568fa-e39f-802c-99ff-debc43853448" class="bulleted-list"><li style="list-style-type:disc">Запустить <code>eval_classifier.py</code>.</li></ul><ul id="2ab568fa-e39f-80a3-9ab7-dad366504429" class="bulleted-list"><li style="list-style-type:disc">Сохранить результаты (accuracy/F1) как baseline.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-802e-85de-ea9f63461936" class="numbered-list" start="3"><li><strong>Offline-eval для суммаризатора</strong><ul id="2ab568fa-e39f-80b1-b66f-f4e56d9a9c7e" class="bulleted-list"><li style="list-style-type:disc">Собрать хотя бы 5–10 примеров с ручными summary.</li></ul><ul id="2ab568fa-e39f-8053-8532-f1b3d53097af" class="bulleted-list"><li style="list-style-type:disc">Запустить <code>eval_summarizer.py</code>.</li></ul><ul id="2ab568fa-e39f-801a-aaf7-fbaf566fa9e9" class="bulleted-list"><li style="list-style-type:disc">Понять, какие диалоги модель портит, и положить их потом в набор для дообучения.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8077-9b88-e5b2571d8655" class="numbered-list" start="4"><li><strong>Health-check</strong><ul id="2ab568fa-e39f-80b5-9ba8-ce4e98fe8383" class="bulleted-list"><li style="list-style-type:disc">Добавить <code>/health</code>.</li></ul><ul id="2ab568fa-e39f-80c8-9757-e8c13ed2cb12" class="bulleted-list"><li style="list-style-type:disc">Проверить (через браузер / curl), что:<ul id="2ab568fa-e39f-8059-9296-c8d27a81fe1b" class="bulleted-list"><li style="list-style-type:circle">в норме возвращает <code>{&quot;status&quot;:&quot;ok&quot;, ...}</code>,</li></ul><ul id="2ab568fa-e39f-8067-b837-db08c09c91e5" class="bulleted-list"><li style="list-style-type:circle">если, например, специально сломать путь к модели и перезапустить сервис, health выдает <code>status: error</code>.</li></ul></li></ul></li></ol><hr id="2ab568fa-e39f-8042-9f71-d1aaeb1f8fda"/><p id="2ab568fa-e39f-8051-9086-fcac2ec4a7e2" class="">После 10.4 у тебя уже не просто “моделька в ноутбуке”, а:</p><ul id="2ab568fa-e39f-8024-9771-e28990a6ac15" class="bulleted-list"><li style="list-style-type:disc">сервис с API,</li></ul><ul id="2ab568fa-e39f-8018-8fed-d0450d06f08a" class="bulleted-list"><li style="list-style-type:disc">интерфейсом,</li></ul><ul id="2ab568fa-e39f-80f5-9d07-d8834dadbf17" class="bulleted-list"><li style="list-style-type:disc">батчингом,</li></ul><ul id="2ab568fa-e39f-80ea-8ba5-ce5c703d2b12" class="bulleted-list"><li style="list-style-type:disc">логами,</li></ul><ul id="2ab568fa-e39f-8083-9488-faa9a3e7a196" class="bulleted-list"><li style="list-style-type:disc">оффлайн-оценкой,</li></ul><ul id="2ab568fa-e39f-808a-9a66-c32b8616529e" class="bulleted-list"><li style="list-style-type:disc">health-check’ом.</li></ul><p id="2ab568fa-e39f-80d0-ab47-e2306131929a" class="">То есть вполне взрослый “микросервис с ML”, вокруг которого можно строить реальный продукт 🧠⚙️</p><p id="2ab568fa-e39f-80fe-9fd8-ebf2740195e8" class="">Если захочешь, могу следующим шагом:</p><ul id="2ab568fa-e39f-8083-81bb-fa61743fddf1" class="bulleted-list"><li style="list-style-type:disc">помочь собрать <strong>общий конспект по модулям 0–10</strong> (на лендинг/презу курса),</li></ul><ul id="2ab568fa-e39f-80bc-979c-c6ebba2f0a83" class="bulleted-list"><li style="list-style-type:disc">или придумать <strong>капстоун-проект</strong>, где студент за курс делает полноценного Support AI-ассистента от нуля до прода.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

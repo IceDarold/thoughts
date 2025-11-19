@@ -1,0 +1,885 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 4.1. Первый запуск Trainer: обучаем простую модель</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8027-bb10-fb01aacea7f7" class="page sans"><header><h1 class="page-title">Урок 4.1. Первый запуск Trainer: обучаем простую модель</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8065-8b39-ccbb44b0bae6" class="">Красота, вот мы и добрались до “нажать train и смотреть, как всё горит” 🔥</p><p id="2ab568fa-e39f-8015-b4f3-ebd14c06a637" class="">Ниже — <strong>полный урок 4.1</strong>, как если бы ты его читал в конспекте курса: теория, код, разбор.</p><hr id="2ab568fa-e39f-8007-8677-eff44841353d"/><h2 id="2ab568fa-e39f-8003-b749-e1fccb8a07a2" class="">0. Что мы делаем в этом уроке</h2><p id="2ab568fa-e39f-80e7-a4fd-e9352738c326" class=""><strong>Цель урока:</strong></p><p id="2ab568fa-e39f-80f2-bf66-d11b18d9aece" class="">С нуля собрать <strong>первый рабочий fine-tuning</strong> модели для классификации тикетов:</p><ul id="2ab568fa-e39f-80d7-8f61-c390a1b86910" class="bulleted-list"><li style="list-style-type:disc">взять готовую предобученную модель (например, <code>distilbert-base-uncased</code>);</li></ul><ul id="2ab568fa-e39f-8009-8d10-de72da8e2c44" class="bulleted-list"><li style="list-style-type:disc">подстроить её под наши классы (<code>bug</code>, <code>feature</code>, <code>billing</code>, <code>other</code>);</li></ul><ul id="2ab568fa-e39f-802b-8bdf-cb07912670d3" class="bulleted-list"><li style="list-style-type:disc">запустить обучение через <code>Trainer</code>;</li></ul><ul id="2ab568fa-e39f-80bb-bb10-d927352e58f6" class="bulleted-list"><li style="list-style-type:disc">сохранить модель, чтобы потом её использовать.</li></ul><p id="2ab568fa-e39f-80e4-9a94-de41bc759e9b" class="">В конце урока у тебя будет файл <code>train_tickets_basic.py</code>, который можно запускать командой:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80da-9737-d1aae1741c86" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">python train_tickets_basic.py
+</code></pre><p id="2ab568fa-e39f-809a-b2de-db3c106e192e" class="">и он реально будет учить модель.</p><hr id="2ab568fa-e39f-80f3-a041-cd0834374612"/><h2 id="2ab568fa-e39f-809c-bc13-ee0741842c87" class="">1. Что у нас уже есть (контекст из прошлых модулей)</h2><p id="2ab568fa-e39f-8044-b4f7-e810b695f1b1" class="">Мы будем считать, что к этому моменту:</p><ol type="1" id="2ab568fa-e39f-80e3-8b6f-d702a9cfc5e0" class="numbered-list" start="1"><li>У тебя есть файл <code>tickets.csv</code> вида:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8080-a91a-f87514c065b9" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">text,label
+&quot;The app crashes when I upload a photo&quot;,bug
+&quot;Can you add dark mode?&quot;,feature
+&quot;I was charged twice this month&quot;,billing
+&quot;Great app, thanks!&quot;,other
+...
+</code></pre><ol type="1" id="2ab568fa-e39f-80eb-822c-ed5583c91466" class="numbered-list" start="1"><li>Ты сделал модуль <code>data_pipeline.py</code> (из модуля 3) с функцией:</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8085-b9f2-cf0a2bb4bdcb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tokenized_dataset, label2id, id2label, tokenizer, data_collator = load_and_prepare_data(
+    csv_path=&quot;tickets.csv&quot;,
+    model_name=&quot;distilbert-base-uncased&quot;,
+    max_length=128,
+    test_size=0.1,
+    seed=42,
+)
+</code></pre><p id="2ab568fa-e39f-80f7-8968-ca70b49c6d76" class="">который:</p><ul id="2ab568fa-e39f-80e0-a4ac-cf2d1a50bcd7" class="bulleted-list"><li style="list-style-type:disc">грузит CSV → <code>DatasetDict(train, validation)</code>;</li></ul><ul id="2ab568fa-e39f-80c5-a24b-e189424d0302" class="bulleted-list"><li style="list-style-type:disc">строит <code>label2id</code> и <code>id2label</code>;</li></ul><ul id="2ab568fa-e39f-80b8-a991-e037ac37bf1e" class="bulleted-list"><li style="list-style-type:disc">токенизирует тексты;</li></ul><ul id="2ab568fa-e39f-80f5-a848-c0e1a15a794b" class="bulleted-list"><li style="list-style-type:disc">возвращает <code>DataCollatorWithPadding</code>.</li></ul><p id="2ab568fa-e39f-80d2-aff8-d98c577cb2a6" class=""><strong>Если этого нет</strong> — ничего страшного, для урока можно считать, что <code>load_and_prepare_data</code> уже реализована, и мы просто её используем. (В реальном курсе это было бы в предыдущем модуле.)</p><hr id="2ab568fa-e39f-803a-b1de-c8a8b83291cc"/><h2 id="2ab568fa-e39f-809b-b21b-f007b9ce2ee6" class="">2. Небольшая теория: что делает Trainer и почему он удобен</h2><h3 id="2ab568fa-e39f-8065-bb60-febc6d18baf9" class="">2.1. “Ручной” цикл обучения vs Trainer</h3><p id="2ab568fa-e39f-8055-9988-f5762b891f87" class="">Если писать обучение вручную, получается примерно такой псевдокод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f3-a083-d0a387e6a60c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">for epoch in range(num_epochs):
+    model.train()
+    for batch in train_loader:
+        optimizer.zero_grad()
+        outputs = model(**batch)
+        loss = outputs.loss
+        loss.backward()
+        optimizer.step()
+
+    model.eval()
+    with torch.no_grad():
+        for batch in val_loader:
+            outputs = model(**batch)
+            # считаем метрики
+</code></pre><p id="2ab568fa-e39f-80a9-8282-d2c403b58338" class="">Плюс сверху:</p><ul id="2ab568fa-e39f-80d9-bea5-ecaf86dfb3f2" class="bulleted-list"><li style="list-style-type:disc">создание оптимизатора,</li></ul><ul id="2ab568fa-e39f-8093-98e9-e07287d69cc3" class="bulleted-list"><li style="list-style-type:disc">планировщик learning rate,</li></ul><ul id="2ab568fa-e39f-80b7-8780-d97ec3191b12" class="bulleted-list"><li style="list-style-type:disc">сохранение чекпоинтов,</li></ul><ul id="2ab568fa-e39f-8066-b3ef-cb30a1e0775c" class="bulleted-list"><li style="list-style-type:disc">логирование.</li></ul><p id="2ab568fa-e39f-8092-9727-e9151ed1cbb8" class=""><strong>Trainer</strong> всё это делает за тебя:</p><ul id="2ab568fa-e39f-809f-9e1a-ebc807fc3c16" class="bulleted-list"><li style="list-style-type:disc">сам создаёт <code>DataLoader</code>’ы из <code>Dataset</code>’ов и <code>DataCollator</code>;</li></ul><ul id="2ab568fa-e39f-80ef-9b34-f5a56106fdbf" class="bulleted-list"><li style="list-style-type:disc">сам делает <code>zero_grad → forward → backward → step</code>;</li></ul><ul id="2ab568fa-e39f-808e-90ca-d81bedc4ea5b" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-80e5-87e0-e74ff00e4a3a" class="bulleted-list"><li style="list-style-type:circle">делать eval по расписанию (по шагам или по эпохам),</li></ul><ul id="2ab568fa-e39f-8000-a28e-fa4ec3030e4e" class="bulleted-list"><li style="list-style-type:circle">считать метрики (<code>compute_metrics</code>),</li></ul><ul id="2ab568fa-e39f-803a-b6c4-fa10d9d60f48" class="bulleted-list"><li style="list-style-type:circle">сохранять чекпоинты,</li></ul><ul id="2ab568fa-e39f-8078-a40f-d929ccbe05ab" class="bulleted-list"><li style="list-style-type:circle">логгировать кривые,</li></ul><ul id="2ab568fa-e39f-80cb-b15b-dec60f940639" class="bulleted-list"><li style="list-style-type:circle">загружать лучший чекпоинт.</li></ul></li></ul><p id="2ab568fa-e39f-8027-93e0-e6d1c0e5b972" class="">Твоя задача — просто <strong>собрать детали и сказать “train”</strong>.</p><h3 id="2ab568fa-e39f-80f7-9556-e96788e3e7c6" class="">2.2. Из чего состоит Trainer</h3><p id="2ab568fa-e39f-80bb-8963-f0b2aa2aaa26" class="">Три опорных сущности:</p><ol type="1" id="2ab568fa-e39f-807a-be95-f9b3b22ffd1b" class="numbered-list" start="1"><li><strong>Модель</strong><p id="2ab568fa-e39f-804d-90b1-cd69d78de9b7" class=""><code>AutoModelForSequenceClassification</code> с правильным <code>num_labels</code>, <code>id2label</code>, <code>label2id</code>.</p></li></ol><ol type="1" id="2ab568fa-e39f-80ff-ba2d-d6131790108d" class="numbered-list" start="2"><li><strong>Данные</strong><p id="2ab568fa-e39f-802c-b4fc-f57564af12b6" class=""><code>train_dataset</code>, <code>eval_dataset</code>, <code>tokenizer</code>, <code>data_collator</code>.</p></li></ol><ol type="1" id="2ab568fa-e39f-80dd-adc0-f203e866f85a" class="numbered-list" start="3"><li><strong>Параметры обучения</strong><p id="2ab568fa-e39f-8070-bf53-d6a7939972a7" class=""><code>TrainingArguments</code> — сюда запихиваем всё: куда сохранять, сколько эпох, какой lr, батч-сайзы и т.д.</p></li></ol><hr id="2ab568fa-e39f-80cb-b845-e48718aee908"/><h2 id="2ab568fa-e39f-80df-ac49-c2a593042471" class="">3. Полный код урока: <code>train_tickets_basic.py</code></h2><p id="2ab568fa-e39f-8025-a149-d8b53e6ab85d" class="">Сначала дам <strong>полный скрипт</strong>, затем разберём его по кускам.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f2-a730-c3793c3a9f56" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># train_tickets_basic.py
+
+from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+    Trainer,
+)
+from data_pipeline import load_and_prepare_data
+
+
+def main():
+    # 1. Базовые настройки
+    csv_path = &quot;tickets.csv&quot;
+    base_model_name = &quot;distilbert-base-uncased&quot;
+
+    # 2. Загружаем и подготавливаем данные
+    (
+        tokenized_dataset,
+        label2id,
+        id2label,
+        tokenizer,
+        data_collator,
+    ) = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=base_model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    # 3. Инициализируем модель под наши классы
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        base_model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    # 4. Задаём параметры обучения
+    training_args = TrainingArguments(
+        output_dir=&quot;checkpoints/tickets_basic&quot;,
+        evaluation_strategy=&quot;epoch&quot;,   # eval в конце каждой эпохи
+        save_strategy=&quot;epoch&quot;,         # сохраняем чекпоинт после каждой эпохи
+        learning_rate=2e-5,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=32,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        logging_steps=50,
+        load_best_model_at_end=False,  # пока без выбора лучшей модели
+    )
+
+    # 5. Создаём Trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset[&quot;train&quot;],
+        eval_dataset=tokenized_dataset[&quot;validation&quot;],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        # compute_metrics добавим на следующем уроке
+    )
+
+    # 6. Запускаем обучение
+    trainer.train()
+
+    # 7. Сохраняем финальную модель
+    trainer.save_model(&quot;models/tickets_classifier_basic&quot;)
+    tokenizer.save_pretrained(&quot;models/tickets_classifier_basic&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-80e3-8ee6-c4aa882cd7ac" class="">Теперь давай пройдёмся по нему частями.</p><hr id="2ab568fa-e39f-80e7-9b3c-c54db661f40c"/><h2 id="2ab568fa-e39f-80d2-a14b-ea324e1bed21" class="">4. Разбираем код по шагам</h2><h3 id="2ab568fa-e39f-8025-b6fa-d75bcdcf1f33" class="">4.1. Импорты и точка входа</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8086-8ffb-ded32b032b41" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+    Trainer,
+)
+from data_pipeline import load_and_prepare_data
+</code></pre><ul id="2ab568fa-e39f-80b7-84a8-e7e1a203fad8" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForSequenceClassification</code> — готовая модель “BERT + классификационная голова”.</li></ul><ul id="2ab568fa-e39f-8051-a243-d7465cc259ef" class="bulleted-list"><li style="list-style-type:disc"><code>TrainingArguments</code> — контейнер с параметрами обучения.</li></ul><ul id="2ab568fa-e39f-8060-b116-e6a579363247" class="bulleted-list"><li style="list-style-type:disc"><code>Trainer</code> — основной класс, который всё запускает.</li></ul><ul id="2ab568fa-e39f-80dc-bb43-d168a727f880" class="bulleted-list"><li style="list-style-type:disc"><code>load_and_prepare_data</code> — наша функция из модуль 3, которая:<ul id="2ab568fa-e39f-8026-bf7b-ccd5fb6fe0d7" class="bulleted-list"><li style="list-style-type:circle">грузит CSV,</li></ul><ul id="2ab568fa-e39f-8035-a3a6-de0ce97d55e4" class="bulleted-list"><li style="list-style-type:circle">делит на train/validation,</li></ul><ul id="2ab568fa-e39f-80ef-bc3d-fa0bb74b59a3" class="bulleted-list"><li style="list-style-type:circle">токенизирует тексты,</li></ul><ul id="2ab568fa-e39f-8030-a4ae-cbde0f5d58d5" class="bulleted-list"><li style="list-style-type:circle">возвращает всё нужное для Trainer.</li></ul></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f8-8fb7-fbf033b35955" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-8018-8136-d4329f0a631b" class="">Классический питоновский шаблон: при запуске файла как скрипта (а не import’ом), вызовется <code>main()</code>.</p><hr id="2ab568fa-e39f-80c6-8a61-d01cca137cb3"/><h3 id="2ab568fa-e39f-8091-8323-daeb6fdc3a1d" class="">4.2. Базовые настройки и загрузка данных</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c5-b369-e24a96238943" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">csv_path = &quot;tickets.csv&quot;
+base_model_name = &quot;distilbert-base-uncased&quot;
+</code></pre><ul id="2ab568fa-e39f-80f3-80d6-f0c4e1bd87bb" class="bulleted-list"><li style="list-style-type:disc"><code>csv_path</code> — путь к данным.</li></ul><ul id="2ab568fa-e39f-80bc-9fa4-f8cd1c89f8ad" class="bulleted-list"><li style="list-style-type:disc"><code>base_model_name</code> — имя предобученной модели с Hugging Face Hub.<p id="2ab568fa-e39f-80c6-8943-ea59efed3f87" class="">Можно потом легко поменять, например, на <code>bert-base-uncased</code> или русскую модель.</p></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8060-a527-f48e25ca0790" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">(
+    tokenized_dataset,
+    label2id,
+    id2label,
+    tokenizer,
+    data_collator,
+) = load_and_prepare_data(
+    csv_path=csv_path,
+    model_name=base_model_name,
+    max_length=128,
+    test_size=0.1,
+    seed=42,
+)
+</code></pre><p id="2ab568fa-e39f-8046-926e-c33da32243a2" class="">Что здесь происходит:</p><ul id="2ab568fa-e39f-805f-a104-dc9596afd8b3" class="bulleted-list"><li style="list-style-type:disc"><code>load_and_prepare_data</code>:<ul id="2ab568fa-e39f-80d6-9b70-d5209488e38f" class="bulleted-list"><li style="list-style-type:circle">читает <code>tickets.csv</code> в <code>Dataset</code>,</li></ul><ul id="2ab568fa-e39f-809d-aebd-f37a16c64264" class="bulleted-list"><li style="list-style-type:circle">делает <code>train_test_split(test_size=0.1)</code> → 90% train, 10% validation,</li></ul><ul id="2ab568fa-e39f-804f-bdf3-eae7116aa6e8" class="bulleted-list"><li style="list-style-type:circle">строит список меток (<code>label_list</code>), а потом:<ul id="2ab568fa-e39f-8012-b2e7-d0fff9d362c4" class="bulleted-list"><li style="list-style-type:square"><code>label2id = {&quot;bug&quot;: 0, &quot;billing&quot;: 1, ...}</code>,</li></ul><ul id="2ab568fa-e39f-8080-883d-d0edf09de9f2" class="bulleted-list"><li style="list-style-type:square"><code>id2label = {0: &quot;bug&quot;, 1: &quot;billing&quot;, ...}</code>,</li></ul></li></ul><ul id="2ab568fa-e39f-808f-90de-e3c20d12ebc4" class="bulleted-list"><li style="list-style-type:circle">токенизирует <code>text</code> через <code>tokenizer</code> (до <code>max_length=128</code>),</li></ul><ul id="2ab568fa-e39f-8024-b3e9-c0b9ded95a0a" class="bulleted-list"><li style="list-style-type:circle">возвращает:<ul id="2ab568fa-e39f-8081-baa0-fcb9736bc40d" class="bulleted-list"><li style="list-style-type:square"><code>tokenized_dataset</code> (типа <code>DatasetDict</code> с ключами <code>&quot;train&quot;</code>, <code>&quot;validation&quot;</code>),</li></ul><ul id="2ab568fa-e39f-804a-8cc9-e6cb0caaa6eb" class="bulleted-list"><li style="list-style-type:square"><code>label2id</code> и <code>id2label</code>,</li></ul><ul id="2ab568fa-e39f-80fe-9bbc-e0e0dd15642a" class="bulleted-list"><li style="list-style-type:square"><code>tokenizer</code>,</li></ul><ul id="2ab568fa-e39f-80ba-bf83-e5beaa2dfbd4" class="bulleted-list"><li style="list-style-type:square"><code>data_collator</code> (обычно <code>DataCollatorWithPadding</code>).</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-80d3-a556-d7e0f1611d24" class="">Проверка (можно вставить в код для дебага):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d6-922e-d64386e53849" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(tokenized_dataset)
+print(label2id)
+print(tokenized_dataset[&quot;train&quot;][0])
+</code></pre><hr id="2ab568fa-e39f-80c6-b5d8-df4fe80c5bc8"/><h3 id="2ab568fa-e39f-8025-b795-fcf1050d9097" class="">4.3. Инициализация модели под наши классы</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a6-9ac3-c668438cf2a5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">num_labels = len(label2id)
+model = AutoModelForSequenceClassification.from_pretrained(
+    base_model_name,
+    num_labels=num_labels,
+    id2label=id2label,
+    label2id=label2id,
+)
+</code></pre><p id="2ab568fa-e39f-8019-8c9b-cda43b3af1ca" class="">Очень важный момент:</p><ul id="2ab568fa-e39f-80a6-8814-da2451d9ac73" class="bulleted-list"><li style="list-style-type:disc">Мы берём не “готовую” модель для sentiment-а, а <strong>базовую предобученную модель</strong> (<code>distilbert-base-uncased</code>), обученную на языковую задачу, но без специфики наших классов.</li></ul><ul id="2ab568fa-e39f-8095-a9ed-f27430e61fcf" class="bulleted-list"><li style="list-style-type:disc"><code>num_labels=num_labels</code> говорит:<ul id="2ab568fa-e39f-8030-b8e7-da7c52e562e3" class="bulleted-list"><li style="list-style-type:circle">“на выходе классификационной головы у нас будет столько логитов, сколько наших классов”.</li></ul></li></ul><ul id="2ab568fa-e39f-8085-8247-cc2209704da3" class="bulleted-list"><li style="list-style-type:disc"><code>id2label</code> и <code>label2id</code> зашиваются в <code>config</code> модели:<ul id="2ab568fa-e39f-803d-8e64-e4505480f516" class="bulleted-list"><li style="list-style-type:circle">потом при инференсе мы можем достать <code>model.config.id2label</code> и получить текстовый класс.</li></ul></li></ul><p id="2ab568fa-e39f-8013-99dc-ea146149477b" class="">Под капотом происходит:</p><ul id="2ab568fa-e39f-80bc-982b-e0f725208d6a" class="bulleted-list"><li style="list-style-type:disc">загружается BERT-подобный encoder;</li></ul><ul id="2ab568fa-e39f-80dc-8a13-cc9d4ace0fe5" class="bulleted-list"><li style="list-style-type:disc">создаётся новая случайно инициализированная классификационная голова (<code>Linear(hidden_size → num_labels)</code>).</li></ul><p id="2ab568fa-e39f-8083-ae6a-f5814f51ef57" class="">Эта голова будет дообучаться на наших данных.</p><hr id="2ab568fa-e39f-8086-abe3-d51667fd4d18"/><h3 id="2ab568fa-e39f-805e-8bad-fc12435d60f5" class="">4.4. TrainingArguments: все настройки обучения в одном месте</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8046-be95-ed912334a99d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/tickets_basic&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=2e-5,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=32,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    logging_steps=50,
+    load_best_model_at_end=False,
+)
+</code></pre><p id="2ab568fa-e39f-8074-bcb9-db748701840c" class="">Разбираем по параметрам:</p><ul id="2ab568fa-e39f-8006-ab5c-f87604ba72b0" class="bulleted-list"><li style="list-style-type:disc"><code>output_dir</code> — папка, куда Trainer будет:<ul id="2ab568fa-e39f-802b-80d8-c5ac4bd284fa" class="bulleted-list"><li style="list-style-type:circle">складывать логи,</li></ul><ul id="2ab568fa-e39f-8007-9eed-dcbe8ff1b8dd" class="bulleted-list"><li style="list-style-type:circle">чекпоинты (если <code>save_strategy</code> не <code>&quot;no&quot;</code>),</li></ul><ul id="2ab568fa-e39f-8099-9a16-c32a403fff9e" class="bulleted-list"><li style="list-style-type:circle">конфиги и т.п.</li></ul></li></ul><ul id="2ab568fa-e39f-80eb-aa3b-e34e50d19c7e" class="bulleted-list"><li style="list-style-type:disc"><code>evaluation_strategy=&quot;epoch&quot;</code>:<ul id="2ab568fa-e39f-80c6-99bb-c35d0c58606b" class="bulleted-list"><li style="list-style-type:circle">означает: запускаем <code>trainer.evaluate()</code> <strong>автоматически</strong> в конце каждой эпохи.</li></ul><ul id="2ab568fa-e39f-80f9-bcde-ce046c359465" class="bulleted-list"><li style="list-style-type:circle">другие варианты:<ul id="2ab568fa-e39f-80c2-b98b-d822ccb3b4d7" class="bulleted-list"><li style="list-style-type:square"><code>&quot;no&quot;</code> — совсем без eval,</li></ul><ul id="2ab568fa-e39f-80ca-a08d-c00bdc8f295b" class="bulleted-list"><li style="list-style-type:square"><code>&quot;steps&quot;</code> — каждые <code>eval_steps</code> шагов.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-807e-85d7-ccbc17a08fed" class="bulleted-list"><li style="list-style-type:disc"><code>save_strategy=&quot;epoch&quot;</code>:<ul id="2ab568fa-e39f-80fa-beed-cc162e5a4fde" class="bulleted-list"><li style="list-style-type:circle">сохранять чекпоинт в конце каждой эпохи.</li></ul><ul id="2ab568fa-e39f-8008-a3cd-da762fee3a92" class="bulleted-list"><li style="list-style-type:circle">можно переключить на <code>&quot;steps&quot;</code> (будет сохранять по шагам).</li></ul></li></ul><ul id="2ab568fa-e39f-801f-a4b8-d6db99fa7ee9" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate=2e-5</code>:<ul id="2ab568fa-e39f-80cc-94f6-eb67b629e759" class="bulleted-list"><li style="list-style-type:circle">стандартный стартовый lr для BERT-подобных моделей при fine-tuning’е.</li></ul></li></ul><ul id="2ab568fa-e39f-8043-bb5d-f57ea72a833e" class="bulleted-list"><li style="list-style-type:disc"><code>per_device_train_batch_size=16</code>:<ul id="2ab568fa-e39f-80b7-aafa-ef2de641dccf" class="bulleted-list"><li style="list-style-type:circle">размер батча для тренировки <strong>на одно устройство</strong> (GPU/CPU).</li></ul><ul id="2ab568fa-e39f-8008-be4d-c6e1c869c96e" class="bulleted-list"><li style="list-style-type:circle">если нет памяти — уменьшай, если GPU жирная — можно увеличить.</li></ul></li></ul><ul id="2ab568fa-e39f-805e-aab6-de5c0c123d28" class="bulleted-list"><li style="list-style-type:disc"><code>per_device_eval_batch_size=32</code>:<ul id="2ab568fa-e39f-80b3-bd1e-eab0d6e4c2aa" class="bulleted-list"><li style="list-style-type:circle">батч-сайз на валидации (можно побольше, так как там только forward).</li></ul></li></ul><ul id="2ab568fa-e39f-8097-bd0b-eae3c925c83e" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs=3</code>:<ul id="2ab568fa-e39f-8000-8e55-c84449f0727e" class="bulleted-list"><li style="list-style-type:circle">количество эпох обучения;</li></ul><ul id="2ab568fa-e39f-80a1-9265-d02b92ca8d19" class="bulleted-list"><li style="list-style-type:circle">3–5 — часто разумный диапазон.</li></ul></li></ul><ul id="2ab568fa-e39f-806d-a923-c1a1e4700f45" class="bulleted-list"><li style="list-style-type:disc"><code>weight_decay=0.01</code>:<ul id="2ab568fa-e39f-807c-b068-f68b565b431b" class="bulleted-list"><li style="list-style-type:circle">L2-регуляризация весов (немного помогает от переобучения).</li></ul></li></ul><ul id="2ab568fa-e39f-801e-a277-eb21f8450485" class="bulleted-list"><li style="list-style-type:disc"><code>logging_steps=50</code>:<ul id="2ab568fa-e39f-802c-8387-edd65246bc62" class="bulleted-list"><li style="list-style-type:circle">Trainer будет логировать текущее значение лосса каждые 50 шагов обучения.</li></ul></li></ul><ul id="2ab568fa-e39f-80ee-831c-d54c9d59f450" class="bulleted-list"><li style="list-style-type:disc"><code>load_best_model_at_end=False</code>:<ul id="2ab568fa-e39f-807c-ab6b-fdfb1f89e05f" class="bulleted-list"><li style="list-style-type:circle">пока не заморачиваемся выбором лучшей модели;</li></ul><ul id="2ab568fa-e39f-802c-bb58-c3066aa1a526" class="bulleted-list"><li style="list-style-type:circle">Trainer просто оставит модель в состоянии после последней эпохи.</li></ul><ul id="2ab568fa-e39f-8084-bfc3-c7a6a5b35a02" class="bulleted-list"><li style="list-style-type:circle">На следующем уроке добавим метрики и поменяем это на <code>True</code>.</li></ul></li></ul><blockquote id="2ab568fa-e39f-8065-bcef-f268b45ee843" class="">Важно: Trainer сам разберётся, использовать ли GPU/CPU.<p id="2ab568fa-e39f-80e0-9a9c-d64cd991e455" class="">Если есть CUDA — он переедет на GPU. Если нет — будет считать на CPU, но медленнее.</p></blockquote><hr id="2ab568fa-e39f-80e6-8cf4-e4e40a2cf755"/><h3 id="2ab568fa-e39f-80e9-afd5-fe7e877fe70b" class="">4.5. Создаём Trainer</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c5-8e1b-fd8624a41f77" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_dataset[&quot;train&quot;],
+    eval_dataset=tokenized_dataset[&quot;validation&quot;],
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    # compute_metrics добавим потом
+)
+</code></pre><p id="2ab568fa-e39f-80be-aaa3-f1a89cb4c509" class="">Здесь мы связываем всё:</p><ul id="2ab568fa-e39f-8050-8d92-e2c02809d2b1" class="bulleted-list"><li style="list-style-type:disc"><code>model</code> — что обучать;</li></ul><ul id="2ab568fa-e39f-8007-8a5f-e0315ea85406" class="bulleted-list"><li style="list-style-type:disc"><code>args</code> — как обучать;</li></ul><ul id="2ab568fa-e39f-8034-9cea-ddbc9dcbe7ab" class="bulleted-list"><li style="list-style-type:disc"><code>train_dataset</code> / <code>eval_dataset</code> — на чём обучать и валидироваться;</li></ul><ul id="2ab568fa-e39f-80dd-b93e-fb9029046ad4" class="bulleted-list"><li style="list-style-type:disc"><code>tokenizer</code> — Trainer будет его использовать, например, для сохранения/логирования;</li></ul><ul id="2ab568fa-e39f-80d4-ba2d-d643bc473390" class="bulleted-list"><li style="list-style-type:disc"><code>data_collator</code> — отвечает за формирование батчей:<ul id="2ab568fa-e39f-80ba-bf86-d631fdd11b9e" class="bulleted-list"><li style="list-style-type:circle">внутри Trainer он будет получать список примеров и превращать их в тензорный batch (<code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>).</li></ul></li></ul><p id="2ab568fa-e39f-8026-bb50-c217cda60b08" class="">Под капотом Trainer:</p><ol type="1" id="2ab568fa-e39f-80d8-bd84-ea176225a983" class="numbered-list" start="1"><li>создаёт <code>DataLoader</code>’ы для train и eval, используя <code>data_collator</code>;</li></ol><ol type="1" id="2ab568fa-e39f-80fa-b3af-ebca8edcb1b8" class="numbered-list" start="2"><li>создаёт оптимизатор и lr scheduler (по дефолту AdamW + linear decay);</li></ol><ol type="1" id="2ab568fa-e39f-803c-82af-d63207b28be7" class="numbered-list" start="3"><li>реализует цикл обучения с backprop.</li></ol><hr id="2ab568fa-e39f-8039-a06f-df9073673b0f"/><h3 id="2ab568fa-e39f-80dd-afa4-feeeecd77f24" class="">4.6. Старт обучения</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8044-836c-f8981f7fbf70" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer.train()
+</code></pre><p id="2ab568fa-e39f-8039-a29b-dfc5dacc0278" class="">С этого момента Trainer:</p><ul id="2ab568fa-e39f-805a-9f9d-de2da016d213" class="bulleted-list"><li style="list-style-type:disc">проходит по всем батчам train-dataloader:<ul id="2ab568fa-e39f-80cf-93d3-d12b0273799e" class="bulleted-list"><li style="list-style-type:circle">прогоняет через модель,</li></ul><ul id="2ab568fa-e39f-808e-a772-e96af8347898" class="bulleted-list"><li style="list-style-type:circle">считает <code>loss</code> (модель знает, что делать, потому что мы передаём и <code>input_ids</code>, и <code>labels</code>),</li></ul><ul id="2ab568fa-e39f-804a-809d-daf102975b4d" class="bulleted-list"><li style="list-style-type:circle">делает backprop и шаг оптимизатора;</li></ul></li></ul><ul id="2ab568fa-e39f-8038-bf38-ed839ded38e8" class="bulleted-list"><li style="list-style-type:disc">после каждой эпохи:<ul id="2ab568fa-e39f-800f-a7f9-c9e8ede69e4c" class="bulleted-list"><li style="list-style-type:circle">вызывает <code>evaluate()</code> на валидации (потому что <code>evaluation_strategy=&quot;epoch&quot;</code>),</li></ul><ul id="2ab568fa-e39f-8016-9d0d-fbbca0f60daf" class="bulleted-list"><li style="list-style-type:circle">логирует eval loss (и метрики, если они будут добавлены).</li></ul></li></ul><p id="2ab568fa-e39f-80ce-91d2-d961691ed0e6" class="">В консоли ты увидишь что-то вроде:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809b-b038-ef7f291b6283" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">***** Running training *****
+  Num examples = 900
+  Num Epochs = 3
+  ...
+Step    Training Loss   Epoch
+  50    0.75            0.16
+ 100    0.60            0.33
+...
+
+***** Running Evaluation *****
+  Num examples = 100
+  ...
+  eval_loss = 0.55
+...
+</code></pre><p id="2ab568fa-e39f-8000-a4d1-c4009380942c" class="">Пока на этом уроке мы смотрим только на лосс. На следующем подключим accuracy/F1.</p><hr id="2ab568fa-e39f-8038-a5ca-db1f52548d63"/><h3 id="2ab568fa-e39f-80b5-b73d-e4c7dfeff3a0" class="">4.7. Сохранение модели</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8026-9723-c87b9f8be268" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer.save_model(&quot;models/tickets_classifier_basic&quot;)
+tokenizer.save_pretrained(&quot;models/tickets_classifier_basic&quot;)
+</code></pre><p id="2ab568fa-e39f-80a5-81a1-e9d9a79b05b7" class="">Объяснение:</p><ul id="2ab568fa-e39f-800d-89ad-eed65cf85deb" class="bulleted-list"><li style="list-style-type:disc"><code>trainer.save_model(dir)</code>:<ul id="2ab568fa-e39f-8051-8588-d2a80ace7197" class="bulleted-list"><li style="list-style-type:circle">сохраняет веса модели (<code>pytorch_model.bin</code>),</li></ul><ul id="2ab568fa-e39f-80cf-9d27-d849477d519c" class="bulleted-list"><li style="list-style-type:circle">конфиг (<code>config.json</code>),</li></ul><ul id="2ab568fa-e39f-806d-bb9f-e449c2d07fdf" class="bulleted-list"><li style="list-style-type:circle">Trainer дополнительно может сохранить ещё служебные файлы;</li></ul></li></ul><ul id="2ab568fa-e39f-8084-a221-c658f2b3cb0c" class="bulleted-list"><li style="list-style-type:disc"><code>tokenizer.save_pretrained(dir)</code>:<ul id="2ab568fa-e39f-80b7-8dfc-d14239eae3c6" class="bulleted-list"><li style="list-style-type:circle">сохранит <code>tokenizer.json</code>, <code>vocab.txt</code>/<code>merges.txt</code>, <code>tokenizer_config.json</code> и т.п.</li></ul></li></ul><p id="2ab568fa-e39f-808f-8817-ca5e4fa60c33" class="">После этого у тебя в папке <code>models/tickets_classifier_basic</code> лежит <strong>полноценный чекпоинт</strong>, который можно потом использовать так:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8033-ba01-d29bb59a1ccb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+model_dir = &quot;models/tickets_classifier_basic&quot;
+
+tokenizer = AutoTokenizer.from_pretrained(model_dir)
+model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+</code></pre><p id="2ab568fa-e39f-8011-9923-da2365467720" class="">И дальше делать inference: токенизировать текст, прогонять через модель, брать <code>argmax</code> по логитам.</p><hr id="2ab568fa-e39f-80d0-951a-c0389a566694"/><h2 id="2ab568fa-e39f-8007-bb0d-dd376126bab8" class="">5. Что посмотреть/осознать после первого запуска</h2><p id="2ab568fa-e39f-80ee-b39a-d2c60c25e495" class="">После первого запуска <code>trainer.train()</code>:</p><ol type="1" id="2ab568fa-e39f-8078-a2f6-c3b9fdd9b239" class="numbered-list" start="1"><li>Обрати внимание на:<ul id="2ab568fa-e39f-80c4-8e98-f017f6b2329d" class="bulleted-list"><li style="list-style-type:disc">как падает <strong>training loss</strong>,</li></ul><ul id="2ab568fa-e39f-8042-95f7-cfb65599a255" class="bulleted-list"><li style="list-style-type:disc">как ведёт себя <strong>eval loss</strong> после каждой эпохи.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80df-a821-d5d43d536118" class="numbered-list" start="2"><li>Если всё адекватно:<ul id="2ab568fa-e39f-80e1-b100-df8a8b1b6e3b" class="bulleted-list"><li style="list-style-type:disc">train loss постепенно падает,</li></ul><ul id="2ab568fa-e39f-806d-9898-ed1640c01de6" class="bulleted-list"><li style="list-style-type:disc">eval loss тоже в среднем уменьшается (в идеале).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e0-b46b-ec813b8356b3" class="numbered-list" start="3"><li>Если что-то совсем странное:<ul id="2ab568fa-e39f-80a3-92de-e0619d0415e3" class="bulleted-list"><li style="list-style-type:disc">loss не убывает / взрывается:<ul id="2ab568fa-e39f-809f-a422-d346ca511848" class="bulleted-list"><li style="list-style-type:circle">попробуй уменьшить <code>learning_rate</code> (например, до <code>1e-5</code>),</li></ul><ul id="2ab568fa-e39f-802a-b56f-fa247818fd53" class="bulleted-list"><li style="list-style-type:circle">уменьшить <code>batch_size</code>,</li></ul><ul id="2ab568fa-e39f-8013-b17f-fc2312ad7272" class="bulleted-list"><li style="list-style-type:circle">проверить входные данные (<code>labels</code> корректные?).</li></ul></li></ul></li></ol><p id="2ab568fa-e39f-800d-8f46-c6ff8b8a8169" class="">Это пока <strong>интуитивное знакомство</strong>. В 4.2 уже добавим аккуратные метрики (accuracy, F1) и будем смотреть не только на loss.</p><hr id="2ab568fa-e39f-80e4-96f9-ee028ea2e0b0"/><h2 id="2ab568fa-e39f-8092-a7ad-e877bef49663" class="">6. Домашка по уроку 4.1</h2><ol type="1" id="2ab568fa-e39f-8089-9a9e-cf4eb0a04f9f" class="numbered-list" start="1"><li><strong>Запусти</strong> <code>train_tickets_basic.py</code> на своём датасете.</li></ol><ol type="1" id="2ab568fa-e39f-80f6-a4a4-ef6c06afad3c" class="numbered-list" start="2"><li>Попробуй 2–3 варианта гиперпараметров:<ul id="2ab568fa-e39f-80f1-a7ce-e76b3794c528" class="bulleted-list"><li style="list-style-type:disc"><code>num_train_epochs = 2</code>, <code>3</code>, <code>5</code>;</li></ul><ul id="2ab568fa-e39f-8076-8bd5-f121d870db6a" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate = 2e-5</code> vs <code>5e-5</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-802e-8539-e87d91e9fdc1" class="numbered-list" start="3"><li>Для каждого запуска:<ul id="2ab568fa-e39f-8005-9684-c085604696fa" class="bulleted-list"><li style="list-style-type:disc">заскринь / запиши значения train loss и eval loss по эпохам;</li></ul><ul id="2ab568fa-e39f-8035-b6f3-d7ed42a0dee4" class="bulleted-list"><li style="list-style-type:disc">сделай маленький вывод:<ul id="2ab568fa-e39f-8038-a281-d2008810eaa9" class="bulleted-list"><li style="list-style-type:circle">при каких настройках модель кажется “лучшей” (по eval loss),</li></ul><ul id="2ab568fa-e39f-802a-8f08-cb428d8e98c9" class="bulleted-list"><li style="list-style-type:circle">был ли перефит (train loss падает, eval растёт).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8031-aa6b-d3388213e65e" class="numbered-list" start="4"><li>(Опционально)<p id="2ab568fa-e39f-807c-b9ae-ea776153d25b" class="">Попробуй поменять <code>base_model_name</code> на другую модель (например, <code>bert-base-uncased</code>) и сравни по:</p><ul id="2ab568fa-e39f-802a-bf0d-c4fd87df3dd2" class="bulleted-list"><li style="list-style-type:disc">скорости обучения,</li></ul><ul id="2ab568fa-e39f-803a-8185-faaabf0983ff" class="bulleted-list"><li style="list-style-type:disc">значению eval loss.</li></ul></li></ol><hr id="2ab568fa-e39f-8053-bd66-e58e4b4f62fa"/><p id="2ab568fa-e39f-80f7-9180-c3b2e2f99ecb" class="">Если хочешь, дальше можем:</p><ul id="2ab568fa-e39f-80ca-a519-ec3744d1b465" class="bulleted-list"><li style="list-style-type:disc">так же “развернуть” весь урок 4.2 с аккуратным <code>compute_metrics</code>,</li></ul><ul id="2ab568fa-e39f-80c7-a811-daa4a113eb42" class="bulleted-list"><li style="list-style-type:disc">или сразу собрать отдельный скрипт инференса по сохранённой модели (типа <code>predict.py</code>, читающий текст из командной строки).</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

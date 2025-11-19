@@ -1,0 +1,739 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 2.3. Схемы разбиения данных: random, user-based, time-based, session-based</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8037-98ba-dcba5691349f" class="page sans"><header><h1 class="page-title">Урок 2.3. Схемы разбиения данных: random, user-based, time-based, session-based</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80a4-a867-e7ec83fb8f07" class="">1. Цели урока</h2><p id="2aa568fa-e39f-804d-88f8-ec27e01a9a77" class="">К концу урока студент должен:</p><ul id="2aa568fa-e39f-80c5-8c07-c4115fb24e6f" class="bulleted-list"><li style="list-style-type:disc">понимать, <strong>зачем вообще думать о схеме сплита</strong>, а не жать <code>train_test_split</code>;</li></ul><ul id="2aa568fa-e39f-8044-bb83-d0211d71547b" class="bulleted-list"><li style="list-style-type:disc">знать и уметь объяснить отличия:<ul id="2aa568fa-e39f-8064-9559-da295ae4f4d6" class="bulleted-list"><li style="list-style-type:circle">random split,</li></ul><ul id="2aa568fa-e39f-80ef-83b1-d6f4ecd7845e" class="bulleted-list"><li style="list-style-type:circle">user-based split,</li></ul><ul id="2aa568fa-e39f-80e9-9d02-de4d4d7cb3ce" class="bulleted-list"><li style="list-style-type:circle">time-based split,</li></ul><ul id="2aa568fa-e39f-809f-8ec1-d2230bd5c337" class="bulleted-list"><li style="list-style-type:circle">session-based / leave-one-out split;</li></ul></li></ul><ul id="2aa568fa-e39f-8057-80e8-d744fed81660" class="bulleted-list"><li style="list-style-type:disc">видеть <strong>типичные лики (leaks)</strong> в RecSys-задачах и объяснять, почему это боль;</li></ul><ul id="2aa568fa-e39f-807b-80c8-ccb202506506" class="bulleted-list"><li style="list-style-type:disc">уметь:<ul id="2aa568fa-e39f-80ba-9f8b-fe37f2bd1f76" class="bulleted-list"><li style="list-style-type:circle">реализовать хотя бы <strong>time-based split</strong> и <strong>leave-one-out</strong> на своём датасете;</li></ul><ul id="2aa568fa-e39f-8036-b58a-c002e40eb982" class="bulleted-list"><li style="list-style-type:circle">выбрать схему сплита под конкретную задачу и обосновать выбор.</li></ul></li></ul><hr id="2aa568fa-e39f-80f7-ad2f-da7ebc6bd711"/><h2 id="2aa568fa-e39f-808d-b591-fe0a4b836dfd" class="">2. Структура урока (90–120 минут)</h2><p id="2aa568fa-e39f-807b-bbdc-ff74bd9f3bb9" class=""><strong>Блок 1 (15–20 мин)</strong> — мотивация: почему «просто random» ломает RecSys</p><p id="2aa568fa-e39f-801c-9d39-f94785961010" class=""><strong>Блок 2 (20–30 мин)</strong> — random и user-based split: когда ок, когда плохо</p><p id="2aa568fa-e39f-8097-ab87-d47005872797" class=""><strong>Блок 3 (25–30 мин)</strong> — time-based и leave-one-out: стандарт RecSys</p><p id="2aa568fa-e39f-80fa-8c8c-ed2e95305ec7" class=""><strong>Блок 4 (15–20 мин)</strong> — session-based split и sequential кейсы</p><p id="2aa568fa-e39f-8004-a1b8-e0758279ee42" class=""><strong>Блок 5 (20–30 мин)</strong> — практическая часть в ноутбуке</p><p id="2aa568fa-e39f-8040-a353-e2e119e951b3" class=""><strong>Домашка</strong> — применить схемы к своему датасету и сравнить их</p><hr id="2aa568fa-e39f-80af-ba5d-ecdabd1f961d"/><h2 id="2aa568fa-e39f-80d7-8a1a-f0c7c6033447" class="">3. Блок 1. Зачем вообще думать о разбиении</h2><h3 id="2aa568fa-e39f-8046-9553-ecd5df684d03" class="">3.1. Вводная история</h3><p id="2aa568fa-e39f-802f-bd6e-e82c6f831976" class="">Классическая история:</p><blockquote id="2aa568fa-e39f-80a3-abb5-d90f91aeb3c7" class="">У нас есть лог событий за год. Мы делаем случайный сплит 80/20, треним модель, получаем Recall@20 = 0.8. Радуемся.<p id="2aa568fa-e39f-8089-9165-ea442c4e0a1e" class="">В прод выкатываем на реальные будущие данные — Recall падает до 0.4.</p><p id="2aa568fa-e39f-8069-903a-dd1216b0d2c6" class="">Почему? Потому что мы <strong>учились на будущем</strong>, а предсказываем прошлое. И это не шутка.</p></blockquote><p id="2aa568fa-e39f-802d-99d2-d288a67f52f2" class="">Разбор:</p><ul id="2aa568fa-e39f-80d1-8f6e-ee6a4bedab13" class="bulleted-list"><li style="list-style-type:disc">В random split:<ul id="2aa568fa-e39f-8014-8013-c3c7266b8494" class="bulleted-list"><li style="list-style-type:circle">события перемешиваются;</li></ul><ul id="2aa568fa-e39f-8017-acc0-c112a5718ebf" class="bulleted-list"><li style="list-style-type:circle">возможно, что часть взаимодействий пользователя из <strong>конца</strong> года попала в train, а из <strong>начала</strong> — в valid;</li></ul><ul id="2aa568fa-e39f-80a5-8e1d-e5e65bc2f0eb" class="bulleted-list"><li style="list-style-type:circle">модель видела поведение пользователя в «будущем», а мы считаем, что она «предсказывает будущее по прошлому».</li></ul></li></ul><p id="2aa568fa-e39f-8087-b345-c84ab6524886" class=""><strong>Ключевая мысль:</strong></p><blockquote id="2aa568fa-e39f-807c-a3ac-cc77723f47ea" class="">В рекомендательных задачах мы почти всегда хотим моделировать:<p id="2aa568fa-e39f-8001-9dfc-c494abebb14a" class="">«по прошлому предсказываем будущее».</p><p id="2aa568fa-e39f-8006-9e55-ed422ddbd857" class="">Если сплит это не уважает — валидизация не про реальную жизнь.</p></blockquote><h3 id="2aa568fa-e39f-8027-8ab8-c129f6a33d04" class="">3.2. Что вообще такое «сплит»</h3><p id="2aa568fa-e39f-80f1-b0fd-d0f1b5f81ae2" class="">формально:</p><ul id="2aa568fa-e39f-80a3-ad4a-c4073a039cd3" class="bulleted-list"><li style="list-style-type:disc">Есть множество событий ( \mathcal{D} ): взаимодействия user–item, сессии, покупки.</li></ul><ul id="2aa568fa-e39f-808d-a122-fad871538c47" class="bulleted-list"><li style="list-style-type:disc">Мы делим их на:<ul id="2aa568fa-e39f-80c0-b755-d93e28c1851d" class="bulleted-list"><li style="list-style-type:circle">train — то, на чём <strong>учимся</strong>;</li></ul><ul id="2aa568fa-e39f-80ab-b410-cc2ce6551531" class="bulleted-list"><li style="list-style-type:circle">validation — то, на чём <strong>оцениваем</strong>.</li></ul></li></ul><p id="2aa568fa-e39f-80bf-9ef3-cc58c808f1b2" class="">При этом:</p><ul id="2aa568fa-e39f-8002-bce3-cfedf7ab7368" class="bulleted-list"><li style="list-style-type:disc">нужно защититься от <strong>leaks</strong>;</li></ul><ul id="2aa568fa-e39f-8001-b644-d5dcf7485ae3" class="bulleted-list"><li style="list-style-type:disc">хочется, чтобы validation была <strong>максимально похожа на реальный use-case</strong>:<ul id="2aa568fa-e39f-8021-8a61-d6a34bf7125d" class="bulleted-list"><li style="list-style-type:circle">такие же пользователи,</li></ul><ul id="2aa568fa-e39f-80a0-830d-f8544f525e7b" class="bulleted-list"><li style="list-style-type:circle">такие же перерывы во времени,</li></ul><ul id="2aa568fa-e39f-803e-9048-e8a64565fc36" class="bulleted-list"><li style="list-style-type:circle">похожее распределение типов взаимодействий.</li></ul></li></ul><hr id="2aa568fa-e39f-8013-8148-c92dde05c4cf"/><h2 id="2aa568fa-e39f-809e-96f7-c74a1961b81c" class="">4. Блок 2. Random split и user-based split</h2><h3 id="2aa568fa-e39f-807d-8fb1-d670e86f1e3e" class="">4.1. Random split</h3><p id="2aa568fa-e39f-80cb-8387-ebd398d581df" class=""><strong>Определение:</strong></p><p id="2aa568fa-e39f-801b-9dd9-f7c5c00fb988" class="">Берём все взаимодействия (строки лога), случайно делим (например) 80% в train, 20% в validation.</p><p id="2aa568fa-e39f-80df-952b-e4495d92a6d3" class="">Плюсы:</p><ul id="2aa568fa-e39f-80ae-a67e-f8d159d0c633" class="bulleted-list"><li style="list-style-type:disc">просто реализовать (1 строчка в sklearn / pandas);</li></ul><ul id="2aa568fa-e39f-80ab-9e7f-cdceb2c5092d" class="bulleted-list"><li style="list-style-type:disc">быстро;</li></ul><ul id="2aa568fa-e39f-804d-8014-c42a9ccf35c0" class="bulleted-list"><li style="list-style-type:disc">иногда ок для чисто табличных задач, когда нет явной time/seq структуры.</li></ul><p id="2aa568fa-e39f-80ef-b19b-c689f0ebe44a" class="">Минусы в RecSys:</p><ul id="2aa568fa-e39f-80b9-96be-f3f59b3ec6cd" class="bulleted-list"><li style="list-style-type:disc"><strong>утечки по времени</strong>:<ul id="2aa568fa-e39f-803f-b5fc-c493d94efb2c" class="bulleted-list"><li style="list-style-type:circle">модель видит взаимодействия пользователя из будущего в train, а мы тестируем на прошлом;</li></ul></li></ul><ul id="2aa568fa-e39f-80e8-9e3c-c8d3212552d9" class="bulleted-list"><li style="list-style-type:disc"><strong>некорректный сценарий</strong>:<ul id="2aa568fa-e39f-800e-822c-d51b00b05b15" class="bulleted-list"><li style="list-style-type:circle">в реальном мире мы не предсказываем «набор взаимодействий в перемешанном порядке», мы предсказываем <strong>дальнейшие действия пользователя</strong>.</li></ul></li></ul><p id="2aa568fa-e39f-8024-97ce-c0a4d0270c6b" class="">Пример лика:</p><ul id="2aa568fa-e39f-80e8-ab87-f223e84550a2" class="bulleted-list"><li style="list-style-type:disc">пользователь купил (или посмотрел) itemX в январе и снова в мае;</li></ul><ul id="2aa568fa-e39f-80ff-85a5-f0deb563cb6c" class="bulleted-list"><li style="list-style-type:disc">январь попал в validation, май — в train;</li></ul><ul id="2aa568fa-e39f-80df-9fd5-c2790a07e595" class="bulleted-list"><li style="list-style-type:disc">модель уже знает, что user любит itemX в мае → а мы считаем, что она «угадывает» покупку в январе.</li></ul><p id="2aa568fa-e39f-807d-8f47-f0cc45e31764" class="">Итог:</p><blockquote id="2aa568fa-e39f-8014-b76e-d2478f4a3aff" class="">Random split почти всегда плохое приближение для RecSys-задач,<p id="2aa568fa-e39f-80d4-be46-d7b7eadb7a14" class="">за редкими исключениями (например, если время не имеет значения).</p></blockquote><h3 id="2aa568fa-e39f-80c8-a694-f3fd1cd73cc2" class="">4.2. User-based split</h3><p id="2aa568fa-e39f-8017-b5c9-e913f175b5b8" class=""><strong>Определение:</strong></p><p id="2aa568fa-e39f-8058-86d2-ebb327cb7604" class="">Берём пользователей:</p><ul id="2aa568fa-e39f-804d-aa64-c84851c710f5" class="bulleted-list"><li style="list-style-type:disc">часть пользователей (например, 80%) целиком в train;</li></ul><ul id="2aa568fa-e39f-801f-a6a4-ff76b8e95969" class="bulleted-list"><li style="list-style-type:disc">оставшиеся 20% — целиком в validation.</li></ul><p id="2aa568fa-e39f-806d-8d3c-c828368641fd" class="">Все их взаимодействия идут в соответствующую часть.</p><p id="2aa568fa-e39f-8040-9bcf-c4ea15b3e9c9" class="">Когда это имеет смысл:</p><ul id="2aa568fa-e39f-80b3-a0e2-fcd6f5522d22" class="bulleted-list"><li style="list-style-type:disc">когда мы хотим проверить <strong>обобщаемость на новых пользователей</strong>:<ul id="2aa568fa-e39f-8071-a520-c0d63cfa3db0" class="bulleted-list"><li style="list-style-type:circle">есть задача «cold-start по пользователю»;</li></ul><ul id="2aa568fa-e39f-80b9-918d-d0452f745934" class="bulleted-list"><li style="list-style-type:circle">мы учимся на одном наборе людей, тестируем на совершенно других.</li></ul></li></ul><p id="2aa568fa-e39f-8094-a2d4-ce89c4ab9290" class="">Плюсы:</p><ul id="2aa568fa-e39f-8089-9eee-e9052d6b3fa3" class="bulleted-list"><li style="list-style-type:disc">нет утечек по пользователю:<ul id="2aa568fa-e39f-8082-9b99-e17ddaf38e4f" class="bulleted-list"><li style="list-style-type:circle">если user в validation, то его нет в train → всё взаимодействие для него «новое».</li></ul></li></ul><p id="2aa568fa-e39f-806e-b547-e33fa702b703" class="">Минусы:</p><ul id="2aa568fa-e39f-808d-b781-cd7470c03165" class="bulleted-list"><li style="list-style-type:disc">это <strong>другая задача</strong>, чем «предсказать будущие события уже знакомого пользователя»;</li></ul><ul id="2aa568fa-e39f-8057-8623-ef2a9be74c93" class="bulleted-list"><li style="list-style-type:disc">модель может учиться делать хорошие рекомендации «в среднем по популяции», но реальный сервис чаще:<ul id="2aa568fa-e39f-8083-92d7-ea8a405a9d8f" class="bulleted-list"><li style="list-style-type:circle">имеет постоянных пользователей,</li></ul><ul id="2aa568fa-e39f-80f8-bc1f-d07a299e0459" class="bulleted-list"><li style="list-style-type:circle">знает их историю, и нужно предсказать <strong>следующее</strong>.</li></ul></li></ul><p id="2aa568fa-e39f-802b-8fb9-e03d63e30d17" class="">Итого:</p><blockquote id="2aa568fa-e39f-8013-bc66-ca71c72fbf4a" class="">User-based split — хороший способ померить new user generalization,<p id="2aa568fa-e39f-8030-8c19-f21fe95d05d7" class="">но не заменяет time-based split для прогнозирования будущего по прошлому.</p></blockquote><hr id="2aa568fa-e39f-8041-861f-ff8e30f15974"/><h2 id="2aa568fa-e39f-800e-8717-c484c9fb348a" class="">5. Блок 3. Time-based split и leave-one-out</h2><p id="2aa568fa-e39f-8098-9d6c-dd0bedae7bd9" class="">Это то, чем мы будем регулярно пользоваться в курсе.</p><h3 id="2aa568fa-e39f-803c-930a-d169d1573619" class="">5.1. Time-based split</h3><p id="2aa568fa-e39f-8036-b36f-f65bae63c95a" class=""><strong>Суть:</strong></p><ul id="2aa568fa-e39f-8026-94c1-df00f578bcd5" class="bulleted-list"><li style="list-style-type:disc">упорядочиваем события по времени;</li></ul><ul id="2aa568fa-e39f-80f5-bf25-d7574da0698d" class="bulleted-list"><li style="list-style-type:disc">выбираем точку разделения ( T_{split} );</li></ul><ul id="2aa568fa-e39f-80f9-b284-cc290a85f026" class="bulleted-list"><li style="list-style-type:disc">всё, что <strong>до</strong> этой точки — train;</li></ul><ul id="2aa568fa-e39f-801c-88e7-fbe9c3110074" class="bulleted-list"><li style="list-style-type:disc">всё, что <strong>после</strong> — validation.</li></ul><p id="2aa568fa-e39f-8007-9c80-cbe70dce34a8" class="">Варианты:</p><ul id="2aa568fa-e39f-80f1-9a13-cd42c7f500ef" class="bulleted-list"><li style="list-style-type:disc">global split:<ul id="2aa568fa-e39f-8013-8da4-f6b49f92fc05" class="bulleted-list"><li style="list-style-type:circle">один момент времени для всех;</li></ul></li></ul><ul id="2aa568fa-e39f-80ee-b4f4-d05adb6bc599" class="bulleted-list"><li style="list-style-type:disc">per-user split:<ul id="2aa568fa-e39f-803b-b952-c1aac95435ec" class="bulleted-list"><li style="list-style-type:circle">для каждого пользователя свои ( T_{split}(u) ) (например, последние N взаимодействий).</li></ul></li></ul><p id="2aa568fa-e39f-8079-bf8e-e5b0746c2177" class="">Плюсы:</p><ul id="2aa568fa-e39f-8032-bc73-e3355cd7dde1" class="bulleted-list"><li style="list-style-type:disc">имитирует реальность:<ul id="2aa568fa-e39f-80e2-9d95-fd58dfbc2077" class="bulleted-list"><li style="list-style-type:circle">есть прошлое → учимся;</li></ul><ul id="2aa568fa-e39f-80d1-ae4d-f13f2143ba99" class="bulleted-list"><li style="list-style-type:circle">есть будущее → на нём проверяем.</li></ul></li></ul><p id="2aa568fa-e39f-80f1-a437-d59719ecda7b" class="">Типичные настройки:</p><ul id="2aa568fa-e39f-8001-b526-e2d244943132" class="bulleted-list"><li style="list-style-type:disc"><strong>global time split</strong>:<ul id="2aa568fa-e39f-80bc-8c39-cf6daed6d3cf" class="bulleted-list"><li style="list-style-type:circle">train = первые, скажем, 80% по времени;</li></ul><ul id="2aa568fa-e39f-8008-ad5c-e9cc21aa8486" class="bulleted-list"><li style="list-style-type:circle">validation = последние 20%;</li></ul></li></ul><ul id="2aa568fa-e39f-8063-abdf-fa0ad0ee49ea" class="bulleted-list"><li style="list-style-type:disc"><strong>rolling validation</strong>:<ul id="2aa568fa-e39f-8069-b729-cf9e89451b89" class="bulleted-list"><li style="list-style-type:circle">несколько окон, чтобы видеть стабильность модели во времени.</li></ul></li></ul><h3 id="2aa568fa-e39f-8017-919f-e64abe3b66d0" class="">5.2. Лики во фичах при time-based split</h3><p id="2aa568fa-e39f-80f1-83f3-ceb7bab619ba" class="">Важно сразу вшить в голову:</p><blockquote id="2aa568fa-e39f-80c0-a321-dec88e68eab4" class="">split по времени — это не только про разделение строк, но и про то, как мы считаем фичи.</blockquote><p id="2aa568fa-e39f-8072-a7cd-d4277c9ce3d8" class="">Примеры плохих фич:</p><ul id="2aa568fa-e39f-805d-9c21-f25d8be9000a" class="bulleted-list"><li style="list-style-type:disc">количество покупок за <strong>весь период</strong>, считанное на полном датасете:<ul id="2aa568fa-e39f-80b6-9445-ee0f12b7a82a" class="bulleted-list"><li style="list-style-type:circle">если мы используем это и в train, и в validation, то в validation мы уже знаем будущие покупки;</li></ul></li></ul><ul id="2aa568fa-e39f-80b8-bcf9-f2a2e4894b65" class="bulleted-list"><li style="list-style-type:disc">средний чек за <strong>всё время</strong>:<ul id="2aa568fa-e39f-803d-ab6e-d4c547db05f3" class="bulleted-list"><li style="list-style-type:circle">также подглядываем в будущее.</li></ul></li></ul><p id="2aa568fa-e39f-803f-ad49-d4959ac9b393" class="">Правильный подход:</p><ul id="2aa568fa-e39f-8016-af0c-d4710c2d6d2e" class="bulleted-list"><li style="list-style-type:disc">считать агрегаты <strong>только по прошлым данным</strong>:<ul id="2aa568fa-e39f-80aa-931c-c8b38b41296b" class="bulleted-list"><li style="list-style-type:circle">либо заранее вычислять фичи «срезом во времени»;</li></ul><ul id="2aa568fa-e39f-8021-b182-d0873d544f2d" class="bulleted-list"><li style="list-style-type:circle">либо использовать window-подход:<ul id="2aa568fa-e39f-80ea-9c4a-d8eebac1d1bf" class="bulleted-list"><li style="list-style-type:square">для validation фичи считаются только до ( T_{split} ).</li></ul></li></ul></li></ul><h3 id="2aa568fa-e39f-8036-80ff-c4f0f14a190d" class="">5.3. Leave-one-out (LOO) по пользователю</h3><p id="2aa568fa-e39f-804c-91cd-c9807ae8b429" class=""><strong>Суть:</strong></p><ul id="2aa568fa-e39f-805c-8ef9-c4f92a383b46" class="bulleted-list"><li style="list-style-type:disc">Для каждого пользователя:<ul id="2aa568fa-e39f-8007-93da-ce710bccf272" class="bulleted-list"><li style="list-style-type:circle">ранние взаимодействия — train;</li></ul><ul id="2aa568fa-e39f-8092-853d-cf54c9127b4d" class="bulleted-list"><li style="list-style-type:circle">последние одно/несколько — validation.</li></ul></li></ul><p id="2aa568fa-e39f-80ac-84ec-c23efe76e646" class="">Пример для одного user:</p><ul id="2aa568fa-e39f-8032-afe6-d6b6f31b0e04" class="bulleted-list"><li style="list-style-type:disc">История: [i1, i2, i3, i4, i5]</li></ul><ul id="2aa568fa-e39f-80eb-aa78-c8c8d454e533" class="bulleted-list"><li style="list-style-type:disc">Leave-one-out (1 item):<ul id="2aa568fa-e39f-801e-8257-f267cb2b59fb" class="bulleted-list"><li style="list-style-type:circle">train: [i1, i2, i3, i4]</li></ul><ul id="2aa568fa-e39f-8055-8163-cdd7d5e08bac" class="bulleted-list"><li style="list-style-type:circle">validation target: i5</li></ul></li></ul><p id="2aa568fa-e39f-80da-8643-ef28f57897a2" class="">Можно делать leave-k-out:</p><ul id="2aa568fa-e39f-8091-870f-ed9da207c8ee" class="bulleted-list"><li style="list-style-type:disc">train: [i1, i2, i3]</li></ul><ul id="2aa568fa-e39f-8090-8017-fad19dfd4097" class="bulleted-list"><li style="list-style-type:disc">validation: [i4, i5]</li></ul><p id="2aa568fa-e39f-80dd-808c-e2fd70b88f89" class="">Плюсы:</p><ul id="2aa568fa-e39f-804e-9d02-f3af30e2734f" class="bulleted-list"><li style="list-style-type:disc">хорошо подходит для топ-K задач:<ul id="2aa568fa-e39f-80be-ba72-e7277c50dadb" class="bulleted-list"><li style="list-style-type:circle">«по истории user предсказать последний/последние item’ы»;</li></ul></li></ul><ul id="2aa568fa-e39f-80ce-8dac-eec5cd28602e" class="bulleted-list"><li style="list-style-type:disc">для каждого пользователя есть <strong>свой</strong> validation target, что удобно.</li></ul><p id="2aa568fa-e39f-80e1-b327-c3d24b917b7f" class="">Минусы:</p><ul id="2aa568fa-e39f-8045-86eb-c05696171d49" class="bulleted-list"><li style="list-style-type:disc">может быть смещён, если у пользователя очень мало интеракций;</li></ul><ul id="2aa568fa-e39f-807e-adba-f20e67625026" class="bulleted-list"><li style="list-style-type:disc">иногда последний item — странный (случайный, noise).</li></ul><hr id="2aa568fa-e39f-8089-bc33-e474bdf9fafb"/><h2 id="2aa568fa-e39f-80cc-bf24-e887d442a965" class="">6. Блок 4. Session-based split и последовательные задачи</h2><h3 id="2aa568fa-e39f-8042-8bc9-d579208920e7" class="">6.1. Session-based задачи</h3><p id="2aa568fa-e39f-801c-aa8e-fc2b6f86a19a" class="">Напомнить:</p><ul id="2aa568fa-e39f-8071-b266-f4329c5dede3" class="bulleted-list"><li style="list-style-type:disc">в session-based RecSys:<ul id="2aa568fa-e39f-8087-af14-ef5d039775f2" class="bulleted-list"><li style="list-style-type:circle">у нас есть сессии (последовательности действий без явного user_id или с weak user_id);</li></ul><ul id="2aa568fa-e39f-80f1-aa37-dc74b99d48b4" class="bulleted-list"><li style="list-style-type:circle">мы часто хотим предсказать <strong>следующий item в сессии</strong>.</li></ul></li></ul><p id="2aa568fa-e39f-8045-9417-cb5597d1e947" class="">Структура:</p><ul id="2aa568fa-e39f-80ee-99bf-d369dd97ccdd" class="bulleted-list"><li style="list-style-type:disc">session_id;</li></ul><ul id="2aa568fa-e39f-80e0-986c-dd905dda8aa0" class="bulleted-list"><li style="list-style-type:disc">последовательность item’ов, каждый с timestamp.</li></ul><h3 id="2aa568fa-e39f-805a-9da3-e56b61c8f9f4" class="">6.2. Как делить сессии</h3><p id="2aa568fa-e39f-80ec-a91f-c9fa60b50931" class=""><strong>Вариант 1: сплит по времени по сессиям</strong></p><ul id="2aa568fa-e39f-804c-80d7-daa3fb5fc8b9" class="bulleted-list"><li style="list-style-type:disc">сортируем сессии по времени (например, по времени последнего события в сессии);</li></ul><ul id="2aa568fa-e39f-80a9-8b46-c5a4e819591d" class="bulleted-list"><li style="list-style-type:disc">первые N% сессий → train,</li></ul><ul id="2aa568fa-e39f-80a5-9202-e66522ebd24b" class="bulleted-list"><li style="list-style-type:disc">последние → validation.</li></ul><p id="2aa568fa-e39f-8080-93f8-cd6ec7a3c212" class=""><strong>Вариант 2: внутри-сессионный split</strong></p><ul id="2aa568fa-e39f-8092-bdcf-e609474e07ed" class="bulleted-list"><li style="list-style-type:disc">для каждой сессии:<ul id="2aa568fa-e39f-80dd-b444-fcc6907b1666" class="bulleted-list"><li style="list-style-type:circle">первые события идут в train (формируют историю),</li></ul><ul id="2aa568fa-e39f-8028-b30a-f912e284afef" class="bulleted-list"><li style="list-style-type:circle">последние 1–3 события — target для предсказания.</li></ul></li></ul><ul id="2aa568fa-e39f-807f-a37b-c19422140db7" class="bulleted-list"><li style="list-style-type:disc">Пример:<ul id="2aa568fa-e39f-80f4-9ddc-e2a44bd0cd86" class="bulleted-list"><li style="list-style-type:circle">Сессия: [A, B, C, D, E]</li></ul><ul id="2aa568fa-e39f-803c-bd07-c1f0fa94891d" class="bulleted-list"><li style="list-style-type:circle">Train: использовать prefix’ы [A], [A,B], [A,B,C], [A,B,C,D]</li></ul><ul id="2aa568fa-e39f-80ad-ba25-efc7ef7f4777" class="bulleted-list"><li style="list-style-type:circle">Validation target: E (или {D, E}).</li></ul></li></ul><h3 id="2aa568fa-e39f-8040-b334-c0ebc9ffd8d3" class="">6.3. Особенности session-based split</h3><ul id="2aa568fa-e39f-809d-b7d5-e9a7f8966be7" class="bulleted-list"><li style="list-style-type:disc">Важна <strong>целостность сессий</strong>:<ul id="2aa568fa-e39f-8050-bde6-eec8c1526c06" class="bulleted-list"><li style="list-style-type:circle">нельзя перемешивать события разных сессий random’ом;</li></ul></li></ul><ul id="2aa568fa-e39f-8067-bdda-c535cb6342ba" class="bulleted-list"><li style="list-style-type:disc">Нельзя в train использовать события, которые находятся <strong>после</strong> target внутри сессии;</li></ul><ul id="2aa568fa-e39f-80b9-aa6d-d6306982f5ab" class="bulleted-list"><li style="list-style-type:disc">Частая ошибка:<ul id="2aa568fa-e39f-80cc-ab9a-ef5428b643b4" class="bulleted-list"><li style="list-style-type:circle">использовать всю сессию для генерации фич <strong>и для предсказания последнего item</strong> → лики.</li></ul></li></ul><hr id="2aa568fa-e39f-80d1-b443-e84d82561619"/><h2 id="2aa568fa-e39f-803e-a1b7-ebfe8ae486df" class="">7. Блок 5. Практика в ноутбуке</h2><p id="2aa568fa-e39f-8072-a896-f52daf01f65b" class="">Цель: чтобы студент руками реализовал несколько схем сплита на своём заведённом датасете.</p><h3 id="2aa568fa-e39f-80ff-9983-e10c45ecdb6e" class="">7.1. Подготовка</h3><p id="2aa568fa-e39f-80fd-8f9e-fec78fc477aa" class="">Взять:</p><ul id="2aa568fa-e39f-800c-b0e7-c58a9dd50637" class="bulleted-list"><li style="list-style-type:disc">датасет/сорев, используемый в модуле 1 и 2;</li></ul><ul id="2aa568fa-e39f-80b2-9064-d2e7a071aa56" class="bulleted-list"><li style="list-style-type:disc">лог событий с колонками типа:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8014-b1eb-f46b5aa25af3" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">user_id, item_id, timestamp, (session_id?), event_type, ...
+</code></pre></li></ul><h3 id="2aa568fa-e39f-80fe-afe5-ffb598a4750d" class="">7.2. Реализуем три схемы сплита</h3><p id="2aa568fa-e39f-80ba-b228-f1c6db401466" class=""><strong>1) Random split (как анти-пример)</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8006-9051-f2b1b15d7edf" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sklearn.model_selection import train_test_split
+
+train_df, val_df = train_test_split(events_df, test_size=0.2, random_state=42)
+</code></pre><p id="2aa568fa-e39f-80f6-86ca-d2fd885b77ef" class="">Обсуждение: показать, как легко это сделать — и почему почти всегда плохо.</p><p id="2aa568fa-e39f-80fe-87ed-d9b5e2b50aa5" class=""><strong>2) Time-based split</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8032-a452-e7ce7d2c6c83" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># сортируем события по времени
+events_sorted = events_df.sort_values(&quot;timestamp&quot;)
+
+# выбираем точку разделения
+split_time = events_sorted[&quot;timestamp&quot;].quantile(0.8)
+
+train_df = events_sorted[events_sorted[&quot;timestamp&quot;] &lt;= split_time]
+val_df   = events_sorted[events_sorted[&quot;timestamp&quot;] &gt; split_time]
+</code></pre><ul id="2aa568fa-e39f-80c8-b4c0-e6411d501290" class="bulleted-list"><li style="list-style-type:disc">Проверить:<ul id="2aa568fa-e39f-80d8-a873-c9c8e9c8de91" class="bulleted-list"><li style="list-style-type:circle">сколько пользователей/товаров есть и там, и там;</li></ul><ul id="2aa568fa-e39f-80ec-b32f-da3b625cc5bd" class="bulleted-list"><li style="list-style-type:circle">выглядит ли распределение по времени адекватно.</li></ul></li></ul><p id="2aa568fa-e39f-80be-90b4-d9aaa3efc08b" class=""><strong>3) Leave-one-out по пользователю</strong></p><p id="2aa568fa-e39f-803f-a1e8-df42e88e080f" class="">Вариант простой реализации:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80e6-8059-ebc8aaa2c441" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">events_sorted = events_df.sort_values([&quot;user_id&quot;, &quot;timestamp&quot;])
+
+def leave_one_out_split(df):
+    train_rows = []
+    val_rows = []
+
+    for user_id, group in df.groupby(&quot;user_id&quot;):
+        if len(group) &lt; 2:
+            # слишком мало событий, можно всё отправить в train
+            train_rows.append(group)
+            continue
+
+        # всё кроме последнего - train, последний - validation
+        train_rows.append(group.iloc[:-1])
+        val_rows.append(group.iloc[-1:])
+
+    train_df = pd.concat(train_rows, ignore_index=True)
+    val_df   = pd.concat(val_rows, ignore_index=True)
+    return train_df, val_df
+
+train_df_loo, val_df_loo = leave_one_out_split(events_sorted)
+</code></pre><p id="2aa568fa-e39f-8039-82be-fc3e0029fa6f" class=""><em>(Код можно упростить/изменить; важен принцип.)</em></p><h3 id="2aa568fa-e39f-80ff-b6de-fcd9f977e0f9" class="">7.3. Анализ результатов</h3><p id="2aa568fa-e39f-8015-8e6d-fc43d5a03a22" class="">Для каждой схемы сплита:</p><ul id="2aa568fa-e39f-809b-bd37-df438f2db1a0" class="bulleted-list"><li style="list-style-type:disc">посчитать:<ul id="2aa568fa-e39f-80c0-b22d-fe17c7b0e07f" class="bulleted-list"><li style="list-style-type:circle">количество пользователей в train/val;</li></ul><ul id="2aa568fa-e39f-80a4-ac98-e4aef9936064" class="bulleted-list"><li style="list-style-type:circle">сколько пользователей есть в обоих;</li></ul><ul id="2aa568fa-e39f-80b2-879e-f6cba46e3364" class="bulleted-list"><li style="list-style-type:circle">распределение по времени (построить гистограмму / min-max timestamp’ы).</li></ul></li></ul><ul id="2aa568fa-e39f-809f-9fab-f0db742b3683" class="bulleted-list"><li style="list-style-type:disc">задать себе вопросы:<ul id="2aa568fa-e39f-80f7-a052-ec061a28b705" class="bulleted-list"><li style="list-style-type:circle">имитирует ли эта схема реальную задачу?</li></ul><ul id="2aa568fa-e39f-8051-a84b-fd571b975a52" class="bulleted-list"><li style="list-style-type:circle">где тут возможны утечки?</li></ul><ul id="2aa568fa-e39f-80ba-af06-ff6c22ad3290" class="bulleted-list"><li style="list-style-type:circle">чем отличается валидный набор от train’а?</li></ul></li></ul><p id="2aa568fa-e39f-80de-ac7f-c4e37c667ec2" class="">Можно предложить студентам прямо в ноутбуке сделать маленькую табличку:</p><table id="2aa568fa-e39f-8055-b64e-f29c0c19c600" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-80f8-95fd-e56285af2874"><th id="K{Vw" class="simple-table-header-color simple-table-header">Split type</th><th id="t:E{" class="simple-table-header-color simple-table-header">Train size</th><th id="Y&lt;nM" class="simple-table-header-color simple-table-header">Val size</th><th id="&gt;Uha" class="simple-table-header-color simple-table-header">% users in both</th><th id="E@t?" class="simple-table-header-color simple-table-header">Comments</th></tr></thead><tbody><tr id="2aa568fa-e39f-808a-80d6-ca2f9a02e85f"><td id="K{Vw" class="">Random</td><td id="t:E{" class=""></td><td id="Y&lt;nM" class=""></td><td id="&gt;Uha" class=""></td><td id="E@t?" class="">leaks по времени</td></tr><tr id="2aa568fa-e39f-806c-93dd-d60be9456e0e"><td id="K{Vw" class="">Time-based</td><td id="t:E{" class=""></td><td id="Y&lt;nM" class=""></td><td id="&gt;Uha" class=""></td><td id="E@t?" class="">близко к реальности</td></tr><tr id="2aa568fa-e39f-8081-915b-f7b333e85908"><td id="K{Vw" class="">Leave-one-out</td><td id="t:E{" class=""></td><td id="Y&lt;nM" class=""></td><td id="&gt;Uha" class=""></td><td id="E@t?" class="">хорошо для top-K «следующий item»</td></tr></tbody></table><hr id="2aa568fa-e39f-80ce-b084-f7e8b1702b76"/><h2 id="2aa568fa-e39f-80ea-b659-c7d90d166548" class="">8. Домашнее задание 2.3</h2><h3 id="2aa568fa-e39f-80a1-ab36-fdd405d71b8f" class="">Задание 1. Реализовать две схемы сплита</h3><p id="2aa568fa-e39f-80fd-8761-f857d64da23d" class="">На своём датасете/сореве:</p><ol type="1" id="2aa568fa-e39f-802e-aec8-cc889f9e10f7" class="numbered-list" start="1"><li><strong>Time-based split</strong> (global или per-user) — на твой выбор.</li></ol><ol type="1" id="2aa568fa-e39f-80c9-b85e-c52b1d0f2633" class="numbered-list" start="2"><li><strong>Leave-one-out split</strong> по пользователю или по сессии (если задача session-based).</li></ol><p id="2aa568fa-e39f-80ee-8a9e-de0a3b21c034" class="">Нужно:</p><ul id="2aa568fa-e39f-800f-acbb-f41ae1851bf0" class="bulleted-list"><li style="list-style-type:disc">Реализовать split в ноутбуке (с кодом).</li></ul><ul id="2aa568fa-e39f-8042-bf6e-ffe6f8041250" class="bulleted-list"><li style="list-style-type:disc">Вывести:<ul id="2aa568fa-e39f-8055-a262-f77f5dfc45ac" class="bulleted-list"><li style="list-style-type:circle">размеры train/val;</li></ul><ul id="2aa568fa-e39f-80dd-9b37-d756c2e15924" class="bulleted-list"><li style="list-style-type:circle">статистику по количеству пользователей и items.</li></ul></li></ul><h3 id="2aa568fa-e39f-800d-8c82-d1f7b30204e5" class="">Задание 2. Сравнительный анализ</h3><p id="2aa568fa-e39f-8063-85d1-c3d4023ffc33" class="">Написать короткий текст (1–2 страницы):</p><ol type="1" id="2aa568fa-e39f-8066-a5dd-f28c2328b9f6" class="numbered-list" start="1"><li>Описать:<ul id="2aa568fa-e39f-804c-9af9-fdda91a54743" class="bulleted-list"><li style="list-style-type:disc">какая у тебя задача (implicit/next-item/multi-objective и т.д.);</li></ul><ul id="2aa568fa-e39f-80d0-b790-fd217d4daa3b" class="bulleted-list"><li style="list-style-type:disc">как в реальности выглядит сценарий «мы учимся на прошлых данных → выдаём рекомендации».</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-805c-b1ab-e1f75346d97b" class="numbered-list" start="2"><li>Сравнить <strong>time-based</strong> и <strong>leave-one-out</strong> схемы:<ul id="2aa568fa-e39f-80ef-8893-f96d7d652553" class="bulleted-list"><li style="list-style-type:disc">какая лучше имитирует реальность для твоей задачи;</li></ul><ul id="2aa568fa-e39f-8067-905f-e9b1b63df38e" class="bulleted-list"><li style="list-style-type:disc">в какой проще считать метрики;</li></ul><ul id="2aa568fa-e39f-8055-b5b5-d45acaeeab6f" class="bulleted-list"><li style="list-style-type:disc">в какой больше риск ликов.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801c-a2e5-c6a336fdc0ec" class="numbered-list" start="3"><li>Ответить на вопросы:<ul id="2aa568fa-e39f-803f-9642-ee0332f56ff4" class="bulleted-list"><li style="list-style-type:disc">если бы ты участвовал в соревновании с такой постановкой,<p id="2aa568fa-e39f-8091-80f9-c6c829ebb390" class="">какой сплит использовал бы в качестве <strong>основного offline-сплита</strong> и почему?</p></li></ul><ul id="2aa568fa-e39f-8022-bfd7-cc123d475732" class="bulleted-list"><li style="list-style-type:disc">есть ли смысл держать <strong>второй тип сплита</strong> как sanity check (например, time-based + leave-one-out)?</li></ul></li></ol><hr id="2aa568fa-e39f-80a0-ba4d-d6c4be70da9b"/><h2 id="2aa568fa-e39f-8020-800e-f0c4e3a4e6a3" class="">9. Чек-лист усвоения урока 2.3</h2><p id="2aa568fa-e39f-8000-9238-f1e26d0c4099" class="">Студент считается «усвоившим» урок, если он:</p><ul id="2aa568fa-e39f-806d-b844-d2662c380d35" class="bulleted-list"><li style="list-style-type:disc">может объяснить:<ul id="2aa568fa-e39f-8078-86ab-ed5373d1350f" class="bulleted-list"><li style="list-style-type:circle">чем плох random split для RecSys;</li></ul><ul id="2aa568fa-e39f-80b3-aa8a-c13ec89d4e69" class="bulleted-list"><li style="list-style-type:circle">что измеряет user-based split;</li></ul><ul id="2aa568fa-e39f-805d-a033-c36065fa5215" class="bulleted-list"><li style="list-style-type:circle">почему time-based split — «каноничный» для многих задач;</li></ul><ul id="2aa568fa-e39f-8099-92e0-ce19f31997b0" class="bulleted-list"><li style="list-style-type:circle">как устроен leave-one-out;</li></ul></li></ul><ul id="2aa568fa-e39f-80f1-8e33-f7f4cb659c33" class="bulleted-list"><li style="list-style-type:disc">способен, глядя на описание новой RecSys-задачи:<ul id="2aa568fa-e39f-8055-ad73-e6ccf22b6594" class="bulleted-list"><li style="list-style-type:circle">предложить адекватную схему валидации;</li></ul><ul id="2aa568fa-e39f-8079-9888-d895263d14a5" class="bulleted-list"><li style="list-style-type:circle">назвать хотя бы один потенциальный leak;</li></ul></li></ul><ul id="2aa568fa-e39f-8012-b77c-f3ea7c8e0742" class="bulleted-list"><li style="list-style-type:disc">реализовал на практике <strong>как минимум один time-based и один leave-one-out сплит</strong> на своём датасете и не умер.</li></ul><hr id="2aa568fa-e39f-80d7-8a25-d0c5e6346c3d"/><p id="2aa568fa-e39f-80a1-a150-ed71e8065e5a" class="">Если хочешь, дальше можно:</p><ul id="2aa568fa-e39f-8037-b02a-cb58ac7c97cf" class="bulleted-list"><li style="list-style-type:disc">расписать <strong>урок 2.4</strong> (negative sampling + полноценный evaluation-фреймворк),</li></ul><ul id="2aa568fa-e39f-80c5-9fc6-fb7c35a081b8" class="bulleted-list"><li style="list-style-type:disc">или переключиться к <strong>Модулю 3</strong> (CF: user-based / item-based) и построить его на топе того eval-движка, что мы тут заложили.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

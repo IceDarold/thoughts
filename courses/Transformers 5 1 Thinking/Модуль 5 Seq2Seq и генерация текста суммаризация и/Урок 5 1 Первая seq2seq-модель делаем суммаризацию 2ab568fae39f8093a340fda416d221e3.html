@@ -1,0 +1,853 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 5.1. Первая seq2seq-модель: делаем суммаризацию диалога через generate()</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8093-a340-fda416d221e3" class="page sans"><header><h1 class="page-title">Урок 5.1. Первая seq2seq-модель: делаем суммаризацию диалога через <code>generate()</code></h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80ce-9e44-de4b199310af" class="">Окей, делаем из 5.1 прям полноценный урок, который можно брать и читать ученикам 💪</p><hr id="2ab568fa-e39f-802d-8a61-fe8e8fe452e2"/><h2 id="2ab568fa-e39f-802b-b903-c12df5dd892b" class="">1. Цель урока</h2><p id="2ab568fa-e39f-8000-83d2-d004d25602be" class="">После этого урока ученик должен уметь:</p><ul id="2ab568fa-e39f-80e1-9211-d7868787fb83" class="bulleted-list"><li style="list-style-type:disc">понимать <strong>на уровне интуиции</strong>, что такое encoder-decoder (seq2seq) модель;</li></ul><ul id="2ab568fa-e39f-802b-b2a2-c1cb3bf9cb93" class="bulleted-list"><li style="list-style-type:disc">грузить <code>AutoTokenizer</code> + <code>AutoModelForSeq2SeqLM</code>;</li></ul><ul id="2ab568fa-e39f-803a-963c-c8a956c8cbc9" class="bulleted-list"><li style="list-style-type:disc">токенизировать длинный диалог и запускать <code>model.generate()</code> для суммаризации;</li></ul><ul id="2ab568fa-e39f-8021-83c2-f58efb20938e" class="bulleted-list"><li style="list-style-type:disc">управлять стратегией генерации:<ul id="2ab568fa-e39f-806d-8d43-e972171c0f85" class="bulleted-list"><li style="list-style-type:circle">greedy,</li></ul><ul id="2ab568fa-e39f-804c-b2a3-f8ecfc42d3f3" class="bulleted-list"><li style="list-style-type:circle">beam search,</li></ul><ul id="2ab568fa-e39f-8007-bbe8-f7dd2daea0c2" class="bulleted-list"><li style="list-style-type:circle">sampling (<code>top_k</code>, <code>top_p</code>, <code>temperature</code>);</li></ul></li></ul><ul id="2ab568fa-e39f-8070-a273-c89261073ea7" class="bulleted-list"><li style="list-style-type:disc">видеть, как сильно от этого меняется качество и стиль текста.</li></ul><p id="2ab568fa-e39f-80ce-8a56-dfe7ef62a2a2" class="">Мы продолжаем наш <strong>кейс саппорта</strong>:</p><blockquote id="2ab568fa-e39f-80bf-b1b1-dd150a1a7e74" class="">Есть длинный диалог “пользователь ↔ поддержка”.<p id="2ab568fa-e39f-8077-acda-f644e56e40a6" class="">Задача — автоматически сделать <strong>короткое резюме</strong>: что случилось, на каком этапе всё зависло, что пофиксили / планируем.</p></blockquote><hr id="2ab568fa-e39f-8089-9457-e615f5fd204a"/><h2 id="2ab568fa-e39f-8018-8d4a-fb5b8b6f0f08" class="">2. Теория: что такое seq2seq модель и чем она отличается от “обычной”</h2><p id="2ab568fa-e39f-80a1-a703-d1aa7a6e9aa8" class="">Без теор. кошмара, только то, что реально надо для кода.</p><h3 id="2ab568fa-e39f-8044-b6e0-db42d4c7a793" class="">2.1. Encoder-decoder на пальцах</h3><p id="2ab568fa-e39f-8008-959a-d9fa0435b481" class="">Есть три основных семейства трансформеров:</p><ol type="1" id="2ab568fa-e39f-8038-b013-f3063dcde77a" class="numbered-list" start="1"><li><strong>Encoder-only</strong> (BERT-подобные):<ul id="2ab568fa-e39f-80d8-9fe8-d4ed28564138" class="bulleted-list"><li style="list-style-type:disc">хорошо для задач типа:<ul id="2ab568fa-e39f-808f-ad2a-e2e0d633cbfa" class="bulleted-list"><li style="list-style-type:circle">классификация текста,</li></ul><ul id="2ab568fa-e39f-80ad-bfdd-eb0e4f52fcfd" class="bulleted-list"><li style="list-style-type:circle">NER,</li></ul><ul id="2ab568fa-e39f-8062-a8d0-e90aa4354f2e" class="bulleted-list"><li style="list-style-type:circle">извлечение признаков.</li></ul></li></ul><ul id="2ab568fa-e39f-809b-ac07-d910541841e9" class="bulleted-list"><li style="list-style-type:disc">На вход: текст → на выход: вектора/логиты.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8075-a548-ecfe3e713061" class="numbered-list" start="2"><li><strong>Decoder-only</strong> (GPT-подобные):<ul id="2ab568fa-e39f-807d-9475-e1bba65236bb" class="bulleted-list"><li style="list-style-type:disc">хорошо для:<ul id="2ab568fa-e39f-8058-b03d-cd1fe10c1ea6" class="bulleted-list"><li style="list-style-type:circle">продолжения текста,</li></ul><ul id="2ab568fa-e39f-8058-979f-c294cb6027ff" class="bulleted-list"><li style="list-style-type:circle">чат-боты,</li></ul><ul id="2ab568fa-e39f-806d-b672-da9cb0a592ff" class="bulleted-list"><li style="list-style-type:circle">генерация.</li></ul></li></ul><ul id="2ab568fa-e39f-8018-bfb5-f1023f3a48f0" class="bulleted-list"><li style="list-style-type:disc">Модель “смотрит назад” и предсказывает следующий токен.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8052-9088-d9e3d475814b" class="numbered-list" start="3"><li><strong>Encoder-decoder (seq2seq)</strong> (T5, BART и т.п.):<ul id="2ab568fa-e39f-8017-ac36-dcaea0f68f96" class="bulleted-list"><li style="list-style-type:disc">вход: <strong>один текст</strong> (source),</li></ul><ul id="2ab568fa-e39f-800d-8277-fb135c4f7cae" class="bulleted-list"><li style="list-style-type:disc">выход: <strong>другой текст</strong> (target),</li></ul><ul id="2ab568fa-e39f-80bf-871f-fcfbcd3f30c1" class="bulleted-list"><li style="list-style-type:disc">подходят для:<ul id="2ab568fa-e39f-80cd-af45-c74fe4c33a42" class="bulleted-list"><li style="list-style-type:circle">суммаризации,</li></ul><ul id="2ab568fa-e39f-808f-b9bd-c7981152a5d4" class="bulleted-list"><li style="list-style-type:circle">перевода,</li></ul><ul id="2ab568fa-e39f-8048-91dc-feb02f5570ef" class="bulleted-list"><li style="list-style-type:circle">перефразирования,</li></ul><ul id="2ab568fa-e39f-80ef-bf48-cbe7c79e3c7a" class="bulleted-list"><li style="list-style-type:circle">“вопрос → ответ” и т.п.</li></ul></li></ul></li></ol><p id="2ab568fa-e39f-8095-9791-d5e173314172" class="">Схема seq2seq:</p><ol type="1" id="2ab568fa-e39f-80e2-a643-c45335e26d38" class="numbered-list" start="1"><li><strong>Encoder</strong> читает весь входной текст → делает набор скрытых представлений.</li></ol><ol type="1" id="2ab568fa-e39f-8011-a388-ff0cca727260" class="numbered-list" start="2"><li><strong>Decoder</strong> постепенно генерирует выходной текст, опираясь:<ul id="2ab568fa-e39f-80b4-b792-df4313b70c5e" class="bulleted-list"><li style="list-style-type:disc">на скрытые состояния энкодера,</li></ul><ul id="2ab568fa-e39f-80ea-bf96-d67783d1b43b" class="bulleted-list"><li style="list-style-type:disc">и на уже сгенерированные токены.</li></ul></li></ol><p id="2ab568fa-e39f-8010-8988-c79bc4c3a0df" class="">Вот именно такие модели нам нужны для <strong>“диалог → резюме”</strong>.</p><h3 id="2ab568fa-e39f-8031-a899-f8e9c481a641" class="">2.2. Как Hugging Face это упаковывает</h3><p id="2ab568fa-e39f-80e9-afe9-d6ff948eb4f1" class="">Для seq2seq в HF есть класс:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803d-bfeb-c394300840eb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">AutoModelForSeq2SeqLM
+</code></pre><p id="2ab568fa-e39f-80a1-910a-f5eb9086dda3" class="">Он:</p><ul id="2ab568fa-e39f-8044-b2cc-e5217392cf7e" class="bulleted-list"><li style="list-style-type:disc">под капотом берёт нужную архитектуру (T5, BART и т.п.),</li></ul><ul id="2ab568fa-e39f-8085-af6f-d26ae27fddd3" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-8026-bf38-cb3d41f1bec1" class="bulleted-list"><li style="list-style-type:circle">считать loss (если передать <code>labels</code>),</li></ul><ul id="2ab568fa-e39f-806b-bb6b-d8ecd0016093" class="bulleted-list"><li style="list-style-type:circle">генерировать текст через <code>.generate()</code>.</li></ul></li></ul><p id="2ab568fa-e39f-80c3-8af1-c4e4539f71c5" class="">И ещё:</p><ul id="2ab568fa-e39f-806d-bda5-eae5779c35ef" class="bulleted-list"><li style="list-style-type:disc"><code>AutoTokenizer</code>:<ul id="2ab568fa-e39f-806d-976a-cc52a8b054c2" class="bulleted-list"><li style="list-style-type:circle">знает, как кодировать и декодировать текст для этой модели,</li></ul><ul id="2ab568fa-e39f-8045-abd7-d74ce4c79b26" class="bulleted-list"><li style="list-style-type:circle">у некоторых моделей (например T5) есть стилевые промпты: <code>&quot;summarize: &lt;текст&gt;&quot;</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-80fe-b129-d973dd5acf2d" class="">2.3. <code>generate()</code> — как мозг генерации</h3><p id="2ab568fa-e39f-8018-8c5a-d1de21a5e17a" class="">Метод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8024-a2e3-f5ca445a9bf7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model.generate(input_ids, attention_mask, ...)
+</code></pre><p id="2ab568fa-e39f-80d4-b75c-e83855f28fbd" class="">делает три вещи:</p><ol type="1" id="2ab568fa-e39f-808b-912e-ef4a05bfbe52" class="numbered-list" start="1"><li>Берёт вход (энкодер),</li></ol><ol type="1" id="2ab568fa-e39f-80f8-a220-cce345f59217" class="numbered-list" start="2"><li>итеративно предсказывает токены (декодер),</li></ol><ol type="1" id="2ab568fa-e39f-8065-bc37-f1be67edeba5" class="numbered-list" start="3"><li>возвращает последовательность <code>output_ids</code> (индексы токенов).</li></ol><p id="2ab568fa-e39f-80a5-a2e1-fb0629228837" class="">Параметры, которыми мы будем играть:</p><ul id="2ab568fa-e39f-805a-b3c6-e47639b6be2a" class="bulleted-list"><li style="list-style-type:disc"><strong>длина</strong>:<ul id="2ab568fa-e39f-8095-a05f-f20b1b76fd53" class="bulleted-list"><li style="list-style-type:circle"><code>max_new_tokens</code> / <code>max_length</code>,</li></ul><ul id="2ab568fa-e39f-8064-8d6f-f36f9663cad1" class="bulleted-list"><li style="list-style-type:circle"><code>min_length</code>;</li></ul></li></ul><ul id="2ab568fa-e39f-80ee-94b2-e6e30521ae49" class="bulleted-list"><li style="list-style-type:disc"><strong>стратегия</strong>:<ul id="2ab568fa-e39f-8085-ade1-c257d12e7add" class="bulleted-list"><li style="list-style-type:circle">greedy: <code>num_beams=1</code>, <code>do_sample=False</code>,</li></ul><ul id="2ab568fa-e39f-8064-996e-eb7f03cac3b2" class="bulleted-list"><li style="list-style-type:circle">beam search: <code>num_beams&gt;1</code>, <code>do_sample=False</code>,</li></ul><ul id="2ab568fa-e39f-80c4-81fd-f85b015bdd2b" class="bulleted-list"><li style="list-style-type:circle">sampling: <code>do_sample=True</code>, <code>top_k</code>, <code>top_p</code>, <code>temperature</code>;</li></ul></li></ul><ul id="2ab568fa-e39f-8088-bf02-e1a1a1bfbe51" class="bulleted-list"><li style="list-style-type:disc"><strong>качество</strong>:<ul id="2ab568fa-e39f-8017-abea-c485b987612d" class="bulleted-list"><li style="list-style-type:circle"><code>no_repeat_ngram_size</code> (чтобы не заикалась),</li></ul><ul id="2ab568fa-e39f-803c-939f-f6446ef142b3" class="bulleted-list"><li style="list-style-type:circle"><code>length_penalty</code>.</li></ul></li></ul><hr id="2ab568fa-e39f-80cb-bd4e-ffb157c10821"/><h2 id="2ab568fa-e39f-80bd-8600-f1e4cbbaa988" class="">3. Практика, часть 1. Первый запуск: суммаризация одного диалога</h2><h3 id="2ab568fa-e39f-8034-b8e7-ec2739be052d" class="">3.1. Установка и импорт</h3><p id="2ab568fa-e39f-80ef-90ea-d23cd748d18c" class="">Если окружение ещё чистое:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8020-b8ca-d808a7e705e2" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install transformers accelerate
+</code></pre><p id="2ab568fa-e39f-8021-85cb-d960c9a48533" class="">В уроке можно просто считать, что всё уже поставлено.</p><p id="2ab568fa-e39f-8044-9b2a-ce575f028de7" class="">Дальше — код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8061-9c6a-fc4f615b8009" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+</code></pre><p id="2ab568fa-e39f-80e5-adfd-c399e27181de" class=""><strong>Объяснение:</strong></p><ul id="2ab568fa-e39f-803e-8f12-ce3cf380d455" class="bulleted-list"><li style="list-style-type:disc"><code>AutoTokenizer</code> — отвечает за перевод текста ↔ токены.</li></ul><ul id="2ab568fa-e39f-801d-97ba-fb8312ed3091" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForSeq2SeqLM</code> — сама seq2seq модель, умеющая генерировать.</li></ul><h3 id="2ab568fa-e39f-80c8-8e0c-f58141608495" class="">3.2. Загружаем модель для суммаризации</h3><p id="2ab568fa-e39f-8051-8a74-d3b8133f44f7" class="">Возьмём популярную модель суммаризации (например, BART):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c6-893c-c6318427269d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model_id = &quot;facebook/bart-large-cnn&quot;
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+</code></pre><p id="2ab568fa-e39f-8070-a65e-c0aba8f0360c" class=""><strong>Объяснение:</strong></p><ul id="2ab568fa-e39f-8026-8beb-f519d14a5889" class="bulleted-list"><li style="list-style-type:disc"><code>from_pretrained(model_id)</code>:<ul id="2ab568fa-e39f-8026-bb35-ed58a79c9ce9" class="bulleted-list"><li style="list-style-type:circle">качает веса модели и конфиг,</li></ul><ul id="2ab568fa-e39f-80e9-83ee-c6882f2eef77" class="bulleted-list"><li style="list-style-type:circle">токенизатор — словарь токенов + правила,</li></ul><ul id="2ab568fa-e39f-8098-8b94-fc0f921f0570" class="bulleted-list"><li style="list-style-type:circle">модель — архитектура + предобученные веса.</li></ul></li></ul><ul id="2ab568fa-e39f-803e-89c6-ef5d9e107007" class="bulleted-list"><li style="list-style-type:disc"><code>bart-large-cnn</code> обучался на суммаризации новостей — не идеален для техподдержки, но для курса годится.</li></ul><p id="2ab568fa-e39f-8095-ab05-ef7f699792fc" class="">Если есть GPU, можно сразу на него пересадить:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8014-9982-f8ae3f75622d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+model.to(device)
+</code></pre><h3 id="2ab568fa-e39f-8000-8365-d8e37821a7ed" class="">3.3. Возьмём пример диалога</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a5-8444-db5e2566a969" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">dialog = &quot;&quot;&quot;
+User: Hi, I updated the app yesterday and now it crashes whenever I open the gallery.
+Support: Sorry to hear that. Could you tell me your device and OS version?
+User: It&#x27;s an iPhone 13 with iOS 17.1, app version 5.2.1.
+Support: Thanks! Does it crash anywhere else or only in the gallery?
+User: Only in the gallery when I try to upload or preview images.
+Support: Got it, we are aware of this bug on iOS 17.1 in 5.2.1 and working on a fix for this week.
+&quot;&quot;&quot;
+</code></pre><h3 id="2ab568fa-e39f-8095-8251-f286fa78b4e8" class="">3.4. Токенизация диалога</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8055-b87d-ecaffce6e105" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">inputs = tokenizer(
+    dialog,
+    return_tensors=&quot;pt&quot;,    # хотим PyTorch тензоры
+    truncation=True,        # обрежем, если слишком длинный
+    max_length=512,         # ограничение длины входа
+)
+
+print(inputs.keys())
+print(inputs[&quot;input_ids&quot;].shape)
+print(inputs[&quot;attention_mask&quot;].shape)
+</code></pre><p id="2ab568fa-e39f-8070-a1a5-d9f18139394b" class=""><strong>Объяснение:</strong></p><ul id="2ab568fa-e39f-8062-b0ff-e328d3cb1d83" class="bulleted-list"><li style="list-style-type:disc"><code>input_ids</code>: размер <code>[1, seq_len]</code> — индексы токенов.</li></ul><ul id="2ab568fa-e39f-80c8-b354-c5641afb7a61" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code>: <code>[1, seq_len]</code> — где 1 = реальный токен, 0 = паддинг.</li></ul><ul id="2ab568fa-e39f-8045-8570-e34fffcc9091" class="bulleted-list"><li style="list-style-type:disc">если диалог будет длиннее, чем <code>max_length</code>, он обрежется справа (это важно, но для урока достаточно понять, что без <code>truncation=True</code> будет ошибка).</li></ul><p id="2ab568fa-e39f-805c-a08c-e61a8f841d50" class="">Не забываем, если модель на GPU:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80dc-8057-ee6a5df757df" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">inputs = {k: v.to(device) for k, v in inputs.items()}
+</code></pre><h3 id="2ab568fa-e39f-8035-82a8-f223ce501938" class="">3.5. Генерация резюме</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8012-9547-ce9f7d9bbc15" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">with torch.no_grad():  # градиенты не нужны при инференсе
+    summary_ids = model.generate(
+        **inputs,
+        max_new_tokens=60,      # сколько токенов максимум генерировать
+        min_length=20,          # минимум токенов (чтобы не ответила одним словом)
+        num_beams=4,            # beam search с 4 лучами
+        length_penalty=1.0,     # штраф за длину
+        no_repeat_ngram_size=3, # запрещаем повтор 3-грамм
+    )
+</code></pre><p id="2ab568fa-e39f-80d3-b47d-fe182f1534c5" class="">Что тут важно:</p><ul id="2ab568fa-e39f-809a-8e2b-c680940d34ba" class="bulleted-list"><li style="list-style-type:disc"><code>max_new_tokens=60</code> — ограничиваем длину <strong>выхода</strong>, а не суммарную длину input+output.</li></ul><ul id="2ab568fa-e39f-8026-8596-c320ce4a21a5" class="bulleted-list"><li style="list-style-type:disc"><code>num_beams=4</code>:<ul id="2ab568fa-e39f-8066-bd37-ffd3b59027dd" class="bulleted-list"><li style="list-style-type:circle">beam search: модель пробует несколько лучших вариантов на каждом шаге, а не только один.</li></ul></li></ul><ul id="2ab568fa-e39f-803f-8f4a-d2f6625a37b8" class="bulleted-list"><li style="list-style-type:disc"><code>no_repeat_ngram_size=3</code>:<ul id="2ab568fa-e39f-807b-9b20-cea2eb10e7a6" class="bulleted-list"><li style="list-style-type:circle">предотвращает повтор кусочков типа <code>&quot;the app the app the app&quot;</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8080-8fb2-ec209843bada" class="">Теперь декодируем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8097-a472-e272b5aa45bf" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+print(&quot;SUMMARY:&quot;)
+print(summary)
+</code></pre><p id="2ab568fa-e39f-80ac-a483-c527bad8fe33" class=""><strong>Объяснения:</strong></p><ul id="2ab568fa-e39f-8070-88d4-e0fb43238242" class="bulleted-list"><li style="list-style-type:disc"><code>summary_ids[0]</code> — первая (и единственная) гипотеза для нашего единственного примера.</li></ul><ul id="2ab568fa-e39f-805d-a208-d920c19362e5" class="bulleted-list"><li style="list-style-type:disc"><code>skip_special_tokens=True</code> — убирает <code>&lt;s&gt;</code>, <code>&lt;/s&gt;</code>, <code>&lt;pad&gt;</code> и т.п.</li></ul><p id="2ab568fa-e39f-8080-ba45-d29b2bd342a0" class="">На этом месте полезно с учениками обсудить:</p><p id="2ab568fa-e39f-80f6-a15e-c3818bf86f03" class="">насколько summary действительно передаёт суть диалога, что потерялось, что искажено.</p><hr id="2ab568fa-e39f-8077-b72e-c54a6a0fb6b4"/><h2 id="2ab568fa-e39f-80ce-a75d-fb1070c167af" class="">4. Практика, часть 2. Сравниваем режимы генерации: greedy, beam, sampling</h2><p id="2ab568fa-e39f-807b-862f-e0c9b4860de2" class="">Теперь даём ученикам почувствовать, что <strong>одни и те же веса модели</strong> могут вести себя очень по-разному в зависимости от стратегии генерации.</p><h3 id="2ab568fa-e39f-8091-b7e1-d6c109b66dc2" class="">4.1. Вводим три режима</h3><p id="2ab568fa-e39f-80ef-b1e1-d801ff5c8620" class="">Сделаем функцию, которая принимает <code>dialog</code> и <code>mode</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80fd-9e7d-f63841475a10" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def summarize(dialog: str, mode: str = &quot;beam&quot;) -&gt; str:
+    inputs = tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    )
+
+    if torch.cuda.is_available():
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+
+    gen_kwargs = dict(
+        max_new_tokens=60,
+        min_length=20,
+        no_repeat_ngram_size=3,
+    )
+
+    if mode == &quot;greedy&quot;:
+        # Жадный режим: всегда берём самый вероятный токен
+        gen_kwargs.update(
+            num_beams=1,
+            do_sample=False,
+        )
+    elif mode == &quot;beam&quot;:
+        # Beam search: держим несколько кандидатов
+        gen_kwargs.update(
+            num_beams=4,
+            do_sample=False,
+        )
+    elif mode == &quot;sample&quot;:
+        # Стохастический режим: сэмплирование
+        gen_kwargs.update(
+            do_sample=True,
+            top_k=50,
+            top_p=0.9,
+            temperature=0.7,
+        )
+    else:
+        raise ValueError(f&quot;Unknown mode: {mode}&quot;)
+
+    with torch.no_grad():
+        summary_ids = model.generate(
+            **inputs,
+            **gen_kwargs,
+        )
+
+    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return summary
+</code></pre><p id="2ab568fa-e39f-80ce-9035-df9b15c15bb1" class="">Разбираем:</p><ul id="2ab568fa-e39f-80a8-baca-e2b33b1b153c" class="bulleted-list"><li style="list-style-type:disc"><code>mode == &quot;greedy&quot;</code>:<ul id="2ab568fa-e39f-80f5-a9ce-c5b2b750e1d2" class="bulleted-list"><li style="list-style-type:circle"><code>num_beams=1</code>, <code>do_sample=False</code>:<ul id="2ab568fa-e39f-80d7-9e0d-ef78ddc37150" class="bulleted-list"><li style="list-style-type:square">всегда выдаёт “самый вероятный” токен,</li></ul><ul id="2ab568fa-e39f-809e-92b8-d389f21a1bb4" class="bulleted-list"><li style="list-style-type:square">текст более предсказуемо-однообразный.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-808a-a03f-df9d966f0a44" class="bulleted-list"><li style="list-style-type:disc"><code>mode == &quot;beam&quot;</code>:<ul id="2ab568fa-e39f-8047-b195-cfc94d1046c5" class="bulleted-list"><li style="list-style-type:circle"><code>num_beams=4</code>:<ul id="2ab568fa-e39f-809d-98c7-f4639e96067f" class="bulleted-list"><li style="list-style-type:square">ищет более глобально “лучший” вариант,</li></ul><ul id="2ab568fa-e39f-805b-873e-cdbf96b7a5b6" class="bulleted-list"><li style="list-style-type:square">более аккуратный, но иногда слишком “формальный”.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-8065-a36a-d2d491898544" class="bulleted-list"><li style="list-style-type:disc"><code>mode == &quot;sample&quot;</code>:<ul id="2ab568fa-e39f-801d-827b-f2a7914e0513" class="bulleted-list"><li style="list-style-type:circle"><code>do_sample=True</code>, <code>top_k</code>, <code>top_p</code>, <code>temperature</code>:<ul id="2ab568fa-e39f-8017-a397-ea9a62810531" class="bulleted-list"><li style="list-style-type:square">добавляем рандома,</li></ul><ul id="2ab568fa-e39f-80c8-977b-f3d124cc75bc" class="bulleted-list"><li style="list-style-type:square">текст может быть более живым, но иногда и странным.</li></ul></li></ul></li></ul><h3 id="2ab568fa-e39f-8057-8b07-ce216ac66c68" class="">4.2. Сравниваем выводы разных режимов</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8059-8e6c-dbebfd786319" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">for m in [&quot;greedy&quot;, &quot;beam&quot;, &quot;sample&quot;]:
+    print(&quot;=&quot; * 80)
+    print(f&quot;MODE: {m}&quot;)
+    print(&quot;-&quot; * 80)
+    print(summarize(dialog, mode=m))
+    print()
+</code></pre><p id="2ab568fa-e39f-80ff-8b2b-c4f029337534" class=""><strong>Что стоит обсудить с учениками:</strong></p><ul id="2ab568fa-e39f-80df-8d63-e68c42fbf134" class="bulleted-list"><li style="list-style-type:disc">Где модель даёт <strong>слишком сухое</strong> summary?</li></ul><ul id="2ab568fa-e39f-803a-9984-c8999ffce00b" class="bulleted-list"><li style="list-style-type:disc">Где summary <strong>слишком креативное</strong> и начинает придумывать лишнее?</li></ul><ul id="2ab568fa-e39f-8090-a4bd-ca1b84e3ae71" class="bulleted-list"><li style="list-style-type:disc">Видно ли, что beam search:<ul id="2ab568fa-e39f-8028-a15e-e8ce80d6ea04" class="bulleted-list"><li style="list-style-type:circle">чаще даёт более логичную, связную формулировку,</li></ul><ul id="2ab568fa-e39f-8095-9bbe-d55f24ca4d0b" class="bulleted-list"><li style="list-style-type:circle">но может быть “скучнее”?</li></ul></li></ul><ul id="2ab568fa-e39f-806d-b2bc-f79c53f21c66" class="bulleted-list"><li style="list-style-type:disc">Видно ли, что sampling:<ul id="2ab568fa-e39f-8062-83f1-f7fcc49f7b31" class="bulleted-list"><li style="list-style-type:circle">местами формулирует иначе,</li></ul><ul id="2ab568fa-e39f-8095-b3fe-e7367d383ac0" class="bulleted-list"><li style="list-style-type:circle">иногда добавляет лишние детали / “фантазирует”?</li></ul></li></ul><hr id="2ab568fa-e39f-800f-89a9-f150563fc1cd"/><h2 id="2ab568fa-e39f-8088-910f-d3da3834d5d7" class="">5. Практика, часть 3. Небольшой хелпер для суммаризации диалогов</h2><p id="2ab568fa-e39f-8068-a234-c3a76d57b35a" class="">Для удобства (и для дальнейших модулей) можно показать мини-обёртку:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8001-be5f-c3e4f643aad0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_summarizer(
+    model_id: str = &quot;facebook/bart-large-cnn&quot;,
+    device: str | None = None,
+):
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+
+    if device is None:
+        device = &quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;
+
+    device = torch.device(device)
+    model.to(device)
+
+    def summarize(dialog: str, mode: str = &quot;beam&quot;) -&gt; str:
+        inputs = tokenizer(
+            dialog,
+            return_tensors=&quot;pt&quot;,
+            truncation=True,
+            max_length=512,
+        )
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+
+        gen_kwargs = dict(
+            max_new_tokens=60,
+            min_length=20,
+            no_repeat_ngram_size=3,
+        )
+
+        if mode == &quot;greedy&quot;:
+            gen_kwargs.update(num_beams=1, do_sample=False)
+        elif mode == &quot;beam&quot;:
+            gen_kwargs.update(num_beams=4, do_sample=False)
+        elif mode == &quot;sample&quot;:
+            gen_kwargs.update(
+                do_sample=True,
+                top_k=50,
+                top_p=0.9,
+                temperature=0.7,
+            )
+        else:
+            raise ValueError(f&quot;Unknown mode: {mode}&quot;)
+
+        with torch.no_grad():
+            ids = model.generate(**inputs, **gen_kwargs)
+
+        return tokenizer.decode(ids[0], skip_special_tokens=True)
+
+    return summarize
+</code></pre><p id="2ab568fa-e39f-809e-b0ec-c8960f2586b7" class="">И использование:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806e-8e26-d740c9184347" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">summarize = build_summarizer()
+
+print(summarize(dialog, mode=&quot;beam&quot;))
+</code></pre><p id="2ab568fa-e39f-8055-8d18-c1bfb0239ea1" class="">Это можно потом легко переиспользовать в других уроках (seq2seq-fine-tuning, мини-API и т.п.).</p><hr id="2ab568fa-e39f-8057-b461-ff187bbf255c"/><h2 id="2ab568fa-e39f-8084-8303-ee3dce121998" class="">6. Типичные грабли и важные моменты, которые стоит проговорить</h2><p id="2ab568fa-e39f-80d8-96d8-d0fb9b76cab1" class="">Чтобы ученики меньше страдали:</p><ol type="1" id="2ab568fa-e39f-8098-8843-e479bd8b258e" class="numbered-list" start="1"><li><strong>Слишком длинный текст</strong><ul id="2ab568fa-e39f-80ff-b021-e2ba7947ef15" class="bulleted-list"><li style="list-style-type:disc">если не указать <code>truncation=True</code>, <code>max_length</code>, можно словить ошибку;</li></ul><ul id="2ab568fa-e39f-80e7-9d01-c89d736762b9" class="bulleted-list"><li style="list-style-type:disc">для реальных диалогов надо следить за <code>model.config.max_position_embeddings</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8007-9b58-c80b73f4ae24" class="numbered-list" start="2"><li><strong>Слишком длинный output</strong><ul id="2ab568fa-e39f-80a2-8b96-e8c114d0438c" class="bulleted-list"><li style="list-style-type:disc">без <code>max_new_tokens</code> модель может ползти до <code>max_length</code>, что иногда долго и бессмысленно.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-804f-8c84-c061b01260c4" class="numbered-list" start="3"><li><strong>GPU vs CPU</strong><ul id="2ab568fa-e39f-802c-9bf3-e1aa5c5bb502" class="bulleted-list"><li style="list-style-type:disc">на CPU всё работает, но медленнее;</li></ul><ul id="2ab568fa-e39f-8094-8187-c23eab3e614b" class="bulleted-list"><li style="list-style-type:disc">если нужно ускорить, переносим модель и inputs на GPU:<p id="2ab568fa-e39f-80fc-8e15-e4f961b1d59b" class=""><code>model.to(&quot;cuda&quot;)</code>, <code>inputs = {k: v.to(&quot;cuda&quot;) for k, v in inputs.items()}</code>.</p></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8013-b978-c3b84d977a94" class="numbered-list" start="4"><li><strong>Детерминизм</strong><ul id="2ab568fa-e39f-8054-9c8f-e90acc943ba1" class="bulleted-list"><li style="list-style-type:disc">greedy / beam search → детерминированные (при фиксированных весах),</li></ul><ul id="2ab568fa-e39f-80a5-b7a2-d00f27ebd214" class="bulleted-list"><li style="list-style-type:disc">sampling → каждый запуск может давать чуть другой текст.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-803e-b905-c7d8e7093dd0" class="numbered-list" start="5"><li><strong>Подбор параметров</strong><ul id="2ab568fa-e39f-8035-b972-c0796d0a8c72" class="bulleted-list"><li style="list-style-type:disc"><code>num_beams</code>: 1–8 обычно хватает;</li></ul><ul id="2ab568fa-e39f-8096-b8d4-d3f359da1d0d" class="bulleted-list"><li style="list-style-type:disc"><code>top_k</code>, <code>top_p</code>, <code>temperature</code>:<ul id="2ab568fa-e39f-80f5-8d1b-ef45be036b0f" class="bulleted-list"><li style="list-style-type:circle">чем выше <code>temperature</code> → тем более “расслабленная” модель,</li></ul><ul id="2ab568fa-e39f-8078-b191-f35244c2d7b5" class="bulleted-list"><li style="list-style-type:circle"><code>top_k</code>: модель выбирает следующий токен из топ-k самых вероятных,</li></ul><ul id="2ab568fa-e39f-809e-95fd-fdfbc686ce8a" class="bulleted-list"><li style="list-style-type:circle"><code>top_p</code>: модель берёт минимальный набор токенов, суммарная вероятность которых ≥ <code>p</code>.</li></ul></li></ul></li></ol><hr id="2ab568fa-e39f-802b-93db-d0d2d7f1f38b"/><h2 id="2ab568fa-e39f-8025-96f6-f31898d89e89" class="">7. Домашнее задание к уроку 5.1</h2><p id="2ab568fa-e39f-8055-8b4b-d7ccbe9e75e1" class="">Можно оставить так:</p><ol type="1" id="2ab568fa-e39f-8069-91ec-ce9717631588" class="numbered-list" start="1"><li>Подготовить <strong>минимум 3 разных диалога</strong>:<ul id="2ab568fa-e39f-8043-9e74-eb6324d284be" class="bulleted-list"><li style="list-style-type:disc">короткий (2–3 реплики),</li></ul><ul id="2ab568fa-e39f-80ee-924e-c79c3bcc430e" class="bulleted-list"><li style="list-style-type:disc">средний (5–7 реплик),</li></ul><ul id="2ab568fa-e39f-8044-bdac-fe3382365977" class="bulleted-list"><li style="list-style-type:disc">длинный (10+ реплик).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80a3-81f9-c87bacf0b48f" class="numbered-list" start="2"><li>Для каждого:<ul id="2ab568fa-e39f-807a-a86f-df600dd5c09a" class="bulleted-list"><li style="list-style-type:disc">сгенерировать summary в трёх режимах: <code>&quot;greedy&quot;</code>, <code>&quot;beam&quot;</code>, <code>&quot;sample&quot;</code>;</li></ul><ul id="2ab568fa-e39f-80ca-812d-f777669d19a5" class="bulleted-list"><li style="list-style-type:disc">записать результаты в табличку/ноутбук:<ul id="2ab568fa-e39f-808c-ab91-ef21c1b2177d" class="bulleted-list"><li style="list-style-type:circle">диалог,</li></ul><ul id="2ab568fa-e39f-80f0-8781-e7ca77ef9c0b" class="bulleted-list"><li style="list-style-type:circle">три summaries,</li></ul><ul id="2ab568fa-e39f-80df-be72-f4006d0253ad" class="bulleted-list"><li style="list-style-type:circle">короткий комментарий: какой вариант кажется наиболее адекватным и почему.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e5-be48-efd7ce1fe2b5" class="numbered-list" start="3"><li>Поиграться с параметрами:<ul id="2ab568fa-e39f-8051-baf4-ef79e0a4eef0" class="bulleted-list"><li style="list-style-type:disc"><code>num_beams</code> = 2, 4, 8;</li></ul><ul id="2ab568fa-e39f-80bb-b35d-ecf98c9d552f" class="bulleted-list"><li style="list-style-type:disc"><code>temperature</code> = 0.3, 0.7, 1.0;</li></ul><ul id="2ab568fa-e39f-80a1-889b-ea5e31cfd75b" class="bulleted-list"><li style="list-style-type:disc">сделать пару скринов/скриншотов или текстовый отчёт “как меняются тексты”.</li></ul></li></ol><hr id="2ab568fa-e39f-8098-a67f-d4e567fe5121"/><p id="2ab568fa-e39f-8046-8ad4-f3ed8a51ca5f" class="">Если хочешь, дальше могу так же разложить <strong>урок 5.2</strong>:</p><p id="2ab568fa-e39f-80b1-a5bf-ebf1c82b94f3" class="">полная подготовка датасета <code>dialog → summary</code>, с <code>map</code>, <code>DataCollatorForSeq2Seq</code> и всеми подводными камнями.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

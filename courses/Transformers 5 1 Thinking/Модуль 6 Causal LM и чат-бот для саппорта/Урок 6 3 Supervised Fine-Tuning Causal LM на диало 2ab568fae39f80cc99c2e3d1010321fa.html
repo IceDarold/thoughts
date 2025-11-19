@@ -1,0 +1,944 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 6.3. Supervised Fine-Tuning Causal LM на диалогах саппорта</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80cc-99c2-e3d1010321fa" class="page sans"><header><h1 class="page-title">Урок 6.3. Supervised Fine-Tuning Causal LM на диалогах саппорта</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8056-ad6a-df4d766d4e2b" class="">Хорошо, идём прокачивать модель, чтобы она говорила <strong>как твой саппорт</strong>, а не как “голый GPT-2” 💬🧠</p><p id="2ab568fa-e39f-80c0-a37a-f5227a328bb8" class="">Ниже — <strong>полный урок 6.3</strong>: теория SFT для каузалки → код → разбор.</p><hr id="2ab568fa-e39f-80d3-8a37-cbf6ba327780"/><h2 id="2ab568fa-e39f-800e-aa1a-d3954b0c24db" class="">0. Цели урока</h2><p id="2ab568fa-e39f-80e7-83de-c6c02a4128eb" class="">После урока ученики смогут:</p><ul id="2ab568fa-e39f-805a-a02e-d4c3a7af7f55" class="bulleted-list"><li style="list-style-type:disc">понимать, что такое <strong>SFT (supervised fine-tuning)</strong> для Causal LM;</li></ul><ul id="2ab568fa-e39f-80d1-b7bf-d767b050a84f" class="bulleted-list"><li style="list-style-type:disc">подготовить датасет диалогов саппорта в формате <code>jsonl</code>;</li></ul><ul id="2ab568fa-e39f-80c8-a90a-db747efd9198" class="bulleted-list"><li style="list-style-type:disc">превратить диалоги в текст для обучения языковой модели;</li></ul><ul id="2ab568fa-e39f-802c-9b3d-fb6e460d1483" class="bulleted-list"><li style="list-style-type:disc">настроить:<ul id="2ab568fa-e39f-8014-9cbc-c613d23070d0" class="bulleted-list"><li style="list-style-type:circle"><code>AutoTokenizer</code>, <code>AutoModelForCausalLM</code>,</li></ul><ul id="2ab568fa-e39f-8094-853c-d9fb0ab2da84" class="bulleted-list"><li style="list-style-type:circle"><code>DataCollatorForLanguageModeling</code> (с <code>mlm=False</code>),</li></ul><ul id="2ab568fa-e39f-8002-be3c-e688c0894aef" class="bulleted-list"><li style="list-style-type:circle"><code>TrainingArguments</code> + <code>Trainer</code>;</li></ul></li></ul><ul id="2ab568fa-e39f-8097-8bf2-c4fa07240b6f" class="bulleted-list"><li style="list-style-type:disc">запустить обучение и увидеть, как падает <code>loss</code>;</li></ul><ul id="2ab568fa-e39f-802f-8fc5-dc34417e2343" class="bulleted-list"><li style="list-style-type:disc">проверить, как <strong>изменилось поведение модели до и после SFT</strong>.</li></ul><hr id="2ab568fa-e39f-806d-8fbf-cf5b8e27dc47"/><h2 id="2ab568fa-e39f-807d-8aac-db37dd263999" class="">1. Теория: что такое SFT для каузальной модели</h2><h3 id="2ab568fa-e39f-80fa-9f9a-c5d0765f48a5" class="">1.1. Что модель делала до SFT</h3><p id="2ab568fa-e39f-8055-88cf-cd6b0db818a5" class="">Causal LM (GPT-2 и друзья):</p><ul id="2ab568fa-e39f-809b-88f0-de0ed2c9cbd0" class="bulleted-list"><li style="list-style-type:disc">учится на огромном корпусе текста,</li></ul><ul id="2ab568fa-e39f-803b-b4f4-c513da441a26" class="bulleted-list"><li style="list-style-type:disc">задачка: <em>предсказывать следующий токен по всем предыдущим</em>.</li></ul><p id="2ab568fa-e39f-8009-9825-df5c3aa90d31" class="">То есть модель видела много всего:</p><ul id="2ab568fa-e39f-80ca-ac99-ef432d530901" class="bulleted-list"><li style="list-style-type:disc">книги, статьи, код, диалоги, форумы,</li></ul><ul id="2ab568fa-e39f-8012-bc7e-cdfb7f5f1601" class="bulleted-list"><li style="list-style-type:disc">но конкретно твои <strong>шаблоны саппорта</strong>, регламентные фразы, стиль — вряд ли.</li></ul><hr id="2ab568fa-e39f-8045-8a3c-e62b9927c224"/><h3 id="2ab568fa-e39f-80ed-b1b3-c887a74e5923" class="">1.2. Что делает SFT</h3><p id="2ab568fa-e39f-80f4-a46e-df1cf3d892cb" class=""><strong>SFT (supervised fine-tuning)</strong>:</p><ul id="2ab568fa-e39f-80eb-9b97-d703cb3b59e1" class="bulleted-list"><li style="list-style-type:disc">мы даём модели <strong>свои</strong> данные (например, диалоги саппорта),</li></ul><ul id="2ab568fa-e39f-80ea-b3c3-efc0634dbc6a" class="bulleted-list"><li style="list-style-type:disc">оптимизируем ту же задачу: предсказывать следующий токен,</li></ul><ul id="2ab568fa-e39f-800d-997e-e9d2c05611f0" class="bulleted-list"><li style="list-style-type:disc">но уже <strong>на нашем домене</strong>.</li></ul><p id="2ab568fa-e39f-80a4-9a4b-d7cca195c84d" class="">Результат:</p><ul id="2ab568fa-e39f-805a-b25c-faecad46026a" class="bulleted-list"><li style="list-style-type:disc">модель начинает “подражать” стилю этих диалогов:<ul id="2ab568fa-e39f-8052-a9d1-c8ec5b6484ba" class="bulleted-list"><li style="list-style-type:circle">“извините за неудобства”,</li></ul><ul id="2ab568fa-e39f-804f-b2c0-c12e34e9440f" class="bulleted-list"><li style="list-style-type:circle">“могли бы уточнить…”</li></ul><ul id="2ab568fa-e39f-80e4-8f44-f34eef5bd99f" class="bulleted-list"><li style="list-style-type:circle">“мы знаем о проблеме и работаем над исправлением”.</li></ul></li></ul><hr id="2ab568fa-e39f-80b9-812c-d33db55566da"/><h3 id="2ab568fa-e39f-80c2-8602-f7171d9bae48" class="">1.3. Два подхода к разметке для SFT</h3><p id="2ab568fa-e39f-8043-9d0e-d5c827568239" class="">Есть два популярных способа организовать данные:</p><h3 id="2ab568fa-e39f-803c-8c05-fbc4b824f98a" class="">Вариант A. <strong>Plain LM по целому диалогу</strong> (то, что мы будем делать)</h3><ul id="2ab568fa-e39f-807e-81c9-c6b9ec968131" class="bulleted-list"><li style="list-style-type:disc">Каждую сессию диалога превращаем в один длинный текст:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ca-b7ea-dfa5daa627a8" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: ...
+User: ...
+Support: ...
+User: ...
+Support: ...
+</code></pre></li></ul><ul id="2ab568fa-e39f-8019-aeaa-f27b0a2a5c90" class="bulleted-list"><li style="list-style-type:disc">Модель учится предсказывать <strong>все</strong> токены:<ul id="2ab568fa-e39f-80ef-b346-e9c18aa7ab52" class="bulleted-list"><li style="list-style-type:circle">и сообщения user,</li></ul><ul id="2ab568fa-e39f-801a-9059-fe20322d43ad" class="bulleted-list"><li style="list-style-type:circle">и сообщения support,</li></ul><ul id="2ab568fa-e39f-808c-a7af-f8809ef7d9ad" class="bulleted-list"><li style="list-style-type:circle">и system.</li></ul></li></ul><p id="2ab568fa-e39f-8088-8ed6-f7a176d007d3" class="">Плюсы:</p><ul id="2ab568fa-e39f-80b5-ba90-efdb10c97a16" class="bulleted-list"><li style="list-style-type:disc">просто,</li></ul><ul id="2ab568fa-e39f-80c5-ae05-eb4742dac05f" class="bulleted-list"><li style="list-style-type:disc">подходит для базового SFT.</li></ul><p id="2ab568fa-e39f-807b-a8cb-e36dc75aec9e" class="">Минусы:</p><ul id="2ab568fa-e39f-808e-9d3e-c646b2f6f4d0" class="bulleted-list"><li style="list-style-type:disc">модель тренится предсказывать и user’а, а не только ассистента.</li></ul><h3 id="2ab568fa-e39f-802b-a0e5-e4c86fdc9d4b" class="">Вариант B. <strong>Явный input → output (инструкционный SFT)</strong></h3><ul id="2ab568fa-e39f-80dd-8941-fdfd9409a51a" class="bulleted-list"><li style="list-style-type:disc">Делим на:<ul id="2ab568fa-e39f-8047-914c-fc341dfc2551" class="bulleted-list"><li style="list-style-type:circle"><code>input</code> = контекст до последней реплики пользователя,</li></ul><ul id="2ab568fa-e39f-80af-b89d-eb5b27f2f5e1" class="bulleted-list"><li style="list-style-type:circle"><code>target</code> = последний ответ ассистента.</li></ul></li></ul><ul id="2ab568fa-e39f-802b-ac8b-d42fa471eb4f" class="bulleted-list"><li style="list-style-type:disc">Модель учится предсказывать <strong>только</strong> ответ.</li></ul><p id="2ab568fa-e39f-80c6-8cc6-e852b0a5e1fd" class="">Плюсы:</p><ul id="2ab568fa-e39f-8087-8ade-e6b402e4c1f9" class="bulleted-list"><li style="list-style-type:disc">более “чистая” задача (модель концентрируется на ответах).</li></ul><p id="2ab568fa-e39f-80e7-9b02-f88c996e77e4" class="">Минусы:</p><ul id="2ab568fa-e39f-80fb-9044-fd49ac7fd6c9" class="bulleted-list"><li style="list-style-type:disc">сложнее в подготовке (нужно аккуратно резать диалоги).</li></ul><p id="2ab568fa-e39f-80a1-8f45-c7a23af09288" class="">👉 В этом уроке берём <strong>вариант A (Plain LM)</strong> — он проще и уже даёт заметный эффект. В следующих модулях можно усложнять.</p><hr id="2ab568fa-e39f-806e-bcb9-d0dbde21bca3"/><h2 id="2ab568fa-e39f-805c-ae5f-cb9c02ac8145" class="">2. Датасет: <code>support_dialogs.jsonl</code></h2><h3 id="2ab568fa-e39f-8043-9b98-fd57ecb43af0" class="">2.1. Формат jsonl</h3><p id="2ab568fa-e39f-8005-82c6-e6ea23b87e21" class="">Договоримся о формате:</p><ul id="2ab568fa-e39f-8036-87b2-c07de6c36896" class="bulleted-list"><li style="list-style-type:disc">один диалог — одна строка JSON;</li></ul><ul id="2ab568fa-e39f-8079-a703-f8019650095d" class="bulleted-list"><li style="list-style-type:disc">поле <code>messages</code> — список сообщений.</li></ul><p id="2ab568fa-e39f-8081-a083-d1222ffdbd32" class="">Пример <code>support_dialogs.jsonl</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8062-937a-f54024e5bbeb" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{&quot;messages&quot;: [
+  {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant for a mobile app.&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, the app crashes when I open the gallery.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Sorry to hear that! Could you tell me your device and OS version?&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;iPhone 13, iOS 17.1, app version 5.2.1.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Thank you. We are aware of this issue on iOS 17.1 and working on a fix.&quot;}
+]}
+{&quot;messages&quot;: [
+  {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant for a mobile app.&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;I was charged twice this month.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;I&#x27;m sorry about that! Could you share the last 4 digits of your card?&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;1234.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Thanks. I see a duplicate charge and will refund it within 3-5 business days.&quot;}
+]}
+...
+</code></pre><p id="2ab568fa-e39f-8023-9685-fee3f64419c8" class="">Важно:</p><ul id="2ab568fa-e39f-800f-a34f-f6553b262bc6" class="bulleted-list"><li style="list-style-type:disc"><code>role</code> ∈ <code>{&quot;system&quot;, &quot;user&quot;, &quot;assistant&quot;}</code> (или <code>&quot;support&quot;</code>; главное — консистентно).</li></ul><ul id="2ab568fa-e39f-80f9-be16-fa82c6ee337c" class="bulleted-list"><li style="list-style-type:disc"><code>content</code> — чистый текст, без лишнего форматирования.</li></ul><hr id="2ab568fa-e39f-809f-89b2-f015a6627072"/><h2 id="2ab568fa-e39f-8004-be26-e86ffb9f65b2" class="">3. Превращаем messages → текст для обучения</h2><h3 id="2ab568fa-e39f-8050-ac2a-fa4fac0ebc26" class="">3.1. Функция <code>messages_to_text</code></h3><p id="2ab568fa-e39f-80eb-a865-d0c152e67b81" class="">Мы хотим, чтобы модель видела диалог как одну строку в понятном ей формате, например:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ee-8bce-fef29264dc45" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: You are a helpful support assistant for a mobile app.
+User: Hi, the app crashes when I open the gallery.
+Support: Sorry to hear that! Could you tell me your device and OS version?
+User: iPhone 13, iOS 17.1, app version 5.2.1.
+Support: Thank you. We are aware of this issue on iOS 17.1 and working on a fix.
+</code></pre><p id="2ab568fa-e39f-8089-8be2-d904497efd49" class="">Функция:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80de-964c-e405bb81e2ff" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def messages_to_text(messages):
+    &quot;&quot;&quot;
+    Превращает список сообщений в один текстовый диалог.
+    &quot;&quot;&quot;
+    lines = []
+
+    for msg in messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        elif role in (&quot;assistant&quot;, &quot;support&quot;):
+            lines.append(f&quot;Support: {content}&quot;)
+        else:
+            lines.append(f&quot;{role.capitalize()}: {content}&quot;)
+
+    # Можно добавить пустую строку в конце, чтобы отделить диалоги
+    return &quot;\n&quot;.join(lines)
+</code></pre><p id="2ab568fa-e39f-8035-bed9-f2e34ca82e50" class="">Объяснение:</p><ul id="2ab568fa-e39f-808b-b9bf-cb02104a72da" class="bulleted-list"><li style="list-style-type:disc">мы отдаём в модель уже <strong>читабельный</strong> диалог;</li></ul><ul id="2ab568fa-e39f-80ba-bd23-c38032f9d060" class="bulleted-list"><li style="list-style-type:disc">на этапе инференса мы используем <strong>аналогичный формат</strong> (см. урок 6.2).</li></ul><hr id="2ab568fa-e39f-801b-8a09-f5fb4fb0d8f4"/><h2 id="2ab568fa-e39f-8049-97a8-db5d37e9f174" class="">4. Загрузка и препроцессинг с <code>datasets</code></h2><h3 id="2ab568fa-e39f-80a1-87c0-fa01253a3263" class="">4.1. Загружаем jsonl</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808a-937e-d803dc749e52" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset
+
+data = load_dataset(&quot;json&quot;, data_files=&quot;support_dialogs.jsonl&quot;)
+dataset = data[&quot;train&quot;]
+print(dataset)
+print(dataset[0])
+</code></pre><p id="2ab568fa-e39f-80ba-af06-fcadeab99488" class="">Вывод:</p><ul id="2ab568fa-e39f-80a2-94b1-f123c83978c4" class="bulleted-list"><li style="list-style-type:disc"><code>dataset</code> — объект <code>Dataset</code>,</li></ul><ul id="2ab568fa-e39f-8013-8805-df15a34afddd" class="bulleted-list"><li style="list-style-type:disc">у него есть поле <code>&quot;messages&quot;</code>.</li></ul><hr id="2ab568fa-e39f-807e-a542-c74612d3ffcd"/><h3 id="2ab568fa-e39f-8093-9e56-dd95a2127155" class="">4.2. Токенизатор и pad_token</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8016-b1fb-dc2a07461ca1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer
+
+model_name = &quot;gpt2&quot;  # можно заменить на другой causal LM чекпоинт
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# GPT-2 часто без pad_token — добавим
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+</code></pre><p id="2ab568fa-e39f-8064-a222-ed2260000703" class="">Зачем:</p><ul id="2ab568fa-e39f-8094-9df1-ca07bf9d1313" class="bulleted-list"><li style="list-style-type:disc">Для батчевого обучения нужен <code>pad_token</code>, чтобы выравнивать длины;</li></ul><ul id="2ab568fa-e39f-80d8-a35c-f95ca948d2cc" class="bulleted-list"><li style="list-style-type:disc">если его нет — ставим <code>pad_token = eos_token</code>, это стандартный трюк для LM.</li></ul><hr id="2ab568fa-e39f-808f-a92f-ee9df6cc4278"/><h3 id="2ab568fa-e39f-808f-926e-fdb1d3bddae4" class="">4.3. Функция препроцессинга: messages → текст → токены</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8062-9003-db31173f0d4d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">max_length = 512  # ограничим длину одного диалога
+
+def preprocess_function(batch):
+    # batch[&quot;messages&quot;] — список списков сообщений
+    texts = [messages_to_text(m) for m in batch[&quot;messages&quot;]]
+
+    # Токенизируем
+    tokenized = tokenizer(
+        texts,
+        truncation=True,
+        max_length=max_length,
+    )
+
+    # Для causal LM нам не нужно вручную создавать labels — это сделает коллатор
+    return tokenized
+</code></pre><p id="2ab568fa-e39f-802a-8143-d1ca491f6855" class="">Объяснение:</p><ul id="2ab568fa-e39f-8019-adbf-ea39a0c68fec" class="bulleted-list"><li style="list-style-type:disc"><code>texts</code> — список строк (по одной на диалог),</li></ul><ul id="2ab568fa-e39f-80d3-9b8a-dd18c35f6c29" class="bulleted-list"><li style="list-style-type:disc"><code>truncation=True</code> — обрежет слишком длинные диалоги (иначе не влезут),</li></ul><ul id="2ab568fa-e39f-8082-a416-cdd2b97ed089" class="bulleted-list"><li style="list-style-type:disc">мы <strong>не добавляем </strong><code><strong>labels</strong></code> — для causal LM будем использовать <code>DataCollatorForLanguageModeling</code>, который сам построит <code>labels</code> из <code>input_ids</code>.</li></ul><hr id="2ab568fa-e39f-80d1-b260-d1ebc39e42f2"/><h3 id="2ab568fa-e39f-8000-8b17-f1907d795555" class="">4.4. Применяем <code>.map()</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b8-8c96-d2119900f7d5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=dataset.column_names,  # убираем messages, оставляем только токены
+)
+
+print(tokenized_dataset)
+print(tokenized_dataset[0])
+</code></pre><p id="2ab568fa-e39f-80d6-b324-f0d2ac1989a7" class="">Теперь <code>tokenized_dataset</code> содержит:</p><ul id="2ab568fa-e39f-80c0-9265-e5eccf19577b" class="bulleted-list"><li style="list-style-type:disc"><code>input_ids</code></li></ul><ul id="2ab568fa-e39f-8030-9468-cb9564d20349" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code></li></ul><p id="2ab568fa-e39f-80a8-a08d-fe15350e7097" class="">для каждого диалога.</p><hr id="2ab568fa-e39f-80e8-9abf-e9d9ec52a488"/><h2 id="2ab568fa-e39f-80c0-8bfe-eb660f5a56fb" class="">5. DataCollatorForLanguageModeling: создаём labels для LM</h2><h3 id="2ab568fa-e39f-80b8-b411-ff51f9844e3b" class="">5.1. Зачем нужен этот collator</h3><p id="2ab568fa-e39f-801d-9a54-f0026572f4f8" class=""><code>DataCollatorForLanguageModeling</code> делает:</p><ul id="2ab568fa-e39f-80ae-bac6-efb5c0247131" class="bulleted-list"><li style="list-style-type:disc">паддинг входов до max длины в батче,</li></ul><ul id="2ab568fa-e39f-80eb-a8ae-d4f02ee10b46" class="bulleted-list"><li style="list-style-type:disc">создаёт <code>labels</code> по <code>input_ids</code>:<ul id="2ab568fa-e39f-80cf-aad5-c2f39e82e990" class="bulleted-list"><li style="list-style-type:circle">для causal LM (<code>mlm=False</code>) → <code>labels = input_ids</code>, но с <code>100</code> на паддинге,</li></ul><ul id="2ab568fa-e39f-80cc-9d74-d50348cc8d94" class="bulleted-list"><li style="list-style-type:circle">модель сама сдвигает токены внутри своей головы.</li></ul></li></ul><h3 id="2ab568fa-e39f-807a-990b-c2e1d398f465" class="">5.2. Код</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bf-9fa0-e77a4e19d316" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForLanguageModeling
+
+data_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer,
+    mlm=False,  # ВАЖНО: мы не делаем masked LM, это causal LM
+)
+</code></pre><p id="2ab568fa-e39f-801c-acb0-c9e2f45ec95a" class="">Объяснение:</p><ul id="2ab568fa-e39f-80e2-b1d1-cb385d81b3aa" class="bulleted-list"><li style="list-style-type:disc"><code>mlm=False</code> означает:<ul id="2ab568fa-e39f-8095-80f5-d914d61355ab" class="bulleted-list"><li style="list-style-type:circle"><strong>не</strong> маскировать токены (как BERT),</li></ul><ul id="2ab568fa-e39f-8040-b88f-e72153298038" class="bulleted-list"><li style="list-style-type:circle">а предсказывать каждый следующий токен по предыдущим.</li></ul></li></ul><hr id="2ab568fa-e39f-8064-a31f-d415ef674591"/><h3 id="2ab568fa-e39f-80c9-8634-fa7920392df0" class="">5.3. Проверим collator вручную</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8070-9055-f1a19dd17f6c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from torch.utils.data import DataLoader
+
+train_loader = DataLoader(
+    tokenized_dataset,
+    batch_size=2,
+    shuffle=True,
+    collate_fn=data_collator,
+)
+
+batch = next(iter(train_loader))
+for k, v in batch.items():
+    print(k, v.shape)
+</code></pre><p id="2ab568fa-e39f-8000-b79d-cbbe16cabb8c" class="">Ожидаем:</p><ul id="2ab568fa-e39f-8075-bc72-f64cb351eee8" class="bulleted-list"><li style="list-style-type:disc"><code>input_ids</code>: <code>[batch_size, seq_len]</code>,</li></ul><ul id="2ab568fa-e39f-80af-9391-db0df27c180b" class="bulleted-list"><li style="list-style-type:disc"><code>attention_mask</code>: <code>[batch_size, seq_len]</code>,</li></ul><ul id="2ab568fa-e39f-805e-b460-d8fe17e90558" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code>: <code>[batch_size, seq_len]</code>.</li></ul><p id="2ab568fa-e39f-8089-b5b8-cf33959a9860" class=""><code>labels</code> совпадает с <code>input_ids</code>, кроме мест с паддингом (там <code>-100</code>).</p><hr id="2ab568fa-e39f-8025-a53d-dd07ce48edcf"/><h2 id="2ab568fa-e39f-807a-91d5-c03ce4cd8152" class="">6. Trainer: обучаем Causal LM на диалогах</h2><h3 id="2ab568fa-e39f-8047-9c79-e1dce6f39270" class="">6.1. Разбиваем на train / eval</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807a-b94e-f09e6acaeb0f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import DatasetDict
+
+split = tokenized_dataset.train_test_split(test_size=0.1, seed=42)
+train_ds = split[&quot;train&quot;]
+eval_ds = split[&quot;test&quot;]
+
+dataset_dict = DatasetDict(
+    {&quot;train&quot;: train_ds, &quot;validation&quot;: eval_ds}
+)
+print(dataset_dict)
+</code></pre><hr id="2ab568fa-e39f-8064-bd2a-e09412475c13"/><h3 id="2ab568fa-e39f-801b-a16d-f4a88982f46d" class="">6.2. Загружаем модель</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c9-b0ae-cdd7bcac8cef" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoModelForCausalLM
+
+model = AutoModelForCausalLM.from_pretrained(model_name)
+model.resize_token_embeddings(len(tokenizer))  # если мы меняли токены/пад
+</code></pre><ul id="2ab568fa-e39f-8009-87ac-f992d69994ae" class="bulleted-list"><li style="list-style-type:disc"><code>resize_token_embeddings</code> на всякий случай, если токенизатор расширялся (например, добавили пад-токен; для GPT-2 это иногда нужно).</li></ul><hr id="2ab568fa-e39f-80c3-900c-e1b38c67311b"/><h3 id="2ab568fa-e39f-80b0-a7d7-dd83c19e4989" class="">6.3. Настраиваем TrainingArguments</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8026-a4ec-edf21330f104" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import TrainingArguments
+
+training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/support_causal_sft&quot;,
+    evaluation_strategy=&quot;steps&quot;,   # будем оценивать каждые eval_steps шагов
+    eval_steps=500,
+    save_steps=500,
+    save_total_limit=2,
+    learning_rate=5e-5,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    num_train_epochs=3,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
+    logging_steps=50,
+    report_to=[&quot;none&quot;],  # можно &quot;tensorboard&quot; или &quot;wandb&quot;
+)
+</code></pre><p id="2ab568fa-e39f-8021-8283-d261e826dd74" class="">Пояснения:</p><ul id="2ab568fa-e39f-80ae-83e6-c841a54d9aec" class="bulleted-list"><li style="list-style-type:disc"><code>per_device_train_batch_size=2</code> — маленький батч, чтобы не взрывать память (диалоги могут быть длинными).</li></ul><ul id="2ab568fa-e39f-80cf-a698-db4fbb3e485c" class="bulleted-list"><li style="list-style-type:disc"><code>eval_steps=500</code> — не слишком часто, чтобы не тормозить обучение.</li></ul><ul id="2ab568fa-e39f-8046-a26c-c5c36c8febf1" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate=5e-5</code> — типичный порядок для fine-tuning трансформеров.</li></ul><hr id="2ab568fa-e39f-8069-8893-f0601eec14cc"/><h3 id="2ab568fa-e39f-80e9-8e3b-da18986b1f1a" class="">6.4. Trainer и обучение</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8083-a220-f8676db888c9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import Trainer
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_ds,
+    eval_dataset=eval_ds,
+    data_collator=data_collator,
+)
+
+trainer.train()
+
+trainer.save_model(&quot;models/support_causal_sft&quot;)
+tokenizer.save_pretrained(&quot;models/support_causal_sft&quot;)
+</code></pre><p id="2ab568fa-e39f-8021-8a56-fcecf7a725fe" class="">Во время тренинга:</p><ul id="2ab568fa-e39f-8001-8fd5-f4f507fa640f" class="bulleted-list"><li style="list-style-type:disc">Trainer считает <code>loss</code> (усреднённый по всем токенам, кроме <code>100</code>),</li></ul><ul id="2ab568fa-e39f-801e-804c-c80da28e228b" class="bulleted-list"><li style="list-style-type:disc">на eval шаге показывает eval loss.</li></ul><p id="2ab568fa-e39f-802c-a051-e5d9f9f9b064" class="">Чем меньше loss — тем лучше модель подстроилась под твои диалоги (но, конечно, можно и переобучиться, особенно на маленьком датасете).</p><hr id="2ab568fa-e39f-80af-b721-efa8a3ab63b7"/><h2 id="2ab568fa-e39f-8051-8d2c-cf9094352773" class="">7. Проверяем, что SFT реально изменил поведение модели</h2><p id="2ab568fa-e39f-8038-9d56-c130c29df21e" class="">Сделаем мини-скрипт: сравним <strong>ответ до</strong> и <strong>после</strong> обучения.</p><h3 id="2ab568fa-e39f-8035-b0f8-c34af0b300d4" class="">7.1. Функции для генерации</h3><p id="2ab568fa-e39f-8041-ab5b-dea4cf9f5f39" class="">Используем формат из урока 6.2.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8011-a0f8-d8645fcbd015" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_prompt(messages, max_turns=6):
+    system_messages = [m for m in messages if m[&quot;role&quot;] == &quot;system&quot;]
+    other_messages = [m for m in messages if m[&quot;role&quot;] != &quot;system&quot;]
+
+    system_part = system_messages[:1]
+    other_part = other_messages[-max_turns:]
+
+    use_messages = system_part + other_part
+
+    lines = []
+    for msg in use_messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        elif role in (&quot;assistant&quot;, &quot;support&quot;):
+            lines.append(f&quot;Support: {content}&quot;)
+        else:
+            lines.append(f&quot;{role.capitalize()}: {content}&quot;)
+
+    prompt = &quot;\n&quot;.join(lines) + &quot;\nSupport:&quot;
+    return prompt
+
+
+def generate_reply(model, tokenizer, messages, max_new_tokens=80):
+    prompt = build_prompt(messages)
+    inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;, truncation=True, max_length=512)
+    inputs = {k: v.to(model.device) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+
+    input_len = inputs[&quot;input_ids&quot;].shape[1]
+    new_tokens = output_ids[0][input_len:]
+    reply = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+    if &quot;User:&quot; in reply:
+        reply = reply.split(&quot;User:&quot;)[0].strip()
+
+    return reply
+</code></pre><hr id="2ab568fa-e39f-8001-a3fb-eccb3e5bf67b"/><h3 id="2ab568fa-e39f-8008-8b59-d5d7ae432e80" class="">7.2. Скрипт сравнения before/after</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809c-95d4-c75a91a0212b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+def compare_models():
+    base_model_name = &quot;gpt2&quot;
+    sft_model_dir = &quot;models/support_causal_sft&quot;
+
+    # Базовая модель
+    base_tokenizer = AutoTokenizer.from_pretrained(base_model_name)
+    base_model = AutoModelForCausalLM.from_pretrained(base_model_name)
+    if base_tokenizer.pad_token is None:
+        base_tokenizer.pad_token = base_tokenizer.eos_token
+
+    # Дообученная модель
+    sft_tokenizer = AutoTokenizer.from_pretrained(sft_model_dir)
+    sft_model = AutoModelForCausalLM.from_pretrained(sft_model_dir)
+    if sft_tokenizer.pad_token is None:
+        sft_tokenizer.pad_token = sft_tokenizer.eos_token
+
+    device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+    base_model.to(device)
+    sft_model.to(device)
+
+    # Тестовый диалог
+    messages = [
+        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant for a mobile app.&quot;},
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, I was charged twice this month.&quot;},
+    ]
+
+    print(&quot;=== BASE MODEL ===&quot;)
+    base_reply = generate_reply(base_model, base_tokenizer, messages)
+    print(base_reply)
+    print()
+
+    print(&quot;=== SFT MODEL ===&quot;)
+    sft_reply = generate_reply(sft_model, sft_tokenizer, messages)
+    print(sft_reply)
+    print()
+
+if __name__ == &quot;__main__&quot;:
+    compare_models()
+</code></pre><p id="2ab568fa-e39f-80cb-86a2-e4821ee16ec0" class="">Ожидание:</p><ul id="2ab568fa-e39f-80f8-be33-d3d393063f88" class="bulleted-list"><li style="list-style-type:disc">базовая модель (<code>gpt2</code>) будет не очень в теме:<ul id="2ab568fa-e39f-80ad-9334-de583c54ff70" class="bulleted-list"><li style="list-style-type:circle">может начать болтать про что угодно,</li></ul><ul id="2ab568fa-e39f-8058-8194-cbf0c74a4563" class="bulleted-list"><li style="list-style-type:circle">мало “саппортского” стиля.</li></ul></li></ul><ul id="2ab568fa-e39f-804e-80b3-ce125bc04506" class="bulleted-list"><li style="list-style-type:disc">SFT-модель:<ul id="2ab568fa-e39f-8038-8ed8-f9cdafd1d4b2" class="bulleted-list"><li style="list-style-type:circle">чаще будет:<ul id="2ab568fa-e39f-80b5-a528-caf69173a28a" class="bulleted-list"><li style="list-style-type:square">извиняться за неудобства,</li></ul><ul id="2ab568fa-e39f-80f9-a6a9-cba58f816a3e" class="bulleted-list"><li style="list-style-type:square">просить уточнить детали,</li></ul><ul id="2ab568fa-e39f-808c-ae30-c79952ca267c" class="bulleted-list"><li style="list-style-type:square">говорить про “refund”, “ticket”, “we are working on it” и т.д.,</li></ul></li></ul><ul id="2ab568fa-e39f-808c-88ed-d31cb711e057" class="bulleted-list"><li style="list-style-type:circle">всё зависит от твоего датасета, но тренд будет заметен.</li></ul></li></ul><hr id="2ab568fa-e39f-8045-8082-e08182408890"/><h2 id="2ab568fa-e39f-802a-b004-d7b708b56edf" class="">8. Домашка по уроку 6.3</h2><h3 id="2ab568fa-e39f-8054-970c-df728f3b3e5b" class="">Задание 1. Собственный датасет</h3><ol type="1" id="2ab568fa-e39f-80be-8d3b-f75f83b0c4b7" class="numbered-list" start="1"><li>Собери <strong>минимум 20–30</strong> диалогов саппорта в формате <code>support_dialogs.jsonl</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80d5-9f79-f9e4f1e03d04" class="numbered-list" start="2"><li>Убедись, что:<ul id="2ab568fa-e39f-8061-9863-dc28ed5d9196" class="bulleted-list"><li style="list-style-type:disc">у каждого диалога есть <code>system</code>сообщение (кто ты),</li></ul><ul id="2ab568fa-e39f-80bf-a2bc-c7d987894e10" class="bulleted-list"><li style="list-style-type:disc">роли <code>user/assistant</code> расставлены консистентно.</li></ul></li></ol><hr id="2ab568fa-e39f-8018-9bab-d843d57245f5"/><h3 id="2ab568fa-e39f-8007-bbce-ea2947d4ce74" class="">Задание 2. Обучение</h3><ol type="1" id="2ab568fa-e39f-8022-824f-e9fb3c09f87d" class="numbered-list" start="1"><li>Прогнать полный пайплайн:<ul id="2ab568fa-e39f-8012-8288-e7d2e55fdabd" class="bulleted-list"><li style="list-style-type:disc"><code>load_dataset</code> → <code>messages_to_text</code> → токенизация → <code>DataCollatorForLanguageModeling</code> → <code>Trainer</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-806c-96c6-e40b19008efd" class="numbered-list" start="2"><li>Запустить <strong>хотя бы 1–2 эпохи</strong>.</li></ol><ol type="1" id="2ab568fa-e39f-8021-90f6-c22895e9c7c2" class="numbered-list" start="3"><li>Сохранить модель в <code>models/support_causal_sft</code>.</li></ol><hr id="2ab568fa-e39f-802a-98af-f9b9bfc8895c"/><h3 id="2ab568fa-e39f-8091-b5fa-c98e0dd03f9a" class="">Задание 3. До/после</h3><ol type="1" id="2ab568fa-e39f-80f4-847b-d3e0d0b19436" class="numbered-list" start="1"><li>Выбрать 5 типичных запросов пользователей (оплата, баг, логин, downgrade/upgrade).</li></ol><ol type="1" id="2ab568fa-e39f-80eb-98e0-ef3acdeac570" class="numbered-list" start="2"><li>Для каждого:<ul id="2ab568fa-e39f-80b8-8805-c25ada19b26e" class="bulleted-list"><li style="list-style-type:disc">сгенерировать ответ <strong>до SFT</strong> (базовая модель),</li></ul><ul id="2ab568fa-e39f-8074-a4f6-d6888b897f21" class="bulleted-list"><li style="list-style-type:disc">сгенерировать ответ <strong>после SFT</strong>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8042-9ac1-c33f7a0cebea" class="numbered-list" start="3"><li>Описать, что изменилось:<ul id="2ab568fa-e39f-8043-bbec-d03d39b8c39f" class="bulleted-list"><li style="list-style-type:disc">стиль (формальный/неформальный),</li></ul><ul id="2ab568fa-e39f-80e4-b841-efa7097e890a" class="bulleted-list"><li style="list-style-type:disc">наличие “правильных” слов (“sorry for the inconvenience”, “let me check”),</li></ul><ul id="2ab568fa-e39f-8069-bed3-c145ed2f1853" class="bulleted-list"><li style="list-style-type:disc">структурированность ответа.</li></ul></li></ol><hr id="2ab568fa-e39f-80b2-8bfa-f6f79acb246c"/><p id="2ab568fa-e39f-80d8-b381-eb07ff35a9ea" class="">На этом уроке вы научились <strong>натравливать каузалку на свои диалоги</strong>:</p><ul id="2ab568fa-e39f-808e-9e9b-e3b1e055b70a" class="bulleted-list"><li style="list-style-type:disc">готовим <code>jsonl</code>,</li></ul><ul id="2ab568fa-e39f-8041-a323-eed12d8bfe6e" class="bulleted-list"><li style="list-style-type:disc">превращаем messages → текст,</li></ul><ul id="2ab568fa-e39f-8062-93cf-f5d0e8ba35d0" class="bulleted-list"><li style="list-style-type:disc">токенизируем,</li></ul><ul id="2ab568fa-e39f-80c1-9bc6-e6b15f2da276" class="bulleted-list"><li style="list-style-type:disc">запускаем <code>Trainer</code> с <code>DataCollatorForLanguageModeling</code>,</li></ul><ul id="2ab568fa-e39f-8056-b598-cfbfaf102413" class="bulleted-list"><li style="list-style-type:disc">проверяем, как модель изменилась.</li></ul><p id="2ab568fa-e39f-8014-8355-c45534c0ad1c" class="">Следующий логичный шаг (модуль 6.4) — взять эту дообученную модель и <strong>обернуть её в полноценный чат-бот</strong>: с историей, ограничением контекста, возможно, с маленькими “правилами безопасности” и fallback’ами.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

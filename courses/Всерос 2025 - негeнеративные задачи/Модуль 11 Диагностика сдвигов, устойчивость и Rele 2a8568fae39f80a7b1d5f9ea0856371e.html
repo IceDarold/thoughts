@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 11. Диагностика сдвигов, устойчивость и Release</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80a7-b1d5-f9ea0856371e" class="page sans"><header><h1 class="page-title">Модуль 11. Диагностика сдвигов, устойчивость и Release</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-80ec-92a2-c1bc6cfa8726" class="">Это — «страховочный» модуль: как не утонуть на приватном тесте и не завалить сабмит форматом. <strong>Модуль 11 — Диагностика сдвигов, устойчивость и release-чек-лист</strong>. Теория → лабы под каждый трек (табличка/текст/RecSys/аудио/CV).</p><hr id="2a8568fa-e39f-80e6-8167-ec6844e82b08"/><h2 id="2a8568fa-e39f-80cc-b800-f7310da3835e" class="">1) Результаты модуля (к чему приходим)</h2><ul id="2a8568fa-e39f-808e-ad87-fe3c914f143f" class="bulleted-list"><li style="list-style-type:disc">Умеешь <strong>обнаруживать и измерять сдвиги</strong> (train↔val/test): ковариатный, prior/class, temporal, cold-start, разреженность.</li></ul><ul id="2a8568fa-e39f-8094-80f6-d15b892e391a" class="bulleted-list"><li style="list-style-type:disc">Настраиваешь <strong>адверсариальную валидацию</strong> без утечек, корректно работаешь с пропусками/несовпадающими фичами.</li></ul><ul id="2a8568fa-e39f-80c1-8877-d17c829e18bc" class="bulleted-list"><li style="list-style-type:disc">Проектируешь <strong>стресс-тесты/фолт-инъекции</strong> под метрику задачи (MAE/H@3/mAP@20/harmonic/medianAPE).</li></ul><ul id="2a8568fa-e39f-8087-a67c-ff09616ef644" class="bulleted-list"><li style="list-style-type:disc">Делаешь <strong>калибровки и защитный пост-процесс</strong> (порог/топ-k/клиппинг/дедуп/дополнение).</li></ul><ul id="2a8568fa-e39f-8035-8a3d-ffc75eccabea" class="bulleted-list"><li style="list-style-type:disc">Сдаёшь сабмит, проходящий <strong>release-чек-лист</strong> (формат, детерминизм, тайм-лимит, валидация офлайна).</li></ul><hr id="2a8568fa-e39f-803c-91b9-ed77d66caefc"/><h2 id="2a8568fa-e39f-80de-a3e6-d13ed284ab1f" class="">2) Теория (90–120 минут)</h2><h3 id="2a8568fa-e39f-8016-8903-c4f9bd448f81" class="">A. Виды сдвигов и как их ловить</h3><ul id="2a8568fa-e39f-802d-84fe-d8982d2a1ef2" class="bulleted-list"><li style="list-style-type:disc"><strong>Ковариатный (X-shift):</strong> распределения признаков меняются (гео/демо/тексты/изображения).</li></ul><ul id="2a8568fa-e39f-809b-aa61-f85434230d9d" class="bulleted-list"><li style="list-style-type:disc"><strong>Prior/class shift:</strong> частоты классов/товаров/категорий (особенно H@3/RecSys).</li></ul><ul id="2a8568fa-e39f-803d-8181-f183dec3c181" class="bulleted-list"><li style="list-style-type:disc"><strong>Concept drift:</strong> связь X→y меняется (цены в декабре vs январь в «АвтоПрайс» — нужен TimeSplit и калибровки).</li></ul><ul id="2a8568fa-e39f-80a1-ad2a-f4d3b435551c" class="bulleted-list"><li style="list-style-type:disc"><strong>Temporal &amp; cold-start:</strong> новые пользователи/товары/пакеты данных в RecSys (тест — <strong>последние 7 дней</strong>, дистрибуция сдвинута).</li></ul><ul id="2a8568fa-e39f-80f8-b7bd-fe26d58cfc35" class="bulleted-list"><li style="list-style-type:disc"><strong>Форматный/структурный:</strong> новые/пустые поля текста, длинные хвосты в аудио/изображениях.</li></ul><h3 id="2a8568fa-e39f-8006-9046-e0b4cc5d4ee7" class="">B. Инструменты диагностики</h3><ul id="2a8568fa-e39f-8062-b154-f3ea0bb1d43c" class="bulleted-list"><li style="list-style-type:disc"><strong>Сравнительные метрики:</strong> PSI, JS/Wasserstein для числовых; χ² для категорий; KS-тест; top-k частоты/доли редких.</li></ul><ul id="2a8568fa-e39f-80cb-83fa-d47385457ad4" class="bulleted-list"><li style="list-style-type:disc"><strong>Adversarial validation:</strong> LR/LGBM «train vs test»; AUC→ насколько сеты различимы. <strong>Важно:</strong> одинаковые фичи, строгий OOF, работа с пропусками (импут/маски).</li></ul><ul id="2a8568fa-e39f-8084-b569-e2512e58ad11" class="bulleted-list"><li style="list-style-type:disc"><strong>Backtesting:</strong> скользящее окно по времени (t-7d hold-out в RecSys; «янв–ноя→дек» в AutoPrice).</li></ul><ul id="2a8568fa-e39f-80a7-a4c7-e88e048752e4" class="bulleted-list"><li style="list-style-type:disc"><strong>Stress/fault injection:</strong> пустые описания (H@3), редкие мульти-опции (CV), шумы/SNR (KWS), обрезка истории (RecSys «последняя неделя»).</li></ul><h3 id="2a8568fa-e39f-80ef-8a87-cb5950ea9f68" class="">C. Калибровки и пост-процесс под метрику</h3><ul id="2a8568fa-e39f-8028-bf3a-dc17a3984b44" class="bulleted-list"><li style="list-style-type:disc"><strong>MAE/medianAPE (табличка/CV):</strong> лог-таргет, Huber/квантили, <strong>клиппинг</strong> по перцентилям на валиде; избегать уводов в 0 и нереальных экстремумов.</li></ul><ul id="2a8568fa-e39f-809c-9a86-d473cdbadac5" class="bulleted-list"><li style="list-style-type:disc"><strong>H@3 (текст):</strong> <strong>всегда ровно 3 метки</strong>, частотный бэк-офф при пустых/шумных текстах; ранговые бленды и тай-брейки.</li></ul><ul id="2a8568fa-e39f-80d6-ab43-f176b966daed" class="bulleted-list"><li style="list-style-type:disc"><strong>mAP@20 (RecSys):</strong> дедуп, fill-up до 20, last-item/recency бусты, лёгкая диверсификация; контроль <strong>candidate recall</strong> после сдвигов.</li></ul><ul id="2a8568fa-e39f-80bf-a7b0-f12fc7eaf1c9" class="bulleted-list"><li style="list-style-type:disc"><strong>Harmonic(1−FRR,1−FAR) (KWS):</strong> <strong>подбор τ на вал-клипах</strong>, не по ROC-AUC/accuracy; устойчивые агрегаторы (<code>max</code> vs <code>top-k mean</code>).</li></ul><h3 id="2a8568fa-e39f-8064-8fd6-fb85ba1c9461" class="">D. «Красные флаги»</h3><ul id="2a8568fa-e39f-8048-b66b-ef6d2b1e27ad" class="bulleted-list"><li style="list-style-type:disc">Разная схема сплитов между локалом и сабмитом; fit трансформов на всём train; несогласованные id/дубликаты; нарушение формата саба (меньше 20 item_id на строку; не три метки; NaN/inf).</li></ul><hr id="2a8568fa-e39f-805d-a891-de0e96590038"/><h2 id="2a8568fa-e39f-8065-bac5-e24f167a9b56" class="">3) Практика (лабы, 3–4 часа)</h2><h3 id="2a8568fa-e39f-80c7-87c5-ea58dd52f9f5" class="">Лаба 1. Drift-репорт (универсальный)</h3><ol type="1" id="2a8568fa-e39f-8079-ab3e-fbaa7d6535cd" class="numbered-list" start="1"><li>Собери <strong>train vs hold-out</strong> (или «янв–ноя→дек» для АвтоПрайс): PSI/JS/KS по числам, χ² по категориям; таблицы топ-категорий/редкостей.</li></ol><ol type="1" id="2a8568fa-e39f-8015-adb3-f696d629746b" class="numbered-list" start="2"><li><strong>Adversarial validation:</strong> LR/LGBM (OOF, одинаковые фичи). AUC&gt;0.7? — перечисли подозрительные признаки (SHAP/importance).</li></ol><p id="2a8568fa-e39f-804f-93d3-c767d6def96c" class=""><strong>Артефакты:</strong> <code>drift_report.ipynb</code>, <code>adv_val.py</code>, <code>drift_top_features.md</code>.</p><hr id="2a8568fa-e39f-80e2-85e5-ed0b4dbdce8b"/><h3 id="2a8568fa-e39f-80de-9571-e9e8eb762a34" class="">Лаба 2. Стресс-тесты под каждую метрику</h3><ul id="2a8568fa-e39f-8053-bef3-e905f51b784a" class="bulleted-list"><li style="list-style-type:disc"><strong>Табличка «Георейтинг» (MAE):</strong> перетасовать доли категорий районов/доходов; посмотреть, как растёт MAE; применить клиппинг и робаст-лоссы.</li></ul><ul id="2a8568fa-e39f-802b-ad64-e6797f3771d4" class="bulleted-list"><li style="list-style-type:disc"><strong>Текст «Мыслим категориями» (H@3):</strong> заинжектить пустые/короткие описания, опечатки; проверить бэк-офф до частотных меток и инвариант «ровно 3».</li></ul><ul id="2a8568fa-e39f-80c6-a6b3-d9c25aa94866" class="bulleted-list"><li style="list-style-type:disc"><strong>RecSys «Т-Шопинг» (mAP@20):</strong> отрезать историю <strong>последней недели</strong> (симуляция холодного старта), пересчитать <strong>candidate recall@20</strong> и mAP@20; добавить trending-страховку.</li></ul><ul id="2a8568fa-e39f-804f-8874-cd54897a64f9" class="bulleted-list"><li style="list-style-type:disc"><strong>KWS «Не слышу тебя»:</strong> добавить шумы (SNR 3/6/9 dB), тянуть τ на вал-клипах, сравнить <code>max</code> vs <code>top-k mean</code>.</li></ul><ul id="2a8568fa-e39f-80b3-bc6d-da11c5abba60" class="bulleted-list"><li style="list-style-type:disc"><strong>CV «АвтоПрайс» (medianAPE):</strong> сместить месяц/регион; проверить квантиль/клиппинг и влияние фьюжна фото+табличка.</li></ul><p id="2a8568fa-e39f-80d7-bc85-c968b20ccc1a" class=""><strong>Артефакты:</strong> <code>stress_tabular.py</code>, <code>stress_h3.py</code>, <code>stress_recsys.py</code>, <code>stress_kws.py</code>, <code>stress_cv.py</code>.</p><hr id="2a8568fa-e39f-808b-b85c-d327568fe368"/><h3 id="2a8568fa-e39f-8094-aac5-e2ee7d099288" class="">Лаба 3. Пост-проц и калибровки</h3><ul id="2a8568fa-e39f-80fc-b6aa-e71c90942a06" class="bulleted-list"><li style="list-style-type:disc">Реализуй единый <code>postprocess/</code>:<ul id="2a8568fa-e39f-809b-917f-cf58033984b2" class="bulleted-list"><li style="list-style-type:circle"><code>ensure_topk_h3(k=3)</code> для текста; формат TSV как в сэмпле.</li></ul><ul id="2a8568fa-e39f-8013-b120-c8a9e9e06ce6" class="bulleted-list"><li style="list-style-type:circle"><code>recsys_post_rank()</code> → dedup, fill-up до 20, last-item boost, лёгкая диверсификация.</li></ul><ul id="2a8568fa-e39f-802b-917d-ef15349eacac" class="bulleted-list"><li style="list-style-type:circle"><code>kws_calibrate_threshold()</code> → поиск τ* по вал-клипам, сохранение τ в конфиг.</li></ul><ul id="2a8568fa-e39f-80b4-a8a9-e7317fb033e4" class="bulleted-list"><li style="list-style-type:circle"><code>price_clip_quantiles()</code> → клиппинг/лог-обратка для medianAPE.</li></ul></li></ul><p id="2a8568fa-e39f-805b-a10a-c9bd56381681" class=""><strong>Артефакты:</strong> <code>postprocess_rules.py</code>, <code>calibration.py</code>, юнит-тесты.</p><hr id="2a8568fa-e39f-8039-b971-f6ff39e45ddf"/><h3 id="2a8568fa-e39f-80e7-b6a2-ca91e5686674" class="">Лаба 4. Release-чек-лист и «паник-профиль»</h3><ul id="2a8568fa-e39f-80e8-81a1-ec6273b31460" class="bulleted-list"><li style="list-style-type:disc">Собери <strong>release_check.py</strong>:<ol type="1" id="2a8568fa-e39f-8079-a682-ce69a4d8cf49" class="numbered-list" start="1"><li>форматы сабов (колонки/типы/ровно 20/ровно 3/без NaN),</li></ol><ol type="1" id="2a8568fa-e39f-80bd-8108-ddcc31690461" class="numbered-list" start="2"><li>детерминизм (фикс сидов, повторимость хэша сабмита),</li></ol><ol type="1" id="2a8568fa-e39f-802a-a4b4-fb5f77f4b156" class="numbered-list" start="3"><li>время end-to-end в лимите для двух треков,</li></ol><ol type="1" id="2a8568fa-e39f-80e7-856a-ece8079863aa" class="numbered-list" start="4"><li>отчёт «офлайн-метрика vs паблик» на мини-холдауте.</li></ol></li></ul><ul id="2a8568fa-e39f-80c7-9ace-c83c39d04c30" class="bulleted-list"><li style="list-style-type:disc"><strong>Паник-профиль</strong> (<code>-fast</code>): урезанные фичи, меньше кандидатов, без HPO, только бленд/порог — саб за гарантированное время.</li></ul><p id="2a8568fa-e39f-809c-bd52-c4c4df5c001a" class=""><strong>Артефакты:</strong> <code>release_check.py</code>, <code>repro.sh --fast</code>, <code>release_report.md</code>.</p><hr id="2a8568fa-e39f-8068-b5bc-f1476db6a225"/><h2 id="2a8568fa-e39f-8056-a570-d658e668b8ca" class="">4) Критерии сдачи</h2><ul id="2a8568fa-e39f-8018-a7d3-fbdc56b0218b" class="bulleted-list"><li style="list-style-type:disc">Есть <strong>drift-репорт</strong> + <strong>adversarial validation</strong> для одной табличной и одной последовательной задачи (RecSys/аудио), с планом смягчения.</li></ul><ul id="2a8568fa-e39f-809f-a654-ef025b7cfaa2" class="bulleted-list"><li style="list-style-type:disc">Пост-проц/калибровки реализованы и протестированы под <strong>их</strong> метрики (H@3/mAP@20/harmonic/medianAPE).</li></ul><ul id="2a8568fa-e39f-80c2-af26-e704be3022b2" class="bulleted-list"><li style="list-style-type:disc">Пройден <strong>release-чек-лист</strong>: валидные сабмиты формата площадок, детерминизм, лимит времени, сопоставимость офлайна/паблика.</li></ul><hr id="2a8568fa-e39f-8055-9b4b-dbe7c3402410"/><h2 id="2a8568fa-e39f-8077-be8a-ccc7a1fc3e9b" class="">5) Домашнее задание</h2><ol type="1" id="2a8568fa-e39f-805d-93cc-c4dc7896edc5" class="numbered-list" start="1"><li>На своём пайплайне сделай <strong>двойной стресс-тест</strong> (сдвиг дистрибуции + деградация ресурсов), опиши падение метрики и компенсирующие меры.</li></ol><ol type="1" id="2a8568fa-e39f-8023-969b-ea34b093f5a5" class="numbered-list" start="2"><li>Встрой в <code>repro.sh</code> «панику» (<code>-fast</code>) и <strong>порог перехода</strong> на неё (например, «T−30 мин до дедлайна»).</li></ol><ol type="1" id="2a8568fa-e39f-801f-9c3a-db1824ff2430" class="numbered-list" start="3"><li>Подними «адверсариалку» с безопасным импутом пропусков; приложи список топ-5 «подозрительных» фичей и что ты с ними сделал.</li></ol><ol type="1" id="2a8568fa-e39f-80a5-98af-f7f3fe9ba0d0" class="numbered-list" start="4"><li>Отдай <code>release_report.md</code>: чек-лист, тайминги, дельта офлайна к паблику (и почему она такая).</li></ol><hr id="2a8568fa-e39f-80eb-ba98-cc711849848f"/><p id="2a8568fa-e39f-8078-a560-c8f9bae80500" class="">Если ок — финальный <strong>Модуль 12</strong> сделаем как 6-часовую генеральную репетицию: две разные задачи (например, RecSys + табличка) с таймерами, паник-профилем и защитой сабмитов.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

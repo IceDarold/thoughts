@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Tabular</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-80c0-9f1f-c7514b8c14a2" class="page sans"><header><h1 class="page-title">Tabular</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-8041-a938-d6487227f16a" class="">Окей, делаем «штурм за 5 часов». Ниже — поминутный план с чёткими стоп-критериями, ускорителями и заготовками сабмитов. Логика: быстрое скрининговое CV → узкий набор сильных фичей → 2–3 ортогональные модели → ранк-бленд → два разных по характеру сабмита (консервативный и широкий) + запасной мета-сабмит.</p><p id="2aa568fa-e39f-80ac-adf1-cb345c1af64c" class="">Считай, что у тебя <strong>CPU-режим</strong> и «1 прогон = 40 минут» — поэтому все гипотезы гоняем по лестнице <strong>scout → gate → full</strong>.</p><hr id="2aa568fa-e39f-809a-86da-fe79a20a676d"/><h1 id="2aa568fa-e39f-8005-ad0e-df7054247f34" class="">0:00–0:20 — Префлайт и базовый каркас</h1><p id="2aa568fa-e39f-8008-a122-c144a4be57b3" class=""><strong>Цель:</strong> поставить стабильную измерялку и первый baseline.</p><ul id="2aa568fa-e39f-80f3-9a2c-e77c993f47d7" class="bulleted-list"><li style="list-style-type:disc">Создай проект и фиксируй всё: <code>RNG=42</code>, страта, одни и те же индексы фолдов/подвыборок.</li></ul><ul id="2aa568fa-e39f-80df-8918-e6f0b4198ac1" class="bulleted-list"><li style="list-style-type:disc"><strong>Сплиты:</strong> <code>StratifiedKFold(n_splits=5, shuffle=True, random_state=RNG)</code> для финала; для быстрых тестов — <code>StratifiedShuffleSplit</code> (holdout 20%).</li></ul><ul id="2aa568fa-e39f-8043-8a8f-cbbfc0db4577" class="bulleted-list"><li style="list-style-type:disc"><strong>Scout-подвыборка 15%</strong> (сохрани индексы и используй везде).</li></ul><ul id="2aa568fa-e39f-80c3-87fc-df7b1d2aa186" class="bulleted-list"><li style="list-style-type:disc"><strong>Бейзлайн LGBM (raw):</strong><p id="2aa568fa-e39f-803f-90ab-d415a34e75b9" class=""><code>learning_rate=0.2, num_leaves=127, max_bin=127, min_data_in_leaf=256, feature_fraction=0.8, bagging_fraction=0.8, bagging_freq=1, n_jobs=-1</code>,</p><p id="2aa568fa-e39f-8044-91a3-e8a8316feb6a" class=""><code>num_boost_round=200, early_stopping_rounds=30</code>, <strong>folds=1</strong> на 15%.</p><p id="2aa568fa-e39f-80a0-987a-c31646252235" class="">Запиши AUC_scout_raw.</p></li></ul><ul id="2aa568fa-e39f-8045-a331-ca8e8bddcd9c" class="bulleted-list"><li style="list-style-type:disc"><strong>Кэш:</strong> сохрани <code>train.bin</code>/<code>valid.bin</code> (LightGBM binary) — сильно сэкономит время дальше.</li></ul><ul id="2aa568fa-e39f-808f-98a2-dea92fb48483" class="bulleted-list"><li style="list-style-type:disc">Санити: валидируй <strong>только по </strong><code><strong>predict_proba</strong></code> (не <code>predict</code>), проверь NaN/inf, одинаковый порядок колонок.</li></ul><hr id="2aa568fa-e39f-8071-b506-d814e693af25"/><h1 id="2aa568fa-e39f-807d-8109-d8468d1718c6" class="">0:20–0:45 — Фич-пакет v1 (быстрые кред. признаки)</h1><p id="2aa568fa-e39f-80c7-9500-f642da713505" class=""><strong>Цель:</strong> дешёвые сильные сигналы, которые почти всегда работают.</p><ul id="2aa568fa-e39f-80eb-83e2-f4c78918c61d" class="bulleted-list"><li style="list-style-type:disc">Денежные/нагрузочные:<p id="2aa568fa-e39f-8080-88ad-df3e57a53233" class=""><code>loan_to_income</code>, <code>installment_to_income</code>, <code>interest_burden = interest_rate*loan_amount/income</code>, <code>residual_income</code>, <code>dti</code>.</p></li></ul><ul id="2aa568fa-e39f-807c-89ef-c2c2cd96e9f7" class="bulleted-list"><li style="list-style-type:disc">Обработка скоса: <strong>винзоринг 1–99% → </strong><code><strong>log1p</strong></code> (только для строго ≥−1), <strong>флаги пропусков</strong>.</li></ul><ul id="2aa568fa-e39f-80f1-8edc-c62397534260" class="bulleted-list"><li style="list-style-type:disc">Категории (быстро): rare bucketing (сливай хвост <code>&lt;k</code>, k≈10), <code>count/freq</code>encoding.</li></ul><ul id="2aa568fa-e39f-80ee-b32e-e2c06629e442" class="bulleted-list"><li style="list-style-type:disc"><strong>Scout-чек (15%, 1 fold):</strong> тот же LGBM. Если <strong>ΔAUC ≥ +0.002</strong>, повышаем гипотезу; если ≤0 — откатываем конкретную трансформацию (часто лишний <code>class_weight</code> ломает AUC).</li></ul><hr id="2aa568fa-e39f-80dc-8ed8-c90bb083c072"/><h1 id="2aa568fa-e39f-80de-9ed9-e941c0dd031c" class="">0:45–1:10 — OOF-TE и стабилизация</h1><p id="2aa568fa-e39f-8016-a428-ce7f0fdf7323" class=""><strong>Цель:</strong> осторожно дать модели «таргет-инфу» без ликов.</p><ul id="2aa568fa-e39f-80d9-aa09-ca38bb9fb9f3" class="bulleted-list"><li style="list-style-type:disc">Добавь <strong>KFold Target Encoding</strong> (M-estimate/β-сглаживание) <strong>строго OOF</strong>.</li></ul><ul id="2aa568fa-e39f-8081-bca5-c9e69d1206ea" class="bulleted-list"><li style="list-style-type:disc">Убери явные мусорные фичи по univariate AUC на scout (топ-K=150–300 признаков хватит).</li></ul><ul id="2aa568fa-e39f-809d-b3e0-cbdbac979582" class="bulleted-list"><li style="list-style-type:disc"><strong>Gate-чек (30–40% данных, 3 фолда, </strong><code><strong>lr=0.1</strong></code><strong>, 400 итераций, ES=50):</strong> прирост должен держаться на ≥2 из 3 фолдов. Иначе режем самый тяжёлый кусок (обычно лишние перекрёсты/переусердный TE).</li></ul><hr id="2aa568fa-e39f-8097-ac22-e11829aa590c"/><h1 id="2aa568fa-e39f-80b0-aa72-c316e0a0d756" class="">1:10–1:35 — Семейство базовых моделей (лёгкие конфигурации)</h1><p id="2aa568fa-e39f-80ca-9aae-d997a87ca58b" class=""><strong>Цель:</strong> собрать диверсификацию для бленда.</p><ul id="2aa568fa-e39f-80c4-a246-f1d941939d5d" class="bulleted-list"><li style="list-style-type:disc"><strong>LGBM-узкий (стабильный):</strong> <code>lr=0.05, num_leaves=127, min_data_in_leaf=256, max_bin=255, lambda_l2=5</code>.</li></ul><ul id="2aa568fa-e39f-80d7-a687-e2f3b2a09779" class="bulleted-list"><li style="list-style-type:disc"><strong>LGBM-широкий (выразительный):</strong> <code>lr=0.03, num_leaves=255, min_data_in_leaf=64, feature_fraction=0.7</code>.</li></ul><ul id="2aa568fa-e39f-803c-846e-f107c1db989e" class="bulleted-list"><li style="list-style-type:disc"><strong>XGBoost (стабильный, hist):</strong> <code>max_depth=6, min_child_weight=8, subsample=0.8, colsample_bytree=0.8, eta=0.05, reg_lambda=8</code>, ES=100–200.</li></ul><ul id="2aa568fa-e39f-8081-9299-c5d1bb42f22a" class="bulleted-list"><li style="list-style-type:disc">(Опц.) <strong>CatBoost</strong> быстрым прогоном: <code>depth=6, l2_leaf_reg=6, lr=0.05</code>.</li></ul><ul id="2aa568fa-e39f-8067-8283-ecae4b7ffe15" class="bulleted-list"><li style="list-style-type:disc">Все — на <strong>Gate-чеке</strong> (40%, 3 фолда). Оставь 2–3 лучших по AUC и <strong>взаимной корреляции</strong> (стремись к ρ≈0.90–0.96 между моделями).</li></ul><hr id="2aa568fa-e39f-8014-8fc6-fb155cf4eb3e"/><h1 id="2aa568fa-e39f-801c-a26f-edf7aafe16f0" class="">1:35–1:55 — Rank-бленд и «метрика-пилот»</h1><p id="2aa568fa-e39f-801a-89aa-e7bffa7247e1" class=""><strong>Цель:</strong> быстро понять, даёт ли ансамбль реальную прибавку.</p><ul id="2aa568fa-e39f-8084-9e6a-f4db16d8da96" class="bulleted-list"><li style="list-style-type:disc">Собери OOF-предсказания выбранных моделей (на тех же 3 фолдах).</li></ul><ul id="2aa568fa-e39f-8016-955e-dde053a4fa5c" class="bulleted-list"><li style="list-style-type:disc">Сконверть в <strong>ранги</strong> (или z-оценки) и найди веса через <strong>NNLS</strong> / быструю Optuna (10–20 трейлов) с целью OOF-AUC.</li></ul><ul id="2aa568fa-e39f-800d-8e83-d6d5a6d542a5" class="bulleted-list"><li style="list-style-type:disc">Если <strong>бленд +0.001…+0.003</strong> к лучшей модели — ок, берём.</li></ul><hr id="2aa568fa-e39f-80c8-8af0-e34a5fa8fc96"/><h1 id="2aa568fa-e39f-80a8-b3d1-d228a3d1d86e" class="">1:55–2:20 — Adversarial-валидация и чистка</h1><p id="2aa568fa-e39f-80b2-baee-fd9dc8bea4e8" class=""><strong>Цель:</strong> не улететь в приватной.</p><ul id="2aa568fa-e39f-80e8-926d-f51f7d3153a6" class="bulleted-list"><li style="list-style-type:disc">Обучи LGBM «train vs test». Если AUC_adv <strong>&gt;0.60</strong> — есть сдвиг.<ul id="2aa568fa-e39f-80b1-9a27-c0579e873cd9" class="bulleted-list"><li style="list-style-type:circle">Подвинь сплиты (StratifiedKFold по квантилям <code>pred_adv</code> или importance weighting).</li></ul><ul id="2aa568fa-e39f-80e0-883e-e26adf2af4a6" class="bulleted-list"><li style="list-style-type:circle">Удали/замаскируй подозрительные признаки (часто редкие категории/прямые счётчики).</li></ul></li></ul><ul id="2aa568fa-e39f-80d8-ac09-eddb081fed76" class="bulleted-list"><li style="list-style-type:disc">Быстрый перезапуск Gate-чека на 3 фолдах, убедись, что AUC не просел.</li></ul><hr id="2aa568fa-e39f-805e-b00d-d37fad17f6bc"/><h1 id="2aa568fa-e39f-8038-89c8-fd63427c4e91" class="">2:20–2:40 — <strong>Full-чек #1</strong> и Сабмит A (консервативный)</h1><p id="2aa568fa-e39f-8073-96ca-d653a1673e08" class=""><strong>Цель:</strong> первый «стабильный» сабмит с невысокой вариативностью.</p><ul id="2aa568fa-e39f-8071-b4cf-f8c093308a2b" class="bulleted-list"><li style="list-style-type:disc">Полные данные, <strong>5 фолдов</strong>, лучшие 2 модели (<strong>узкий LGBM</strong> + <strong>XGB</strong>), ES=100–150, <code>lr=0.03–0.05</code>.</li></ul><ul id="2aa568fa-e39f-80e7-b2eb-da04d8ace0b7" class="bulleted-list"><li style="list-style-type:disc"><strong>Rank-бленд</strong> с весами из NNLS по 5-fold OOF.</li></ul><ul id="2aa568fa-e39f-8079-9d5d-c39adb647577" class="bulleted-list"><li style="list-style-type:disc">Сохрани OOF, веса, фолды, версию фичей → <strong>Сабмит A</strong> («консервативный»).</li></ul><hr id="2aa568fa-e39f-8058-94b0-d0f3720032c4"/><h1 id="2aa568fa-e39f-80f0-a30b-d2260013aba3" class="">2:40–3:10 — Фич-пакет v2 (точечные усилители)</h1><p id="2aa568fa-e39f-805c-ab66-e317690cbc31" class=""><strong>Цель:</strong> добрать ещё +0.001…+0.003 AUC.</p><ul id="2aa568fa-e39f-8054-8de5-f6336a7df54f" class="bulleted-list"><li style="list-style-type:disc">Квантильные бины (q5/q10) по топ-числовым (из v1).</li></ul><ul id="2aa568fa-e39f-80b0-95e7-d8397f16f608" class="bulleted-list"><li style="list-style-type:disc">2–3 <strong>экономически осмысленных взаимодействия</strong>: например, <code>rate*term</code>, <code>loan_to_income*term_bin</code>.</li></ul><ul id="2aa568fa-e39f-80a0-9007-f80fbc360396" class="bulleted-list"><li style="list-style-type:disc">(Если категорий мало) аккуратные перекрёсты по 2 поля, затем <strong>L1-отбор</strong> по OOF.</li></ul><ul id="2aa568fa-e39f-8024-9401-dc1ad1b0bddc" class="bulleted-list"><li style="list-style-type:disc"><strong>Gate-чек (40%, 3 фолда)</strong>: продвигаем только если устойчивый плюс.</li></ul><hr id="2aa568fa-e39f-80b3-a66a-e46733270c1b"/><h1 id="2aa568fa-e39f-800c-b2e6-daa2876d6426" class="">3:10–3:40 — <strong>Full-чек #2</strong> и Сабмит B (широкий)</h1><p id="2aa568fa-e39f-80a7-ab79-ead2f6570b00" class=""><strong>Цель:</strong> второй сабмит, более «выразительный» и с другой геометрией.</p><ul id="2aa568fa-e39f-808d-88c0-cd8f4080285d" class="bulleted-list"><li style="list-style-type:disc">Полные данные, <strong>5 фолдов</strong>, <strong>широкий LGBM</strong> + (опц.) <strong>CatBoost</strong>.</li></ul><ul id="2aa568fa-e39f-800f-935c-ce42f0216e93" class="bulleted-list"><li style="list-style-type:disc">Пересобери бленд → <strong>Сабмит B</strong> («широкий»).</li></ul><ul id="2aa568fa-e39f-8046-89dd-fa2325ab8781" class="bulleted-list"><li style="list-style-type:disc">Проверь корреляцию A vs B (по тест-скорам, если можешь прикинуть; иначе по OOF) — <strong>держи ρ &lt; 0.985</strong>.</li></ul><hr id="2aa568fa-e39f-8074-8602-fcda5ca731d9"/><h1 id="2aa568fa-e39f-80bf-a2c8-f8314684a519" class="">3:40–4:20 — Мета-уровень (быстрый)</h1><p id="2aa568fa-e39f-80b1-ac00-e7c778aab28d" class=""><strong>Цель:</strong> дешёвый прирост и третий вариант сабмита.</p><ul id="2aa568fa-e39f-8080-8e59-fb8c20ee9bf6" class="bulleted-list"><li style="list-style-type:disc"><strong>Мета-логрег</strong> (или LGBM с малой глубиной) на OOF-предсказаниях базовых моделей + 3–5 сильных фичей (например, <code>loan_to_income</code>, <code>dti</code>, <code>interest_burden</code>).</li></ul><ul id="2aa568fa-e39f-8042-84d9-ef124e322f69" class="bulleted-list"><li style="list-style-type:disc">5-fold OOF → тест → <strong>Сабмит C (meta)</strong>. Обычно даёт +0.001 к ранк-бленду и имеет чуть другую корреляцию.</li></ul><hr id="2aa568fa-e39f-8004-ab47-d8b897728c28"/><h1 id="2aa568fa-e39f-80ab-a171-ffe628ec1454" class="">4:20–4:45 — Полировка устойчивости</h1><p id="2aa568fa-e39f-800c-be59-e8408f5def43" class=""><strong>Цель:</strong> защититься от приватки.</p><ul id="2aa568fa-e39f-8059-991b-d50a9c4f928f" class="bulleted-list"><li style="list-style-type:disc">Усили <strong>регуляризацию</strong> у самой рискованной модели: <code>lambda_l2↑</code>, <code>min_data_in_leaf↑</code>, <code>feature_fraction≈0.75</code>.</li></ul><ul id="2aa568fa-e39f-8053-997b-f448d29a3ba3" class="bulleted-list"><li style="list-style-type:disc">Проверь, что при <strong>смене сидов</strong> (например, 3 сид-перезапуска на 3 фолдах) OOF не плавает &gt;0.002.</li></ul><ul id="2aa568fa-e39f-80c5-9f3d-e0a0afa3d793" class="bulleted-list"><li style="list-style-type:disc">Оставь 2 сабмита с <strong>умеренной корреляцией</strong>: A(консервативный) + C(мета) <strong>или</strong> A + B — по твоим OOF.</li></ul><hr id="2aa568fa-e39f-80a4-9722-c562e55e546c"/><h1 id="2aa568fa-e39f-8033-9368-c2eff0fc7c55" class="">4:45–5:00 — Финализация</h1><p id="2aa568fa-e39f-80a8-a9e3-fc37b661cf5c" class=""><strong>Цель:</strong> порядок и чёткий выбор.</p><ul id="2aa568fa-e39f-809e-85ee-d3685900d147" class="bulleted-list"><li style="list-style-type:disc">Выбери <strong>2 финальных сабмита</strong>, лог: зачем каждый живёт (стабильный vs широкий/мета).</li></ul><ul id="2aa568fa-e39f-8062-8e07-f45304e0571d" class="bulleted-list"><li style="list-style-type:disc">Зафиксируй <strong>версии фичей</strong>, сплиты, гиперы, веса бленда.</li></ul><ul id="2aa568fa-e39f-8044-9462-cfba4a0d6484" class="bulleted-list"><li style="list-style-type:disc">Экспортируй артефакты: OOF-csv, test-scores, <code>folds.json</code>, <code>params.yaml</code>, короткий README (что и почему сработало).</li></ul><hr id="2aa568fa-e39f-80cc-89dc-c511cee48b97"/><h2 id="2aa568fa-e39f-80b6-bd95-db642265a8d7" class="">Быстрые настройки и стоп-правила (чтобы не сжечь время)</h2><ul id="2aa568fa-e39f-80b2-9970-d344f3da4358" class="bulleted-list"><li style="list-style-type:disc"><strong>Лестница:</strong><ul id="2aa568fa-e39f-80de-8663-c094ec1ef3ac" class="bulleted-list"><li style="list-style-type:circle"><em>Scout</em> (15%, 1 fold, <code>lr=0.2</code>, 200 ит.) → +0.002? Продвигаем.</li></ul><ul id="2aa568fa-e39f-8013-b542-e874fde1f8dc" class="bulleted-list"><li style="list-style-type:circle"><em>Gate</em> (40%, 3 folds, <code>lr=0.1</code>, 400 ит.) → плюс ≥2/3 фолдов? В прод.</li></ul><ul id="2aa568fa-e39f-8019-98a0-e4855c5a016b" class="bulleted-list"><li style="list-style-type:circle"><em>Full</em> (100%, 5 folds, <code>lr=0.03–0.05</code>, до 2000 ит., ES=100).</li></ul></li></ul><ul id="2aa568fa-e39f-80d1-b23f-eddc2c4ad297" class="bulleted-list"><li style="list-style-type:disc"><strong>Не трогай</strong> <code>class_weight</code> для AUC, если только дисбаланс не экстремальный — чаще вредит ранжированию.</li></ul><ul id="2aa568fa-e39f-80b5-a98f-d0f050cfb26d" class="bulleted-list"><li style="list-style-type:disc">Если прогон стал «40 минут» — <strong>снизь </strong><code><strong>max_bin</strong></code><strong> до 127</strong>, подними <code>min_data_in_leaf</code>, и всегда юзай бинарные датасеты LGBM.</li></ul><ul id="2aa568fa-e39f-804d-81f3-f5be7bafca9b" class="bulleted-list"><li style="list-style-type:disc"><strong>Лики TE:</strong> только OOF. Любая утечка — минус 0.02 AUC за минуту «экономии».</li></ul><ul id="2aa568fa-e39f-8096-aa9e-f39fd36cccec" class="bulleted-list"><li style="list-style-type:disc">Если видишь <strong>AUC_adv &gt; 0.65</strong> — немедленно чисти признаки/перестраивай сплит, иначе в приватке больно.</li></ul><hr id="2aa568fa-e39f-8084-b82b-e1fc7f84e710"/><h2 id="2aa568fa-e39f-80eb-8173-fa0e7c84baba" class="">Мини-конфиги (копипаст-готовые)</h2><ul id="2aa568fa-e39f-80ec-a418-ce16a20cf855" class="bulleted-list"><li style="list-style-type:disc"><strong>LGBM_Stable</strong>:<p id="2aa568fa-e39f-80ee-9741-d4dc9a534891" class=""><code>lr=0.05, num_leaves=127, max_bin=255, min_data_in_leaf=256, feature_fraction=0.8, bagging_fraction=0.8, bagging_freq=1, lambda_l2=5, n_jobs=-1</code></p></li></ul><ul id="2aa568fa-e39f-8058-98b3-d863d1013b07" class="bulleted-list"><li style="list-style-type:disc"><strong>LGBM_Wide</strong>:<p id="2aa568fa-e39f-8017-b22f-f64d07424f0f" class=""><code>lr=0.03, num_leaves=255, max_bin=255, min_data_in_leaf=64, feature_fraction=0.7, bagging_fraction=0.8, bagging_freq=1, lambda_l2=1</code></p></li></ul><ul id="2aa568fa-e39f-80b2-b684-e25d26e1fad5" class="bulleted-list"><li style="list-style-type:disc"><strong>XGB_Stable (hist)</strong>:<p id="2aa568fa-e39f-8036-b1cb-ead70361a4ec" class=""><code>max_depth=6, min_child_weight=8, subsample=0.8, colsample_bytree=0.8, eta=0.05, reg_lambda=8, n_estimators=4000, early_stopping_rounds=200, tree_method=&#x27;hist&#x27;</code></p></li></ul><ul id="2aa568fa-e39f-8037-835f-ee3be165fffe" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost_Fast</strong>:<p id="2aa568fa-e39f-8032-a2d6-c290a6fea5c5" class=""><code>depth=6, l2_leaf_reg=6, learning_rate=0.05, iterations=3000, loss_function=&#x27;Logloss&#x27;, eval_metric=&#x27;AUC&#x27;, od_type=&#x27;Iter&#x27;, od_wait=200</code></p></li></ul><hr id="2aa568fa-e39f-801f-a3b9-ea75197c22dd"/><h2 id="2aa568fa-e39f-8055-9190-c3d474d30fe3" class="">Что делать, если что-то идёт не так</h2><ul id="2aa568fa-e39f-80b5-87ba-f0e7b0b33c6a" class="bulleted-list"><li style="list-style-type:disc"><strong>AUC внезапно 0.7–0.8:</strong> проверяй <code>predict</code> vs <code>predict_proba</code>, NaN после <code>log1p</code>, рассинхрон колонок.</li></ul><ul id="2aa568fa-e39f-8074-9cb9-df8cf8349580" class="bulleted-list"><li style="list-style-type:disc"><strong>Модель «колбасит»:</strong> подними <code>min_data_in_leaf</code>, <code>lambda_l2</code>, снизь <code>num_leaves</code>, зажми <code>feature_fraction</code>.</li></ul><ul id="2aa568fa-e39f-80a1-8338-d0fd5f3c2485" class="bulleted-list"><li style="list-style-type:disc"><strong>LB расходится с OOF:</strong> вернись к adversarial-валидации, удали «грязные» признаки, проверь TE, разнеси фолды по квантилям <code>pred_adv</code>.</li></ul><hr id="2aa568fa-e39f-80f1-9a65-e78e904349c0"/><h2 id="2aa568fa-e39f-8099-987b-c0e05c0791d5" class="">Итоговая стратегия сабмитов (2–3 за 5 часов)</h2><ol type="1" id="2aa568fa-e39f-8036-ade3-e81a2de167d8" class="numbered-list" start="1"><li><strong>A (консервативный):</strong> LGBM_Stable + XGB_Stable rank-бленд (низкая вариативность).</li></ol><ol type="1" id="2aa568fa-e39f-8073-8ece-ff11968ed100" class="numbered-list" start="2"><li><strong>B (широкий):</strong> LGBM_Wide + (CatBoost) rank-бленд (выразительный, другой уклон).</li></ol><ol type="1" id="2aa568fa-e39f-8083-8b34-c88951d52f28" class="numbered-list" start="3"><li><strong>C (meta):</strong> мета-логрег на OOF-предиктах + 3–5 сильных фичей.</li></ol><p id="2aa568fa-e39f-801c-9631-d7c9befb1294" class="">Держи между ними разумную корреляцию, и у тебя будет один «тихий танк» для приватки и один «искатель потолка» для паблика. Если останется время — добросыпь фич-пакет v2 и обнови B/C; если нет — A+C обычно закрывают топовые места безопасно.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

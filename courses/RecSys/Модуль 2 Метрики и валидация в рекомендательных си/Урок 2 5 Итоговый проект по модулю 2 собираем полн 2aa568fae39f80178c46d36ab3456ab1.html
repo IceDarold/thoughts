@@ -1,0 +1,811 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 2.5. Итоговый проект по модулю 2: собираем полноценный offline-eval</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8017-8c46-d36ab3456ab1" class="page sans"><header><h1 class="page-title">Урок 2.5. Итоговый проект по модулю 2: собираем полноценный offline-eval</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-8053-b175-f6e9fb1a2b7c" class="">1. Цели урока</h2><p id="2aa568fa-e39f-8086-bde1-cfdc5da0fac3" class="">К концу урока студент:</p><ul id="2aa568fa-e39f-80fa-9b5b-c00ab4b898be" class="bulleted-list"><li style="list-style-type:disc">имеет <strong>рабочий evaluation-пайплайн</strong> для своего RecSys-соревнования/датасета;</li></ul><ul id="2aa568fa-e39f-8041-8f5b-f6249cb84f1a" class="bulleted-list"><li style="list-style-type:disc">может <strong>запускать одну и ту же функцию eval</strong> на разных моделях/бейзлайнах и сравнивать их по нескольким метрикам;</li></ul><ul id="2aa568fa-e39f-80c9-b95a-c112538c494e" class="bulleted-list"><li style="list-style-type:disc">явно понимает:<ul id="2aa568fa-e39f-8009-8395-fe1be107c529" class="bulleted-list"><li style="list-style-type:circle">какой <strong>split</strong> используется;</li></ul><ul id="2aa568fa-e39f-80b5-92b5-d80b935f961e" class="bulleted-list"><li style="list-style-type:circle">какая <strong>offline-метрика</strong> (или набор) и почему именно они;</li></ul><ul id="2aa568fa-e39f-8016-962c-cb4749a64610" class="bulleted-list"><li style="list-style-type:circle">где возможны <strong>лики</strong> и ограничения;</li></ul></li></ul><ul id="2aa568fa-e39f-803b-8fbf-ddaab5a12956" class="bulleted-list"><li style="list-style-type:disc">делает первый «настоящий мини-эксперимент»: сравнивает 2–3 модели и пишет вывод.</li></ul><p id="2aa568fa-e39f-80a4-88cf-f91d63f3919e" class="">Это не чисто лекция, а скорее <strong>workshop</strong>: 10–20 минут теории и постановки задач → остальное — код, ноутбуки, работа руками.</p><hr id="2aa568fa-e39f-8026-8ed7-d3f70219a737"/><h2 id="2aa568fa-e39f-80fa-a877-f413e126630b" class="">2. Формат урока</h2><p id="2aa568fa-e39f-8004-9bd8-fc68ad8d9c3d" class="">Рассчёт на ~2 часа (можно разбить на 2 занятия):</p><ol type="1" id="2aa568fa-e39f-80f0-a30b-ed70892a0ecb" class="numbered-list" start="1"><li><strong>Вступление (10–15 мин)</strong> — проговорить цели и чек-лист.</li></ol><ol type="1" id="2aa568fa-e39f-80a2-8e17-fa7b8506e60b" class="numbered-list" start="2"><li><strong>Шаг 1. Формализуем задачу и split (20–25 мин)</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-8006-980b-f62960036e56" class="numbered-list" start="3"><li><strong>Шаг 2. Оформляем интерфейсы Recommender + метрики (20–25 мин)</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-8029-bd51-f393ac3526d7" class="numbered-list" start="4"><li><strong>Шаг 3. Пишем общий eval-фреймворк (20–30 мин)</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-805e-8fea-d552fb77923a" class="numbered-list" start="5"><li><strong>Шаг 4. Сравниваем модели/бейзлайны, интерпретация (20–30 мин)</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-80de-ba36-cd8d7a61ddfb" class="numbered-list" start="6"><li><strong>Итог: рефлексия и фиксация результатов (10–15 мин)</strong>.</li></ol><p id="2aa568fa-e39f-80b9-91c6-deb77b89ef8a" class="">Домашка — довести проект до идеально читаемого состояния (код + отчёт).</p><hr id="2aa568fa-e39f-809b-a80a-d23cbe4a584f"/><h2 id="2aa568fa-e39f-8002-b419-d02bbd310069" class="">3. Вступление: что мы собираем</h2><p id="2aa568fa-e39f-80c4-a49f-fcd0e63799d2" class="">Короткий спич учителя (или ты пишешь это в методичку):</p><blockquote id="2aa568fa-e39f-80af-9e2b-f106c04c5506" class="">«В предыдущих уроках мы по кусочкам собирали:<ul id="2aa568fa-e39f-8034-9e88-e1d223d49405" class="bulleted-list"><li style="list-style-type:disc">метрики (2.2),</li></ul><ul id="2aa568fa-e39f-80c9-9f42-f15af379e247" class="bulleted-list"><li style="list-style-type:disc">схемы сплитов (2.3),</li></ul><ul id="2aa568fa-e39f-800a-b573-f69afc5e3bcb" class="bulleted-list"><li style="list-style-type:disc">negative sampling и дизайн eval-фреймворка (2.4).</li></ul><p id="2aa568fa-e39f-802b-8b2e-e1d620b3175f" class="">На этом уроке ваша задача — собрать всё это в <strong>единую систему</strong>, завязанную на <strong>конкретное соревнование или датасет</strong>, с которым вы будете работать в следующих модулях.</p><p id="2aa568fa-e39f-804d-9922-e8be0db087da" class="">Дальше, во всех модулях (CF, MF, sequence, graph) вы просто будете менять модель, а eval останется тем же».</p></blockquote><p id="2aa568fa-e39f-805a-ba8f-e18ad87705c4" class="">Фиксируем чек-лист для урока:</p><ul id="2aa568fa-e39f-80b9-bc38-dc7126cd5599" class="bulleted-list"><li style="list-style-type:disc">Есть <strong>чётко описанная постановка задачи</strong> (что предсказываем).</li></ul><ul id="2aa568fa-e39f-80b2-913a-e0bff609a2ab" class="bulleted-list"><li style="list-style-type:disc">Есть <strong>выбранная схема сплита</strong> и реализованный код разбиения.</li></ul><ul id="2aa568fa-e39f-8096-a9b3-c3f059e3777e" class="bulleted-list"><li style="list-style-type:disc">Есть <strong>набор метрик</strong> (минимум 2–3 ranking-метрики).</li></ul><ul id="2aa568fa-e39f-8094-8f7b-f77d01bee09c" class="bulleted-list"><li style="list-style-type:disc">Есть функция <code>evaluate_model(model, ...)</code>, возвращающая словарь с метриками.</li></ul><ul id="2aa568fa-e39f-808a-8523-ff7b91c60f55" class="bulleted-list"><li style="list-style-type:disc">Есть минимум 2–3 модели/бейзлайна, которые мы сравниваем.</li></ul><hr id="2aa568fa-e39f-805a-ad72-e1733d926460"/><h2 id="2aa568fa-e39f-80e1-a3ca-f1ec0a0dbd6f" class="">4. Шаг 1. Формализуем задачу и split</h2><h3 id="2aa568fa-e39f-80b3-a2cf-eeab1ad761f4" class="">4.1. Уточнение задачи (без кода)</h3><p id="2aa568fa-e39f-80b5-8afe-c67f96e6f320" class="">Студенты в начале урока открывают свой README / блокнот и отвечают себе (и фиксируют текстом):</p><ol type="1" id="2aa568fa-e39f-8038-ba06-e419226c3607" class="numbered-list" start="1"><li><strong>Тип задачи:</strong><ul id="2aa568fa-e39f-80e6-ab55-ee6510d48434" class="bulleted-list"><li style="list-style-type:disc">implicit / explicit;</li></ul><ul id="2aa568fa-e39f-8072-b382-d5ef9d341dec" class="bulleted-list"><li style="list-style-type:disc">rating prediction / top-K ranking / next-item / session-based / multi-objective.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cd-a2e1-d34a48781995" class="numbered-list" start="2"><li><strong>Юнит оценки:</strong><ul id="2aa568fa-e39f-8050-971e-f0235e4fd213" class="bulleted-list"><li style="list-style-type:disc">user;</li></ul><ul id="2aa568fa-e39f-8013-a9de-cf43aaba65c3" class="bulleted-list"><li style="list-style-type:disc">session;</li></ul><ul id="2aa568fa-e39f-8006-8153-dbfcdcd2611a" class="bulleted-list"><li style="list-style-type:disc">interaction (user-session);</li></ul><ul id="2aa568fa-e39f-8049-9ca9-f3cea168cc73" class="bulleted-list"><li style="list-style-type:disc">что именно мы будем считать «одной единицей» для метрики (например, «один пользователь + список релевантных товаров»).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808a-9e32-d0de5a27b146" class="numbered-list" start="3"><li><strong>Ground truth:</strong><ul id="2aa568fa-e39f-8095-baa6-da643b12a1f8" class="bulleted-list"><li style="list-style-type:disc">Какие события считаем релевантными?<ul id="2aa568fa-e39f-8049-9fc5-cd1d78bde1dc" class="bulleted-list"><li style="list-style-type:circle">покупки?</li></ul><ul id="2aa568fa-e39f-809b-924c-c3d0f042479b" class="bulleted-list"><li style="list-style-type:circle">клики?</li></ul><ul id="2aa568fa-e39f-80b0-aa0a-f84ba1cb7516" class="bulleted-list"><li style="list-style-type:circle">только последнее событие? или все за период?</li></ul></li></ul></li></ol><p id="2aa568fa-e39f-80f7-8f93-ebc7ec2fadb1" class="">Пример формулировки (студент должен сделать такую же для своего кейса):</p><blockquote id="2aa568fa-e39f-80a7-8b3e-e2af1aca20ca" class="">Пример:<p id="2aa568fa-e39f-807a-b6bb-c1456c8e72d0" class="">Тип задачи: implicit top-K recommendation.</p><p id="2aa568fa-e39f-80a4-8dab-d68b6f9eb108" class="">Юнит оценки: пользователь.</p><p id="2aa568fa-e39f-80ce-b520-c6e7b3e43391" class="">Ground truth: товары, купленные пользователем в валидационный период (после точки T_split).</p></blockquote><h3 id="2aa568fa-e39f-8096-825e-e93c61c1169e" class="">4.2. Определяем split (рефреш из 2.3)</h3><p id="2aa568fa-e39f-8083-91f7-facc9b7baf87" class="">Студент выбирает и фиксирует текстом:</p><ul id="2aa568fa-e39f-80f1-921a-e45d0bc4d0ac" class="bulleted-list"><li style="list-style-type:disc">какую схему он использует <strong>как основную</strong>:<ul id="2aa568fa-e39f-803a-9808-e2d11363a3bf" class="bulleted-list"><li style="list-style-type:circle">time-based global,</li></ul><ul id="2aa568fa-e39f-8083-a9bb-c02ef49369ac" class="bulleted-list"><li style="list-style-type:circle">per-user leave-one-out,</li></ul><ul id="2aa568fa-e39f-80d6-af04-dc87b14645a3" class="bulleted-list"><li style="list-style-type:circle">session-based;</li></ul></li></ul><ul id="2aa568fa-e39f-8061-90e8-c3adb548d024" class="bulleted-list"><li style="list-style-type:disc">почему именно она лучше всего отражает реальность / условия соревнования.</li></ul><p id="2aa568fa-e39f-80b2-bf49-ed036fc04697" class=""><strong>Мини-задача на уроке:</strong></p><ul id="2aa568fa-e39f-804e-82bf-ee1c65006f5c" class="bulleted-list"><li style="list-style-type:disc">Написать текст (можно прямо в ноутбуке в markdown/комментарии):<blockquote id="2aa568fa-e39f-8094-85f3-fcd858c06432" class="">«В этом проекте я использую схему _________ split, потому что:<p id="2aa568fa-e39f-80c4-812f-fdfc18c8c0ce" class="">– наша задача → ________;</p><p id="2aa568fa-e39f-8002-a2cf-d22583d732b2" class="">– в реальности модель будет обучаться на периоде ________ и предсказывать ________;</p><p id="2aa568fa-e39f-8049-aa1a-f7a0e77a8062" class="">– time-based / leave-one-out лучше всего имитирует этот сценарий, потому что ________».</p></blockquote></li></ul><h3 id="2aa568fa-e39f-8028-9c67-f01117be7a49" class="">4.3. Код сплита</h3><p id="2aa568fa-e39f-8024-816d-faf1c2a7172a" class="">Студенты приводят разбиение в финальный вид:</p><ul id="2aa568fa-e39f-8065-8522-cdc449380520" class="bulleted-list"><li style="list-style-type:disc">функция <code>make_split(events_df, mode=&quot;time&quot;)</code>, которая возвращает <code>train_df, val_df</code>.</li></ul><ul id="2aa568fa-e39f-80c9-9dee-d744bf4ec70c" class="bulleted-list"><li style="list-style-type:disc">Варианты:<ul id="2aa568fa-e39f-804c-b830-cfcc43467ae9" class="bulleted-list"><li style="list-style-type:circle">если уже написано в 2.3 — просто немного рефакторинга, чтобы код был читаемым и воспроизводимым;</li></ul><ul id="2aa568fa-e39f-80d1-a2a2-f89bddfabc13" class="bulleted-list"><li style="list-style-type:circle">добавить seed, логгирование размера.</li></ul></li></ul><p id="2aa568fa-e39f-8035-b270-cee9174aa2d6" class="">Пример структуры:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80c6-9e71-e1e90e86798f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def make_time_based_split(events_df, time_col=&quot;timestamp&quot;, val_size=0.2):
+    events_sorted = events_df.sort_values(time_col)
+    split_time = events_sorted[time_col].quantile(1 - val_size)
+    train_df = events_sorted[events_sorted[time_col] &lt;= split_time].copy()
+    val_df   = events_sorted[events_sorted[time_col] &gt;  split_time].copy()
+    return train_df, val_df
+</code></pre><hr id="2aa568fa-e39f-80f5-9cb3-d35bbbe6e1d1"/><h2 id="2aa568fa-e39f-80ce-a700-e639825de4e3" class="">5. Шаг 2. Интерфейсы Recommender и метрики</h2><h3 id="2aa568fa-e39f-800e-b780-efb923a0b276" class="">5.1. Recommender API</h3><p id="2aa568fa-e39f-80e9-9da1-cdd0895b8400" class="">Студенты должны привести к <strong>единообразному интерфейсу</strong> свои модели.</p><p id="2aa568fa-e39f-800b-b496-f80ecdb232be" class="">Для simplest user-based кейсов:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8089-ae0b-e1552057ea4b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class BaseRecommender:
+    def recommend(self, user_id, k: int) -&gt; list:
+        &quot;&quot;&quot;
+        Вернуть список item_id длины &lt;= k, отсортированный по убыванию score.
+        &quot;&quot;&quot;
+        raise NotImplementedError
+</code></pre><p id="2aa568fa-e39f-80d2-b07a-e5baded80b33" class="">И реализовать минимум:</p><ul id="2aa568fa-e39f-80b5-b19a-d4c6db44eb36" class="bulleted-list"><li style="list-style-type:disc">PopularityRecommender</li></ul><ul id="2aa568fa-e39f-80fa-8d88-f5ff6c47f4e1" class="bulleted-list"><li style="list-style-type:disc">ItemItemRecommender</li></ul><ul id="2aa568fa-e39f-80a8-af85-dfb6dca9eb9c" class="bulleted-list"><li style="list-style-type:disc">(опционально) PopularitySegmentRecommender</li></ul><p id="2aa568fa-e39f-809d-ae48-fc2f07853434" class="">Пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80bc-8a70-e09e0491304e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class PopularityRecommender(BaseRecommender):
+    def __init__(self, train_df):
+        # train_df: user_id, item_id, timestamp, ...
+        self.popularity = (
+            train_df.groupby(&quot;item_id&quot;)[&quot;user_id&quot;]
+                    .nunique()
+                    .sort_values(ascending=False)
+        )
+        self.items_sorted = list(self.popularity.index)
+
+    def recommend(self, user_id, k=10):
+        return self.items_sorted[:k]
+</code></pre><h3 id="2aa568fa-e39f-803f-aae9-e3085d2d101c" class="">5.2. Метрики</h3><p id="2aa568fa-e39f-808b-867d-c8998dbacb59" class="">Студенты берут <strong>функции метрик из урока 2.2</strong>, приводят их к аккуратному виду (без копипасты в 10 местах), складывают в отдельный блок/файл, например <code>metrics.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-802e-baf9-db702bf1cb77" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def hit_rate_at_k(recommended, ground_truth, k):
+    rec_k = recommended[:k]
+    hit = int(len(set(rec_k) &amp; set(ground_truth)) &gt; 0)
+    return hit
+
+def precision_at_k(recommended, ground_truth, k):
+    rec_k = recommended[:k]
+    if not rec_k:
+        return 0.0
+    hits = len(set(rec_k) &amp; set(ground_truth))
+    return hits / len(rec_k)
+
+def recall_at_k(recommended, ground_truth, k):
+    if not ground_truth:
+        return 0.0
+    rec_k = recommended[:k]
+    hits = len(set(rec_k) &amp; set(ground_truth))
+    return hits / len(ground_truth)
+
+# и т.д. для AP@K, NDCG@K
+</code></pre><p id="2aa568fa-e39f-8032-9a75-efb8d03e2e52" class="">Важно: договориться о формате ground_truth (список/множество).</p><hr id="2aa568fa-e39f-8073-8939-e56ab0fdc7ba"/><h2 id="2aa568fa-e39f-80b7-b73b-cfd676205148" class="">6. Шаг 3. Пишем общий eval-фреймворк</h2><h3 id="2aa568fa-e39f-80d5-8fe0-d11fdb9fee8b" class="">6.1. Структура входных данных для eval</h3><p id="2aa568fa-e39f-8072-a668-d9886315a7ad" class="">Надо привести в единый формат:</p><ul id="2aa568fa-e39f-80b4-8c08-fb2fd1fe1b52" class="bulleted-list"><li style="list-style-type:disc"><code>val_users</code> — список user_id, по которым считаем метрики;</li></ul><ul id="2aa568fa-e39f-80db-af04-c1ad3db6a457" class="bulleted-list"><li style="list-style-type:disc"><code>ground_truth[user_id]</code> — список релевантных items для этого пользователя в validation периоде.</li></ul><p id="2aa568fa-e39f-809c-92c9-facec89fc118" class="">Пример подготовки:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80ba-b102-fd922106eaee" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_ground_truth(val_df):
+    gt = (
+        val_df.groupby(&quot;user_id&quot;)[&quot;item_id&quot;]
+              .apply(list)
+              .to_dict()
+    )
+    return gt
+</code></pre><h3 id="2aa568fa-e39f-80c4-872b-e8dfe2476463" class="">6.2. Функция evaluate_model</h3><p id="2aa568fa-e39f-80d7-95e8-d80ff29ec473" class="">Студенты пишут финальную версию <code>evaluate_model</code>, использующую:</p><ul id="2aa568fa-e39f-80dd-9e11-fd6cfd8cf2c6" class="bulleted-list"><li style="list-style-type:disc">Recommender API,</li></ul><ul id="2aa568fa-e39f-8083-8422-d33889af0770" class="bulleted-list"><li style="list-style-type:disc">список пользователей,</li></ul><ul id="2aa568fa-e39f-80d9-8a09-d6811b840218" class="bulleted-list"><li style="list-style-type:disc">ground_truth,</li></ul><ul id="2aa568fa-e39f-80c1-80b5-dde7deedcc88" class="bulleted-list"><li style="list-style-type:disc">метрики из <code>metrics.py</code>.</li></ul><p id="2aa568fa-e39f-808a-b723-e83780074290" class="">Пример (упрощённый):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80af-a645-e99c863476a4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def evaluate_model(
+    recommender,
+    val_users,
+    ground_truth,
+    k=10,
+    metrics=(&quot;hit&quot;, &quot;recall&quot;, &quot;map&quot;, &quot;ndcg&quot;),
+):
+    results_sum = {m: 0.0 for m in metrics}
+    n = 0
+
+    for user_id in val_users:
+        gt_items = ground_truth.get(user_id, [])
+        if not gt_items:
+            continue
+
+        recs = recommender.recommend(user_id, k)
+
+        if &quot;hit&quot; in metrics:
+            results_sum[&quot;hit&quot;] += hit_rate_at_k(recs, gt_items, k)
+        if &quot;recall&quot; in metrics:
+            results_sum[&quot;recall&quot;] += recall_at_k(recs, gt_items, k)
+        if &quot;precision&quot; in metrics:
+            results_sum[&quot;precision&quot;] += precision_at_k(recs, gt_items, k)
+        if &quot;map&quot; in metrics:
+            results_sum[&quot;map&quot;] += ap_at_k(recs, gt_items, k)
+        if &quot;ndcg&quot; in metrics:
+            results_sum[&quot;ndcg&quot;] += ndcg_at_k(recs, gt_items, k)
+
+        n += 1
+
+    # усредняем
+    if n == 0:
+        return {m: 0.0 for m in metrics}
+
+    results = {m: results_sum[m] / n for m in metrics}
+    return results
+</code></pre><h3 id="2aa568fa-e39f-8071-9b60-c7fb192d9c2a" class="">6.3. (Опционально) Negative sampling в eval</h3><p id="2aa568fa-e39f-80f8-babc-fe99ce017488" class="">Если датасет большой и/или задача требует:</p><ul id="2aa568fa-e39f-80fd-83e4-dab0d54cf276" class="bulleted-list"><li style="list-style-type:disc">Студенты добавляют <code>negative_sampler</code> и оценивают по схеме «таргет + негативы» (из 2.4).</li></ul><p id="2aa568fa-e39f-80ec-a105-f99e1d48c372" class="">Но на уроке 2.5 это можно сделать по желанию — главное, чтобы базовый eval работал.</p><hr id="2aa568fa-e39f-80b7-8251-d2fb1c24921c"/><h2 id="2aa568fa-e39f-8079-b5de-f7ca60920764" class="">7. Шаг 4. Сравнение моделей и интерпретация</h2><p id="2aa568fa-e39f-80a2-8324-f8387214e37e" class=""><strong>Ключевая часть урока</strong> — чтобы студенты увидели, как реально отличаются бейзлайны, и попробовали объяснить цифры.</p><h3 id="2aa568fa-e39f-80e5-a96f-e4d1a544c95e" class="">7.1. Запуск минимум 2–3 моделей</h3><p id="2aa568fa-e39f-803e-aa55-dd4d7c07edc8" class="">Например:</p><ul id="2aa568fa-e39f-8099-96c5-fcc869e2e398" class="bulleted-list"><li style="list-style-type:disc"><code>pop_model = PopularityRecommender(train_df)</code></li></ul><ul id="2aa568fa-e39f-8063-b7d0-cf36c522f42c" class="bulleted-list"><li style="list-style-type:disc"><code>seg_model = PopularityBySegmentRecommender(train_df)</code></li></ul><ul id="2aa568fa-e39f-800f-8c32-ee75084f5810" class="bulleted-list"><li style="list-style-type:disc"><code>item_model = ItemItemRecommender(train_df)</code></li></ul><p id="2aa568fa-e39f-800f-a6f3-c3f7ffda8e5a" class="">Код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-806f-a9be-c6013cf56538" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">models = {
+    &quot;popularity&quot;: pop_model,
+    &quot;popularity_segment&quot;: seg_model,
+    &quot;item_item&quot;: item_model,
+}
+
+val_users = list(ground_truth.keys())
+
+results = {}
+for name, model in models.items():
+    metrics = evaluate_model(
+        model,
+        val_users,
+        ground_truth,
+        k=20,
+        metrics=(&quot;hit&quot;, &quot;recall&quot;, &quot;map&quot;, &quot;ndcg&quot;)
+    )
+    results[name] = metrics
+</code></pre><p id="2aa568fa-e39f-807e-97af-eff03d65a6e2" class="">Сформировать табличку:</p><table id="2aa568fa-e39f-80e2-bc7e-d279de52aaaa" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-8069-a61f-e812c87b11a8"><th id="Um`q" class="simple-table-header-color simple-table-header">Model</th><th id="~BHR" class="simple-table-header-color simple-table-header">Hit@20</th><th id="`~af" class="simple-table-header-color simple-table-header">Recall@20</th><th id="UZNc" class="simple-table-header-color simple-table-header">MAP@20</th><th id="jvaH" class="simple-table-header-color simple-table-header">NDCG@20</th></tr></thead><tbody><tr id="2aa568fa-e39f-80eb-98ee-da25cf3f2b97"><td id="Um`q" class="">popularity</td><td id="~BHR" class="">0.45</td><td id="`~af" class="">0.30</td><td id="UZNc" class="">0.12</td><td id="jvaH" class="">0.20</td></tr><tr id="2aa568fa-e39f-80db-98a3-c9bd9c7bf302"><td id="Um`q" class="">popularity_segment</td><td id="~BHR" class="">0.48</td><td id="`~af" class="">0.33</td><td id="UZNc" class="">0.13</td><td id="jvaH" class="">0.22</td></tr><tr id="2aa568fa-e39f-8085-b459-ca4d18c7fad7"><td id="Um`q" class="">item_item</td><td id="~BHR" class="">0.55</td><td id="`~af" class="">0.40</td><td id="UZNc" class="">0.17</td><td id="jvaH" class="">0.27</td></tr></tbody></table><p id="2aa568fa-e39f-80ac-9732-e55343f49dba" class="">(Цифры выдуманные, в уроке студенты получают свои.)</p><h3 id="2aa568fa-e39f-800c-894a-f302967a6640" class="">7.2. Вопросы для обсуждения</h3><ul id="2aa568fa-e39f-80fc-aeee-d932acad816d" class="bulleted-list"><li style="list-style-type:disc"><strong>Какая модель лучшая?</strong><ul id="2aa568fa-e39f-8047-8e34-cefe4f965c7a" class="bulleted-list"><li style="list-style-type:circle">по Hit@20,</li></ul><ul id="2aa568fa-e39f-8022-a9ef-c7a14620484e" class="bulleted-list"><li style="list-style-type:circle">по Recall@20,</li></ul><ul id="2aa568fa-e39f-8064-9f33-c6c9c1c7789d" class="bulleted-list"><li style="list-style-type:circle">по MAP@20/NDCG@20.</li></ul></li></ul><ul id="2aa568fa-e39f-80f9-85a2-f296c752bb90" class="bulleted-list"><li style="list-style-type:disc">Есть ли конфликты:<ul id="2aa568fa-e39f-806b-8ed6-d3f1ecc0cd83" class="bulleted-list"><li style="list-style-type:circle">например, у одной модели выше Recall, у другой — MAP.</li></ul></li></ul><ul id="2aa568fa-e39f-80e8-aae9-cfd2ec58a660" class="bulleted-list"><li style="list-style-type:disc">Как это коррелирует с тем, что вы <strong>интуитивно ожидали</strong>?<ul id="2aa568fa-e39f-8029-b904-f71a4c3ce0e0" class="bulleted-list"><li style="list-style-type:circle">item-to-item должен быть лучше, чем pure popularity — так ли вышло?</li></ul></li></ul><h3 id="2aa568fa-e39f-801a-8d11-d0bbb505652d" class="">7.3. Связь с реальным продуктом/соревом</h3><ul id="2aa568fa-e39f-809c-8d5f-e3fadbf2c5a3" class="bulleted-list"><li style="list-style-type:disc">Если бы это был <strong>реальный продукт</strong>:<ul id="2aa568fa-e39f-806c-b4c9-f55f0efa5b33" class="bulleted-list"><li style="list-style-type:circle">на какую метрику вы бы смотрели в первую очередь?</li></ul><ul id="2aa568fa-e39f-80a5-ae1d-e562db6c02e1" class="bulleted-list"><li style="list-style-type:circle">какую модель выбрали бы, если бы нужно было прямо сейчас выкатить?</li></ul></li></ul><ul id="2aa568fa-e39f-80e9-a61a-c1a36d72739c" class="bulleted-list"><li style="list-style-type:disc">Если это <strong>соревнование</strong>:<ul id="2aa568fa-e39f-806c-8f23-fc2db88f5a01" class="bulleted-list"><li style="list-style-type:circle">насколько ваши offline-метрики похожи на соревовую (формула/metrica в description)?</li></ul><ul id="2aa568fa-e39f-808f-80d7-ea2c7ffb33d2" class="bulleted-list"><li style="list-style-type:circle">есть ли риск, что вы переобучаетесь на offline, а private LB окажется другим?</li></ul></li></ul><hr id="2aa568fa-e39f-807f-b855-e0236b2b5cd2"/><h2 id="2aa568fa-e39f-80b3-8d90-d937d66dc51f" class="">8. Итог урока и домашка</h2><h3 id="2aa568fa-e39f-80c1-b6fc-ea7ea764d8c4" class="">8.1. Что должно быть готово к концу урока</h3><ol type="1" id="2aa568fa-e39f-8041-99c2-f90bec2515c4" class="numbered-list" start="1"><li><strong>Код:</strong><ul id="2aa568fa-e39f-803d-bba8-c6447277db54" class="bulleted-list"><li style="list-style-type:disc">функция для сплита (time-based / LOO);</li></ul><ul id="2aa568fa-e39f-80fb-b702-e8b3f36f0354" class="bulleted-list"><li style="list-style-type:disc">подготовка ground_truth;</li></ul><ul id="2aa568fa-e39f-80b9-b2ae-f556a1a8036c" class="bulleted-list"><li style="list-style-type:disc">Recommender API + реализации 2–3 моделей;</li></ul><ul id="2aa568fa-e39f-80ce-9fde-e5d24388cd5f" class="bulleted-list"><li style="list-style-type:disc">функции метрик (Hit/Recall/MAP/NDCG);</li></ul><ul id="2aa568fa-e39f-8073-bb5f-e0efb4bbabd8" class="bulleted-list"><li style="list-style-type:disc"><code>evaluate_model(...)</code>, считающая метрики по всем пользователям.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8045-95a7-f81d7277507b" class="numbered-list" start="2"><li><strong>Результаты:</strong><ul id="2aa568fa-e39f-802e-b2c9-e006a0fc9b0a" class="bulleted-list"><li style="list-style-type:disc">таблица с метриками по моделям;</li></ul><ul id="2aa568fa-e39f-80da-8836-f8c70d20f481" class="bulleted-list"><li style="list-style-type:disc">хотя бы базовый вывод, кто лучше и почему.</li></ul></li></ol><h3 id="2aa568fa-e39f-80d6-be66-f1e2447381d2" class="">8.2. Домашнее задание 2.5</h3><p id="2aa568fa-e39f-80c6-9c0b-c6c55e2221ce" class=""><strong>1. Довести код до «продуктового» состояния</strong></p><ul id="2aa568fa-e39f-804e-8ef7-eb35495447b4" class="bulleted-list"><li style="list-style-type:disc">Разнести в модули:<ul id="2aa568fa-e39f-80ed-a9fc-c757bd840840" class="bulleted-list"><li style="list-style-type:circle"><code>data_split.py</code> — функции сплитов;</li></ul><ul id="2aa568fa-e39f-8037-be88-de154df86d9a" class="bulleted-list"><li style="list-style-type:circle"><code>metrics.py</code> — метрики;</li></ul><ul id="2aa568fa-e39f-8038-886b-e67cceb73d79" class="bulleted-list"><li style="list-style-type:circle"><code>models.py</code> — базовый Recommender и его реализации;</li></ul><ul id="2aa568fa-e39f-80ac-95e6-f922e849ab57" class="bulleted-list"><li style="list-style-type:circle"><code>eval.py</code> — функции оценки.</li></ul></li></ul><ul id="2aa568fa-e39f-805a-bc0f-cf2b131c0309" class="bulleted-list"><li style="list-style-type:disc">Добавить минимальную документацию:<ul id="2aa568fa-e39f-80c8-bf8b-d5018b028628" class="bulleted-list"><li style="list-style-type:circle">docstring’и к функциям;</li></ul><ul id="2aa568fa-e39f-8070-9d29-c76af7cdd29e" class="bulleted-list"><li style="list-style-type:circle">комментарии там, где есть хитрые моменты (например, time-based сплит по timestamp’ам).</li></ul></li></ul><p id="2aa568fa-e39f-80a0-9604-e6af2fa76fb9" class=""><strong>2. Написать короткий отчёт (2–3 страницы)</strong></p><p id="2aa568fa-e39f-80b5-b028-c12a2d4a656f" class="">Структура:</p><ol type="1" id="2aa568fa-e39f-80ad-bd96-d8b79fe921bf" class="numbered-list" start="1"><li><strong>Описание задачи и датасета</strong>:<ul id="2aa568fa-e39f-801e-b5f2-f5c23b906d84" class="bulleted-list"><li style="list-style-type:disc">тип задачи, сущности, таргет.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c8-b253-e641872c8c36" class="numbered-list" start="2"><li><strong>Схема валидации</strong>:<ul id="2aa568fa-e39f-80fd-84eb-d83ae57c0519" class="bulleted-list"><li style="list-style-type:disc">какой split, почему он выбран;</li></ul><ul id="2aa568fa-e39f-80cb-b4a9-c527ca304d98" class="bulleted-list"><li style="list-style-type:disc">есть ли потенциальные лики;</li></ul><ul id="2aa568fa-e39f-80cf-a6e7-f537121b63df" class="bulleted-list"><li style="list-style-type:disc">какие ограничения у такой валидации.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d4-8bc0-ef3f4d1b5327" class="numbered-list" start="3"><li><strong>Метрики</strong>:<ul id="2aa568fa-e39f-80be-ac1c-d9d417f679e2" class="bulleted-list"><li style="list-style-type:disc">какие метрики считаются;</li></ul><ul id="2aa568fa-e39f-80a6-a357-d2bcd59074ed" class="bulleted-list"><li style="list-style-type:disc">почему именно они, чем они отражают бизнес/соревовую цель.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c8-a441-f4e531f7e8b7" class="numbered-list" start="4"><li><strong>Результаты сравнения моделей</strong>:<ul id="2aa568fa-e39f-80f9-9704-ddf9b6f4cebb" class="bulleted-list"><li style="list-style-type:disc">табличка с метриками по моделям (для K, который тебе кажется разумным);</li></ul><ul id="2aa568fa-e39f-80db-b1d7-e49fe3324d94" class="bulleted-list"><li style="list-style-type:disc">текстовый анализ:<ul id="2aa568fa-e39f-808c-b2ea-c325d9d0e453" class="bulleted-list"><li style="list-style-type:circle">какая модель лучше и по каким критериям;</li></ul><ul id="2aa568fa-e39f-80df-8f5c-e94e4ed97783" class="bulleted-list"><li style="list-style-type:circle">что тебя удивило/неожиданно по результатам.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8019-845e-ebb9f07650ce" class="numbered-list" start="5"><li><strong>План улучшений</strong>:<ul id="2aa568fa-e39f-8088-95b1-eedd1a5c483e" class="bulleted-list"><li style="list-style-type:disc">какие шаги ты сделаешь в следующих модулях (CF, MF, sequence, graph), чтобы улучшить свои результаты;</li></ul><ul id="2aa568fa-e39f-80e3-b372-fcda9867c8be" class="bulleted-list"><li style="list-style-type:disc">какую модель возьмёшь в качестве «baseline to beat».</li></ul></li></ol><hr id="2aa568fa-e39f-807f-81bd-f81ab8cf7853"/><h2 id="2aa568fa-e39f-802b-be8e-ed9cf82f63a8" class="">9. Чек-лист: человек «закрыл» модуль 2, если…</h2><ul id="2aa568fa-e39f-8032-9c83-f235a388e2e4" class="bulleted-list"><li style="list-style-type:disc">У него есть <strong>рабочий ноутбук/репозиторий</strong>, где:<ul id="2aa568fa-e39f-809d-8e8a-e85a96c91f2c" class="bulleted-list"><li style="list-style-type:circle">можно одной командой/ячейкой пересчитать offline-метрики для любой модели, реализующей Recommender API;</li></ul><ul id="2aa568fa-e39f-801e-b30b-dafd6775ec1a" class="bulleted-list"><li style="list-style-type:circle">всё не разваливается при смене модели.</li></ul></li></ul><ul id="2aa568fa-e39f-80fb-864c-c970e94ea4c3" class="bulleted-list"><li style="list-style-type:disc">Он может:<ul id="2aa568fa-e39f-80bb-bf9b-e1b68291729a" class="bulleted-list"><li style="list-style-type:circle">чётко объяснить, <strong>какой split</strong> он использует и почему;</li></ul><ul id="2aa568fa-e39f-80cb-9243-e1903b6c2a9d" class="bulleted-list"><li style="list-style-type:circle">назвать выбранные <strong>метрики</strong> и их смысл;</li></ul><ul id="2aa568fa-e39f-8078-a8b4-d30383f12f44" class="bulleted-list"><li style="list-style-type:circle">показать <strong>цифровое сравнение</strong> хотя бы двух моделей.</li></ul></li></ul><ul id="2aa568fa-e39f-80e8-a88a-ffcfb5f5508c" class="bulleted-list"><li style="list-style-type:disc">И самое важное — он перестал «стрелять в темноту» и теперь:<blockquote id="2aa568fa-e39f-8008-8e98-eb95c4da424a" class="">каждое улучшение модели проходит через один и тот же, понятный ему самому evaluation-пайплайн.</blockquote></li></ul><hr id="2aa568fa-e39f-80c9-836c-f096221325d2"/><p id="2aa568fa-e39f-80e2-984b-de376da3864b" class="">Если дальше хочешь продолжить эту линию — могу следующим шагом:</p><ul id="2aa568fa-e39f-8048-ada5-ddc7a6d30f19" class="bulleted-list"><li style="list-style-type:disc">либо расписать <strong>Модуль 3 (CF)</strong> целиком,</li></ul><ul id="2aa568fa-e39f-8054-b638-ee0ce870f545" class="bulleted-list"><li style="list-style-type:disc">либо начать с <strong>урока 3.1</strong>: user-based CF, формулы, код и сразу интеграция в твой eval-фреймворк.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,1005 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.3. Question Answering по базе FAQ</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8075-87c1-f67d057456d3" class="page sans"><header><h1 class="page-title">Урок 1.3. Question Answering по базе FAQ</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80bb-8295-e9bf9087351f" class="">Окей, идём дальше по нашему “саппорт-стеку” 💬</p><p id="2ab568fa-e39f-80a4-824e-cc341d4b5961" class="">Теперь делаем урок 1.3 — <strong>FAQ-бот на базе </strong><code><strong>question-answering</strong></code>.</p><hr id="2ab568fa-e39f-804c-bbee-f61a094561f4"/><h2 id="2ab568fa-e39f-80d5-b858-c3b7eac3ab88" class="">1. Цели урока</h2><p id="2ab568fa-e39f-80a6-8c8f-ca5e4714a575" class="">К концу этого урока студент:</p><ul id="2ab568fa-e39f-80c7-a8b8-decd4660346b" class="bulleted-list"><li style="list-style-type:disc">понимает разницу между:<ul id="2ab568fa-e39f-8065-a00f-eb87d8b0ff9f" class="bulleted-list"><li style="list-style-type:circle"><strong>классической классификацией</strong> текста,</li></ul><ul id="2ab568fa-e39f-801f-8cc3-df428ff89346" class="bulleted-list"><li style="list-style-type:circle"><strong>извлекающим вопрос-ответом</strong> (extractive QA);</li></ul></li></ul><ul id="2ab568fa-e39f-8051-90d0-c1dca5308d0b" class="bulleted-list"><li style="list-style-type:disc">знает, как работает <code>pipeline(&quot;question-answering&quot;)</code>:<ul id="2ab568fa-e39f-8087-82ce-ec155384508b" class="bulleted-list"><li style="list-style-type:circle">какие аргументы подаём на вход,</li></ul><ul id="2ab568fa-e39f-80c2-9f5d-dc98e5e4b403" class="bulleted-list"><li style="list-style-type:circle">что возвращает модель,</li></ul><ul id="2ab568fa-e39f-80df-a73c-c5908d2dfab6" class="bulleted-list"><li style="list-style-type:circle">что означает <code>score</code>, <code>start</code>, <code>end</code>;</li></ul></li></ul><ul id="2ab568fa-e39f-8089-8422-e02de6fc216a" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-809a-8a96-e7e6de686bf4" class="bulleted-list"><li style="list-style-type:circle">задать вопрос к <strong>одному</strong> FAQ-тексту;</li></ul><ul id="2ab568fa-e39f-8065-b28b-d29720a0cb1c" class="bulleted-list"><li style="list-style-type:circle">комбинировать <strong>несколько</strong> FAQ-статей и выбирать лучший ответ по <code>score</code>;</li></ul><ul id="2ab568fa-e39f-80eb-bbb9-fc5ab2366813" class="bulleted-list"><li style="list-style-type:circle">написать функцию <code>answer_from_faq(...)</code>, которая возвращает:<ul id="2ab568fa-e39f-807e-ae87-ecbd9f78add3" class="bulleted-list"><li style="list-style-type:square">найденный ответ,</li></ul><ul id="2ab568fa-e39f-8084-aeb8-e890ca102df7" class="bulleted-list"><li style="list-style-type:square">источник (какая статья),</li></ul><ul id="2ab568fa-e39f-80bb-acbd-e92eb58f63ee" class="bulleted-list"><li style="list-style-type:square">уверенность модели.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-8071-9c3e-ebb17fd8bff0" class="">Плюс — у нас появится минимальный прототип FAQ-бота, который реально можно заинтегрить куда-то дальше.</p><hr id="2ab568fa-e39f-80f1-a595-ecae7252e263"/><h2 id="2ab568fa-e39f-8074-935e-f44507850ad4" class="">2. Мотивация и постановка задачи (5–10 минут)</h2><p id="2ab568fa-e39f-80e3-b87d-cc2a0d4c576a" class=""><strong>Кейс:</strong></p><p id="2ab568fa-e39f-8057-8821-cdd6d258befa" class="">У продукта есть раздел “Помощь / FAQ”:</p><ul id="2ab568fa-e39f-808b-8c7a-d951f6c2be6f" class="bulleted-list"><li style="list-style-type:disc">“Оплата и подписки” (Billing FAQ),</li></ul><ul id="2ab568fa-e39f-8048-bc3c-c71fb853e5cc" class="bulleted-list"><li style="list-style-type:disc">“Аккаунт и вход” (Account FAQ),</li></ul><ul id="2ab568fa-e39f-80f6-a97f-f43da679a420" class="bulleted-list"><li style="list-style-type:disc">“Функции приложения” (Features FAQ).</li></ul><p id="2ab568fa-e39f-80ad-82a4-e0fa8e816227" class="">Пользователь пишет в саппорт:</p><ul id="2ab568fa-e39f-805d-8092-c040b2b2ebaa" class="bulleted-list"><li style="list-style-type:disc">“Why was I charged twice this month?”</li></ul><ul id="2ab568fa-e39f-8002-9d7b-df264b432805" class="bulleted-list"><li style="list-style-type:disc">“How can I reset my password?”</li></ul><ul id="2ab568fa-e39f-8090-8385-feb3d0cee3ac" class="bulleted-list"><li style="list-style-type:disc">“How do I change my billing address?”</li></ul><p id="2ab568fa-e39f-8038-b7e3-d09bcfec48da" class="">Знание уже есть в FAQ, но:</p><ul id="2ab568fa-e39f-80a4-ad36-ddc116d4c821" class="bulleted-list"><li style="list-style-type:disc">пользователи туда не заходят,</li></ul><ul id="2ab568fa-e39f-80b7-8756-c3b3c3f7a24d" class="bulleted-list"><li style="list-style-type:disc">саппорт тратит время, копируя куски из FAQ.</li></ul><p id="2ab568fa-e39f-804a-ae3b-f57c3bb3b5de" class="">Наша цель:</p><blockquote id="2ab568fa-e39f-8089-a4da-e1fa1d508caf" class="">Сделать бота/функцию:<p id="2ab568fa-e39f-809a-9171-f19948deed68" class=""><strong>вопрос → модель находит фрагмент из FAQ → отдаёт как ответ.</strong></p></blockquote><p id="2ab568fa-e39f-80aa-b1db-f455e9865c63" class="">И мы это делаем без сложных retriever’ов, только на <code>pipeline(&quot;question-answering&quot;)</code>.</p><hr id="2ab568fa-e39f-808f-9e98-dcc58435d543"/><h2 id="2ab568fa-e39f-8053-ba27-cb2447b698ba" class="">3. Теория: Extractive QA через <code>pipeline</code> (15–20 минут)</h2><h3 id="2ab568fa-e39f-8026-877d-e10a44e00a48" class="">3.1. Что такое extractive QA</h3><p id="2ab568fa-e39f-8085-af0e-d905c8d54fcc" class=""><strong>Extractive Question Answering</strong>:</p><ul id="2ab568fa-e39f-80b1-80d5-c6f45312796e" class="bulleted-list"><li style="list-style-type:disc">есть <strong>вопрос</strong> (question),</li></ul><ul id="2ab568fa-e39f-806c-8986-ca00ad89d333" class="bulleted-list"><li style="list-style-type:disc">есть <strong>контекст</strong> (context) — кусок текста: статья, параграф и т.п.,</li></ul><ul id="2ab568fa-e39f-80f2-afa8-fb8d0063e255" class="bulleted-list"><li style="list-style-type:disc">модель должна <strong>выделить отрывок из контекста</strong>, который является ответом.</li></ul><p id="2ab568fa-e39f-800f-a827-dc040b2e039b" class="">Пример:</p><blockquote id="2ab568fa-e39f-802c-a0ea-c193e3fc8148" class="">Контекст:<p id="2ab568fa-e39f-8005-a22b-c297df839dbc" class=""><code>&quot;If you see a double charge, it may be an authorization hold. Authorization holds usually disappear within 3–5 business days.&quot;</code></p><p id="2ab568fa-e39f-80a5-8063-dfe590589348" class="">Вопрос: <code>&quot;Why was I charged twice this month?&quot;</code></p><p id="2ab568fa-e39f-803b-ac84-efc91ef63f62" class="">Ответ: <code>&quot;it may be an authorization hold&quot;</code></p></blockquote><p id="2ab568fa-e39f-80f2-8611-f57b5174c5ad" class="">Ключевые моменты:</p><ul id="2ab568fa-e39f-8006-a94b-d6d4bb35dcb9" class="bulleted-list"><li style="list-style-type:disc">модель <strong>не генерит</strong> текст с нуля, а <strong>вырезает</strong> подстроку из контекста;</li></ul><ul id="2ab568fa-e39f-80c8-a6d5-e720defeb951" class="bulleted-list"><li style="list-style-type:disc">качество зависит от того, насколько хорошо выбран сам контекст.</li></ul><h3 id="2ab568fa-e39f-8011-be1a-cff0e02b3b52" class="">3.2. Формат <code>pipeline(&quot;question-answering&quot;)</code></h3><p id="2ab568fa-e39f-807e-805f-d6a0c29588e4" class="">В <code>transformers</code> это выглядит так:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8082-a038-e73e8c57a6f6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+qa = pipeline(&quot;question-answering&quot;)
+res = qa(
+    question=&quot;...&quot;,
+    context=&quot;...&quot;,
+)
+</code></pre><p id="2ab568fa-e39f-80a5-ad6d-f217a4d681fe" class="">На выходе:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b8-a367-d66d31642ca0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;answer&quot;: &quot;...&quot;,  # подстрока из context
+  &quot;score&quot;: 0.92,    # уверенность
+  &quot;start&quot;: 123,     # индекс начала ответа в context
+  &quot;end&quot;: 145        # индекс конца (+1)
+}
+</code></pre><p id="2ab568fa-e39f-807e-90dc-dc1566754b42" class="">Где:</p><ul id="2ab568fa-e39f-8073-a984-fc22eaef363b" class="bulleted-list"><li style="list-style-type:disc"><code>start</code>, <code>end</code> — индексы в <strong>строке контекста</strong>;</li></ul><ul id="2ab568fa-e39f-807a-9688-ea218d37b844" class="bulleted-list"><li style="list-style-type:disc"><code>answer = context[start:end]</code> (по сути, модель даёт только индексы, а библиотека сама вытаскивает подстроку).</li></ul><h3 id="2ab568fa-e39f-8032-b810-d1c3a96cae7a" class="">3.3. Модели для QA</h3><p id="2ab568fa-e39f-80f6-b756-fa7f3ef46bf8" class="">Часто используют модели, обученные на датасете <strong>SQuAD</strong> (вопрос-ответ):</p><ul id="2ab568fa-e39f-8078-89a1-e49b9c7639cb" class="bulleted-list"><li style="list-style-type:disc">пример: <code>&quot;distilbert-base-cased-distilled-squad&quot;</code>, <code>&quot;deepset/roberta-base-squad2&quot;</code> и т.п.</li></ul><p id="2ab568fa-e39f-80a4-9cd4-d3cd5bd5fa73" class="">Мы будем использовать что-то из этого типа, но для урока не критично, какая именно — важен сам процесс.</p><h3 id="2ab568fa-e39f-809b-8d22-d571dbd0b742" class="">3.4. Ограничения</h3><p id="2ab568fa-e39f-8096-87af-df07e690e655" class="">Честно проговариваем, где кроется подвох:</p><ul id="2ab568fa-e39f-8083-97bb-ede64a943488" class="bulleted-list"><li style="list-style-type:disc">Модель может обрабатывать контекст ограниченной длины (обычно до 512 токенов, что ≈ пара абзацев/страниц).</li></ul><ul id="2ab568fa-e39f-80ea-99a3-ceeba9157593" class="bulleted-list"><li style="list-style-type:disc">Чтобы работать с <strong>большой</strong> базой знаний, нужен ещё один слой:<ul id="2ab568fa-e39f-806c-8417-c4070423c982" class="bulleted-list"><li style="list-style-type:circle">извлечение релевантных документов/параграфов (retrieval),</li></ul><ul id="2ab568fa-e39f-80ea-a6fb-e6fa4f56a82c" class="bulleted-list"><li style="list-style-type:circle">а потом уже запуск QA на выбранных кусках.</li></ul></li></ul><ul id="2ab568fa-e39f-80cb-89e7-ec9c650e0dda" class="bulleted-list"><li style="list-style-type:disc">На этом уроке мы сделаем <strong>очень простой retriever</strong>:<ul id="2ab568fa-e39f-8057-800c-eba7f5fe5e72" class="bulleted-list"><li style="list-style-type:circle">перебор FAQ-статей,</li></ul><ul id="2ab568fa-e39f-80ad-a9df-d61248320dcf" class="bulleted-list"><li style="list-style-type:circle">позже можно добавить фильтрацию по ключевым словам.</li></ul></li></ul><hr id="2ab568fa-e39f-80b6-b9ef-f7b38bcba741"/><h2 id="2ab568fa-e39f-8019-9316-cf792a1cbb5a" class="">4. Практика. Часть 1: QA по одной FAQ-статье (20 минут)</h2><h3 id="2ab568fa-e39f-8083-9f6a-c43256b36b86" class="">4.1. Создаём пайплайн</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8094-96c1-f1da4abdbfb5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+qa = pipeline(
+    &quot;question-answering&quot;,
+    model=&quot;distilbert-base-cased-distilled-squad&quot;,  # пример модели
+)
+</code></pre><p id="2ab568fa-e39f-80c5-83b7-ce383c67126b" class="">Можно пояснить:</p><ul id="2ab568fa-e39f-801b-981a-fb1e58076cb7" class="bulleted-list"><li style="list-style-type:disc">если не указать <code>model=...</code>, <code>pipeline(&quot;question-answering&quot;)</code> возьмёт дефолтную модель, но лучше <strong>явно</strong> указывать модель в курсах/проде.</li></ul><h3 id="2ab568fa-e39f-80ad-b355-c9f94b988e60" class="">4.2. Пример текста FAQ по оплате</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e9-ad69-f6facb988c03" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">billing_faq = &quot;&quot;&quot;
+If you see a double charge on your card, it may be an authorization hold.
+Authorization holds usually disappear within 3–5 business days.
+If the charge is still present after 5 business days, please contact support with a screenshot of your statement.
+Subscriptions are billed monthly on the day you started your subscription.
+You can update your billing information in the account settings under &quot;Payment methods&quot;.
+&quot;&quot;&quot;
+</code></pre><h3 id="2ab568fa-e39f-8050-9c58-ea94232d394d" class="">4.3. Задаём вопрос и смотрим на результат</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a8-9657-e9cb9179f683" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">question = &quot;Why was I charged twice this month?&quot;
+
+res = qa(
+    question=question,
+    context=billing_faq,
+)
+
+print(res)
+print(&quot;Extracted answer:&quot;, res[&quot;answer&quot;])
+</code></pre><p id="2ab568fa-e39f-801e-9e71-ec5ee41e9382" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-80b2-b746-d8db65767588" class="bulleted-list"><li style="list-style-type:disc"><code>res[&quot;answer&quot;]</code> должен быть типа <code>&quot;it may be an authorization hold&quot;</code>;</li></ul><ul id="2ab568fa-e39f-804d-b3b8-d529bad20e4d" class="bulleted-list"><li style="list-style-type:disc"><code>score</code> — насколько модель уверена, что эта подстрока отвечает на вопрос;</li></ul><ul id="2ab568fa-e39f-807f-86f2-eed85c47a9a3" class="bulleted-list"><li style="list-style-type:disc">можно проверить:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8006-ad48-c048d0ad4d76" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(&quot;Context slice:&quot;, billing_faq[res[&quot;start&quot;]:res[&quot;end&quot;]])
+</code></pre><p id="2ab568fa-e39f-8096-9432-ef635882fa06" class="">Чтобы показать студенту, что это реально подстрока контекста.</p><h3 id="2ab568fa-e39f-80ba-9fd4-e1af3ecc0598" class="">4.4. Пробуем разные вопросы</h3><p id="2ab568fa-e39f-8018-9a6a-c63ad68eca2b" class="">Запускаем ещё:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807d-af9d-e3be10d90ab0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">questions = [
+    &quot;When will the double charge disappear?&quot;,
+    &quot;What should I do if the charge is still there after 5 days?&quot;,
+    &quot;How often are subscriptions billed?&quot;,
+]
+
+for q in questions:
+    res = qa(question=q, context=billing_faq)
+    print(&quot;Q:&quot;, q)
+    print(&quot;A:&quot;, res[&quot;answer&quot;])
+    print(&quot;Score:&quot;, res[&quot;score&quot;])
+    print(&quot;-&quot; * 40)
+</code></pre><p id="2ab568fa-e39f-8087-b431-c404e069e5d8" class="">Здесь можно:</p><ul id="2ab568fa-e39f-80d3-b5b4-d97b000ef2d2" class="bulleted-list"><li style="list-style-type:disc">показать, где модель отвечает нормально,</li></ul><ul id="2ab568fa-e39f-8055-b1ed-d7c1ae64ebf6" class="bulleted-list"><li style="list-style-type:disc">где она путается,</li></ul><ul id="2ab568fa-e39f-8052-8171-e50adc3441ff" class="bulleted-list"><li style="list-style-type:disc">обсудить, что <code>score</code> — не абсолютная истина, но неплохой индикатор уверенности.</li></ul><hr id="2ab568fa-e39f-8027-a9d3-fe94bec88e82"/><h2 id="2ab568fa-e39f-801d-8527-f12355b7640d" class="">5. Практика. Часть 2: QA по нескольким FAQ-статьям (25 минут)</h2><p id="2ab568fa-e39f-8085-98c3-c43bf85f4fdd" class="">Теперь делаем реальный мини-FAQ-бот: у нас есть <strong>несколько текстов</strong>, и нужно выбрать лучший ответ.</p><h3 id="2ab568fa-e39f-809a-b008-c6a952a31da9" class="">5.1. Строим “базу FAQ”</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8008-8395-c1ae9902d9fc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">faqs = [
+    {
+        &quot;title&quot;: &quot;Billing FAQ&quot;,
+        &quot;text&quot;: billing_faq,
+    },
+    {
+        &quot;title&quot;: &quot;Account FAQ&quot;,
+        &quot;text&quot;: &quot;&quot;&quot;
+If you forgot your password, you can reset it by clicking &quot;Forgot password&quot; on the login page.
+We will send a reset link to your registered email address.
+If you no longer have access to that email, contact support to change your email.
+&quot;&quot;&quot;,
+    },
+    {
+        &quot;title&quot;: &quot;Features FAQ&quot;,
+        &quot;text&quot;: &quot;&quot;&quot;
+The app supports dark mode on iOS and Android.
+You can enable dark mode in the appearance settings.
+If you don&#x27;t see the option, make sure you are using the latest version of the app.
+&quot;&quot;&quot;,
+    },
+]
+</code></pre><h3 id="2ab568fa-e39f-80a0-8466-dbd1e8fc7a7e" class="">5.2. Функция: прогнать вопрос через все FAQ и выбрать лучшую статью</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800e-9c87-fb1f51558186" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def answer_from_faq(
+    question: str,
+    faqs: list[dict],
+    qa_pipe,
+    min_score: float = 0.1,
+):
+    &quot;&quot;&quot;
+    question: вопрос пользователя
+    faqs: список словарей {&quot;title&quot;: ..., &quot;text&quot;: ...}
+    qa_pipe: pipeline(&quot;question-answering&quot;)
+    min_score: минимальная уверенность, ниже которой мы говорим &quot;не уверен&quot;
+    &quot;&quot;&quot;
+    candidates = []
+
+    for faq in faqs:
+        context = faq[&quot;text&quot;]
+        res = qa_pipe(question=question, context=context)
+        candidates.append({
+            &quot;title&quot;: faq[&quot;title&quot;],
+            &quot;answer&quot;: res[&quot;answer&quot;],
+            &quot;score&quot;: res[&quot;score&quot;],
+        })
+
+    # сортируем по уверенности
+    candidates = sorted(candidates, key=lambda x: x[&quot;score&quot;], reverse=True)
+    best = candidates[0]
+
+    if best[&quot;score&quot;] &lt; min_score:
+        # модель не уверена ни в одном контексте
+        return {
+            &quot;answer&quot;: None,
+            &quot;source&quot;: None,
+            &quot;score&quot;: best[&quot;score&quot;],
+            &quot;candidates&quot;: candidates,
+        }
+
+    return {
+        &quot;answer&quot;: best[&quot;answer&quot;],
+        &quot;source&quot;: best[&quot;title&quot;],
+        &quot;score&quot;: best[&quot;score&quot;],
+        &quot;candidates&quot;: candidates,
+    }
+</code></pre><p id="2ab568fa-e39f-8045-b79b-ed1f6d4a1ddf" class="">Разбираем:</p><ul id="2ab568fa-e39f-80dd-891c-d7a4e8513829" class="bulleted-list"><li style="list-style-type:disc">мы <strong>перебираем все FAQ</strong>,</li></ul><ul id="2ab568fa-e39f-80df-969b-f0b1a788d0cd" class="bulleted-list"><li style="list-style-type:disc">для каждого:<ul id="2ab568fa-e39f-80e1-bda2-c93dc8f754c6" class="bulleted-list"><li style="list-style-type:circle">спрашиваем модель,</li></ul><ul id="2ab568fa-e39f-80dc-8cdb-c44633b5f2f4" class="bulleted-list"><li style="list-style-type:circle">собираем <code>answer</code> + <code>score</code>,</li></ul></li></ul><ul id="2ab568fa-e39f-8018-a656-d09bf1cd1de1" class="bulleted-list"><li style="list-style-type:disc">сортируем и берём лучшего.</li></ul><h3 id="2ab568fa-e39f-80cf-8ff7-f56ff5d35208" class="">5.3. Проверяем на нескольких вопросах</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8006-8276-f09c421d8a5c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">questions = [
+    &quot;Why was I charged twice this month?&quot;,
+    &quot;How can I reset my password?&quot;,
+    &quot;How do I enable dark mode?&quot;,
+    &quot;How do I change my email address?&quot;,
+]
+
+for q in questions:
+    best = answer_from_faq(q, faqs, qa)
+    print(&quot;Q:&quot;, q)
+    print(&quot;Best answer:&quot;, best[&quot;answer&quot;])
+    print(&quot;From:&quot;, best[&quot;source&quot;])
+    print(&quot;Score:&quot;, best[&quot;score&quot;])
+    print(&quot;-&quot; * 60)
+</code></pre><p id="2ab568fa-e39f-80f5-b2ef-c8e9a2a904fa" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-80d2-a0cf-d9701b75e616" class="bulleted-list"><li style="list-style-type:disc">для вопросов про оплату лучшее источник — <code>&quot;Billing FAQ&quot;</code>;</li></ul><ul id="2ab568fa-e39f-8086-8cd5-c35fe3b702b9" class="bulleted-list"><li style="list-style-type:disc">для пароля — <code>&quot;Account FAQ&quot;</code>;</li></ul><ul id="2ab568fa-e39f-8040-8985-e817fc9aeaa9" class="bulleted-list"><li style="list-style-type:disc">для dark mode — <code>&quot;Features FAQ&quot;</code>;</li></ul><ul id="2ab568fa-e39f-8056-90e1-c45674a742a7" class="bulleted-list"><li style="list-style-type:disc">показываем, как <code>score</code> различается.</li></ul><h3 id="2ab568fa-e39f-804f-8787-f672bee2e871" class="">5.4. Что делать, если модель “не уверена”</h3><p id="2ab568fa-e39f-8084-9ae4-dccf779fc02b" class="">Случай, когда <code>score</code> маленький:</p><ul id="2ab568fa-e39f-80b7-adb7-e97595ccd393" class="bulleted-list"><li style="list-style-type:disc">мы возвращаем <code>answer=None</code>, <code>source=None</code>;</li></ul><ul id="2ab568fa-e39f-8015-bfe4-c4858a928051" class="bulleted-list"><li style="list-style-type:disc">в проде можно:<ul id="2ab568fa-e39f-80c5-8593-e73ac74d7e6a" class="bulleted-list"><li style="list-style-type:circle">показать пользователю: “Я не уверен, посмотри в разделе X”,</li></ul><ul id="2ab568fa-e39f-80f1-a648-c3bf78992d2e" class="bulleted-list"><li style="list-style-type:circle">зарепортить такие вопросы для дообучения модели.</li></ul></li></ul><p id="2ab568fa-e39f-80cf-9567-d0709af9d303" class="">Можно добавить простую обёртку:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8011-9941-cebb7d7c0d92" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def pretty_print_answer(question: str, result: dict):
+    print(f&quot;Q: {question}&quot;)
+    if result[&quot;answer&quot;] is None:
+        print(&quot;I&#x27;m not sure about the answer. Please contact support or check the help center.&quot;)
+        print(&quot;Best score was:&quot;, result[&quot;score&quot;])
+    else:
+        print(&quot;Answer:&quot;, result[&quot;answer&quot;])
+        print(&quot;Source:&quot;, result[&quot;source&quot;])
+        print(&quot;Score:&quot;, result[&quot;score&quot;])
+    print(&quot;=&quot; * 60)
+</code></pre><hr id="2ab568fa-e39f-80f5-a4e0-c4d9fc3b2399"/><h2 id="2ab568fa-e39f-80de-b2f7-e76d691b318b" class="">6. Практика. Часть 3: разбиение больших FAQ на параграфы (20 минут)</h2><p id="2ab568fa-e39f-8007-8436-f59a845b94c0" class="">Жизнь не такая добрая: реальные FAQ-страницы могут быть <strong>очень длинными</strong> — тогда:</p><ul id="2ab568fa-e39f-80fa-8ca0-de0de1a6a934" class="bulleted-list"><li style="list-style-type:disc">контекст &gt; лимита модели → обрезается,</li></ul><ul id="2ab568fa-e39f-800b-bc0f-c44c75415bbc" class="bulleted-list"><li style="list-style-type:disc">качество падает.</li></ul><p id="2ab568fa-e39f-80ce-9a2c-fd2e96f434f6" class="">Простейшее улучшение — разрезать FAQ-текст на абзацы / куски, и спрашивать модель <strong>по каждому куску</strong>.</p><h3 id="2ab568fa-e39f-80b6-b57d-feb8ebde79a1" class="">6.1. Разбиваем FAQ на параграфы</h3><p id="2ab568fa-e39f-80d7-85e4-fa97e7455c1d" class="">Примитивный способ — разделить по двум переносам строки:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c3-b2f6-cbaa7bdbf979" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def split_into_paragraphs(text: str) -&gt; list[str]:
+    paragraphs = [p.strip() for p in text.split(&quot;\n\n&quot;) if p.strip()]
+    return paragraphs
+
+print(split_into_paragraphs(billing_faq))
+</code></pre><p id="2ab568fa-e39f-801b-9dfd-d1d53005eee1" class="">Можно обернуть <code>faqs</code> в структуру с параграфами:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8086-a1e2-c4e8c5454085" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def prepare_faq_paragraphs(faqs: list[dict]) -&gt; list[dict]:
+    res = []
+    for faq in faqs:
+        paragraphs = split_into_paragraphs(faq[&quot;text&quot;])
+        for i, p in enumerate(paragraphs):
+            res.append({
+                &quot;title&quot;: faq[&quot;title&quot;],
+                &quot;paragraph_id&quot;: i,
+                &quot;text&quot;: p,
+            })
+    return res
+
+faq_paragraphs = prepare_faq_paragraphs(faqs)
+print(len(faq_paragraphs), &quot;paragraphs total&quot;)
+</code></pre><h3 id="2ab568fa-e39f-804a-a405-f0e72eb95f7d" class="">6.2. QA по параграфам вместо целых статей</h3><p id="2ab568fa-e39f-80cd-abb4-ed1e5524786f" class="">Теперь перепишем функцию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8087-936a-ff05fee2e76b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def answer_from_faq_paragraphs(
+    question: str,
+    faq_paragraphs: list[dict],
+    qa_pipe,
+    min_score: float = 0.1,
+):
+    candidates = []
+
+    for para in faq_paragraphs:
+        context = para[&quot;text&quot;]
+        res = qa_pipe(question=question, context=context)
+        candidates.append({
+            &quot;title&quot;: para[&quot;title&quot;],
+            &quot;paragraph_id&quot;: para[&quot;paragraph_id&quot;],
+            &quot;answer&quot;: res[&quot;answer&quot;],
+            &quot;score&quot;: res[&quot;score&quot;],
+        })
+
+    candidates = sorted(candidates, key=lambda x: x[&quot;score&quot;], reverse=True)
+    best = candidates[0]
+
+    if best[&quot;score&quot;] &lt; min_score:
+        return {
+            &quot;answer&quot;: None,
+            &quot;source&quot;: None,
+            &quot;paragraph_id&quot;: None,
+            &quot;score&quot;: best[&quot;score&quot;],
+            &quot;candidates&quot;: candidates,
+        }
+
+    return {
+        &quot;answer&quot;: best[&quot;answer&quot;],
+        &quot;source&quot;: best[&quot;title&quot;],
+        &quot;paragraph_id&quot;: best[&quot;paragraph_id&quot;],
+        &quot;score&quot;: best[&quot;score&quot;],
+        &quot;candidates&quot;: candidates,
+    }
+</code></pre><p id="2ab568fa-e39f-8028-ae63-d67a3294c4ea" class="">Проверим:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b3-a001-dd0fed2d9112" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">q = &quot;How can I reset my password?&quot;
+best = answer_from_faq_paragraphs(q, faq_paragraphs, qa)
+print(best)
+</code></pre><p id="2ab568fa-e39f-80ab-b008-f6d0a83a0efb" class="">Это уже ближе к тому, как делают простейшие QA-системы поверх длинных текстов.</p><hr id="2ab568fa-e39f-8092-94e3-f8d148edd246"/><h2 id="2ab568fa-e39f-8021-939f-f7c6e15f496f" class="">7. Собираем мини-FAQ-бот (5–10 минут)</h2><p id="2ab568fa-e39f-800b-b06c-db205f6d3738" class="">В конце урока упакуем всё в модуль <code>faq_bot.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80dc-a71a-fba741103416" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+qa = pipeline(
+    &quot;question-answering&quot;,
+    model=&quot;distilbert-base-cased-distilled-squad&quot;,
+)
+
+def split_into_paragraphs(text: str) -&gt; list[str]:
+    return [p.strip() for p in text.split(&quot;\n\n&quot;) if p.strip()]
+
+def prepare_faq_paragraphs(faqs: list[dict]) -&gt; list[dict]:
+    res = []
+    for faq in faqs:
+        paragraphs = split_into_paragraphs(faq[&quot;text&quot;])
+        for i, p in enumerate(paragraphs):
+            res.append({
+                &quot;title&quot;: faq[&quot;title&quot;],
+                &quot;paragraph_id&quot;: i,
+                &quot;text&quot;: p,
+            })
+    return res
+
+def answer_from_faq_paragraphs(
+    question: str,
+    faq_paragraphs: list[dict],
+    qa_pipe,
+    min_score: float = 0.1,
+):
+    candidates = []
+    for para in faq_paragraphs:
+        context = para[&quot;text&quot;]
+        res = qa_pipe(question=question, context=context)
+        candidates.append({
+            &quot;title&quot;: para[&quot;title&quot;],
+            &quot;paragraph_id&quot;: para[&quot;paragraph_id&quot;],
+            &quot;answer&quot;: res[&quot;answer&quot;],
+            &quot;score&quot;: res[&quot;score&quot;],
+        })
+
+    candidates = sorted(candidates, key=lambda x: x[&quot;score&quot;], reverse=True)
+    best = candidates[0]
+
+    if best[&quot;score&quot;] &lt; min_score:
+        return {
+            &quot;answer&quot;: None,
+            &quot;source&quot;: None,
+            &quot;paragraph_id&quot;: None,
+            &quot;score&quot;: best[&quot;score&quot;],
+        }
+
+    return {
+        &quot;answer&quot;: best[&quot;answer&quot;],
+        &quot;source&quot;: best[&quot;title&quot;],
+        &quot;paragraph_id&quot;: best[&quot;paragraph_id&quot;],
+        &quot;score&quot;: best[&quot;score&quot;],
+    }
+
+if __name__ == &quot;__main__&quot;:
+    # Пример FAQ
+    billing_faq = &quot;&quot;&quot;
+If you see a double charge on your card, it may be an authorization hold.
+Authorization holds usually disappear within 3–5 business days.
+
+If the charge is still present after 5 business days, please contact support with a screenshot of your statement.
+
+Subscriptions are billed monthly on the day you started your subscription.
+&quot;&quot;&quot;
+
+    account_faq = &quot;&quot;&quot;
+If you forgot your password, you can reset it by clicking &quot;Forgot password&quot; on the login page.
+We will send a reset link to your registered email address.
+
+If you no longer have access to that email, contact support to change your email.
+&quot;&quot;&quot;
+
+    faqs = [
+        {&quot;title&quot;: &quot;Billing FAQ&quot;, &quot;text&quot;: billing_faq},
+        {&quot;title&quot;: &quot;Account FAQ&quot;, &quot;text&quot;: account_faq},
+    ]
+
+    faq_paragraphs = prepare_faq_paragraphs(faqs)
+
+    questions = [
+        &quot;Why was I charged twice this month?&quot;,
+        &quot;How can I reset my password?&quot;,
+        &quot;What should I do if I no longer have access to my email?&quot;,
+    ]
+
+    for q in questions:
+        ans = answer_from_faq_paragraphs(q, faq_paragraphs, qa)
+        print(&quot;Q:&quot;, q)
+        print(&quot;A:&quot;, ans[&quot;answer&quot;])
+        print(&quot;Source:&quot;, ans[&quot;source&quot;])
+        print(&quot;Score:&quot;, ans[&quot;score&quot;])
+        print(&quot;=&quot; * 60)
+</code></pre><p id="2ab568fa-e39f-8090-9d2b-d30cf42a86c3" class="">Это уже:</p><ul id="2ab568fa-e39f-80c3-9712-ce2061ab7206" class="bulleted-list"><li style="list-style-type:disc">рабочий MVP FAQ-бота,</li></ul><ul id="2ab568fa-e39f-8042-90e5-e93e46f78739" class="bulleted-list"><li style="list-style-type:disc">который можно:<ul id="2ab568fa-e39f-8032-8ca8-f62bd11a0eba" class="bulleted-list"><li style="list-style-type:circle">повесить за простым веб-интерфейсом,</li></ul><ul id="2ab568fa-e39f-8062-9e2e-f2c2c9bfc0da" class="bulleted-list"><li style="list-style-type:circle">использовать как внутренний ассистент для саппорта.</li></ul></li></ul><hr id="2ab568fa-e39f-80b5-ac70-ea3ac1883055"/><h2 id="2ab568fa-e39f-8045-8092-c2254e4d59ee" class="">8. Домашнее задание по уроку 1.3</h2><p id="2ab568fa-e39f-80fb-9992-e3b3ac5d168c" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-8075-86b3-f2901e0039cd" class="numbered-list" start="1"><li>Взять <strong>минимум 3 текстовых документа</strong> (FAQ, правила, раздел помощи, документацию).<p id="2ab568fa-e39f-80b3-b948-ebc321c75ec1" class="">Можно:</p><ul id="2ab568fa-e39f-80b5-8ed9-d69e58f13fac" class="bulleted-list"><li style="list-style-type:disc">взять реальные страницы и скопировать текст,</li></ul><ul id="2ab568fa-e39f-8046-bbed-cbe6fb5dd30c" class="bulleted-list"><li style="list-style-type:disc">или написать свои “игрушечные” статьи.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e8-9995-fd1269c20f48" class="numbered-list" start="2"><li>Для каждого документа придумать <strong>5–10 вопросов</strong>, на которые можно ответить, опираясь на текст.</li></ol><ol type="1" id="2ab568fa-e39f-80c7-945f-ff60c24b6237" class="numbered-list" start="3"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-8095-b619-d8b36ca2df7b" class="bulleted-list"><li style="list-style-type:disc">готовит список <code>faqs</code> или <code>faq_paragraphs</code>,</li></ul><ul id="2ab568fa-e39f-808e-9100-c6e6115b90ef" class="bulleted-list"><li style="list-style-type:disc">для каждого вопроса ищет ответ через <code>pipeline(&quot;question-answering&quot;)</code>,</li></ul><ul id="2ab568fa-e39f-80da-b8ce-c354d2c6f045" class="bulleted-list"><li style="list-style-type:disc">сохраняет результаты в структуру:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8022-9ab5-ecd166b1ad4f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[
+  {
+    &quot;question&quot;: &quot;...&quot;,
+    &quot;answer&quot;: &quot;...&quot;,
+    &quot;source&quot;: &quot;...&quot;,
+    &quot;score&quot;: ...,
+  },
+  ...
+]
+</code></pre></li></ul><ul id="2ab568fa-e39f-8071-81f1-eecdf5bd2267" class="bulleted-list"><li style="list-style-type:disc">печатает <strong>вопрос + ответ + название статьи</strong> в удобном виде.</li></ul></li></ol><p id="2ab568fa-e39f-803a-9c50-fcd6c5d9462d" class=""><strong>Продвинутая часть (по желанию):</strong></p><ol type="1" id="2ab568fa-e39f-80ea-aca1-c305f68efb21" class="numbered-list" start="1"><li>Добавить простейший “retriever” перед QA:<ul id="2ab568fa-e39f-80a0-9088-dfcbb698d6b1" class="bulleted-list"><li style="list-style-type:disc">по каждому вопросу сначала выбрать <strong>N самых подходящих параграфов</strong> по ключевым словам (например, считать количество пересечений слов),</li></ul><ul id="2ab568fa-e39f-8044-9826-fa95200a70bf" class="bulleted-list"><li style="list-style-type:disc">запускать <code>question-answering</code> только на них.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8010-9374-f00a405dd5a9" class="numbered-list" start="2"><li>Добавить обработку низкого <code>score</code>:<ul id="2ab568fa-e39f-8002-b9f1-f64ef37cfde9" class="bulleted-list"><li style="list-style-type:disc">если <code>score &lt; threshold</code>, выводить:<p id="2ab568fa-e39f-8076-948e-dfd32d1b0435" class="">“Я не уверен в ответе, проверь FAQ вручную. Лучший кандидат: …”.</p></li></ul></li></ol><hr id="2ab568fa-e39f-80e5-ab51-fcf84bdaf40a"/><p id="2ab568fa-e39f-80b5-a621-e9025a27756b" class="">Если хочешь, дальше можем:</p><ul id="2ab568fa-e39f-80e1-8806-c49073326476" class="bulleted-list"><li style="list-style-type:disc">так же развернуть <strong>урок 1.4 (суммаризация + генерация черновика ответа)</strong>,</li></ul><ul id="2ab568fa-e39f-801f-ae3d-fe498b054309" class="bulleted-list"><li style="list-style-type:disc">или прыгнуть к <strong>модулю 2</strong>, где мы уже будем работать без <code>pipeline</code> — руками собирать токены и кидать их в <code>AutoModelFor*</code>.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

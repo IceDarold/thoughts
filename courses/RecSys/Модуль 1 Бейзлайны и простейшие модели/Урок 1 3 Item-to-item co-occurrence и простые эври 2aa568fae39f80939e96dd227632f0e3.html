@@ -1,0 +1,812 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.3. Item-to-item co-occurrence и простые эвристики</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8093-9e96-dd227632f0e3" class="page sans"><header><h1 class="page-title">Урок 1.3. Item-to-item co-occurrence и простые эвристики</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-8019-806a-e38a65ed250c" class="">1. Цели и результат урока</h2><p id="2aa568fa-e39f-800b-a49d-fa357be8e9b0" class=""><strong>После урока студент:</strong></p><ul id="2aa568fa-e39f-80d7-b6c8-fc8d92c78b6d" class="bulleted-list"><li style="list-style-type:disc">Понимает идею <strong>item-to-item рекомендаций</strong>:<p id="2aa568fa-e39f-806a-893c-f105b15acc06" class="">«люди, которые брали X, часто брали Y».</p></li></ul><ul id="2aa568fa-e39f-80a4-b580-f30f88375484" class="bulleted-list"><li style="list-style-type:disc">Знает, в каких контекстах считать co-occurrence (сессия, корзина, user-history).</li></ul><ul id="2aa568fa-e39f-8003-8460-e4383af953ac" class="bulleted-list"><li style="list-style-type:disc">Умеет:<ul id="2aa568fa-e39f-8085-bd5e-dd962927296d" class="bulleted-list"><li style="list-style-type:circle">посчитать co-occurrence для пар товаров;</li></ul><ul id="2aa568fa-e39f-8067-9e56-da22c339bdcc" class="bulleted-list"><li style="list-style-type:circle">построить для каждого item список «похожих» соседей;</li></ul><ul id="2aa568fa-e39f-8089-bfda-ed56babd4576" class="bulleted-list"><li style="list-style-type:circle">написать функцию <code>recommend_item_item(user_id, k)</code>, которая:<ul id="2aa568fa-e39f-809c-b02d-c16dbeb16368" class="bulleted-list"><li style="list-style-type:square">смотрит на последние действия пользователя,</li></ul><ul id="2aa568fa-e39f-80f4-a0b6-e95552bfc20b" class="bulleted-list"><li style="list-style-type:square">через co-occurrence генерирует кандидатов,</li></ul><ul id="2aa568fa-e39f-80cd-aedf-d98cbcc51bac" class="bulleted-list"><li style="list-style-type:square">объединяет и ранжирует их.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-803c-9266-d5064de6899b" class="bulleted-list"><li style="list-style-type:disc">Имеет в ноутбуке <strong>второй тип бейзлайна</strong> (item-based), который потом можно:<ul id="2aa568fa-e39f-805f-97dc-c26302a5c178" class="bulleted-list"><li style="list-style-type:circle">комбинировать с популярностью;</li></ul><ul id="2aa568fa-e39f-8001-84ba-c99295c5054f" class="bulleted-list"><li style="list-style-type:circle">сравнивать в offline-валидации.</li></ul></li></ul><hr id="2aa568fa-e39f-803e-a336-cf16ec5a31fe"/><h2 id="2aa568fa-e39f-802a-8deb-ebe9f739e6aa" class="">2. Структура урока (90 мин)</h2><p id="2aa568fa-e39f-8071-9a57-f29d6efadbc3" class="">Примерный тайминг:</p><ol type="1" id="2aa568fa-e39f-800a-bb4e-ed4c7d271eca" class="numbered-list" start="1"><li><strong>0–10 мин</strong> — мотивация: зачем нам item-to-item, если есть популярность.</li></ol><ol type="1" id="2aa568fa-e39f-8030-a85a-e8ebe5afd9f2" class="numbered-list" start="2"><li><strong>10–30 мин</strong> — теория: co-occurrence, типы контекстов, способы измерения «схожести».</li></ol><ol type="1" id="2aa568fa-e39f-80c0-ac01-f6f05908b8c1" class="numbered-list" start="3"><li><strong>30–60 мин</strong> — кодим co-occurrence по логу и строим списки похожих items.</li></ol><ol type="1" id="2aa568fa-e39f-80e4-b065-c397e1767393" class="numbered-list" start="4"><li><strong>60–80 мин</strong> — пишем <code>recommend_item_item(user_id, k)</code> с простыми эвристиками.</li></ol><ol type="1" id="2aa568fa-e39f-8083-aa68-d170daf60ae9" class="numbered-list" start="5"><li><strong>80–90 мин</strong> — обсуждаем, в чём item-to-item лучше/хуже популярности + домашка.</li></ol><hr id="2aa568fa-e39f-800b-8271-f7f4dd3508bd"/><h2 id="2aa568fa-e39f-8026-a40d-e41288471a4c" class="">3. Блок 0–10 мин: мотивация</h2><p id="2aa568fa-e39f-80c0-a6f2-d34720529a40" class="">Краткое напоминание:</p><ul id="2aa568fa-e39f-80e0-b624-dec3c3f14cc0" class="bulleted-list"><li style="list-style-type:disc">В уроке 1.2 мы научились делать <strong>популярностные рекомендации</strong>:<ul id="2aa568fa-e39f-80f2-ba61-ee43f5080fc9" class="bulleted-list"><li style="list-style-type:circle">глобальные,</li></ul><ul id="2aa568fa-e39f-808b-854e-ff760e18b70b" class="bulleted-list"><li style="list-style-type:circle">сегментные,</li></ul><ul id="2aa568fa-e39f-80aa-ae85-e431a027754d" class="bulleted-list"><li style="list-style-type:circle">time-decayed.</li></ul></li></ul><p id="2aa568fa-e39f-80cd-99c5-c5e158dd6b40" class="">Ты задаёшь вопрос:</p><blockquote id="2aa568fa-e39f-80f8-9daa-e3226cf38af3" class="">«Представь, что человек посмотрел/купил конкретный товар X.<p id="2aa568fa-e39f-804f-96f5-fa32cc2c51e4" class="">Хотим ли мы ему советовать просто “топ популярных” — или “товары, которые обычно идут вместе с X”?»</p></blockquote><p id="2aa568fa-e39f-806a-aa3a-f9f4f5c47187" class="">Подводишь к идее:</p><ul id="2aa568fa-e39f-8054-91a0-fcef251723f1" class="bulleted-list"><li style="list-style-type:disc">Popularity — «что нравится всем».</li></ul><ul id="2aa568fa-e39f-80b5-9ad7-ecd522cd5665" class="bulleted-list"><li style="list-style-type:disc">Item-to-item — «что обычно идёт вместе с тем, что тебе уже понравилось».</li></ul><hr id="2aa568fa-e39f-80f6-9807-d5a0f102e237"/><h2 id="2aa568fa-e39f-8039-98db-fb12414a5b8f" class="">4. Блок 10–30 мин: теория — co-occurrence и item-to-item</h2><h3 id="2aa568fa-e39f-805b-956f-f6984354608e" class="">4.1. Базовая идея co-occurrence</h3><p id="2aa568fa-e39f-8032-b43b-f98b0979bc74" class="">Формулируешь максимально просто:</p><blockquote id="2aa568fa-e39f-8024-91f6-e9c2f5e257ad" class="">«Если два товара часто встречаются в одном и том же контексте (сессия, корзина, история пользователя), то, вероятно, они как-то связаны.»</blockquote><p id="2aa568fa-e39f-80ee-b6e4-f4a8d2666c42" class="">Обозначения:</p><ul id="2aa568fa-e39f-8084-a263-cc1cc4041268" class="bulleted-list"><li style="list-style-type:disc"><code>i</code>, <code>j</code> — товары;</li></ul><ul id="2aa568fa-e39f-80cb-b190-d96529f9be2b" class="bulleted-list"><li style="list-style-type:disc"><code>C(i, j)</code> — сколько раз товары <code>i</code> и <code>j</code> «встречались вместе»;</li></ul><ul id="2aa568fa-e39f-80c0-89e9-e036a3008d33" class="bulleted-list"><li style="list-style-type:disc"><code>freq(i)</code> — сколько раз встречался товар <code>i</code> вообще.</li></ul><h3 id="2aa568fa-e39f-802e-b342-c36db66809ac" class="">4.2. Какие бывают контексты</h3><p id="2aa568fa-e39f-8005-b819-f99d7e6372a4" class="">Обозначаешь 3 стандартных варианта:</p><ol type="1" id="2aa568fa-e39f-80c6-9929-efa39994f554" class="numbered-list" start="1"><li><strong>Basket-based (корзины/покупки)</strong><p id="2aa568fa-e39f-8074-8a84-e9e58a4a63a0" class="">Контекст = одна покупка / заказ.</p><ul id="2aa568fa-e39f-8052-b27f-df731a1ae7b4" class="bulleted-list"><li style="list-style-type:disc">Всё, что куплено в одном чеке → co-occurrence.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c5-a138-e07520e9411b" class="numbered-list" start="2"><li><strong>Session-based</strong><p id="2aa568fa-e39f-80be-a44d-d96d34131285" class="">Контекст = одна сессия просмотров.</p><ul id="2aa568fa-e39f-802c-b190-f83fd0bc840c" class="bulleted-list"><li style="list-style-type:disc">Всё, что было в <code>session_id</code> за определённый период.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809b-993b-dd34c62ee9ef" class="numbered-list" start="3"><li><strong>User-based</strong><p id="2aa568fa-e39f-804e-9237-d496dd90f58f" class="">Контекст = история по пользователю (вся или окно по времени).</p><ul id="2aa568fa-e39f-80c0-a03d-eb2646064605" class="bulleted-list"><li style="list-style-type:disc">Все товары, с которыми взаимодействовал один user.</li></ul></li></ol><p id="2aa568fa-e39f-80d3-b15c-c508afc93b37" class="">Обсуждение:</p><ul id="2aa568fa-e39f-808a-b3ca-d5fc78440301" class="bulleted-list"><li style="list-style-type:disc">Basket-based — лучший сигнал «комплементарности» (люди <strong>вместе</strong> покупают).</li></ul><ul id="2aa568fa-e39f-80fb-a16e-c5496d59c222" class="bulleted-list"><li style="list-style-type:disc">Session-based — смесь комплементарности и «альтернатив».</li></ul><ul id="2aa568fa-e39f-80f8-b485-c7b53012bb99" class="bulleted-list"><li style="list-style-type:disc">User-based — «люди, которые интересовались этим, обычно интересовались и этим».</li></ul><p id="2aa568fa-e39f-80da-8980-d57b1840ee65" class="">На уроке можно выбрать <strong>один тип контекста</strong> (например, user-based или session-based), чтобы не усложнять.</p><h3 id="2aa568fa-e39f-80a8-bb84-ecd40d9db79b" class="">4.3. Как измерять силу связи</h3><p id="2aa568fa-e39f-80ba-92b1-eb9c99ce814e" class="">Даёшь три уровня сложности:</p><ol type="1" id="2aa568fa-e39f-8007-85bb-cb34ceb48000" class="numbered-list" start="1"><li><strong>Простой счётчик</strong><p id="2aa568fa-e39f-8038-b025-e19e5213885e" class=""><code>C(i, j) = #контекстов, где i и j были вместе</code>.</p></li></ol><ol type="1" id="2aa568fa-e39f-80bf-86fe-ec6058d0d938" class="numbered-list" start="2"><li><strong>Условная вероятность (интуитивно)</strong><p id="2aa568fa-e39f-80c4-be99-ea89db2ac5f0" class=""><code>P(j | i) ≈ C(i, j) / freq(i)</code></p><p id="2aa568fa-e39f-8051-abc2-f881f43b7c88" class="">→ «если человек видел i, насколько вероятно, что он увидит j».</p></li></ol><ol type="1" id="2aa568fa-e39f-8024-9ff8-ff9644ad2d78" class="numbered-list" start="3"><li><strong>Jaccard (по желанию)</strong><p id="2aa568fa-e39f-805f-9541-e26a2d224697" class=""><code>J(i, j) = C(i, j) / (freq(i) + freq(j) - C(i, j))</code></p><p id="2aa568fa-e39f-8009-97e9-e8694d097520" class="">→ чем больше пересечение относительно объединения, тем сильнее связь.</p></li></ol><p id="2aa568fa-e39f-80df-961e-f6137fe0decd" class="">Можно сказать:</p><ul id="2aa568fa-e39f-80df-95ee-df9b331901e2" class="bulleted-list"><li style="list-style-type:disc">Для первого бейзлайна достаточно просто сортировать по <code>C(i, j)</code> или условной вероятности.</li></ul><h3 id="2aa568fa-e39f-80f4-aee6-d1f6a4419be1" class="">4.4. Как из co-occurrence сделать рекомендации</h3><p id="2aa568fa-e39f-808d-916d-c9ba852c3df0" class="">Общий pipeline:</p><ol type="1" id="2aa568fa-e39f-802c-8acb-cc7ebd0d7787" class="numbered-list" start="1"><li>Для каждого item <code>i</code> храним список <code>neighbors(i)</code> — топ-100/200 товаров <code>j</code> с максимальным <code>C(i, j)</code> (или Jaccard).</li></ol><ol type="1" id="2aa568fa-e39f-803f-ade0-de28b051ce2a" class="numbered-list" start="2"><li>Для пользователя:<ul id="2aa568fa-e39f-80a1-905a-f4b3e26eb347" class="bulleted-list"><li style="list-style-type:disc">берём его последние <code>N</code> действий (items <code>i1, i2, ..., iN</code>);</li></ul><ul id="2aa568fa-e39f-80fe-9158-e6c50fb78b82" class="bulleted-list"><li style="list-style-type:disc">для каждого <code>ik</code> берём его <code>neighbors(ik)</code>;</li></ul><ul id="2aa568fa-e39f-806f-8f3a-e4b97e119b7d" class="bulleted-list"><li style="list-style-type:disc">агрегируем кандидатов:<ul id="2aa568fa-e39f-8043-a6a4-f7179084e967" class="bulleted-list"><li style="list-style-type:circle">суммируем score по всем источникам;</li></ul><ul id="2aa568fa-e39f-80c2-a4a3-ff1ab02b8299" class="bulleted-list"><li style="list-style-type:circle">можем взвешивать по давности действия (<code>ik</code>).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808d-a311-e1c550045e12" class="numbered-list" start="3"><li>Сортируем кандидатов по суммарному score → берём top-K.</li></ol><p id="2aa568fa-e39f-80d5-8a93-ed8ab24211ec" class="">Это и есть <strong>item-to-item река</strong>.</p><hr id="2aa568fa-e39f-8083-aef7-d546622db22f"/><h2 id="2aa568fa-e39f-80e2-b217-ca6db0e7d678" class="">5. Блок 30–60 мин: считаем co-occurrence на данных</h2><h3 id="2aa568fa-e39f-8023-9ba7-c31194d599a9" class="">Важный момент для производительности</h3><p id="2aa568fa-e39f-80b1-9df0-c0ea73d94214" class="">Сразу объясняешь:</p><ul id="2aa568fa-e39f-80cd-9e49-d3a694109952" class="bulleted-list"><li style="list-style-type:disc">Если в данных <strong>очень много товаров</strong>, считать полный <code>n_items × n_items</code> co-occurrence — дорого.</li></ul><ul id="2aa568fa-e39f-802e-81df-d835c2c3d608" class="bulleted-list"><li style="list-style-type:disc">Поэтому:<ul id="2aa568fa-e39f-800d-95b2-c05e8045c17a" class="bulleted-list"><li style="list-style-type:circle">можно ограничиться:<ul id="2aa568fa-e39f-8016-b942-daa991e1f4f3" class="bulleted-list"><li style="list-style-type:square">только топ-N популярных товаров;</li></ul><ul id="2aa568fa-e39f-80cc-b2e9-e94b3a133ff7" class="bulleted-list"><li style="list-style-type:square">или только недавним окном по времени;</li></ul><ul id="2aa568fa-e39f-8031-8c93-c96bec6c7ee6" class="bulleted-list"><li style="list-style-type:square">или только последними M событиями в каждой сессии.</li></ul></li></ul></li></ul><p id="2aa568fa-e39f-8046-9bff-cc9d16cabdbc" class="">На учебном датасете, скорее всего, можно считать «как есть», но всё равно полезно проговорить.</p><hr id="2aa568fa-e39f-800d-9387-d553f1775134"/><h3 id="2aa568fa-e39f-8005-a9e8-e28f0dac8c3d" class="">5.1. Подготовка данных</h3><p id="2aa568fa-e39f-8083-8993-d62d68371a9d" class="">Исходим из DataFrame <code>train</code> со столбцами:</p><ul id="2aa568fa-e39f-8014-841c-e3ac55075e36" class="bulleted-list"><li style="list-style-type:disc"><code>user_id</code></li></ul><ul id="2aa568fa-e39f-800c-a7e3-c801e8b67e1e" class="bulleted-list"><li style="list-style-type:disc"><code>item_id</code></li></ul><ul id="2aa568fa-e39f-80d6-8896-ffc2f7fc8723" class="bulleted-list"><li style="list-style-type:disc"><code>timestamp</code></li></ul><ul id="2aa568fa-e39f-8013-93b1-fe3cb7c12ffd" class="bulleted-list"><li style="list-style-type:disc">возможно, <code>session_id</code> (если есть — можно использовать его)</li></ul><p id="2aa568fa-e39f-8034-8995-c0b788c47f37" class="">Простой вариант: берём <strong>user-based контекст</strong> (все items, которые видел один user).</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-802c-a688-ca990b54fdce" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import pandas as pd
+from itertools import combinations
+from collections import defaultdict
+
+train = pd.read_csv(&quot;../data/train_interactions.csv&quot;)
+
+# при желании фильтруем по типу события (например, только &#x27;view&#x27; или только &#x27;purchase&#x27;)
+if &#x27;event_type&#x27; in train.columns:
+    target_events = train[train[&#x27;event_type&#x27;] == &#x27;view&#x27;]  # или &#x27;purchase&#x27;
+else:
+    target_events = train
+</code></pre><p id="2aa568fa-e39f-80e2-9629-ed203bd15cca" class="">Ограничим количество items для стабильной работы (например, уберём супер-редкие):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8009-9e2b-c09bfa87e46d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">item_freq = target_events[&#x27;item_id&#x27;].value_counts()
+min_item_freq = 5  # параметр
+popular_items = item_freq[item_freq &gt;= min_item_freq].index
+
+filtered = target_events[target_events[&#x27;item_id&#x27;].isin(popular_items)]
+</code></pre><hr id="2aa568fa-e39f-80b0-a2e7-de01b4a24b77"/><h3 id="2aa568fa-e39f-80f9-8a25-ec0bc55bfffb" class="">5.2. Подсчёт co-occurrence (user-based)</h3><p id="2aa568fa-e39f-80d8-817c-dd176615011f" class="">Простой прямолинейный подход:</p><ul id="2aa568fa-e39f-8044-bbff-c6d25e53e301" class="bulleted-list"><li style="list-style-type:disc">для каждого <code>user_id</code> берём список его items;</li></ul><ul id="2aa568fa-e39f-8086-b86a-f55741e9c2ae" class="bulleted-list"><li style="list-style-type:disc">генерируем все пары (i, j), i ≠ j;</li></ul><ul id="2aa568fa-e39f-809b-b4df-f8722d1fdf6e" class="bulleted-list"><li style="list-style-type:disc">увеличиваем счётчик <code>C(i, j)</code>.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8090-8f04-e23cff2b08fc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">cooc_counts = defaultdict(int)
+item_counts = defaultdict(int)
+
+# считаем co-occurrence по пользователям
+for user_id, user_df in filtered.groupby(&#x27;user_id&#x27;):
+    items = user_df[&#x27;item_id&#x27;].unique()
+
+    # считаем freq(i)
+    for item in items:
+        item_counts[item] += 1
+
+    # все пары в данном контексте (user)
+    for i, j in combinations(sorted(items), 2):
+        cooc_counts[(i, j)] += 1
+        cooc_counts[(j, i)] += 1  # делаем симметричным
+</code></pre><p id="2aa568fa-e39f-8009-8ac7-fcbe98277e89" class="">Если хочешь лучше объяснить логику — можно сначала сделать это на игрушечном примере (3–4 users, 5–6 items), показать пары на доске.</p><hr id="2aa568fa-e39f-805a-b187-c273d2660d0b"/><h3 id="2aa568fa-e39f-807f-86d5-ec963315af2a" class="">5.3. Построение таблицы соседей для каждого item</h3><p id="2aa568fa-e39f-8053-b2d4-c6bd238f9397" class="">Теперь из <code>cooc_counts</code> формируем структуру <code>neighbors[item] = [(other_item, score), ...]</code>.</p><p id="2aa568fa-e39f-8040-aa62-ccda6fbe3764" class="">Простой вариант — score = <code>C(i, j)</code>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8013-85e5-ec46ee1b6021" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">neighbors = defaultdict(list)
+
+for (i, j), c in cooc_counts.items():
+    neighbors[i].append((j, c))
+
+# сортируем и ограничиваем количеством соседей (например, top-100)
+max_neighbors = 100
+
+for i in list(neighbors.keys()):
+    neighbors[i].sort(key=lambda x: x[1], reverse=True)
+    neighbors[i] = neighbors[i][:max_neighbors]
+</code></pre><p id="2aa568fa-e39f-802f-bb5e-f42567dd9943" class="">Если хочешь, можно приплести условную вероятность:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80ab-b6cf-e86eddb98ca0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">neighbors_prob = defaultdict(list)
+
+for (i, j), c in cooc_counts.items():
+    freq_i = item_counts[i]
+    p_j_given_i = c / freq_i
+    neighbors_prob[i].append((j, p_j_given_i))
+
+for i in list(neighbors_prob.keys()):
+    neighbors_prob[i].sort(key=lambda x: x[1], reverse=True)
+    neighbors_prob[i] = neighbors_prob[i][:max_neighbors]
+</code></pre><p id="2aa568fa-e39f-8067-8455-d16ed920e8a8" class="">Но для первого бейзлайна достаточно и <code>c</code>.</p><hr id="2aa568fa-e39f-8012-b4fa-deabcd49dba9"/><h3 id="2aa568fa-e39f-80f3-aebb-e95a1aae7813" class="">5.4. Мини-практика</h3><p id="2aa568fa-e39f-8020-a604-e03529da5ea8" class="">Студентам даёшь задания (прямо в ноутбуке):</p><ol type="1" id="2aa568fa-e39f-8072-a25b-d7328b10a2dd" class="numbered-list" start="1"><li>Выбрать 3 товара (item_id), которые они найдут в <code>item_popularity</code> или случайным образом.</li></ol><ol type="1" id="2aa568fa-e39f-8021-bc51-dfeea7c71968" class="numbered-list" start="2"><li>Для каждого:<ul id="2aa568fa-e39f-80a4-b706-e77e36983054" class="bulleted-list"><li style="list-style-type:disc">вывести топ-10 соседей по co-occurrence;</li></ul><ul id="2aa568fa-e39f-8077-8fc8-d4f93abd4f2a" class="bulleted-list"><li style="list-style-type:disc">попытаться интерпретировать:<ul id="2aa568fa-e39f-8008-9b41-e548c31cc927" class="bulleted-list"><li style="list-style-type:circle">из одной ли они категории,</li></ul><ul id="2aa568fa-e39f-80ea-b384-caf36a703014" class="bulleted-list"><li style="list-style-type:circle">похоже ли это на реальную «связку товаров» (комплементарные или альтернативы).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8021-a45c-f47c533d7bb7" class="numbered-list" start="3"><li>Сравнить:<ul id="2aa568fa-e39f-8073-b10b-c804dac88deb" class="bulleted-list"><li style="list-style-type:disc">Эти соседи vs глобальный топ:<ul id="2aa568fa-e39f-8064-b1b0-c89f6791418a" class="bulleted-list"><li style="list-style-type:circle">есть ли в соседях то, чего нет в топе по популярности.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-80f8-a2fd-e9cfb8b891b9"/><h2 id="2aa568fa-e39f-805c-b3ce-d286123ef38b" class="">6. Блок 60–80 мин: пишем recommend_item_item(user_id, k)</h2><p id="2aa568fa-e39f-8087-92dd-c0d7ca6e648b" class="">Теперь нужно из <code>neighbors</code> сделать функцию рекомендаций.</p><h3 id="2aa568fa-e39f-8056-83e8-d7f1e76c97e5" class="">6.1. Общая логика</h3><p id="2aa568fa-e39f-80a1-afb9-fa9e8a07d720" class="">Для заданного <code>user_id</code>:</p><ol type="1" id="2aa568fa-e39f-80d2-8471-d4fead897cd3" class="numbered-list" start="1"><li>Получаем его <strong>последние N действий</strong> (N = 3–10, гиперпараметр).</li></ol><ol type="1" id="2aa568fa-e39f-800a-97f3-eefb457ae33c" class="numbered-list" start="2"><li>Для каждого последнего item:<ul id="2aa568fa-e39f-804e-972b-e1a0d9fd736d" class="bulleted-list"><li style="list-style-type:disc">берём список <code>neighbors[item]</code>.</li></ul><ul id="2aa568fa-e39f-8008-9274-ce10cdaecec8" class="bulleted-list"><li style="list-style-type:disc">добавляем кандидатов в общий словарь с накоплением score.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b0-a12f-d8522bfac918" class="numbered-list" start="3"><li>Агрегируем score кандидатов:<ul id="2aa568fa-e39f-80aa-be81-ec58c3be3179" class="bulleted-list"><li style="list-style-type:disc">можно учесть:<ul id="2aa568fa-e39f-8063-a417-d6d8d3ab5195" class="bulleted-list"><li style="list-style-type:circle">вес по co-occurrence строке (C(i, j));</li></ul><ul id="2aa568fa-e39f-80aa-88e3-c1af16df5c4b" class="bulleted-list"><li style="list-style-type:circle">вес по «давности» действия (чем свежее, тем важнее).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8079-8aaf-d2a3ad9c498d" class="numbered-list" start="4"><li>Убираем:<ul id="2aa568fa-e39f-8052-b9cb-e6271462f372" class="bulleted-list"><li style="list-style-type:disc">уже взаимодействованные items (если нужно по условию задачи).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808a-9466-f27c02bfbbd0" class="numbered-list" start="5"><li>Сортируем по score → берём top-K.</li></ol><h3 id="2aa568fa-e39f-80b8-813c-c299d85897e6" class="">6.2. Кодовый каркас</h3><p id="2aa568fa-e39f-802f-b742-f588f18e4515" class="">Предварительно подготовим <code>user_history</code> — список действий по каждому пользователю (упорядоченный по времени):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8009-9951-f90ecd473568" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># отсортируем по времени
+filtered = filtered.sort_values(&#x27;timestamp&#x27;)
+
+user_history = defaultdict(list)
+
+for row in filtered.itertuples():
+    user_history[row.user_id].append((row.item_id, row.timestamp))
+</code></pre><p id="2aa568fa-e39f-800c-aff5-dc1f80375623" class="">Теперь функция:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8025-b67e-d603ebfb9e4a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_item_item(user_id, k=10, n_recent=5,
+                        alpha_recency=0.9):
+    &quot;&quot;&quot;
+    Рекомендации item-to-item:
+    - берем последние n_recent товаров пользователя
+    - для каждого товара смотрим его neighbors
+    - агрегируем счетчики с учетом &quot;давности&quot; исходного товара
+    &quot;&quot;&quot;
+    history = user_history.get(user_id, [])
+
+    if not history:
+        # fallback: если нет истории, вернем популярные товары
+        return popular_items_global[:k]
+
+    # берем последние n_recent действий
+    recent_items = [item for item, ts in history[-n_recent:]]
+
+    scores = defaultdict(float)
+
+    # идем по последним действиям с recency-весом
+    # чем ближе к концу истории, тем больше вес
+    for idx, item in enumerate(reversed(recent_items)):
+        # recency_weight уменьшается по мере движения назад
+        recency_weight = alpha_recency ** idx
+
+        for neighbor_item, c in neighbors[item]:
+            scores[neighbor_item] += recency_weight * c
+
+    # убираем товары, с которыми пользователь уже взаимодействовал
+    seen_items = set(i for i, _ in history)
+    for seen in seen_items:
+        if seen in scores:
+            del scores[seen]
+
+    # сортируем по score и возвращаем top-K
+    ranked_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    recommended = [item for item, score in ranked_items[:k]]
+
+    # на всякий случай дополняем популярными, если кандидатов мало
+    if len(recommended) &lt; k:
+        for item in popular_items_global:
+            if item not in seen_items and item not in recommended:
+                recommended.append(item)
+            if len(recommended) == k:
+                break
+
+    return recommended[:k]
+</code></pre><p id="2aa568fa-e39f-805c-9673-d77d96236903" class="">Обсуждаете:</p><ul id="2aa568fa-e39f-8055-be1e-dc70e58bd1ac" class="bulleted-list"><li style="list-style-type:disc">что означает <code>alpha_recency</code>;</li></ul><ul id="2aa568fa-e39f-8089-a599-c7d233e2988a" class="bulleted-list"><li style="list-style-type:disc">почему важно отсекать уже просмотренные/купленные (если того просит постановка);</li></ul><ul id="2aa568fa-e39f-8061-9765-d3444f6d1996" class="bulleted-list"><li style="list-style-type:disc">зачем нужен fallback на популярные.</li></ul><h3 id="2aa568fa-e39f-80ee-a1a3-dfa0913c8fe0" class="">6.3. Мини-практика</h3><p id="2aa568fa-e39f-8075-81e8-d9d4b5e82901" class="">Студенты:</p><ol type="1" id="2aa568fa-e39f-8021-89cf-caa41a2a5c37" class="numbered-list" start="1"><li>Выбирают 3–5 пользователей:<ul id="2aa568fa-e39f-8085-a301-ebbc7c0c5198" class="bulleted-list"><li style="list-style-type:disc">смотрят их историю (последние 10 действий);</li></ul><ul id="2aa568fa-e39f-8070-affd-c45936048711" class="bulleted-list"><li style="list-style-type:disc">проверяют, какие рекомендации выдаёт <code>recommend_item_item</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80db-ae59-d6426691b7a0" class="numbered-list" start="2"><li>Сравнивают с <code>recommend_popularity</code> (урок 1.2):<ul id="2aa568fa-e39f-80e3-90c1-dc6ddd905313" class="bulleted-list"><li style="list-style-type:disc">где рекомендации выглядят более «персональными»;</li></ul><ul id="2aa568fa-e39f-8089-81a2-d8ed9511a74e" class="bulleted-list"><li style="list-style-type:disc">есть ли «логические связки» (например, «купил телефон → рекомендуем чехлы/наушники»).</li></ul></li></ol><p id="2aa568fa-e39f-8036-bc52-fe9816d6e9a1" class="">Можно предложить:</p><ul id="2aa568fa-e39f-805a-8b8e-fcde1d6a8e5e" class="bulleted-list"><li style="list-style-type:disc">создать табличку:<p id="2aa568fa-e39f-80ec-bbbe-d42143cf6800" class="">| user_id | last_items | rec_popularity | rec_item_item |</p></li></ul><p id="2aa568fa-e39f-8002-8900-e6f03a1f93f5" class="">и коротко её обсудить.</p><hr id="2aa568fa-e39f-80f9-9b98-db70eee0dc89"/><h2 id="2aa568fa-e39f-8047-8f60-c43e5fd3d54d" class="">7. Блок 80–90 мин: обсуждение и домашка</h2><h3 id="2aa568fa-e39f-80c1-8838-f108657f768b" class="">Обсуждение</h3><p id="2aa568fa-e39f-80e5-beff-df3404f49d28" class="">Вопросы группе:</p><ol type="1" id="2aa568fa-e39f-80b9-9306-cecda34258aa" class="numbered-list" start="1"><li><strong>Когда item-to-item точно лучше популярности?</strong><ul id="2aa568fa-e39f-805e-90d1-c3aea3ed5d42" class="bulleted-list"><li style="list-style-type:disc">пользователь имеет историю;</li></ul><ul id="2aa568fa-e39f-80b1-bb13-d9a546b5c6bc" class="bulleted-list"><li style="list-style-type:disc">каталог большой и разнообразный;</li></ul><ul id="2aa568fa-e39f-8073-8162-cf3af0b46d3e" class="bulleted-list"><li style="list-style-type:disc">важно предлагать не только топ-хиты, а релевантные связки.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8075-8740-def2ba349ebc" class="numbered-list" start="2"><li><strong>Когда популярность по-прежнему нужна?</strong><ul id="2aa568fa-e39f-805c-9fef-c2f430ad3d14" class="bulleted-list"><li style="list-style-type:disc">новый пользователь (нет истории);</li></ul><ul id="2aa568fa-e39f-8004-831f-e6a329753efe" class="bulleted-list"><li style="list-style-type:disc">холодный старт;</li></ul><ul id="2aa568fa-e39f-8096-84c7-d1952ca63015" class="bulleted-list"><li style="list-style-type:disc">недостаточно статистики для co-occurrence.</li></ul></li></ol><p id="2aa568fa-e39f-8027-8fe9-e4c04c263e95" class="">Фиксируешь:</p><blockquote id="2aa568fa-e39f-80e6-9688-f3c7b54fbfcd" class="">В продакшне обе вещи живут рядом: popularity — как fallback и часть кандидатов, item-to-item — как основной источник персональных кандидатов при наличии истории.</blockquote><hr id="2aa568fa-e39f-80a5-91ee-c1c3f475ec53"/><h3 id="2aa568fa-e39f-8020-b14a-e9e758672613" class="">Домашка 1.3</h3><p id="2aa568fa-e39f-80b0-bfb4-f4a7e962ebbc" class=""><strong>Форма:</strong> ноутбук (продолжение предыдущего) + короткий текст.</p><ol type="1" id="2aa568fa-e39f-803f-9133-f2fc9dc4f87f" class="numbered-list" start="1"><li><strong>В ноутбуке:</strong><ul id="2aa568fa-e39f-809e-8cb7-fdf4b7639b06" class="bulleted-list"><li style="list-style-type:disc">Реализовать <strong>полный pipeline item-to-item</strong>, как на уроке:<ul id="2aa568fa-e39f-805c-8cb9-f0157c289831" class="bulleted-list"><li style="list-style-type:circle">подсчитать co-occurrence;</li></ul><ul id="2aa568fa-e39f-80e3-a5c2-f8ec429ebcf7" class="bulleted-list"><li style="list-style-type:circle">построить <code>neighbors[item]</code>;</li></ul><ul id="2aa568fa-e39f-8087-91e5-fcc89d8febf3" class="bulleted-list"><li style="list-style-type:circle">реализовать <code>user_history</code>;</li></ul><ul id="2aa568fa-e39f-8025-8160-e0861ef4ced7" class="bulleted-list"><li style="list-style-type:circle">сделать <code>recommend_item_item(user_id, k)</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-805a-a80d-d7a047778da5" class="bulleted-list"><li style="list-style-type:disc">Выбрать 10 случайных пользователей:<ul id="2aa568fa-e39f-80b2-b631-e23599beb533" class="bulleted-list"><li style="list-style-type:circle">вывести их последние 5 items;</li></ul><ul id="2aa568fa-e39f-8099-91f0-df62c91c4cfe" class="bulleted-list"><li style="list-style-type:circle">вывести top-10 рекомендаций:<ul id="2aa568fa-e39f-8036-9141-e4784048e860" class="bulleted-list"><li style="list-style-type:square">по популярности (из урока 1.2);</li></ul><ul id="2aa568fa-e39f-808d-a732-d63d891d012d" class="bulleted-list"><li style="list-style-type:square">по item-to-item.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-8021-b8ed-d2b9cd6c4180" class="bulleted-list"><li style="list-style-type:disc">(Опционально) сделать очень простой offline-check:<ul id="2aa568fa-e39f-8022-870b-ef5253b5dceb" class="bulleted-list"><li style="list-style-type:circle">взять последние взаимодействия как «target»;</li></ul><ul id="2aa568fa-e39f-8033-ac10-f7f7759d8782" class="bulleted-list"><li style="list-style-type:circle">посмотреть, попал ли target-item в top-K item-to-item vs popularity (простейший HitRate@K на десятке пользователей).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-800b-b4a8-dce24e100178" class="numbered-list" start="2"><li><strong>Короткий отчёт (markdown-ячейка):</strong><ul id="2aa568fa-e39f-80fa-ae60-e0acbddcc42e" class="bulleted-list"><li style="list-style-type:disc">Где, по твоему мнению, item-to-item сильно выигрывает у популярности?</li></ul><ul id="2aa568fa-e39f-807f-bdb5-c2487d644060" class="bulleted-list"><li style="list-style-type:disc">Нашёл ли ты «странные» item-to-item связи (товары, которые co-occur, но, на твой взгляд, не похожи)? Как это можно отфильтровать в будущем?</li></ul><ul id="2aa568fa-e39f-8057-ba86-dcb911118dbb" class="bulleted-list"><li style="list-style-type:disc">Какие улучшения ты бы добавил:<ul id="2aa568fa-e39f-806d-818e-e55d9c3b56b1" class="bulleted-list"><li style="list-style-type:circle">категорийные фильтры,</li></ul><ul id="2aa568fa-e39f-804f-b237-eaf7ab51aade" class="bulleted-list"><li style="list-style-type:circle">более аккуратный decay по времени,</li></ul><ul id="2aa568fa-e39f-807e-8014-e649450b91cc" class="bulleted-list"><li style="list-style-type:circle">ограничение по категориям и т.д.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ec-9d11-f9ca0c6cd149" class="numbered-list" start="3"><li>(Опционально, если группа сильная):<ul id="2aa568fa-e39f-80c9-b49c-c9f51d43df93" class="bulleted-list"><li style="list-style-type:disc">Заменить score с «просто C(i, j)» на что-то более аккуратное:<ul id="2aa568fa-e39f-8091-bc83-cd61121a0225" class="bulleted-list"><li style="list-style-type:circle">условная вероятность <code>P(j | i)</code>,</li></ul><ul id="2aa568fa-e39f-802e-ae5f-ec7c2b3514e3" class="bulleted-list"><li style="list-style-type:circle">либо <code>C(i, j) / sqrt(freq(i) * freq(j))</code> (что-то из серии cosine/Jaccard).</li></ul></li></ul><ul id="2aa568fa-e39f-8061-9c7b-e112f57050d6" class="bulleted-list"><li style="list-style-type:disc">Сравнить рекомендации до и после.</li></ul></li></ol><hr id="2aa568fa-e39f-8092-9d44-cc01de116733"/><p id="2aa568fa-e39f-8083-9ffa-e6066c5be96d" class="">Если хочешь, дальше могу:</p><ul id="2aa568fa-e39f-80b1-b916-f76a13d10321" class="bulleted-list"><li style="list-style-type:disc">расписать <strong>урок 1.4</strong> (сбор popularity + item-to-item в единый бейзлайн и подготовка сабмита),</li></ul><ul id="2aa568fa-e39f-8048-99a6-f41d4eb0c788" class="bulleted-list"><li style="list-style-type:disc">или помочь сделать <strong>единый шаблон репозитория/course skeleton</strong>: <code>src/</code>, <code>data/</code>, <code>notebooks/</code>, <code>configs/</code>, так чтобы всё это сразу выглядело как «мини-Kaggle этажерка».</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

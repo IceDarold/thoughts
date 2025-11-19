@@ -1,0 +1,851 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.4. Суммаризация диалогов и генерация черновика ответа</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-801e-8c8d-c56bd5acd9e7" class="page sans"><header><h1 class="page-title">Урок 1.4. Суммаризация диалогов и генерация черновика ответа</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-806c-a583-d8088d98e2e9" class="">Окей, добьём модуль 1 до конца 💼🔥</p><p id="2ab568fa-e39f-8099-a031-e232640062b8" class="">Урок 1.4 — делаем из длинной переписки <strong>краткий конспект + черновик ответа</strong> с помощью <code>summarization</code> и <code>text-generation</code>.</p><hr id="2ab568fa-e39f-8077-826f-ea32bfdd8cf9"/><h2 id="2ab568fa-e39f-8065-8463-e3184522636c" class="">1. Цели урока</h2><p id="2ab568fa-e39f-8027-aab5-e987d9f4e148" class="">К концу урока студент:</p><ul id="2ab568fa-e39f-8054-b2a2-d966510dc8c2" class="bulleted-list"><li style="list-style-type:disc">понимает разницу между:<ul id="2ab568fa-e39f-8086-b40d-fa15dd37ca46" class="bulleted-list"><li style="list-style-type:circle"><strong>суммаризацией</strong> (summary из текста),</li></ul><ul id="2ab568fa-e39f-80d9-a176-f66cc76ad0bf" class="bulleted-list"><li style="list-style-type:circle"><strong>генерацией</strong> текста (draft ответа, продолжение);</li></ul></li></ul><ul id="2ab568fa-e39f-805e-97e5-db6a3a151292" class="bulleted-list"><li style="list-style-type:disc">знает, как работают:<ul id="2ab568fa-e39f-805c-987a-caba19bb1b25" class="bulleted-list"><li style="list-style-type:circle"><code>pipeline(&quot;summarization&quot;)</code>,</li></ul><ul id="2ab568fa-e39f-80b8-897b-edf16dd67378" class="bulleted-list"><li style="list-style-type:circle"><code>pipeline(&quot;text-generation&quot;)</code> и/или <code>&quot;text2text-generation&quot;</code>;</li></ul></li></ul><ul id="2ab568fa-e39f-8080-be25-dea408fa5edf" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-80ae-84dc-d6f37705f664" class="bulleted-list"><li style="list-style-type:circle">получить краткое резюме длинного диалога саппорта,</li></ul><ul id="2ab568fa-e39f-802c-89f1-ed99920c83ae" class="bulleted-list"><li style="list-style-type:circle">использовать это резюме как контекст для генерации мягкого, человеческого <strong>черновика ответа</strong>;</li></ul></li></ul><ul id="2ab568fa-e39f-8048-a345-f568cad871a7" class="bulleted-list"><li style="list-style-type:disc">написал мини-сервис:<ul id="2ab568fa-e39f-80d6-92fc-f2e7ce760840" class="bulleted-list"><li style="list-style-type:circle"><code>summarize_dialog(dialog_text)</code>,</li></ul><ul id="2ab568fa-e39f-8040-a2ee-fa8261107d38" class="bulleted-list"><li style="list-style-type:circle"><code>generate_reply(summary)</code><p id="2ab568fa-e39f-806c-87da-d4eec9485a4b" class="">и главный <code>prepare_support_reply(dialog_text)</code>.</p></li></ul></li></ul><hr id="2ab568fa-e39f-80de-9db9-fc2ff3f4df87"/><h2 id="2ab568fa-e39f-801c-9cdf-c94d16a5f766" class="">2. Мотивация и постановка задачи (5–10 минут)</h2><p id="2ab568fa-e39f-8032-80d9-dba0d751c336" class=""><strong>Кейс:</strong></p><p id="2ab568fa-e39f-80ac-9443-f7dd11f5c750" class="">В саппорт часто прилетают длинные переписки:</p><ul id="2ab568fa-e39f-8052-b5b6-d7e2709cb246" class="bulleted-list"><li style="list-style-type:disc">15–30 сообщений туда-сюда,</li></ul><ul id="2ab568fa-e39f-8012-8bc1-e25853f5a860" class="bulleted-list"><li style="list-style-type:disc">пользователь объясняет, что он пытался сделать,</li></ul><ul id="2ab568fa-e39f-8078-b8dc-e7500792349e" class="bulleted-list"><li style="list-style-type:disc">саппорт задаёт уточнения,</li></ul><ul id="2ab568fa-e39f-80e2-b12b-ec4d91e54a1b" class="bulleted-list"><li style="list-style-type:disc">куча деталей, разных дат, версий, попыток.</li></ul><p id="2ab568fa-e39f-80a4-aead-e892d5f172c3" class="">Проблемы:</p><ul id="2ab568fa-e39f-80e7-9934-f5d369fda693" class="bulleted-list"><li style="list-style-type:disc">новому агенту сложно влиться и быстро понять, что происходит;</li></ul><ul id="2ab568fa-e39f-801f-a734-f3bcaaa9b091" class="bulleted-list"><li style="list-style-type:disc">хочется:<ul id="2ab568fa-e39f-8025-b59c-d1e4d14e8d4d" class="bulleted-list"><li style="list-style-type:circle"><strong>краткий конспект</strong>: “что вообще произошло?”;</li></ul><ul id="2ab568fa-e39f-808a-8e12-c49e2b1a10b8" class="bulleted-list"><li style="list-style-type:circle"><strong>готовый черновик ответа</strong>, который агент только подправит.</li></ul></li></ul><p id="2ab568fa-e39f-8073-8641-f5fd294d813e" class="">Наша цель:</p><blockquote id="2ab568fa-e39f-8008-b6f6-c853b2b75115" class="">Написать код, который:<ol type="1" id="2ab568fa-e39f-8003-8f2b-f45268e66b82" class="numbered-list" start="1"><li>Берёт сырой диалог (одной строкой или блоком текста).</li></ol><ol type="1" id="2ab568fa-e39f-8065-8e2e-f4f215d903af" class="numbered-list" start="2"><li>Делает короткий summary (2–4 предложения).</li></ol><ol type="1" id="2ab568fa-e39f-80f6-bfac-f9e9d01dfc61" class="numbered-list" start="3"><li>По этому summary генерирует вежливый ответ в стиле саппорта.</li></ol></blockquote><hr id="2ab568fa-e39f-80f0-80a7-eb6e399b2235"/><h2 id="2ab568fa-e39f-80d5-9d0e-f6a246d8b9ad" class="">3. Теория: Summarization и Text Generation (15–20 минут)</h2><h3 id="2ab568fa-e39f-80f7-be50-ebc13df6d611" class="">3.1. Что такое суммаризация</h3><p id="2ab568fa-e39f-8050-b1b5-dcff8c7954ea" class=""><strong>Суммаризация</strong> — это задача: дан длинный текст → нужно сделать короткую версию, сохранив суть.</p><p id="2ab568fa-e39f-803d-bcd1-e846e8c71c4d" class="">Есть два подхода:</p><ul id="2ab568fa-e39f-8007-b0d5-c6c2168c6fd1" class="bulleted-list"><li style="list-style-type:disc"><strong>Extractive</strong> — выбирать “лучшие” предложения из исходного текста (как будто выделяем хайлайты).</li></ul><ul id="2ab568fa-e39f-80ae-9246-d92b74733d6c" class="bulleted-list"><li style="list-style-type:disc"><strong>Abstractive</strong> — модель перефразирует своими словами (именно это делают современные трансформеры типа BART/T5).</li></ul><p id="2ab568fa-e39f-8064-973f-cc0b8af4d0f8" class="">В <code>transformers</code> <code>pipeline(&quot;summarization&quot;)</code> обычно реализует <strong>abstractive summarization</strong>:</p><ul id="2ab568fa-e39f-8040-a77a-c0eb525fe276" class="bulleted-list"><li style="list-style-type:disc">модель читает текст,</li></ul><ul id="2ab568fa-e39f-80bd-8833-f02d0bfba4b4" class="bulleted-list"><li style="list-style-type:disc">генерирует новый, сокращённый текст.</li></ul><h3 id="2ab568fa-e39f-80fa-a79e-d2728571c1cd" class="">3.2. pipeline(&quot;summarization&quot;)</h3><p id="2ab568fa-e39f-808b-9228-c36b9b34db8d" class="">Формат:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802f-a3ba-f3372482aa16" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+summarizer = pipeline(&quot;summarization&quot;, model=&quot;facebook/bart-large-cnn&quot;)
+summary = summarizer(text, max_length=60, min_length=20, do_sample=False)
+</code></pre><p id="2ab568fa-e39f-80cc-b771-eef615e2033d" class="">На выходе обычно:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8007-838a-f3b5fcb4dffd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[{&quot;summary_text&quot;: &quot;...&quot;}]
+</code></pre><p id="2ab568fa-e39f-8093-828e-c7aad68ff5e0" class="">Ключевые аргументы:</p><ul id="2ab568fa-e39f-807c-b24a-f62460f924e4" class="bulleted-list"><li style="list-style-type:disc"><code>max_length</code> — максимальная длина summary (в токенах, но примерно коррелирует с количеством слов/символов);</li></ul><ul id="2ab568fa-e39f-8072-b374-c1a14ee0b698" class="bulleted-list"><li style="list-style-type:disc"><code>min_length</code> — минимальная длина;</li></ul><ul id="2ab568fa-e39f-8003-be2c-fac88def1a6e" class="bulleted-list"><li style="list-style-type:disc"><code>do_sample</code>:<ul id="2ab568fa-e39f-8041-85cd-de5065c0d6a4" class="bulleted-list"><li style="list-style-type:circle"><code>False</code> — детерминированный (beam search);</li></ul><ul id="2ab568fa-e39f-8094-b278-de3fd8aa866e" class="bulleted-list"><li style="list-style-type:circle"><code>True</code> — с рандомом (sampling, можно разнообразить ответы).</li></ul></li></ul><p id="2ab568fa-e39f-804a-8523-fd4a8a3b1cff" class="">Ограничения:</p><ul id="2ab568fa-e39f-8014-8d93-ebe9587fc68e" class="bulleted-list"><li style="list-style-type:disc">модель не любит очень длинные тексты (свыше контекстного окна) → текст будет обрезан/тронктирован;</li></ul><ul id="2ab568fa-e39f-8009-9aa9-e3fbdfbe4f07" class="bulleted-list"><li style="list-style-type:disc">иногда summary получается слишком “общим” или упускает детали → важно правильно задавать длину.</li></ul><h3 id="2ab568fa-e39f-80e1-b9f3-e97273d01a19" class="">3.3. Генерация текста: text-generation / text2text-generation</h3><p id="2ab568fa-e39f-8098-8ef7-d2a5d4c810ee" class=""><strong>Генерация текста</strong> — задача: дан prompt → сгенерировать продолжение/ответ.</p><p id="2ab568fa-e39f-8043-b013-f43d4c93b0e2" class="">В <code>pipeline</code> есть два основных варианта:</p><ul id="2ab568fa-e39f-809d-8856-e2ddf9fe5604" class="bulleted-list"><li style="list-style-type:disc"><strong>&quot;text-generation&quot;</strong> — для <strong>decoder-only</strong> моделей (GPT-style):<ul id="2ab568fa-e39f-801d-9538-ecfecd3691df" class="bulleted-list"><li style="list-style-type:circle">вход: строка,</li></ul><ul id="2ab568fa-e39f-8019-9c22-d6d2f152b7f7" class="bulleted-list"><li style="list-style-type:circle">выход: продолжение.</li></ul></li></ul><ul id="2ab568fa-e39f-8062-82c2-fe470e08925c" class="bulleted-list"><li style="list-style-type:disc"><strong>&quot;text2text-generation&quot;</strong> — для <strong>encoder-decoder</strong> моделей (T5 и похожие):<ul id="2ab568fa-e39f-80be-8503-eca372daa826" class="bulleted-list"><li style="list-style-type:circle">вход: строка-инструкция,</li></ul><ul id="2ab568fa-e39f-8069-afd9-f5cea457527f" class="bulleted-list"><li style="list-style-type:circle">выход: тоже строка, но модель “знает”, что нужно что-то преобразовать (перевести, перефразировать, “ответить”).</li></ul></li></ul><p id="2ab568fa-e39f-805c-8fe3-c3bf9b6486fc" class="">О чём важно сказать:</p><ul id="2ab568fa-e39f-809f-954c-d81460fdb691" class="bulleted-list"><li style="list-style-type:disc">управление генерацией:<ul id="2ab568fa-e39f-80a0-a8e8-dd0acb95a9fd" class="bulleted-list"><li style="list-style-type:circle"><code>max_new_tokens</code> — сколько <strong>новых</strong> токенов генерировать;</li></ul><ul id="2ab568fa-e39f-807b-aa35-f800627f06e1" class="bulleted-list"><li style="list-style-type:circle"><code>temperature</code> — насколько рандомно (0.7 = ок, &gt;1 = хаос);</li></ul><ul id="2ab568fa-e39f-80f8-913e-e3fac51ea8a5" class="bulleted-list"><li style="list-style-type:circle"><code>top_k</code>, <code>top_p</code> — как сильно обрезаем хвост распределения;</li></ul><ul id="2ab568fa-e39f-8075-b3a2-daae719c248f" class="bulleted-list"><li style="list-style-type:circle"><code>do_sample</code>:<ul id="2ab568fa-e39f-8054-b1b6-dc0857302a8e" class="bulleted-list"><li style="list-style-type:square"><code>False</code> → “самый вероятный” ответ (часто скучный/однообразный),</li></ul><ul id="2ab568fa-e39f-80c6-8148-cabce78f5c25" class="bulleted-list"><li style="list-style-type:square"><code>True</code> → вариативность, но возможны странности.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-80ee-9135-fffd161465f7" class="">Мы будем использовать генерацию:</p><ul id="2ab568fa-e39f-80f6-bd7f-f46c78b7f222" class="bulleted-list"><li style="list-style-type:disc">для <strong>черновика ответа</strong> от имени саппорта,</li></ul><ul id="2ab568fa-e39f-8035-9699-e224b196acc5" class="bulleted-list"><li style="list-style-type:disc">на вход давать:<ul id="2ab568fa-e39f-803e-bee1-ef15bb892cc2" class="bulleted-list"><li style="list-style-type:circle">summary диалога,</li></ul><ul id="2ab568fa-e39f-8092-9d9d-cf07fbf77b13" class="bulleted-list"><li style="list-style-type:circle">инструкцию “ты — вежливый сотрудник поддержки…”</li></ul></li></ul><hr id="2ab568fa-e39f-808d-912b-fb9a1fb98afa"/><h2 id="2ab568fa-e39f-80a5-83a9-c8df17d79505" class="">4. Практика. Часть 1: Суммаризация диалога саппорта (25 минут)</h2><h3 id="2ab568fa-e39f-80cf-a6eb-dc9d98a1c4fd" class="">4.1. Подготовим пример диалога</h3><p id="2ab568fa-e39f-80db-903a-ef3ea89d5059" class="">Соберём диалог в виде одной строки (как будто мы склеили лог из чата):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c0-8f2c-f6b02ca32951" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">dialog = &quot;&quot;&quot;
+User: Hi, I updated the app yesterday and since then it keeps crashing whenever I try to open the gallery.
+Support: Thank you for reaching out. Could you tell us your device model and OS version?
+User: I&#x27;m using an iPhone 13 with iOS 17.1. The app version is 5.2.1.
+Support: Thank you. Does the crash happen only in the gallery or also on the home screen?
+User: Only in the gallery when I try to upload or preview images. Home screen works fine.
+Support: Got it. We are aware of an issue with the gallery on iOS 17.1 in version 5.2.1.
+We are working on a fix that should be released this week.
+User: Okay, thanks. It&#x27;s really important for me to upload photos for my work.
+Support: We understand. As a temporary workaround, you can upload photos from the web version.
+User: That&#x27;s not ideal, but I&#x27;ll try. Please let me know when the fix is ready.
+Support: Sure, we will send you a notification once the update is available.
+&quot;&quot;&quot;
+</code></pre><h3 id="2ab568fa-e39f-804a-ac5b-ef38dfa2587f" class="">4.2. Создаём summarization-pipeline</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8011-b388-db045b68458b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+summarizer = pipeline(
+    &quot;summarization&quot;,
+    model=&quot;facebook/bart-large-cnn&quot;,  # популярная модель для суммаризации новостей
+)
+</code></pre><p id="2ab568fa-e39f-809f-a0f9-ec345c422ba5" class="">Поясняем:</p><ul id="2ab568fa-e39f-801e-9cbc-d1ea114f2eb3" class="bulleted-list"><li style="list-style-type:disc">BART-модель хорошо работает для абстрактивной суммаризации;</li></ul><ul id="2ab568fa-e39f-80d5-8c00-c1678749ee50" class="bulleted-list"><li style="list-style-type:disc">мы используем её “из коробки”, без дообучения.</li></ul><h3 id="2ab568fa-e39f-8009-b26c-d07911ff8d97" class="">4.3. Делаем summary диалога</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8073-9696-d7dd27e67a96" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">summary_res = summarizer(
+    dialog,
+    max_length=80,   # ограничиваем длину summary
+    min_length=30,   # хотим хотя бы пару предложений
+    do_sample=False, # детерминированный режим
+)[0]
+
+summary_text = summary_res[&quot;summary_text&quot;]
+print(&quot;SUMMARY:&quot;)
+print(summary_text)
+</code></pre><p id="2ab568fa-e39f-809e-8592-e3e9e8950bca" class="">Разбор:</p><ul id="2ab568fa-e39f-80f4-ac36-c3e764d0aca7" class="bulleted-list"><li style="list-style-type:disc">почему <code>max_length=80</code> и <code>min_length=30</code>:<ul id="2ab568fa-e39f-80b2-a51d-c43cfc7a99cb" class="bulleted-list"><li style="list-style-type:circle">слишком короткое summary может потерять контекст,</li></ul><ul id="2ab568fa-e39f-8097-b3b1-d6ff60a19afe" class="bulleted-list"><li style="list-style-type:circle">слишком длинное → уже не summary, а почти пересказ.</li></ul></li></ul><ul id="2ab568fa-e39f-80ad-87ac-f0b3a21c7146" class="bulleted-list"><li style="list-style-type:disc"><code>do_sample=False</code>:<ul id="2ab568fa-e39f-801c-9c2d-d271903729b7" class="bulleted-list"><li style="list-style-type:circle">хотим устойчивый, воспроизводимый результат,</li></ul><ul id="2ab568fa-e39f-8017-9a0c-c42f7141d5d0" class="bulleted-list"><li style="list-style-type:circle">для саппорта важна стабильность.</li></ul></li></ul><p id="2ab568fa-e39f-8014-a3c5-f116c6315ca7" class="">Типичный summary (примерно по смыслу):</p><blockquote id="2ab568fa-e39f-80c1-a0e1-f8fc33dd9af2" class="">User reports that the app crashes on iOS 17.1 when opening the gallery in version 5.2.1.<p id="2ab568fa-e39f-8050-885c-cae582175349" class="">Support confirms a known issue and promises a fix within a week, suggesting the web version as a temporary workaround.</p></blockquote><p id="2ab568fa-e39f-8067-9880-cc0deca7f60b" class="">Идея понятна: краткая выжимка для агента.</p><h3 id="2ab568fa-e39f-8008-b749-fc316760f6d8" class="">4.4. Оборачиваем в функцию</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8049-9bae-d4487eafe461" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def summarize_dialog(dialog_text: str, max_length: int = 80, min_length: int = 30) -&gt; str:
+    res = summarizer(
+        dialog_text,
+        max_length=max_length,
+        min_length=min_length,
+        do_sample=False,
+    )[0]
+    return res[&quot;summary_text&quot;]
+
+summary_text = summarize_dialog(dialog)
+print(summary_text)
+</code></pre><p id="2ab568fa-e39f-8037-a59b-ffa1830d5baf" class="">Теперь у нас есть переиспользуемая функция, которую дальше будем вызывать из других частей.</p><hr id="2ab568fa-e39f-808c-8297-e1ea7830d39f"/><h2 id="2ab568fa-e39f-800a-ae78-ec637bee26c0" class="">5. Практика. Часть 2: Генерация черновика ответа (25–30 минут)</h2><p id="2ab568fa-e39f-8011-8bf0-df555ab8ffbc" class="">Теперь нужно взять summary и по нему сгенерить <strong>черновик ответа от саппорта</strong>.</p><h3 id="2ab568fa-e39f-80cd-a917-cc408bb339db" class="">5.1. Выбираем модель генерации</h3><p id="2ab568fa-e39f-808d-95f8-ddd8879d3b68" class="">Для примера можно использовать:</p><ul id="2ab568fa-e39f-8069-8ff4-ceeaa090330b" class="bulleted-list"><li style="list-style-type:disc"><code>gpt2</code> (очень базовая английская модель, просто для демонстрации),</li></ul><ul id="2ab568fa-e39f-8083-ab0f-d61b04729dd4" class="bulleted-list"><li style="list-style-type:disc">или любую другую доступную causal-модель.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8048-bc59-e591d4f2ac25" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import pipeline
+
+generator = pipeline(
+    &quot;text-generation&quot;,
+    model=&quot;gpt2&quot;,         # для реальных задач лучше взять более приличную модель
+    max_new_tokens=120,   # ограничиваем длину черновика
+)
+</code></pre><p id="2ab568fa-e39f-804a-b8cf-c34a92ff9d3b" class="">Объясняем ограничения:</p><ul id="2ab568fa-e39f-8006-8760-fe281c9bc5ff" class="bulleted-list"><li style="list-style-type:disc"><code>gpt2</code> не заточен под саппорт, может иногда “ездить по рельсам”;</li></ul><ul id="2ab568fa-e39f-8014-9150-d6be94c4f75d" class="bulleted-list"><li style="list-style-type:disc">в проде нужно:<ul id="2ab568fa-e39f-80e6-8cc1-d15d05b05990" class="bulleted-list"><li style="list-style-type:circle">либо fine-tune,</li></ul><ul id="2ab568fa-e39f-8081-93bf-c3aa825e46bd" class="bulleted-list"><li style="list-style-type:circle">либо использовать модель, обученную на саппорт-стиле.</li></ul></li></ul><p id="2ab568fa-e39f-801f-8fae-f39be596ec4c" class="">Но для курса нам важно понять <strong>механику</strong>.</p><h3 id="2ab568fa-e39f-80e3-8a0d-e5d5418e0744" class="">5.2. Формируем prompt для генерации ответа</h3><p id="2ab568fa-e39f-801e-8672-ff2a4c818537" class="">Мы хотим, чтобы модель:</p><ul id="2ab568fa-e39f-806b-b1a0-c3699efeeb9e" class="bulleted-list"><li style="list-style-type:disc">понимала, что она — <strong>вежливый саппорт</strong>,</li></ul><ul id="2ab568fa-e39f-8000-b8f3-fcaf1f27c668" class="bulleted-list"><li style="list-style-type:disc">имела под рукой summary диалога,</li></ul><ul id="2ab568fa-e39f-8047-939d-e0ac092baef8" class="bulleted-list"><li style="list-style-type:disc">писала короткий, дружелюбный ответ.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802f-a058-d04dc71481ad" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">prompt = f&quot;&quot;&quot;
+You are a polite and helpful customer support agent.
+Here is a summary of the conversation with the user:
+
+{summary_text}
+
+Write a short, friendly reply to the user.
+Acknowledge the issue, explain what will happen next, and mention any temporary workaround.
+Reply in English.
+&quot;&quot;&quot;
+print(prompt)
+</code></pre><p id="2ab568fa-e39f-8091-a07c-e1b18719daed" class="">Можно обсудить, как структура prompt’а влияет на стиль и содержание.</p><h3 id="2ab568fa-e39f-80eb-9ab8-de97a36e35ab" class="">5.3. Генерируем черновик ответа</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f8-9a0c-c6dc5e911206" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">reply_res = generator(
+    prompt,
+    do_sample=True,   # включаем сэмплинг для вариативности
+    top_p=0.9,        # nucleus sampling
+    temperature=0.7,  # немного рандома, но не безумие
+    num_return_sequences=1,
+)[0]
+
+generated_text = reply_res[&quot;generated_text&quot;]
+print(&quot;RAW GENERATED:&quot;)
+print(generated_text)
+</code></pre><p id="2ab568fa-e39f-80ef-b1fa-c92b197a9da9" class="">Скорее всего, <code>generated_text</code> будет содержать:</p><ul id="2ab568fa-e39f-802b-8c06-db9fe672b29e" class="bulleted-list"><li style="list-style-type:disc">наш prompt,</li></ul><ul id="2ab568fa-e39f-80e7-ab6f-e01ff9b9702b" class="bulleted-list"><li style="list-style-type:disc">плюс сгенерированный хвост.</li></ul><p id="2ab568fa-e39f-807b-a122-fd4053ed891d" class="">Поэтому нужно аккуратно вытащить именно <strong>ответ</strong>, а не весь prompt.</p><p id="2ab568fa-e39f-802d-a9de-dfda2a1ce5ed" class="">Простейший способ — выкинуть prompt из начала:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808b-a555-f6dd9ee0f05c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def extract_reply_from_generation(full_text: str, prompt: str) -&gt; str:
+    if full_text.startswith(prompt):
+        return full_text[len(prompt):].strip()
+    # fallback: если модель чуть переписала prompt
+    return full_text.strip()
+
+reply_text = extract_reply_from_generation(generated_text, prompt)
+print(&quot;DRAFT REPLY:&quot;)
+print(reply_text)
+</code></pre><p id="2ab568fa-e39f-80bf-b3ce-cb00968fc88c" class="">Теперь у нас есть именно текст ответа, без повторения инструкции.</p><h3 id="2ab568fa-e39f-80fc-9894-c98ae5abdb4f" class="">5.4. Оборачиваем в функцию</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809a-87cf-f785c433fa69" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def generate_reply(summary: str) -&gt; str:
+    prompt = f&quot;&quot;&quot;
+You are a polite and helpful customer support agent.
+Here is a summary of the conversation with the user:
+
+{summary}
+
+Write a short, friendly reply to the user.
+Acknowledge the issue, explain what will happen next, and mention any temporary workaround.
+Reply in English.
+&quot;&quot;&quot;
+    res = generator(
+        prompt,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+        max_new_tokens=120,
+        num_return_sequences=1,
+    )[0]
+
+    full_text = res[&quot;generated_text&quot;]
+    reply = extract_reply_from_generation(full_text, prompt)
+    return reply
+</code></pre><p id="2ab568fa-e39f-800c-b07f-f7963269c2d0" class="">Тест:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d3-a38e-f661778aabcf" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">summary_text = summarize_dialog(dialog)
+print(&quot;SUMMARY:&quot;)
+print(summary_text)
+print()
+
+draft_reply = generate_reply(summary_text)
+print(&quot;DRAFT REPLY:&quot;)
+print(draft_reply)
+</code></pre><hr id="2ab568fa-e39f-807a-941f-feae9776ee04"/><h2 id="2ab568fa-e39f-80e4-88c5-c95fa75ce6c7" class="">6. Практика. Часть 3: End-to-end функция для саппорта (10–15 минут)</h2><p id="2ab568fa-e39f-8047-b30a-e5d68e9130b2" class="">Теперь собираем всё в одну функцию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80dd-85e7-d40f498fe14a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def prepare_support_reply(dialog_text: str) -&gt; dict:
+    &quot;&quot;&quot;
+    Принимает сырой диалог (строка),
+    возвращает словарь:
+    {
+      &quot;summary&quot;: ...,
+      &quot;reply_draft&quot;: ...,
+    }
+    &quot;&quot;&quot;
+    summary = summarize_dialog(dialog_text)
+    reply = generate_reply(summary)
+    return {
+        &quot;summary&quot;: summary,
+        &quot;reply_draft&quot;: reply,
+    }
+
+if __name__ == &quot;__main__&quot;:
+    result = prepare_support_reply(dialog)
+    print(&quot;=== SUMMARY ===&quot;)
+    print(result[&quot;summary&quot;])
+    print()
+    print(&quot;=== REPLY DRAFT ===&quot;)
+    print(result[&quot;reply_draft&quot;])
+</code></pre><p id="2ab568fa-e39f-8097-8670-f41954df7ebf" class="">Обсуждаем:</p><ul id="2ab568fa-e39f-80b8-a771-e0bdd7e30f03" class="bulleted-list"><li style="list-style-type:disc">в реальном мире:<ul id="2ab568fa-e39f-8074-9560-c6b976e47bda" class="bulleted-list"><li style="list-style-type:circle">summary может показываться агенту сверху карточки тикета;</li></ul><ul id="2ab568fa-e39f-808d-a83e-ea48c53aad6f" class="bulleted-list"><li style="list-style-type:circle">черновик ответа — в текстовом поле, чтобы агент его отредактировал;</li></ul></li></ul><ul id="2ab568fa-e39f-8010-a14f-f9652e02e99f" class="bulleted-list"><li style="list-style-type:disc">модель — это <strong>ассистент</strong>, не “автопилот”:<ul id="2ab568fa-e39f-80a9-a1bf-cbf2472563ad" class="bulleted-list"><li style="list-style-type:circle">всё равно нужен человек, который проверит смысл.</li></ul></li></ul><hr id="2ab568fa-e39f-80b5-9831-c777494212b1"/><h2 id="2ab568fa-e39f-80ae-8f62-f7a2e29ee87c" class="">7. Обсуждение ограничений и улучшений (5–10 минут)</h2><p id="2ab568fa-e39f-80d5-97a4-f9fbbc5754d7" class="">Полезно честно проговорить, где тут слабые места.</p><h3 id="2ab568fa-e39f-8057-bd28-c0ab71ac46df" class="">7.1. Ограничения</h3><ol type="1" id="2ab568fa-e39f-80c0-9ed7-c5261467db09" class="numbered-list" start="1"><li><strong>Длина диалога</strong>:<ul id="2ab568fa-e39f-8090-8e44-d243b15c37f8" class="bulleted-list"><li style="list-style-type:disc">если диалог очень длинный (&gt; контекст модели), часть инфы потеряется;</li></ul><ul id="2ab568fa-e39f-8021-b20e-d2d475d87a31" class="bulleted-list"><li style="list-style-type:disc">что делать:<ul id="2ab568fa-e39f-8016-ad95-c7f0371c0535" class="bulleted-list"><li style="list-style-type:circle">резать диалог на чанки, суммаризировать по частям, потом суммаризировать summary (hierarchical summarization).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80bd-a36b-d1d0fee67158" class="numbered-list" start="2"><li><strong>Качество summary</strong>:<ul id="2ab568fa-e39f-80b9-a1e1-e64bb974fc39" class="bulleted-list"><li style="list-style-type:disc">иногда модель:<ul id="2ab568fa-e39f-801d-9667-da080dd6d8ed" class="bulleted-list"><li style="list-style-type:circle">упускает важные детали,</li></ul><ul id="2ab568fa-e39f-80b6-8790-f5d6100a6d00" class="bulleted-list"><li style="list-style-type:circle">путает, кто что говорил.</li></ul></li></ul><ul id="2ab568fa-e39f-8016-9465-d3d6b1d8ad11" class="bulleted-list"><li style="list-style-type:disc">в саппорте критично перепроверять важные вещи.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8005-9fd9-cf053ca36c03" class="numbered-list" start="3"><li><strong>Генерация ответа</strong>:<ul id="2ab568fa-e39f-800d-bdc8-e4a273a528c4" class="bulleted-list"><li style="list-style-type:disc">модель может:<ul id="2ab568fa-e39f-801f-80f0-e82f7466e4a3" class="bulleted-list"><li style="list-style-type:circle">обещать то, чего компания не делает,</li></ul><ul id="2ab568fa-e39f-80fa-8dd6-cf341b241f86" class="bulleted-list"><li style="list-style-type:circle">придумывать детали (“мы уже выпустили фикc” при том, что нет).</li></ul></li></ul><ul id="2ab568fa-e39f-80fa-9358-f95d48453411" class="bulleted-list"><li style="list-style-type:disc">нужен “safety слой”:<ul id="2ab568fa-e39f-802e-a4d2-ed6f215ac075" class="bulleted-list"><li style="list-style-type:circle">ограничить стиль prompt’ом,</li></ul><ul id="2ab568fa-e39f-803e-b05d-da47f35ad91e" class="bulleted-list"><li style="list-style-type:circle">фильтровать запрещённые фразы,</li></ul><ul id="2ab568fa-e39f-8084-b6b9-e6a1d6cc6c72" class="bulleted-list"><li style="list-style-type:circle">проверять факты.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8028-9d78-c836f639896e" class="numbered-list" start="4"><li><strong>Язык</strong>:<ul id="2ab568fa-e39f-8037-94ad-e506fc46aae0" class="bulleted-list"><li style="list-style-type:disc">мы показали англоязычный пример;</li></ul><ul id="2ab568fa-e39f-80cc-8303-e6dbae9ac80a" class="bulleted-list"><li style="list-style-type:disc">для русского:<ul id="2ab568fa-e39f-8011-8573-d56667312540" class="bulleted-list"><li style="list-style-type:circle">нужен другой summarization-/generation-чекпоинт,</li></ul><ul id="2ab568fa-e39f-80a2-acf4-c6d7a80e48d6" class="bulleted-list"><li style="list-style-type:circle">prompt переписать на русском.</li></ul></li></ul></li></ol><h3 id="2ab568fa-e39f-80ba-86fa-fba8309f80f0" class="">7.2. Идеи для улучшения</h3><ul id="2ab568fa-e39f-8064-a70b-f19a272ba796" class="bulleted-list"><li style="list-style-type:disc">Ограничить prompt:<ul id="2ab568fa-e39f-803d-9880-ffdd8f6c7d69" class="bulleted-list"><li style="list-style-type:circle">“Don&#x27;t invent policies or promises that are not in the summary”.</li></ul></li></ul><ul id="2ab568fa-e39f-80c3-80a4-d91b37c4e9df" class="bulleted-list"><li style="list-style-type:disc">Добавить шаблон:<ul id="2ab568fa-e39f-80a7-8911-c8855282ec12" class="bulleted-list"><li style="list-style-type:circle">“Apologize for the inconvenience” + “Explain current status” + “Suggest workaround” + “Thank the user”.</li></ul></li></ul><ul id="2ab568fa-e39f-803c-81c6-d98e91b8b9f8" class="bulleted-list"><li style="list-style-type:disc">Хранить summary и drafts:<ul id="2ab568fa-e39f-80ec-819d-c51ce3ca3603" class="bulleted-list"><li style="list-style-type:circle">можно использовать их потом как датасет для fine-tuning “саппорт-модели”.</li></ul></li></ul><hr id="2ab568fa-e39f-8009-b593-fa5e11172989"/><h2 id="2ab568fa-e39f-80c0-a2fe-c3f921892ed1" class="">8. Домашнее задание по уроку 1.4</h2><p id="2ab568fa-e39f-803b-aae5-fbb50b9c9b9f" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-8048-b785-c94b0d3afede" class="numbered-list" start="1"><li>Взять <strong>2–3 диалога</strong> (можно придумать, можно анонимизировать реальные):<ul id="2ab568fa-e39f-8016-b626-ebbb5e7c1e01" class="bulleted-list"><li style="list-style-type:disc">минимум 8–10 реплик в каждом.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-804e-9e41-c12782c8f928" class="numbered-list" start="2"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-8078-8afa-da4d3a5ef510" class="bulleted-list"><li style="list-style-type:disc">для каждого диалога считает summary (<code>summarize_dialog</code>),</li></ul><ul id="2ab568fa-e39f-809b-bd1e-d9d82c51503c" class="bulleted-list"><li style="list-style-type:disc">генерирует черновик ответа (<code>generate_reply</code>),</li></ul><ul id="2ab568fa-e39f-804d-8c18-e3bd20f47e37" class="bulleted-list"><li style="list-style-type:disc">сохраняет результат в структуру:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80df-817f-d1a06d80c999" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[
+  {
+    &quot;dialog&quot;: &quot;...&quot;,
+    &quot;summary&quot;: &quot;...&quot;,
+    &quot;reply_draft&quot;: &quot;...&quot;
+  },
+  ...
+]
+</code></pre></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-803d-8e68-d7a320669ce3" class="numbered-list" start="3"><li>Посмотреть глазами на результаты и:<ul id="2ab568fa-e39f-80e1-bfe3-c6e1a16da4ee" class="bulleted-list"><li style="list-style-type:disc">выписать 2–3 случая, где summary адекватен,</li></ul><ul id="2ab568fa-e39f-804e-b437-f7993a59540c" class="bulleted-list"><li style="list-style-type:disc">2–3 случая, где модель лажает (и почему).</li></ul></li></ol><p id="2ab568fa-e39f-804e-af7f-f06c40899c07" class=""><strong>Продвинутая часть (по желанию):</strong></p><ol type="1" id="2ab568fa-e39f-80fe-afd2-fccb591ccba5" class="numbered-list" start="1"><li>Добавить параметризацию:<ul id="2ab568fa-e39f-8015-bab0-e891432e0861" class="bulleted-list"><li style="list-style-type:disc">сделать функцию <code>generate_reply(summary, tone=&quot;neutral&quot; | &quot;friendly&quot; | &quot;formal&quot;)</code>,</li></ul><ul id="2ab568fa-e39f-80cb-8212-f4ae3d596688" class="bulleted-list"><li style="list-style-type:disc">менять prompt в зависимости от <code>tone</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-800f-a502-f8232dd79498" class="numbered-list" start="2"><li>Сделать простейший CLI-интерфейс:<ul id="2ab568fa-e39f-800b-a6bb-e834316f40ec" class="bulleted-list"><li style="list-style-type:disc">скрипт, который:<ul id="2ab568fa-e39f-8048-8897-cabfa80a050d" class="bulleted-list"><li style="list-style-type:circle">читает диалог из файла <code>dialog.txt</code>,</li></ul><ul id="2ab568fa-e39f-8008-91b2-edd690bb296d" class="bulleted-list"><li style="list-style-type:circle">печатает summary,</li></ul><ul id="2ab568fa-e39f-809d-aa0a-f2e494e8bc89" class="bulleted-list"><li style="list-style-type:circle">печатает черновик ответа,</li></ul><ul id="2ab568fa-e39f-80f8-9bda-c984b2b2bec8" class="bulleted-list"><li style="list-style-type:circle">всё это в консоль.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8096-8a06-f4a0c64a5337" class="numbered-list" start="3"><li>Если хочется поиграть:<ul id="2ab568fa-e39f-8020-8961-e1443ccf5f4e" class="bulleted-list"><li style="list-style-type:disc">заменить <code>gpt2</code> на другую open-source модель и сравнить стиль.</li></ul></li></ol><hr id="2ab568fa-e39f-8021-a18a-d0c7c3885aec"/><p id="2ab568fa-e39f-808b-b6e0-e98505743639" class="">Если нужно, дальше можем:</p><ul id="2ab568fa-e39f-806e-94a4-e8664efe298a" class="bulleted-list"><li style="list-style-type:disc">начать <strong>Модуль 2</strong> и разобрать, что под капотом у этих всех <code>pipeline</code> — <code>AutoTokenizer</code>, <code>AutoModelForSequenceClassification</code>, <code>AutoModelForSeq2SeqLM</code> и т.д.,</li></ul><ul id="2ab568fa-e39f-8008-ae90-d2dbff805c0e" class="bulleted-list"><li style="list-style-type:disc">или сделать поверх Модуля 1 один общий <strong>мини-проект</strong>: собрать единый скрипт, который для тикета:<ul id="2ab568fa-e39f-8078-ae0a-ea77738c9d43" class="bulleted-list"><li style="list-style-type:circle">определяет тональность,</li></ul><ul id="2ab568fa-e39f-80df-919a-d4087e163dc2" class="bulleted-list"><li style="list-style-type:circle">эмоции,</li></ul><ul id="2ab568fa-e39f-8003-b512-df7d7815ff56" class="bulleted-list"><li style="list-style-type:circle">извлекает сущности,</li></ul><ul id="2ab568fa-e39f-8047-9142-cebcbb474a77" class="bulleted-list"><li style="list-style-type:circle">ищет ответ в FAQ,</li></ul><ul id="2ab568fa-e39f-80f6-8258-ece846b4fdb3" class="bulleted-list"><li style="list-style-type:circle">и генерирует черновик ответа.</li></ul></li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

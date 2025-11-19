@@ -1,0 +1,870 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 4.2. Метрики, accuracy/F1 и выбор лучшей модели</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8079-9b9a-c85293a8fd15" class="page sans"><header><h1 class="page-title">Урок 4.2. Метрики, accuracy/F1 и выбор лучшей модели</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8049-8cb1-e9be1e4c00f5" class="">Окей, идём дальше — теперь модель не просто “минимально учится”, а мы начинаем <strong>осмысленно смотреть на качество</strong>, а не только на loss 📈</p><p id="2ab568fa-e39f-80ce-a01e-ec2c82fdded8" class="">Сделаю урок 4.2 таким же форматом, как 4.1:</p><p id="2ab568fa-e39f-80ab-9ca9-f72eb00ae5b0" class="">цель → теория → полный код → разбор → домашка.</p><hr id="2ab568fa-e39f-80da-bd9a-d88b12200b38"/><h2 id="2ab568fa-e39f-8015-9000-e48f53d956a6" class="">0. Что мы делаем в этом уроке</h2><p id="2ab568fa-e39f-8073-b956-e95bc7f82259" class=""><strong>Цель урока:</strong></p><ul id="2ab568fa-e39f-8068-91b3-f4da411dc8e2" class="bulleted-list"><li style="list-style-type:disc">Научиться считать метрики качества (accuracy, precision, recall, F1).</li></ul><ul id="2ab568fa-e39f-80a6-84c0-de6e89241af9" class="bulleted-list"><li style="list-style-type:disc">Подключить <code>compute_metrics</code> к <code>Trainer</code>.</li></ul><ul id="2ab568fa-e39f-80aa-97f6-ceb9ff0adf27" class="bulleted-list"><li style="list-style-type:disc">Научиться выбирать <strong>лучшую модель</strong> по нужной метрике:<ul id="2ab568fa-e39f-80d2-b35c-c706a02e538c" class="bulleted-list"><li style="list-style-type:circle"><code>metric_for_best_model=&quot;f1&quot;</code>,</li></ul><ul id="2ab568fa-e39f-80bf-ac2a-e00d8e7277c6" class="bulleted-list"><li style="list-style-type:circle"><code>load_best_model_at_end=True</code>.</li></ul></li></ul><p id="2ab568fa-e39f-80bc-900a-e404f92564c2" class="">В итоге у тебя будет скрипт <code>train_tickets_metrics.py</code>, который:</p><ol type="1" id="2ab568fa-e39f-8088-a1c7-d39a5d4049c8" class="numbered-list" start="1"><li>Обучает модель.</li></ol><ol type="1" id="2ab568fa-e39f-8071-b3bb-cae662d7b547" class="numbered-list" start="2"><li>Считает метрики на валидации.</li></ol><ol type="1" id="2ab568fa-e39f-806c-9a02-c80a148cb5f6" class="numbered-list" start="3"><li>Сохраняет <strong>лучший чекпоинт по F1</strong> и возвращает модель в этом состоянии.</li></ol><hr id="2ab568fa-e39f-80ed-90fb-cec2bc663ef0"/><h2 id="2ab568fa-e39f-80d3-84ae-cbe3a5f871e0" class="">1. Где мы сейчас (контекст)</h2><p id="2ab568fa-e39f-8033-b568-c870dc7685bc" class="">Из предыдущих модулей у нас уже есть:</p><ul id="2ab568fa-e39f-80f3-acac-fe988e12a89d" class="bulleted-list"><li style="list-style-type:disc"><code>tickets.csv</code> с колонками <code>text,label</code>.</li></ul><ul id="2ab568fa-e39f-8049-b87b-f8eac157eb1e" class="bulleted-list"><li style="list-style-type:disc"><code>data_pipeline.py</code> с функцией <code>load_and_prepare_data(...)</code>, которая:<ul id="2ab568fa-e39f-8068-aa16-f362fb8a5e34" class="bulleted-list"><li style="list-style-type:circle">загружает CSV в <code>DatasetDict(train, validation)</code>,</li></ul><ul id="2ab568fa-e39f-8040-a12b-d5e59d21f298" class="bulleted-list"><li style="list-style-type:circle">токенизирует тексты,</li></ul><ul id="2ab568fa-e39f-804b-bb1e-f2617aada3d1" class="bulleted-list"><li style="list-style-type:circle">строит <code>label2id/id2label</code>,</li></ul><ul id="2ab568fa-e39f-8062-afa9-c2a8c7e9f72f" class="bulleted-list"><li style="list-style-type:circle">возвращает <code>tokenized_dataset</code>, <code>tokenizer</code>, <code>data_collator</code>.</li></ul></li></ul><p id="2ab568fa-e39f-803c-98dc-f03f628d6a0f" class="">В уроке 4.1 мы написали <code>train_tickets_basic.py</code>, в котором:</p><ul id="2ab568fa-e39f-808e-b1da-dbce16e06869" class="bulleted-list"><li style="list-style-type:disc">инициализировали <code>AutoModelForSequenceClassification</code> под наши классы,</li></ul><ul id="2ab568fa-e39f-8072-9bcd-cc44d58548ae" class="bulleted-list"><li style="list-style-type:disc">задали <code>TrainingArguments</code>,</li></ul><ul id="2ab568fa-e39f-8049-ac41-cfbffaeb0e79" class="bulleted-list"><li style="list-style-type:disc">создали <code>Trainer</code>,</li></ul><ul id="2ab568fa-e39f-80fe-bc86-cd99d310768d" class="bulleted-list"><li style="list-style-type:disc">вызвали <code>trainer.train()</code> и <code>trainer.save_model(...)</code>.</li></ul><p id="2ab568fa-e39f-8060-904f-f6e92eeaf4fc" class="">Лосс мы уже видели. Теперь хотим видеть <strong>нормальные метрики</strong>.</p><hr id="2ab568fa-e39f-80a9-b529-e1f389f582b8"/><h2 id="2ab568fa-e39f-805b-bd9d-f4cafcebe165" class="">2. Теория: метрики классификации</h2><h3 id="2ab568fa-e39f-8034-8491-ef4ee3548776" class="">2.1. Accuracy</h3><p id="2ab568fa-e39f-802d-b021-cdcd27574f02" class=""><strong>Accuracy</strong> — доля правильно предсказанных примеров:</p><p id="2ab568fa-e39f-8074-92f6-ed4948522a0e" class="">[</p><p id="2ab568fa-e39f-8036-93dd-ef59cc787304" class="">\text{accuracy} = \frac{\text{кол-во верно классифицированных объектов}}{\text{общее кол-во объектов}}</p><p id="2ab568fa-e39f-807a-8c6a-da08134f18a0" class="">]</p><p id="2ab568fa-e39f-80ac-8e90-fa182b6a3b73" class="">Пример:</p><p id="2ab568fa-e39f-8094-b477-fae15b43cf47" class="">Из 100 тикетов модель 90 предсказала правильно → accuracy = 0.9.</p><p id="2ab568fa-e39f-80e3-9713-e4c6b1807e12" class="">Проблема: при <strong>несбалансированных классах</strong> accuracy может врать.</p><p id="2ab568fa-e39f-80bb-98c0-c22c7d247cbc" class="">Пример:</p><ul id="2ab568fa-e39f-806c-a5ee-fae9596aae87" class="bulleted-list"><li style="list-style-type:disc">95% тикетов — класс <code>other</code>,</li></ul><ul id="2ab568fa-e39f-80dd-8b94-d0547cb2f982" class="bulleted-list"><li style="list-style-type:disc">5% — <code>billing</code>.<p id="2ab568fa-e39f-8002-8d6f-ea6f2988504a" class="">Модель всегда говорит <code>other</code>:</p></li></ul><ul id="2ab568fa-e39f-801e-a79a-e1a75c0c7bbc" class="bulleted-list"><li style="list-style-type:disc">accuracy = 95%,</li></ul><ul id="2ab568fa-e39f-80ac-8104-fbdf63a5e60b" class="bulleted-list"><li style="list-style-type:disc">но по факту она <strong>никогда</strong> не видит <code>billing</code>.</li></ul><h3 id="2ab568fa-e39f-808a-beab-e4e41f50da73" class="">2.2. Precision, Recall и F1 (на пальцах)</h3><p id="2ab568fa-e39f-80c2-9057-ed673846ee5e" class="">Рассмотрим один класс, например <code>billing</code>.</p><ul id="2ab568fa-e39f-8049-9ebd-e597593089f1" class="bulleted-list"><li style="list-style-type:disc"><strong>Precision</strong> (точность):<ul id="2ab568fa-e39f-8039-98df-f9d0bdc0caee" class="bulleted-list"><li style="list-style-type:circle">из всего, что модель назвала <code>billing</code>, какая доля <strong>действительно billing</strong>?</li></ul><ul id="2ab568fa-e39f-809f-8a02-d88efc7de340" class="bulleted-list"><li style="list-style-type:circle">“насколько грязный у нас предсказанный класс” (много ли “мусора”).</li></ul></li></ul><ul id="2ab568fa-e39f-80ea-b700-c4aa8371ec8c" class="bulleted-list"><li style="list-style-type:disc"><strong>Recall</strong> (полнота):<ul id="2ab568fa-e39f-80d6-8c9f-edc938d3bb9a" class="bulleted-list"><li style="list-style-type:circle">из всех настоящих <code>billing</code> в данных какую долю модель поймала?</li></ul><ul id="2ab568fa-e39f-801e-8d0b-f469d6195ff0" class="bulleted-list"><li style="list-style-type:circle">“сколько объектов мы <strong>пропустили</strong>”.</li></ul></li></ul><p id="2ab568fa-e39f-8081-bd92-f6ffdac568d5" class="">Иногда важнее:</p><ul id="2ab568fa-e39f-800d-9d63-cad91cc6b55b" class="bulleted-list"><li style="list-style-type:disc">не пропускать <code>billing</code> (высокий recall),</li></ul><ul id="2ab568fa-e39f-8077-8289-c572bd09f4ea" class="bulleted-list"><li style="list-style-type:disc">иногда — не “заливать” всё подряд в <code>billing</code> (высокий precision).</li></ul><p id="2ab568fa-e39f-800a-a795-f3f06231fd2d" class=""><strong>F1</strong> объединяет Precision и Recall:</p><p id="2ab568fa-e39f-809b-b6a3-dad2fe01df55" class="">[</p><p id="2ab568fa-e39f-80c4-b2c4-c55234639957" class="">F1 = 2 \cdot \frac{precision \cdot recall}{precision + recall}</p><p id="2ab568fa-e39f-809a-9990-e3107d20cebb" class="">]</p><p id="2ab568fa-e39f-809d-8e0e-d1ba2b063282" class="">Если один из них близок к нулю → F1 тоже низкий.</p><h3 id="2ab568fa-e39f-807e-935a-fa3919829a73" class="">2.3. Macro-F1 vs Weighted-F1</h3><p id="2ab568fa-e39f-8071-806e-f8e6edf56933" class="">В много классовых задачах (bug/feature/billing/other) можно:</p><ul id="2ab568fa-e39f-801d-ac75-c62e6f6e537d" class="bulleted-list"><li style="list-style-type:disc">считать F1 <strong>по каждому классу</strong>, а потом усреднять:<ul id="2ab568fa-e39f-802c-94df-f24b73984da1" class="bulleted-list"><li style="list-style-type:circle"><strong>macro-F1</strong> — среднее арифметическое по всем классам (каждый класс важен одинаково),</li></ul><ul id="2ab568fa-e39f-80ed-99b7-d082f86a8255" class="bulleted-list"><li style="list-style-type:circle"><strong>weighted-F1</strong> — среднее, где каждый класс взвешен по своей доле в данных.</li></ul></li></ul><ul id="2ab568fa-e39f-80e8-a9ce-de8af7ce7966" class="bulleted-list"><li style="list-style-type:disc">Если классы несбалансированы, <code>weighted</code> часто более “стабильный”.</li></ul><ul id="2ab568fa-e39f-8080-96b7-dc791343205c" class="bulleted-list"><li style="list-style-type:disc"><code>macro</code> помогает понять, не проваливаем ли мы редкие классы.</li></ul><p id="2ab568fa-e39f-80d9-a3ec-e9e4bf4be24d" class="">В этом уроке будем использовать <strong>weighted F1</strong> как “основную” метрику.</p><h3 id="2ab568fa-e39f-8078-9f64-d6f4fa6f2d95" class="">2.4. Почему одного loss мало</h3><p id="2ab568fa-e39f-8014-84a9-c7e975468777" class="">Loss — это сигнал для обучения, но:</p><ul id="2ab568fa-e39f-80a6-b373-fa4c6971c19e" class="bulleted-list"><li style="list-style-type:disc">он не всегда интуитивен,</li></ul><ul id="2ab568fa-e39f-80d0-9cca-f6ef474fe153" class="bulleted-list"><li style="list-style-type:disc">можно получить похожий loss, но разные метрики,</li></ul><ul id="2ab568fa-e39f-80bc-8a94-eb1e42ae0df5" class="bulleted-list"><li style="list-style-type:disc">особенно при несбалансированных классах.</li></ul><p id="2ab568fa-e39f-80ca-86c4-cef37c5799be" class="">Поэтому:</p><ul id="2ab568fa-e39f-808e-8357-d9c00f6949b8" class="bulleted-list"><li style="list-style-type:disc">для оптимизации — loss,</li></ul><ul id="2ab568fa-e39f-8086-909a-c566bc2ccbbc" class="bulleted-list"><li style="list-style-type:disc">для оценки качества — accuracy, F1 и другие метрики.</li></ul><hr id="2ab568fa-e39f-8099-a235-daa11c4c4957"/><h2 id="2ab568fa-e39f-8071-a69c-c29a97b4d951" class="">3. Теория: compute_metrics и выбор лучшей модели</h2><h3 id="2ab568fa-e39f-8042-a3d9-d8bca3fd3dd1" class="">3.1. Как Trainer передаёт предсказания в compute_metrics</h3><p id="2ab568fa-e39f-80f9-9a85-f4520339912f" class="">Trainer при eval делает примерно следующее:</p><ol type="1" id="2ab568fa-e39f-8089-a8d3-ec5904293efb" class="numbered-list" start="1"><li>Прогоняет eval-датасет через модель → собирает <code>logits</code> и <code>labels</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80c5-8b36-d04306e838da" class="numbered-list" start="2"><li>Формирует объект <code>EvalPrediction</code>, в котором:<ul id="2ab568fa-e39f-8064-b437-ee97e01a3414" class="bulleted-list"><li style="list-style-type:disc"><code>predictions</code> — logits (или уже прогнозы),</li></ul><ul id="2ab568fa-e39f-80f9-9ecb-ee22ea17d394" class="bulleted-list"><li style="list-style-type:disc"><code>label_ids</code> — истинные метки.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e2-afc2-f14e5df07be5" class="numbered-list" start="3"><li>Передаёт этот объект в <code>compute_metrics</code>.</li></ol><p id="2ab568fa-e39f-80cc-9b1a-ebeb50a40099" class="">Мы можем писать функцию как:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cb-a4e8-fa7467aac280" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    ...
+</code></pre><p id="2ab568fa-e39f-80ad-8b29-d2b1e30cf4db" class="">(так как <code>EvalPrediction</code> распаковывается в <code>(predictions, label_ids)</code>).</p><p id="2ab568fa-e39f-802f-8919-ca617adaec4f" class="">Дальше:</p><ul id="2ab568fa-e39f-8013-b311-fcb996de49ee" class="bulleted-list"><li style="list-style-type:disc"><code>logits</code> размерностью <code>[num_samples, num_labels]</code>,</li></ul><ul id="2ab568fa-e39f-8087-91bb-e6c97e4635b0" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code> размерностью <code>[num_samples]</code>.</li></ul><p id="2ab568fa-e39f-805c-a5c9-d705325b2fa9" class="">Наша задача:</p><ul id="2ab568fa-e39f-807f-8226-c96180a7b97f" class="bulleted-list"><li style="list-style-type:disc">взять <code>argmax</code> по логитам → предсказанный класс,</li></ul><ul id="2ab568fa-e39f-8037-bf25-cd7c5d3acbc6" class="bulleted-list"><li style="list-style-type:disc">посчитать метрики (<code>accuracy</code>, <code>f1</code>, и т.п.),</li></ul><ul id="2ab568fa-e39f-8030-86cf-e0fb3b69ac01" class="bulleted-list"><li style="list-style-type:disc">вернуть их в виде словаря.</li></ul><p id="2ab568fa-e39f-80f0-9bb6-c42675783a0d" class="">Trainer потом:</p><ul id="2ab568fa-e39f-804b-9124-cbfcd8c21f69" class="bulleted-list"><li style="list-style-type:disc">записывает эти метрики в лог,</li></ul><ul id="2ab568fa-e39f-8010-bb55-caad1d83fab6" class="bulleted-list"><li style="list-style-type:disc">может использовать одну из них как <code>metric_for_best_model</code>.</li></ul><h3 id="2ab568fa-e39f-8079-985f-e10f6d7aeda1" class="">3.2. metric_for_best_model и load_best_model_at_end</h3><p id="2ab568fa-e39f-80b3-abf9-ed73cbbf4124" class="">В <code>TrainingArguments</code> есть параметры:</p><ul id="2ab568fa-e39f-80a1-ad89-c3e6d4635ef2" class="bulleted-list"><li style="list-style-type:disc"><code>metric_for_best_model=&quot;f1&quot;</code> — какую метрику использовать для выбора лучшей модели;</li></ul><ul id="2ab568fa-e39f-80bd-96ed-ccfd9be9856c" class="bulleted-list"><li style="list-style-type:disc"><code>greater_is_better=True</code> — больше — лучше; если False, то меньше — лучше (для лосса, например);</li></ul><ul id="2ab568fa-e39f-8011-8634-c9f859d5519c" class="bulleted-list"><li style="list-style-type:disc"><code>load_best_model_at_end=True</code> — в конце обучения Trainer:<ul id="2ab568fa-e39f-80d0-847d-f71b0fab6005" class="bulleted-list"><li style="list-style-type:circle">найдёт чекпоинт с <strong>лучшим значением метрики</strong>,</li></ul><ul id="2ab568fa-e39f-8060-a119-f92e6b003412" class="bulleted-list"><li style="list-style-type:circle">загрузит его веса в <code>trainer.model</code>.</li></ul></li></ul><p id="2ab568fa-e39f-808d-a164-fcc8d9fb21ed" class="">То есть:</p><ul id="2ab568fa-e39f-80fd-8687-c6b3f27973d4" class="bulleted-list"><li style="list-style-type:disc">даже если модель “под конец” переобучилась и стала хуже,</li></ul><ul id="2ab568fa-e39f-808e-98ff-cfae4447b66b" class="bulleted-list"><li style="list-style-type:disc">после обучения у тебя в <code>trainer.model</code> будут <strong>веса лучшего чекпоинта</strong>.</li></ul><hr id="2ab568fa-e39f-80d6-8190-fa157e5284da"/><h2 id="2ab568fa-e39f-80b0-8f11-e4e4901b2537" class="">4. Полный код урока: <code>train_tickets_metrics.py</code></h2><p id="2ab568fa-e39f-80ac-ab4b-f40fd85a15e3" class="">Сначала — <strong>полный скрипт</strong>, потом разбор.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8007-afd6-e36ed3957168" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># train_tickets_metrics.py
+
+import numpy as np
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+
+from transformers import (
+    AutoModelForSequenceClassification,
+    TrainingArguments,
+    Trainer,
+)
+from data_pipeline import load_and_prepare_data
+
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+
+    # 1. Предсказанный класс — argmax по логитам
+    preds = np.argmax(logits, axis=-1)
+
+    # 2. Accuracy
+    acc = accuracy_score(labels, preds)
+
+    # 3. Precision, Recall, F1 (weighted)
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels,
+        preds,
+        average=&quot;weighted&quot;,
+        zero_division=0,  # чтобы не падать, если какой-то класс не предсказался
+    )
+
+    return {
+        &quot;accuracy&quot;: acc,
+        &quot;f1&quot;: f1,
+        &quot;precision&quot;: precision,
+        &quot;recall&quot;: recall,
+    }
+
+
+def main():
+    csv_path = &quot;tickets.csv&quot;
+    base_model_name = &quot;distilbert-base-uncased&quot;
+
+    # 1. Данные
+    (
+        tokenized_dataset,
+        label2id,
+        id2label,
+        tokenizer,
+        data_collator,
+    ) = load_and_prepare_data(
+        csv_path=csv_path,
+        model_name=base_model_name,
+        max_length=128,
+        test_size=0.1,
+        seed=42,
+    )
+
+    # 2. Модель
+    num_labels = len(label2id)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        base_model_name,
+        num_labels=num_labels,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    # 3. Аргументы обучения (теперь с выбором лучшей модели)
+    training_args = TrainingArguments(
+        output_dir=&quot;checkpoints/tickets_metrics&quot;,
+        evaluation_strategy=&quot;epoch&quot;,
+        save_strategy=&quot;epoch&quot;,
+        learning_rate=2e-5,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=32,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        logging_steps=50,
+        load_best_model_at_end=True,   # &lt;--- теперь включено
+        metric_for_best_model=&quot;f1&quot;,    # &lt;--- по какой метрике выбирать чекпоинт
+        greater_is_better=True,        # &lt;--- F1: чем больше, тем лучше
+    )
+
+    # 4. Trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset[&quot;train&quot;],
+        eval_dataset=tokenized_dataset[&quot;validation&quot;],
+        tokenizer=tokenizer,
+        data_collator=data_collator,
+        compute_metrics=compute_metrics,
+    )
+
+    # 5. Обучение
+    trainer.train()
+
+    # 6. Итоговая оценка на валидации
+    metrics = trainer.evaluate()
+    print(&quot;Final eval metrics:&quot;, metrics)
+
+    # 7. Сохраняем лучшую модель + токенизатор
+    final_model_dir = &quot;models/tickets_classifier_f1&quot;
+    trainer.save_model(final_model_dir)
+    tokenizer.save_pretrained(final_model_dir)
+
+    # 8. Можно посмотреть, какой чекпоинт признан лучшим
+    print(&quot;Best model checkpoint:&quot;, trainer.state.best_model_checkpoint)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><hr id="2ab568fa-e39f-8085-bae0-e969e246f82d"/><h2 id="2ab568fa-e39f-80a0-94a2-c1281bfd1e59" class="">5. Разбираем код урока 4.2 по кускам</h2><h3 id="2ab568fa-e39f-8023-b613-c51345dd4e83" class="">5.1. compute_metrics</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c3-a310-d06ce658d4d2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+
+    preds = np.argmax(logits, axis=-1)
+
+    acc = accuracy_score(labels, preds)
+
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        labels,
+        preds,
+        average=&quot;weighted&quot;,
+        zero_division=0,
+    )
+
+    return {
+        &quot;accuracy&quot;: acc,
+        &quot;f1&quot;: f1,
+        &quot;precision&quot;: precision,
+        &quot;recall&quot;: recall,
+    }
+</code></pre><p id="2ab568fa-e39f-8045-9c39-ce2a8b64e551" class="">Что здесь происходит:</p><ul id="2ab568fa-e39f-800a-b98d-f1c488f41818" class="bulleted-list"><li style="list-style-type:disc"><code>eval_pred</code> — это <code>EvalPrediction</code>, который мы распаковываем как <code>(logits, labels)</code>.</li></ul><ul id="2ab568fa-e39f-8089-ada7-dccb754e9d40" class="bulleted-list"><li style="list-style-type:disc"><code>logits</code> — numpy-массив, shape <code>[num_samples, num_labels]</code>.</li></ul><ul id="2ab568fa-e39f-8082-a62a-d44bf5f8c639" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code> — numpy-массив, shape <code>[num_samples]</code> (истинные ID классов).</li></ul><ul id="2ab568fa-e39f-80e3-942f-d88df6837837" class="bulleted-list"><li style="list-style-type:disc"><code>np.argmax(logits, axis=-1)</code>:<ul id="2ab568fa-e39f-80f4-8332-d05bc215a457" class="bulleted-list"><li style="list-style-type:circle">для каждого примера выбираем индекс класса с максимальным логитом → предсказанный класс.</li></ul></li></ul><ul id="2ab568fa-e39f-8016-b71f-cc1c035504bd" class="bulleted-list"><li style="list-style-type:disc"><code>accuracy_score</code> — стандартная функция из sklearn.</li></ul><ul id="2ab568fa-e39f-8073-adbd-e0b81e3358be" class="bulleted-list"><li style="list-style-type:disc"><code>precision_recall_fscore_support</code>:<ul id="2ab568fa-e39f-8039-80c6-d658203599a8" class="bulleted-list"><li style="list-style-type:circle">считает precision, recall, F1 (и поддержку — количество примеров каждого класса),</li></ul><ul id="2ab568fa-e39f-8014-8413-c75edb87f96e" class="bulleted-list"><li style="list-style-type:circle"><code>average=&quot;weighted&quot;</code>:<ul id="2ab568fa-e39f-8042-a991-cdb3caeb9f75" class="bulleted-list"><li style="list-style-type:square">считается F1 по каждому классу,</li></ul><ul id="2ab568fa-e39f-8010-9623-e7e5144ca0fc" class="bulleted-list"><li style="list-style-type:square">потом усредняется с весами = доле класса в данных,</li></ul></li></ul><ul id="2ab568fa-e39f-80bf-8cf5-ec9369c661c8" class="bulleted-list"><li style="list-style-type:circle"><code>zero_division=0</code>:<ul id="2ab568fa-e39f-8037-957b-f4b42d3a38d7" class="bulleted-list"><li style="list-style-type:square">если вдруг модель ни разу не предсказала какой-то класс (или не встретила его в предсказаниях/лейблах) — избежать деления на ноль и падения.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-80c2-86d2-e75d737c4edc" class="">Возвращаем словарь — Trainer ожидает именно его. Ключи (<code>&quot;accuracy&quot;</code>, <code>&quot;f1&quot;</code> и т.д.) потом можно использовать в <code>metric_for_best_model</code>.</p><hr id="2ab568fa-e39f-808c-8dca-f41ee5149815"/><h3 id="2ab568fa-e39f-80e4-b893-f7eefe4535fc" class="">5.2. TrainingArguments: load_best_model_at_end, metric_for_best_model</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8058-8564-fa6ed04cf594" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = TrainingArguments(
+    output_dir=&quot;checkpoints/tickets_metrics&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=2e-5,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=32,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    logging_steps=50,
+    load_best_model_at_end=True,   # Важно
+    metric_for_best_model=&quot;f1&quot;,    # Важно
+    greater_is_better=True,        # Для F1 это логично
+)
+</code></pre><p id="2ab568fa-e39f-804e-b1f3-d14226593bb7" class="">Тут важные добавления по сравнению с 4.1:</p><ul id="2ab568fa-e39f-8053-b14b-dbcaa51af802" class="bulleted-list"><li style="list-style-type:disc"><code>load_best_model_at_end=True</code>:<ul id="2ab568fa-e39f-80d9-9914-d6b830fdd549" class="bulleted-list"><li style="list-style-type:circle">Trainer будет отслеживать значение метрики (по <code>metric_for_best_model</code>) после каждого eval,</li></ul><ul id="2ab568fa-e39f-80d3-9536-f5267b8a701b" class="bulleted-list"><li style="list-style-type:circle">в конце он загрузит веса <strong>лучшего чекпоинта</strong> в <code>trainer.model</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-80f2-9549-c0b234572c72" class="bulleted-list"><li style="list-style-type:disc"><code>metric_for_best_model=&quot;f1&quot;</code>:<ul id="2ab568fa-e39f-8032-b3dc-efc41876cd77" class="bulleted-list"><li style="list-style-type:circle">мы выбрали <code>&#x27;f1&#x27;</code> — ключ из словаря <code>compute_metrics</code>,</li></ul><ul id="2ab568fa-e39f-80c7-9d8c-ef45c897aabc" class="bulleted-list"><li style="list-style-type:circle">можно было выбрать <code>&quot;accuracy&quot;</code> или другой ключ.</li></ul></li></ul><ul id="2ab568fa-e39f-80d1-bc03-e5d67196f307" class="bulleted-list"><li style="list-style-type:disc"><code>greater_is_better=True</code>:<ul id="2ab568fa-e39f-8037-8072-ef4f891c38a6" class="bulleted-list"><li style="list-style-type:circle">для F1 (и accuracy) всё логично — чем больше, тем лучше.</li></ul><ul id="2ab568fa-e39f-8041-9f84-e8944119f2f3" class="bulleted-list"><li style="list-style-type:circle">если бы мы выбрали <code>eval_loss</code>, нужно было бы поставить <code>False</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8049-a6a5-caf548a9858b" class="">Итого:</p><ul id="2ab568fa-e39f-80f4-bbb8-e6d888163bac" class="bulleted-list"><li style="list-style-type:disc">Если, например:<ul id="2ab568fa-e39f-80c1-a796-e6734afd6a3d" class="bulleted-list"><li style="list-style-type:circle">epoch 1: F1 = 0.75,</li></ul><ul id="2ab568fa-e39f-80a7-a151-c7d91f864874" class="bulleted-list"><li style="list-style-type:circle">epoch 2: F1 = 0.80,</li></ul><ul id="2ab568fa-e39f-8032-bd63-e6ec61363c97" class="bulleted-list"><li style="list-style-type:circle">epoch 3: F1 = 0.78,</li></ul></li></ul><ul id="2ab568fa-e39f-80be-8249-f6b434b29d70" class="bulleted-list"><li style="list-style-type:disc">То лучшим чекпоинтом будет <strong>epoch 2</strong>, и в конце именно его веса окажутся в <code>trainer.model</code>.</li></ul><hr id="2ab568fa-e39f-8071-b197-f67d3d6ad7b6"/><h3 id="2ab568fa-e39f-80fd-b634-e84fff965813" class="">5.3. trainer.evaluate и best_model_checkpoint</h3><p id="2ab568fa-e39f-80b8-9284-e6f0c934fd68" class="">После обучения:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8033-b92b-f6e424992573" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">metrics = trainer.evaluate()
+print(&quot;Final eval metrics:&quot;, metrics)
+</code></pre><ul id="2ab568fa-e39f-8076-a627-f5dbc46e657b" class="bulleted-list"><li style="list-style-type:disc"><code>trainer.evaluate()</code> ещё раз прогоняет eval-датасет:<ul id="2ab568fa-e39f-80c6-814f-c81f693dd48f" class="bulleted-list"><li style="list-style-type:circle">возвращает словарь с:<ul id="2ab568fa-e39f-8041-9de8-f6f46b7f2ed1" class="bulleted-list"><li style="list-style-type:square"><code>eval_loss</code>,</li></ul><ul id="2ab568fa-e39f-808f-aa22-debeef6efc6f" class="bulleted-list"><li style="list-style-type:square"><code>eval_accuracy</code>, <code>eval_f1</code>, <code>eval_precision</code>, <code>eval_recall</code> (если есть <code>compute_metrics</code>),</li></ul><ul id="2ab568fa-e39f-80c7-b105-e174886c09bf" class="bulleted-list"><li style="list-style-type:square">возможно, <code>eval_runtime</code>, <code>eval_samples_per_second</code> и т.п.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-8039-953c-c3e3fbf6527f" class="">Затем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b7-b901-f8da9a451ce5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">final_model_dir = &quot;models/tickets_classifier_f1&quot;
+trainer.save_model(final_model_dir)
+tokenizer.save_pretrained(final_model_dir)
+</code></pre><p id="2ab568fa-e39f-801d-9090-f1e0e9be095f" class="">Сохраняем уже <strong>лучшую</strong> модель (с лучшим F1), потому что:</p><ul id="2ab568fa-e39f-8064-933a-ce0d1b96a02a" class="bulleted-list"><li style="list-style-type:disc">мы включили <code>load_best_model_at_end=True</code>,</li></ul><ul id="2ab568fa-e39f-8072-984f-dd443199a752" class="bulleted-list"><li style="list-style-type:disc">к моменту вызова <code>save_model</code> внутри <code>trainer.model</code> уже загружен лучший чекпоинт.</li></ul><p id="2ab568fa-e39f-80b1-962e-f5f398c8f418" class="">И напоследок:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bb-8c46-e1ddce56a190" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(&quot;Best model checkpoint:&quot;, trainer.state.best_model_checkpoint)
+</code></pre><p id="2ab568fa-e39f-80dd-a4b9-eed5c5d48a48" class="">Эта строка покажет путь к чекпоинту, который был признан лучшим, например:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c9-9694-d591a7065e2c" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Best model checkpoint: checkpoints/tickets_metrics/checkpoint-500
+</code></pre><p id="2ab568fa-e39f-80d8-b7fe-e4d4785cdbc0" class="">Так ты можешь убедиться, что:</p><ul id="2ab568fa-e39f-80fa-a98c-f6a227bfd2e0" class="bulleted-list"><li style="list-style-type:disc">лучшая модель, может, и не последняя по шагам,</li></ul><ul id="2ab568fa-e39f-8086-88fd-ef268a4f35ed" class="bulleted-list"><li style="list-style-type:disc">но именно она сохранена как финальная.</li></ul><hr id="2ab568fa-e39f-80ee-a1f9-f9ccad8fa0c0"/><h2 id="2ab568fa-e39f-80fd-a747-f9d955223076" class="">6. Как интерпретировать метрики</h2><p id="2ab568fa-e39f-8010-a8cd-d41b01bfa43e" class="">После запуска <code>train_tickets_metrics.py</code> ты увидишь в конце что-то вроде:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d6-8fd2-f0595a3cf32c" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Final eval metrics: {
+  &#x27;eval_loss&#x27;: 0.45,
+  &#x27;eval_accuracy&#x27;: 0.86,
+  &#x27;eval_f1&#x27;: 0.85,
+  &#x27;eval_precision&#x27;: 0.86,
+  &#x27;eval_recall&#x27;: 0.86,
+  ...
+}
+Best model checkpoint: checkpoints/tickets_metrics/checkpoint-xxx
+</code></pre><p id="2ab568fa-e39f-8010-b320-eb487013ec5f" class="">Что с этим делать:</p><ol type="1" id="2ab568fa-e39f-80af-a65c-ce5eb3a8898f" class="numbered-list" start="1"><li>Смотреть не только на accuracy, но и на F1:<ul id="2ab568fa-e39f-8057-a801-c6106b3c1fad" class="bulleted-list"><li style="list-style-type:disc">если сильно несбалансированные классы — F1 лучше отражает реальность.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80af-a2c3-fa67f07570f5" class="numbered-list" start="2"><li>Обращать внимание на разницу между:<ul id="2ab568fa-e39f-8079-9e6f-ed538f281378" class="bulleted-list"><li style="list-style-type:disc">train метриками (если ты их логгируешь, например, через TensorBoard),</li></ul><ul id="2ab568fa-e39f-8030-947f-d595b3cc7ace" class="bulleted-list"><li style="list-style-type:disc">eval метриками.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8086-89ca-e28ca1da4a1a" class="numbered-list" start="3"><li>Если:<ul id="2ab568fa-e39f-80b7-b49a-c7aeb1be7ef8" class="bulleted-list"><li style="list-style-type:disc">train F1 высокое, eval F1 низкое → переобучение,</li></ul><ul id="2ab568fa-e39f-80ef-8bcd-c6430894abb6" class="bulleted-list"><li style="list-style-type:disc">обе низкие → недообучение / мало данных / неправильные гиперпараметры.</li></ul></li></ol><hr id="2ab568fa-e39f-80ae-9c64-e0f7a6cecfd7"/><h2 id="2ab568fa-e39f-8089-a2ab-da82c60cf2ef" class="">7. Домашка по уроку 4.2</h2><p id="2ab568fa-e39f-808c-a577-fe06c1b9e58c" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-8030-8bdf-faffbc838356" class="numbered-list" start="1"><li>Взять свой <code>tickets.csv</code> и запустить <code>train_tickets_metrics.py</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80aa-abcc-c807659caa77" class="numbered-list" start="2"><li>Записать финальные:<ul id="2ab568fa-e39f-80ec-b737-fe7d56e23991" class="bulleted-list"><li style="list-style-type:disc"><code>eval_accuracy</code>,</li></ul><ul id="2ab568fa-e39f-800f-8211-c635ca572239" class="bulleted-list"><li style="list-style-type:disc"><code>eval_f1</code>,</li></ul><ul id="2ab568fa-e39f-80c0-8df1-d2013e0d6ad7" class="bulleted-list"><li style="list-style-type:disc"><code>eval_precision</code>,</li></ul><ul id="2ab568fa-e39f-80e4-aa92-c27a9de48c2f" class="bulleted-list"><li style="list-style-type:disc"><code>eval_recall</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8063-b3cc-d33c7560a9e8" class="numbered-list" start="3"><li>Поменять <code>metric_for_best_model</code>:<ul id="2ab568fa-e39f-8048-9e81-d90575dbe894" class="bulleted-list"><li style="list-style-type:disc">сначала <code>metric_for_best_model=&quot;accuracy&quot;</code>,</li></ul><ul id="2ab568fa-e39f-8028-9878-f4d69144e7bb" class="bulleted-list"><li style="list-style-type:disc">потом <code>&quot;f1&quot;</code>,</li></ul><ul id="2ab568fa-e39f-80cf-bde6-e357ac36c958" class="bulleted-list"><li style="list-style-type:disc">в обоих случаях оставить <code>load_best_model_at_end=True</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-801f-a990-dad625c2c9f9" class="numbered-list" start="4"><li>Сравнить:<ul id="2ab568fa-e39f-80b8-974c-fbd7e78edf59" class="bulleted-list"><li style="list-style-type:disc">какой чекпоинт выбирается как лучший в каждом случае (посмотреть <code>trainer.state.best_model_checkpoint</code>),</li></ul><ul id="2ab568fa-e39f-80d6-9edc-e330dd2769df" class="bulleted-list"><li style="list-style-type:disc">отличаются ли финальные метрики в <code>trainer.evaluate()</code>.</li></ul></li></ol><p id="2ab568fa-e39f-80f8-be64-e5dea0b69d9d" class=""><strong>Опциональная часть (чуть хардкор):</strong></p><ol type="1" id="2ab568fa-e39f-8095-8708-ff75d4e0e040" class="numbered-list" start="1"><li>Попробуй немного <strong>искусственно разбалансировать</strong> датасет:<ul id="2ab568fa-e39f-8093-ba58-ddc9348ca66e" class="bulleted-list"><li style="list-style-type:disc">сделать так, чтобы, например, класс <code>bug</code> встречался намного чаще остальных;</li></ul><ul id="2ab568fa-e39f-8038-9d99-fc274d452015" class="bulleted-list"><li style="list-style-type:disc">обучить модель и посмотреть:<ul id="2ab568fa-e39f-802f-922a-fb011921133d" class="bulleted-list"><li style="list-style-type:circle">accuracy,</li></ul><ul id="2ab568fa-e39f-805f-a2a5-edfa43171405" class="bulleted-list"><li style="list-style-type:circle">weighted-F1,</li></ul><ul id="2ab568fa-e39f-802d-aad6-f57124c8a412" class="bulleted-list"><li style="list-style-type:circle">(если захочешь) macro-F1 (<code>average=&quot;macro&quot;</code> в <code>precision_recall_fscore_support</code>).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8048-b269-f97e2ce2748b" class="numbered-list" start="2"><li>Попробовать использовать <code>macro</code> F1:<ul id="2ab568fa-e39f-800f-aff3-c4bba33ded5c" class="bulleted-list"><li style="list-style-type:disc">добавить в <code>compute_metrics</code> ещё одну метрику <code>&quot;macro_f1&quot;</code>,</li></ul><ul id="2ab568fa-e39f-8072-bc85-e53cf7c06a36" class="bulleted-list"><li style="list-style-type:disc">один запуск сделать с <code>metric_for_best_model=&quot;macro_f1&quot;</code>.</li></ul></li></ol><hr id="2ab568fa-e39f-8053-9b4a-db2ea8a53ce3"/><p id="2ab568fa-e39f-80e9-ab76-e5a54f030c0e" class="">Если хочешь, дальше могу:</p><ul id="2ab568fa-e39f-80f7-9407-fc70a62889ce" class="bulleted-list"><li style="list-style-type:disc">так же развернуть <strong>урок 4.3</strong> (логирование, warmup, анализ переобучения),</li></ul><ul id="2ab568fa-e39f-80d6-bf30-e0cdae1b0dfb" class="bulleted-list"><li style="list-style-type:disc">или на основе 4.1 + 4.2 собрать отдельный <strong>скрипт </strong><code><strong>predict.py</strong></code>, который:<ul id="2ab568fa-e39f-801d-a03a-f5e700b8ab66" class="bulleted-list"><li style="list-style-type:circle">загружает модель из <code>models/tickets_classifier_f1</code>,</li></ul><ul id="2ab568fa-e39f-8044-841c-daa6a2ac01cd" class="bulleted-list"><li style="list-style-type:circle">читает текст из <code>input()</code>,</li></ul><ul id="2ab568fa-e39f-80ca-9ce9-d569de3c9671" class="bulleted-list"><li style="list-style-type:circle">печатает класс и уверенность.</li></ul></li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

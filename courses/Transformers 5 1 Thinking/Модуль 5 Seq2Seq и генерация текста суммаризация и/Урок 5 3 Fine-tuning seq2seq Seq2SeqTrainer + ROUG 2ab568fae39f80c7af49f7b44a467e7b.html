@@ -1,0 +1,897 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 5.3. Fine-tuning seq2seq: Seq2SeqTrainer + ROUGE</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80c7-af49-f7b44a467e7b" class="page sans"><header><h1 class="page-title">Урок 5.3. Fine-tuning seq2seq: <code>Seq2SeqTrainer</code> + ROUGE</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-806e-9e45-ed152e79138e" class="">Окей, вот тут уже начинается “взрослая жизнь” для твоего summarizer’а 😎</p><p id="2ab568fa-e39f-80e5-a38b-f55c43332d8c" class="">Сейчас из голого датасета <code>dialog → summary</code> сделаем <strong>настоящий fine-tuning seq2seq модели</strong> с ROUGE, <code>Seq2SeqTrainer</code> и выбором лучшего чекпоинта.</p><hr id="2ab568fa-e39f-8087-bfe2-f177e4796458"/><h2 id="2ab568fa-e39f-8005-948b-d3a34a57f396" class="">1. Цель урока</h2><p id="2ab568fa-e39f-80d3-984d-df36148b497f" class="">После этого урока ученик умеет:</p><ul id="2ab568fa-e39f-8049-830d-c7677101cf02" class="bulleted-list"><li style="list-style-type:disc">использовать <code><strong>Seq2SeqTrainer</strong></code> для обучения суммаризатора;</li></ul><ul id="2ab568fa-e39f-8091-86d1-e447b87f403f" class="bulleted-list"><li style="list-style-type:disc">правильно настраивать <code><strong>Seq2SeqTrainingArguments</strong></code>, включая:<ul id="2ab568fa-e39f-802f-adc7-f6e39f7e7640" class="bulleted-list"><li style="list-style-type:circle"><code>predict_with_generate</code>,</li></ul><ul id="2ab568fa-e39f-803f-8b51-ff1d9be3fd6a" class="bulleted-list"><li style="list-style-type:circle"><code>generation_max_length</code>,</li></ul><ul id="2ab568fa-e39f-80e9-a6fc-fe65cf1c43fa" class="bulleted-list"><li style="list-style-type:circle"><code>generation_num_beams</code>,</li></ul><ul id="2ab568fa-e39f-8076-b990-d9f4fd5d13a9" class="bulleted-list"><li style="list-style-type:circle">выбор метрики для лучшей модели;</li></ul></li></ul><ul id="2ab568fa-e39f-8017-ac96-c331e8a40e5c" class="bulleted-list"><li style="list-style-type:disc">считать <strong>ROUGE-метрики</strong> (rouge1, rouge2, rougeL) для суммаризации;</li></ul><ul id="2ab568fa-e39f-80ea-9b7c-d2ce0eeb22f2" class="bulleted-list"><li style="list-style-type:disc">сохранять обученную модель и вызывать <code>trainer.evaluate()</code> и <code>trainer.predict()</code>.</li></ul><p id="2ab568fa-e39f-8076-a0ea-f9e2a36dcc6d" class="">Всё это — на нашем кейсе:</p><blockquote id="2ab568fa-e39f-80f1-95bd-f075f39584a1" class="">dialog (диалог user ↔ support) → summary (короткое резюме).</blockquote><p id="2ab568fa-e39f-8015-8dae-ee2553d08886" class="">Мы <strong>опираемся</strong> на предыдущий урок:</p><ul id="2ab568fa-e39f-800a-add1-d2ddee391581" class="bulleted-list"><li style="list-style-type:disc">у нас уже есть:<ul id="2ab568fa-e39f-80a7-81c5-da73d4ce7ec1" class="bulleted-list"><li style="list-style-type:circle"><code>tokenized_dataset</code> с полями <code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>,</li></ul><ul id="2ab568fa-e39f-80bd-ad41-f184ef70fbee" class="bulleted-list"><li style="list-style-type:circle"><code>DataCollatorForSeq2Seq</code>,</li></ul><ul id="2ab568fa-e39f-80df-ba51-d117ae2cf135" class="bulleted-list"><li style="list-style-type:circle"><code>AutoTokenizer</code> и <code>AutoModelForSeq2SeqLM</code> под конкретную модель (например, BART).</li></ul></li></ul><hr id="2ab568fa-e39f-80c1-aea1-c68e3451bc20"/><h2 id="2ab568fa-e39f-8089-a8ee-f58012b81f3e" class="">2. Теория: чем <code>Seq2SeqTrainer</code> отличается от обычного <code>Trainer</code></h2><p id="2ab568fa-e39f-808f-afa4-d1eb5799df08" class="">По сути, это “Trainer, но с плюшками для seq2seq”.</p><p id="2ab568fa-e39f-8021-a59c-f9a79159f95b" class="">Главные отличия:</p><ol type="1" id="2ab568fa-e39f-80be-8456-d24558c6c7d6" class="numbered-list" start="1"><li><code><strong>predict_with_generate=True</strong></code><p id="2ab568fa-e39f-8082-af19-eaa8663ad043" class="">При eval/<code>predict()</code> Trainer:</p><ul id="2ab568fa-e39f-800a-95d6-f4e4c347ad34" class="bulleted-list"><li style="list-style-type:disc">не просто считает loss,</li></ul><ul id="2ab568fa-e39f-80df-afb3-c9b799e9e8a7" class="bulleted-list"><li style="list-style-type:disc">но и вызывает <code>.generate()</code>:<ul id="2ab568fa-e39f-801e-8b5a-e0bb68464798" class="bulleted-list"><li style="list-style-type:circle">получаем <strong>реальные предсказанные тексты</strong>, а не только logits.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-805b-aa77-c4dada51ed1c" class="numbered-list" start="2"><li><strong>Спец-аргументы генерации</strong><p id="2ab568fa-e39f-802d-b1b1-e1a5aef48f98" class="">В <code>Seq2SeqTrainingArguments</code> есть:</p><ul id="2ab568fa-e39f-80ff-95a7-dee0cf3bd480" class="bulleted-list"><li style="list-style-type:disc"><code>generation_max_length</code>,</li></ul><ul id="2ab568fa-e39f-808a-b03a-c35aca762501" class="bulleted-list"><li style="list-style-type:disc"><code>generation_num_beams</code>,<p id="2ab568fa-e39f-80bd-bf7f-f8e7420ee30b" class="">которые используются <strong>во время eval</strong> для генерации предсказаний.</p></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-805b-98a8-e0e0c2277d7d" class="numbered-list" start="3"><li><strong>Обработка </strong><code><strong>labels</strong></code><ul id="2ab568fa-e39f-805c-b243-d21be3f764c5" class="bulleted-list"><li style="list-style-type:disc">seq2seq-модель ожидает <code>labels</code> в виде токенов таргета;</li></ul><ul id="2ab568fa-e39f-8095-a7f1-d7b0e1231543" class="bulleted-list"><li style="list-style-type:disc">паддинг в labels должен быть <code>100</code>,</li></ul><ul id="2ab568fa-e39f-806c-9a22-ffc0e6f61684" class="bulleted-list"><li style="list-style-type:disc">при вычислении метрик нам нужно:<ul id="2ab568fa-e39f-80b4-bb63-d283d6c1e571" class="bulleted-list"><li style="list-style-type:circle">заменить <code>100</code> обратно на <code>pad_token_id</code>,</li></ul><ul id="2ab568fa-e39f-80ce-855e-feaf4af2d93a" class="bulleted-list"><li style="list-style-type:circle">декодировать в строки.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-801d-97df-f624b18c7ebc" class="numbered-list" start="4"><li><strong>Метрики по текстам, а не по классам</strong><ul id="2ab568fa-e39f-80db-95df-e541a41fc1a8" class="bulleted-list"><li style="list-style-type:disc">для классификации мы считали accuracy/F1 по id-шникам;</li></ul><ul id="2ab568fa-e39f-80e6-912c-e0324e148820" class="bulleted-list"><li style="list-style-type:disc">для суммаризации — считаем <strong>ROUGE</strong> по строкам.</li></ul></li></ol><hr id="2ab568fa-e39f-80bc-a014-f6d9e64d75c4"/><h2 id="2ab568fa-e39f-8076-bdac-d42a0c645a6d" class="">3. Подготовка окружения и данных</h2><h3 id="2ab568fa-e39f-80e4-a928-cd17ea836838" class="">3.1. Библиотеки</h3><p id="2ab568fa-e39f-80f7-920a-cd6afd5de98a" class="">Нам нужны:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d0-9ec7-c72a6fb6a1d6" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install transformers datasets accelerate evaluate rouge_score
+</code></pre><p id="2ab568fa-e39f-8068-a16d-fdfd85dd1f43" class="">Особенно важны:</p><ul id="2ab568fa-e39f-80f8-96af-c5664697fbca" class="bulleted-list"><li style="list-style-type:disc"><code>evaluate</code> — удобный интерфейс к метрикам,</li></ul><ul id="2ab568fa-e39f-8036-8196-c89ead3605c5" class="bulleted-list"><li style="list-style-type:disc"><code>rouge_score</code> — сама реализация ROUGE (часто подтягивается автоматически, но лучше сразу поставить).</li></ul><h3 id="2ab568fa-e39f-8024-8855-f992eab8271e" class="">3.2. Стартовый код: данные, токенизатор, модель, collator</h3><p id="2ab568fa-e39f-80c6-894a-f2ee6e1c54ef" class="">Предположим, что <strong>код урока 5.2 уже отработал</strong>, и мы перенесём его сюда в компактном виде.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a5-8491-e66e7686132f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import numpy as np
+from datasets import load_dataset, DatasetDict
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM,
+    DataCollatorForSeq2Seq,
+    Seq2SeqTrainingArguments,
+    Seq2SeqTrainer,
+)
+import evaluate
+import torch
+</code></pre><h3 id="2ab568fa-e39f-8078-b944-f8c7e2b876e3" class="">Загружаем датасет</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80fb-a68f-cd5a4465a9cb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># 1. Загружаем CSV с dialog/summary
+raw = load_dataset(&quot;csv&quot;, data_files=&quot;dialogs.csv&quot;)[&quot;train&quot;]
+
+# 2. Делим на train/validation
+split = raw.train_test_split(test_size=0.1, seed=42)
+dataset = DatasetDict(
+    {
+        &quot;train&quot;: split[&quot;train&quot;],
+        &quot;validation&quot;: split[&quot;test&quot;],
+    }
+)
+</code></pre><h3 id="2ab568fa-e39f-80ab-adb7-f5e03a6c0645" class="">Загружаем токенизатор и модель</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8061-9eb6-d63a162b8f10" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model_name = &quot;facebook/bart-large-cnn&quot;  # или свой чекпоинт
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+</code></pre><h3 id="2ab568fa-e39f-80e4-947f-fe36356e9949" class="">Функция препроцессинга (из 5.2)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8057-8eca-ca772082edc9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">max_input_length = 512
+max_target_length = 64
+
+def preprocess_function(batch):
+    inputs = batch[&quot;dialog&quot;]
+    targets = batch[&quot;summary&quot;]
+
+    # Токенизация входа
+    model_inputs = tokenizer(
+        inputs,
+        max_length=max_input_length,
+        truncation=True,
+    )
+
+    # Токенизация таргетов
+    labels = tokenizer(
+        text_target=targets,
+        max_length=max_target_length,
+        truncation=True,
+    )
+
+    model_inputs[&quot;labels&quot;] = labels[&quot;input_ids&quot;]
+    return model_inputs
+
+tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=[&quot;dialog&quot;, &quot;summary&quot;],
+)
+</code></pre><h3 id="2ab568fa-e39f-8059-ba07-fc9c4bec2edc" class="">DataCollatorForSeq2Seq</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8061-82ad-d77be48d5aa9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">data_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    model=model,
+    label_pad_token_id=-100,
+)
+</code></pre><p id="2ab568fa-e39f-80a3-8701-dc1c86d4fd1e" class="">На этом моменте у нас есть:</p><ul id="2ab568fa-e39f-8057-ae18-edb69b39e060" class="bulleted-list"><li style="list-style-type:disc"><code>tokenized_dataset[&quot;train&quot;]</code> и <code>[&quot;validation&quot;]</code> с <code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>;</li></ul><ul id="2ab568fa-e39f-80b3-82a5-e17bc386db3f" class="bulleted-list"><li style="list-style-type:disc">collator, который:<ul id="2ab568fa-e39f-805d-a786-f14252fcbf4b" class="bulleted-list"><li style="list-style-type:circle">паддит <code>input_ids</code> и <code>labels</code> внутри батча,</li></ul><ul id="2ab568fa-e39f-80a1-8936-fe17a0ceafd2" class="bulleted-list"><li style="list-style-type:circle">заменяет паддинг в labels на <code>100</code>.</li></ul></li></ul><hr id="2ab568fa-e39f-803e-8f32-e731cae45b4b"/><h2 id="2ab568fa-e39f-80ed-b7cf-e74fb8f7d2ef" class="">4. ROUGE-метрика через библиотеку <code>evaluate</code></h2><h3 id="2ab568fa-e39f-80aa-a0c7-c86f1a506c14" class="">4.1. Что такое ROUGE на интуитивном уровне</h3><p id="2ab568fa-e39f-8096-b8c4-fcd1cfdadcc3" class="">ROUGE измеряет <strong>перекрытие n-грамм</strong> между:</p><ul id="2ab568fa-e39f-80ad-b7a8-f6d42f5f4fee" class="bulleted-list"><li style="list-style-type:disc">предсказанным summary,</li></ul><ul id="2ab568fa-e39f-80d6-9aa5-c4c15c5ca694" class="bulleted-list"><li style="list-style-type:disc">эталонным (reference) summary.</li></ul><p id="2ab568fa-e39f-801b-b587-fdb7aaceecc2" class="">Чаще всего смотрят:</p><ul id="2ab568fa-e39f-8078-9108-ff6266b59a17" class="bulleted-list"><li style="list-style-type:disc"><code>rouge1</code> — пересечение по униграммам,</li></ul><ul id="2ab568fa-e39f-80f2-b64d-c095bad8babc" class="bulleted-list"><li style="list-style-type:disc"><code>rouge2</code> — по биграммам,</li></ul><ul id="2ab568fa-e39f-80ef-9bc6-c56392c0c9d5" class="bulleted-list"><li style="list-style-type:disc"><code>rougeL</code> — по “Longest Common Subsequence” (длиннейшая общая подпоследовательность).</li></ul><p id="2ab568fa-e39f-8065-97be-e32e4833f5e6" class="">Задача — не запомнить формулы, а понимать:</p><blockquote id="2ab568fa-e39f-804e-b7d9-e62e8ce40bae" class="">Чем ближе сгенерированное резюме к эталонному по словам/фразам, тем выше ROUGE.</blockquote><h3 id="2ab568fa-e39f-80fa-94fe-e352a57bb91a" class="">4.2. Загружаем метрику</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8053-8a00-f3fd44b11c79" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">rouge = evaluate.load(&quot;rouge&quot;)
+</code></pre><p id="2ab568fa-e39f-804a-9758-cf3205cedb97" class="">Эта штука берёт на вход список <code>predictions</code> и список <code>references</code> (строки), и возвращает словарь с метриками.</p><hr id="2ab568fa-e39f-80ed-be85-cd1e774300d8"/><h2 id="2ab568fa-e39f-8041-b8f3-f146d3b17e41" class="">5. Функция <code>compute_metrics</code> для seq2seq</h2><p id="2ab568fa-e39f-80e0-921e-c90a3f5965b5" class="">Trainer будет нам передавать объект <code>EvalPrediction</code>, который логически содержит:</p><ul id="2ab568fa-e39f-8034-9e15-d0b07f7b0145" class="bulleted-list"><li style="list-style-type:disc"><code>predictions</code> — массив предсказаний;</li></ul><ul id="2ab568fa-e39f-8026-b639-e0de3d253aac" class="bulleted-list"><li style="list-style-type:disc"><code>label_ids</code> — массив истинных label’ов.</li></ul><p id="2ab568fa-e39f-80b8-8125-d3e27a6d2d8a" class="">Но для seq2seq:</p><ul id="2ab568fa-e39f-8079-b89d-ed28a0c0063e" class="bulleted-list"><li style="list-style-type:disc"><code>predictions</code> — это <strong>token IDs</strong> (результат <code>.generate()</code>, если <code>predict_with_generate=True</code>);</li></ul><ul id="2ab568fa-e39f-80a2-ba29-ffe051312298" class="bulleted-list"><li style="list-style-type:disc"><code>label_ids</code> — это токены эталонных summary, где паддинг заменён на <code>100</code>.</li></ul><p id="2ab568fa-e39f-80ea-aa89-d0677fe3581a" class="">Наша задача:</p><ol type="1" id="2ab568fa-e39f-8065-8440-c149c7090967" class="numbered-list" start="1"><li>Превратить оба массива в <strong>списки строк</strong>:<ul id="2ab568fa-e39f-808c-9fc6-fe1ac90765ed" class="bulleted-list"><li style="list-style-type:disc">декодируем по токенизатору;</li></ul><ul id="2ab568fa-e39f-8031-99ae-d0a386104033" class="bulleted-list"><li style="list-style-type:disc">убираем спец-токены;</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-802c-b3eb-eaf5a62e36f5" class="numbered-list" start="2"><li>Передать их в <code>rouge.compute</code>.</li></ol><h3 id="2ab568fa-e39f-80c1-9962-e34710953d3b" class="">5.1. Постобработка текстов</h3><p id="2ab568fa-e39f-80ef-b91e-d7e2008b21c4" class="">Маленький хелпер:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804a-815f-cdff7aa13ebd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def postprocess_text(preds, labels):
+    # Убираем пробелы по краям
+    preds = [p.strip() for p in preds]
+    labels = [l.strip() for l in labels]
+
+    return preds, labels
+</code></pre><h3 id="2ab568fa-e39f-80a2-a46f-caad3ae6cd23" class="">5.2. Полная <code>compute_metrics</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807b-b387-ef9c250ee3d8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+
+    # Seq2SeqTrainer иногда возвращает predictions как tuple
+    if isinstance(predictions, tuple):
+        predictions = predictions[0]
+
+    # Декодируем предсказания
+    decoded_preds = tokenizer.batch_decode(
+        predictions,
+        skip_special_tokens=True,
+    )
+
+    # labels: заменяем -100 на pad_token_id, чтобы можно было декодировать
+    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+
+    decoded_labels = tokenizer.batch_decode(
+        labels,
+        skip_special_tokens=True,
+    )
+
+    # Чистим пробелы
+    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+
+    # Считаем ROUGE
+    result = rouge.compute(
+        predictions=decoded_preds,
+        references=decoded_labels,
+        use_stemmer=True,
+    )
+    # result содержит rouge1, rouge2, rougeL, rougeLsum
+    # Каждая метрика там — объект с полями precision/recall/fmeasure.
+    result = {key: value.mid.fmeasure for key, value in result.items()}
+
+    # Отдельно посчитаем среднюю длину предсказаний
+    prediction_lens = [
+        np.count_nonzero(pred != tokenizer.pad_token_id) for pred in predictions
+    ]
+    result[&quot;gen_len&quot;] = np.mean(prediction_lens)
+
+    return result
+</code></pre><p id="2ab568fa-e39f-80e5-a2a9-d08b0abc1e98" class=""><strong>Пояснения:</strong></p><ul id="2ab568fa-e39f-80fb-8ad2-e3c7dbfae2b6" class="bulleted-list"><li style="list-style-type:disc"><code>batch_decode</code> превращает последовательности индексов в строки.</li></ul><ul id="2ab568fa-e39f-80a4-9ca5-e169ec388b61" class="bulleted-list"><li style="list-style-type:disc"><code>np.where(labels != -100, labels, tokenizer.pad_token_id)</code>:<ul id="2ab568fa-e39f-8052-928f-d225ae5f45f0" class="bulleted-list"><li style="list-style-type:circle">на местах <code>100</code> ставим <code>pad_token_id</code>,</li></ul><ul id="2ab568fa-e39f-8030-a41c-f94901d33e13" class="bulleted-list"><li style="list-style-type:circle">иначе невозможно декодировать (tokenizer не знает, что такое -100).</li></ul></li></ul><ul id="2ab568fa-e39f-808e-b4ab-e908a697c40e" class="bulleted-list"><li style="list-style-type:disc"><code>rouge.compute</code> с <code>use_stemmer=True</code>:<ul id="2ab568fa-e39f-8049-a351-cba5896fb854" class="bulleted-list"><li style="list-style-type:circle">стемминг (режет слова до основы) помогает чуть устойчивее считать метрику.</li></ul></li></ul><hr id="2ab568fa-e39f-800a-af11-ed5849c982d8"/><h2 id="2ab568fa-e39f-8032-b309-c7cab5763ba9" class="">6. Настраиваем <code>Seq2SeqTrainingArguments</code></h2><p id="2ab568fa-e39f-800e-844b-d530f13e4f1c" class="">Теперь надо определиться, как мы хотим обучать модель:</p><ul id="2ab568fa-e39f-8065-9204-ecafde0516b8" class="bulleted-list"><li style="list-style-type:disc">сколько эпох,</li></ul><ul id="2ab568fa-e39f-8056-b0e2-d71120038231" class="bulleted-list"><li style="list-style-type:disc">размер батча,</li></ul><ul id="2ab568fa-e39f-8042-9cdd-cd589eb229b3" class="bulleted-list"><li style="list-style-type:disc">лернинг-рейт,</li></ul><ul id="2ab568fa-e39f-80cf-a50b-daef0e9f492a" class="bulleted-list"><li style="list-style-type:disc">как и когда запускать eval,</li></ul><ul id="2ab568fa-e39f-80ee-af1e-fec6acdb330f" class="bulleted-list"><li style="list-style-type:disc">как именно генерировать на eval.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8013-aae3-e4fc8db8fdd5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">training_args = Seq2SeqTrainingArguments(
+    output_dir=&quot;checkpoints/dialog_summarizer&quot;,
+    evaluation_strategy=&quot;epoch&quot;,     # оцениваем в конце каждой эпохи
+    save_strategy=&quot;epoch&quot;,           # сохраняем чекпоинт в конце каждой эпохи
+    learning_rate=3e-5,
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=8,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
+    logging_steps=50,
+    predict_with_generate=True,      # ВАЖНО: при eval генерируем текст
+    generation_max_length=64,        # макс. длина summary при eval
+    generation_num_beams=4,          # beam search для eval
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;rougeL&quot;,  # по какой метрике выбирать лучшую модель
+    greater_is_better=True,          # чем выше rougeL, тем лучше
+    save_total_limit=3,              # хранить не более 3 чекпоинтов
+)
+</code></pre><p id="2ab568fa-e39f-80b3-a15a-e9dfae4a625a" class=""><strong>Разбираем ключевые аргументы:</strong></p><ul id="2ab568fa-e39f-8032-877a-ebe3063c6f06" class="bulleted-list"><li style="list-style-type:disc"><code>evaluation_strategy=&quot;epoch&quot;</code> — запускать <code>trainer.evaluate()</code> после каждой эпохи (можно <code>&quot;steps&quot;</code> и настроить <code>eval_steps</code>).</li></ul><ul id="2ab568fa-e39f-80fd-8ae3-da7315c98224" class="bulleted-list"><li style="list-style-type:disc"><code>predict_with_generate=True</code> — без этого seq2seq-метрики не имеют смысла:<ul id="2ab568fa-e39f-808a-938a-c46321320bf6" class="bulleted-list"><li style="list-style-type:circle">Trainer просто вернёт logits, а не сгенерированные IDS.</li></ul></li></ul><ul id="2ab568fa-e39f-8059-8ece-efc2c571f2af" class="bulleted-list"><li style="list-style-type:disc"><code>generation_max_length</code> / <code>generation_num_beams</code>:<ul id="2ab568fa-e39f-802b-a742-ebda0140b51e" class="bulleted-list"><li style="list-style-type:circle">влияют на то, как <strong>во время eval</strong> будет работать <code>.generate()</code>.</li></ul><ul id="2ab568fa-e39f-8076-8cda-c662541bbfd1" class="bulleted-list"><li style="list-style-type:circle">могут отличаться от параметров, которые ты используешь в проде, но обычно совпадают.</li></ul></li></ul><ul id="2ab568fa-e39f-8083-8cbe-e833d0529723" class="bulleted-list"><li style="list-style-type:disc"><code>metric_for_best_model=&quot;rougeL&quot;</code>:<ul id="2ab568fa-e39f-8050-82f2-ec1e70eaf417" class="bulleted-list"><li style="list-style-type:circle">из <code>compute_metrics</code> берётся ключ <code>&quot;rougeL&quot;</code>,</li></ul><ul id="2ab568fa-e39f-8037-9a2b-c141d635bf9c" class="bulleted-list"><li style="list-style-type:circle">по нему выбирается лучший чекпоинт.</li></ul></li></ul><ul id="2ab568fa-e39f-80f8-96bf-ea5358aab4ad" class="bulleted-list"><li style="list-style-type:disc"><code>load_best_model_at_end=True</code>:<ul id="2ab568fa-e39f-800d-b1e1-d18b7bbc04d0" class="bulleted-list"><li style="list-style-type:circle">после <code>trainer.train()</code> внутри <code>trainer.model</code> будет модель <strong>с лучшим rougeL</strong>, а не последняя по времени.</li></ul></li></ul><hr id="2ab568fa-e39f-8055-ab0c-d4d64ce9daf1"/><h2 id="2ab568fa-e39f-8067-ad0c-e6390042d946" class="">7. Собираем <code>Seq2SeqTrainer</code> и запускаем обучение</h2><p id="2ab568fa-e39f-80aa-9f8c-c14f28f24077" class="">Теперь всё склеиваем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8083-8193-d31ab6990688" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer = Seq2SeqTrainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_dataset[&quot;train&quot;],
+    eval_dataset=tokenized_dataset[&quot;validation&quot;],
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    compute_metrics=compute_metrics,
+)
+</code></pre><p id="2ab568fa-e39f-80a9-9cc0-c673f5de4913" class="">И запускаем обучение:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c8-b74a-f53fc851229e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">trainer.train()
+</code></pre><p id="2ab568fa-e39f-805a-b9c3-edd8750be32b" class="">Во время тренировки:</p><ul id="2ab568fa-e39f-80ee-8a94-c65fb8f52a5b" class="bulleted-list"><li style="list-style-type:disc">Trainer:<ul id="2ab568fa-e39f-806b-9b97-c19ec3744d8e" class="bulleted-list"><li style="list-style-type:circle">делает шаги:<ul id="2ab568fa-e39f-808a-9f98-e339b63ef22e" class="bulleted-list"><li style="list-style-type:square">вперёд/назад,</li></ul><ul id="2ab568fa-e39f-80fb-88d6-cad9e8d08a8b" class="bulleted-list"><li style="list-style-type:square">оптимайзер,</li></ul><ul id="2ab568fa-e39f-80e4-ac3d-d037e13b4c33" class="bulleted-list"><li style="list-style-type:square">scheduler (warmup и т.д.).</li></ul></li></ul><ul id="2ab568fa-e39f-8081-973a-fc1289c46b15" class="bulleted-list"><li style="list-style-type:circle">сохраняет чекпоинты после каждой эпохи,</li></ul><ul id="2ab568fa-e39f-80c4-a644-cfb2ccdb5508" class="bulleted-list"><li style="list-style-type:circle">считает ROUGE на валидации,</li></ul><ul id="2ab568fa-e39f-80f8-988a-cc600b97b766" class="bulleted-list"><li style="list-style-type:circle">выбирает лучший чекпоинт по <code>rougeL</code>.</li></ul></li></ul><p id="2ab568fa-e39f-8038-afd7-dcd00cd8b9a0" class="">После тренировки:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8075-a396-dd52904a7aac" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">metrics = trainer.evaluate()
+print(&quot;Final eval metrics:&quot;, metrics)
+</code></pre><p id="2ab568fa-e39f-80b7-8cc1-cdc8f785a584" class="">Ожидаем, что там будут ключи типа:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8064-9583-cfba72000af2" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">{
+  &#x27;eval_loss&#x27;: ...,
+  &#x27;eval_rouge1&#x27;: ...,
+  &#x27;eval_rouge2&#x27;: ...,
+  &#x27;eval_rougeL&#x27;: ...,
+  &#x27;eval_rougeLsum&#x27;: ...,
+  &#x27;eval_gen_len&#x27;: ...,
+  &#x27;epoch&#x27;: ...
+}
+</code></pre><h3 id="2ab568fa-e39f-80a7-ab20-ca040c1fbf82" class="">7.1. Сохраняем модель и токенизатор</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bb-a946-c90773b2d73c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">output_dir = &quot;models/dialog_summarizer_finetuned&quot;
+
+trainer.save_model(output_dir)
+tokenizer.save_pretrained(output_dir)
+</code></pre><p id="2ab568fa-e39f-801e-9839-cd221a38d777" class="">Теперь эта папка — твой <strong>готовый чекпоинт</strong>:</p><ul id="2ab568fa-e39f-807f-b271-f2686276520d" class="bulleted-list"><li style="list-style-type:disc">можно грузить в другом скрипте,</li></ul><ul id="2ab568fa-e39f-8076-a8ad-d523a107220f" class="bulleted-list"><li style="list-style-type:disc">использовать для суммаризации диалогов,</li></ul><ul id="2ab568fa-e39f-80b7-8c6a-d31a0e240808" class="bulleted-list"><li style="list-style-type:disc">заливать на Hugging Face Hub (если захочешь).</li></ul><hr id="2ab568fa-e39f-809e-9387-d2a2cbacbb08"/><h2 id="2ab568fa-e39f-8031-8897-e322dd6ae5a8" class="">8. Быстрый тест инференса обученной модели</h2><p id="2ab568fa-e39f-8098-9a48-d55a118f8a8c" class="">Чтобы замкнуть цикл, покажем, как <strong>после обучения</strong> использовать модель “как в 5.1, но уже дообученную”.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8098-a697-c99dfb6ffb57" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def summarize_dialog(dialog: str, model_dir: str) -&gt; str:
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_dir)
+
+    device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+    model.to(device)
+
+    inputs = tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=64,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+        )
+
+    return tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+
+if __name__ == &quot;__main__&quot;:
+    dialog_example = &quot;&quot;&quot;
+    User: Hi, the app started crashing after the last update whenever I open the gallery.
+    Support: Sorry about that. Could you tell me your device and OS version?
+    User: It&#x27;s a Samsung S21, Android 14, app version 5.2.1.
+    Support: Thanks! Does it crash anywhere else or only in the gallery?
+    User: Only in the gallery when I try to upload or preview images.
+    &quot;&quot;&quot;
+
+    model_dir = &quot;models/dialog_summarizer_finetuned&quot;
+    summary = summarize_dialog(dialog_example, model_dir=model_dir)
+    print(&quot;SUMMARY:\n&quot;, summary)
+</code></pre><hr id="2ab568fa-e39f-8094-b6c7-eeadf3c8597d"/><h2 id="2ab568fa-e39f-8030-98fa-d1598481546b" class="">9. Типичные проблемы и что с ними делать</h2><p id="2ab568fa-e39f-80ce-87bb-f30bb6b77f10" class="">Можно заранее проговорить пару граблей.</p><h3 id="2ab568fa-e39f-800d-b387-ce348ec46b26" class="">9.1. Память (OOM)</h3><ul id="2ab568fa-e39f-80d9-8359-c2c65702aca5" class="bulleted-list"><li style="list-style-type:disc">Причины:<ul id="2ab568fa-e39f-801d-b76c-e11ee43756bc" class="bulleted-list"><li style="list-style-type:circle">слишком большой <code>batch_size</code>,</li></ul><ul id="2ab568fa-e39f-806a-810f-c083db8b97d2" class="bulleted-list"><li style="list-style-type:circle">слишком большой <code>max_input_length</code>,</li></ul><ul id="2ab568fa-e39f-80bc-9dcc-c2ce7f79e247" class="bulleted-list"><li style="list-style-type:circle">слишком большая модель.</li></ul></li></ul><ul id="2ab568fa-e39f-80ec-b294-dad796e8bd01" class="bulleted-list"><li style="list-style-type:disc">Лечение:<ul id="2ab568fa-e39f-8084-8e2f-cd7997bfc23c" class="bulleted-list"><li style="list-style-type:circle">уменьшить <code>per_device_train_batch_size</code>,</li></ul><ul id="2ab568fa-e39f-8012-bd60-d359d5e9964f" class="bulleted-list"><li style="list-style-type:circle">уменьшить <code>max_input_length</code> / <code>max_target_length</code>,</li></ul><ul id="2ab568fa-e39f-8017-808a-dad1d9ac480b" class="bulleted-list"><li style="list-style-type:circle">при необходимости использовать gradient accumulation (это уже продвинутый топик).</li></ul></li></ul><h3 id="2ab568fa-e39f-80f4-b4f3-e41e3571bdd8" class="">9.2. Очень медленный eval</h3><ul id="2ab568fa-e39f-80b9-97fd-de14ff908683" class="bulleted-list"><li style="list-style-type:disc">Причина — <code>predict_with_generate=True</code> + длинный <code>generation_max_length</code> + много примеров.</li></ul><ul id="2ab568fa-e39f-8014-8da7-d1b896dc3721" class="bulleted-list"><li style="list-style-type:disc">Лечение:<ul id="2ab568fa-e39f-808f-9c1d-cc64c117cb53" class="bulleted-list"><li style="list-style-type:circle">уменьшить <code>generation_max_length</code>,</li></ul><ul id="2ab568fa-e39f-8008-b6ca-d581551153fa" class="bulleted-list"><li style="list-style-type:circle">уменьшить число примеров в валидации (в крайнем случае),</li></ul><ul id="2ab568fa-e39f-80f5-a2cc-dc4cc8aa4af2" class="bulleted-list"><li style="list-style-type:circle">делать eval реже (например, <code>evaluation_strategy=&quot;steps&quot;</code> с большим <code>eval_steps</code>).</li></ul></li></ul><h3 id="2ab568fa-e39f-8010-9277-c4f9b6b3b462" class="">9.3. ROUGE не растёт вообще</h3><ul id="2ab568fa-e39f-8039-8909-f270fbede4ee" class="bulleted-list"><li style="list-style-type:disc">Возможные причины:<ul id="2ab568fa-e39f-8059-a370-ef133ddf3b05" class="bulleted-list"><li style="list-style-type:circle">очень мало данных,</li></ul><ul id="2ab568fa-e39f-8035-b959-e1e12654058c" class="bulleted-list"><li style="list-style-type:circle">слишком маленький/большой learning rate,</li></ul><ul id="2ab568fa-e39f-805f-94e9-ccd57f004646" class="bulleted-list"><li style="list-style-type:circle"><code>max_input_length</code> слишком мал, модель не видит важную часть диалога,</li></ul><ul id="2ab568fa-e39f-800e-bb7f-f257eef0f9d2" class="bulleted-list"><li style="list-style-type:circle">таргеты (summary) сильно отличаются по стилю от того, на чём обучалась базовая модель.</li></ul></li></ul><hr id="2ab568fa-e39f-8099-917e-d524216ea860"/><h2 id="2ab568fa-e39f-801d-bdab-f64c66c149b4" class="">10. Домашка к уроку 5.3</h2><ol type="1" id="2ab568fa-e39f-806b-8f6c-c7829fef3b93" class="numbered-list" start="1"><li>Взять <strong>свой</strong> <code>dialogs.csv</code> и токенизационный код из 5.2.</li></ol><ol type="1" id="2ab568fa-e39f-80fe-8011-fde8deb82c74" class="numbered-list" start="2"><li>Собрать скрипт <code>train_dialog_summarizer.py</code>, который:<ul id="2ab568fa-e39f-80b8-b5ea-e28dae552115" class="bulleted-list"><li style="list-style-type:disc">загружает данные,</li></ul><ul id="2ab568fa-e39f-80ad-b59c-d3c6c60eb23a" class="bulleted-list"><li style="list-style-type:disc">токенизирует,</li></ul><ul id="2ab568fa-e39f-803d-b9e2-ea7ad6be07d1" class="bulleted-list"><li style="list-style-type:disc">создаёт <code>DataCollatorForSeq2Seq</code>,</li></ul><ul id="2ab568fa-e39f-80d4-a975-c16a0cf2f7c6" class="bulleted-list"><li style="list-style-type:disc">создаёт <code>Seq2SeqTrainer</code> с:<ul id="2ab568fa-e39f-8028-8fbd-d22e47be6699" class="bulleted-list"><li style="list-style-type:circle"><code>predict_with_generate=True</code>,</li></ul><ul id="2ab568fa-e39f-80a8-821c-d3d5fbf0e36c" class="bulleted-list"><li style="list-style-type:circle">адекватными <code>generation_*</code> параметрами,</li></ul><ul id="2ab568fa-e39f-80ff-a049-fea2b8f791a4" class="bulleted-list"><li style="list-style-type:circle"><code>compute_metrics</code> на ROUGE.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c6-9e8e-e02228765a38" class="numbered-list" start="3"><li>Запустить обучение минимум на 2–3 эпохи.</li></ol><ol type="1" id="2ab568fa-e39f-8063-a251-c992a650883d" class="numbered-list" start="4"><li>Сохранить:<ul id="2ab568fa-e39f-8034-8475-f9fc24607113" class="bulleted-list"><li style="list-style-type:disc">финальные метрики (<code>trainer.evaluate()</code>),</li></ul><ul id="2ab568fa-e39f-802d-9e75-eaf35583e42e" class="bulleted-list"><li style="list-style-type:disc">3 примера:<ul id="2ab568fa-e39f-8036-8193-ebcc17ac3b5e" class="bulleted-list"><li style="list-style-type:circle">исходный диалог,</li></ul><ul id="2ab568fa-e39f-80c7-b1c3-e7440957112c" class="bulleted-list"><li style="list-style-type:circle"><strong>эталонный</strong> summary (из датасета),</li></ul><ul id="2ab568fa-e39f-80c2-83af-e6b2dedc975f" class="bulleted-list"><li style="list-style-type:circle"><strong>предсказанный</strong> summary моделью.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8016-bb6d-e2c18069a1b2" class="numbered-list" start="5"><li>Написать короткое “ретро” (можно прямо в ноутбуке):<ul id="2ab568fa-e39f-80fd-882f-ebb9d9b849aa" class="bulleted-list"><li style="list-style-type:disc">где модель попадает хорошо,</li></ul><ul id="2ab568fa-e39f-80f2-8fe1-c3da707b8de2" class="bulleted-list"><li style="list-style-type:disc">где промахивается,</li></ul><ul id="2ab568fa-e39f-8016-9778-c24a5eaf919d" class="bulleted-list"><li style="list-style-type:disc">какие гиперпараметры ты бы попробовал изменить (epochs, lr, max_length, num_beams и т.п.).</li></ul></li></ol><hr id="2ab568fa-e39f-8049-b63a-e6a651fc6a7f"/><p id="2ab568fa-e39f-8055-8346-c4beb1b03e0c" class="">Если захочешь, дальше можем так же разобрать <strong>урок 5.4</strong> как полноценный мини-проект:</p><p id="2ab568fa-e39f-80a1-ac23-dc19cbe2ab37" class="">поднятие одного пайплайна “обученный summarizer → generate summary → generate reply” с аккуратным кодом и примерами.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

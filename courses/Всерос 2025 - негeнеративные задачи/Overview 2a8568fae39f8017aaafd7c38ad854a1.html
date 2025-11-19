@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Overview</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8017-aaaf-d7c38ad854a1" class="page sans"><header><h1 class="page-title">Overview</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-80dd-b8f2-d040ad8238dc" class="">Ниже — модульная программа ровно под типовые <strong>негенеративные</strong> форматы Всероса: табличка+текст/гео (MAE), мульти-лейбл текст (H@3), рекомендации (mAP@20), аудио KWS (harmonic mean 1−FRR/1−FAR), CV-регрессия по фото (medianAPE). Для каждого модуля: цели → темы → практика/контроль.</p><hr id="2a8568fa-e39f-8048-b4f8-de4f7e3653ab"/><h2 id="2a8568fa-e39f-801a-97af-df0409367ddd" class="">M0. Старт и боевой шаблон</h2><p id="2a8568fa-e39f-80a0-bd61-e14d58e3ab3d" class=""><strong>Цели:</strong> за 30–40 минут поднимать репро-базелайн для любой из пяти задач.</p><p id="2a8568fa-e39f-80a8-b97e-cbe1921bc6b2" class=""><strong>Темы:</strong> структура репо; <code>data/ src/ notebooks/</code>; единый <code>config.yaml</code>; фиксация seed; CLI (<code>train/predict/eval</code>); локальный scorer; быстрые чек-листы сабмита.</p><p id="2a8568fa-e39f-805d-a4bb-cb5887b88c98" class=""><strong>Практика:</strong> завести каркас для пяти треков (tabular/text/recsys/audio/cv) с единым логгером.</p><h2 id="2a8568fa-e39f-801f-981d-d6c2c5ebece2" class="">M1. Метрики, CV и анти-утечки (сквозной модуль)</h2><p id="2a8568fa-e39f-8095-808d-d8d82ae05db6" class=""><strong>Цели:</strong> метрика и валидация совпадают с ЛБ, без сюрпризов.</p><p id="2a8568fa-e39f-80fe-9801-fa55cc2f5bcb" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-80e8-81b1-c011c77d26b3" class="bulleted-list"><li style="list-style-type:disc">CV: KFold/Stratified/Group/TimeSplit + embargo; негласные «мины» (переток по id/дню/гео).</li></ul><ul id="2a8568fa-e39f-80b8-b1e0-dd52b565909f" class="bulleted-list"><li style="list-style-type:disc">Метрики и их «чувствительность»: <strong>MAE</strong> (клиппинг/лог-трансф), <strong>H@3</strong> (ровно 3 предсказания), <strong>mAP@20</strong> (кандидаты + порядок), <strong>harmonic(1−FRR,1−FAR)</strong> (порог + баланс), <strong>medianAPE</strong> (медиана по MAPE, устойчивость к хвостам).<p id="2a8568fa-e39f-806b-9b1d-df2a8614c124" class=""><strong>Практика:</strong> реализовать 5 локальных scorer’ов, проверить на игрушечных примерах. Сверка с формулировками олимпиадных задач: MAE в «Георейтинге» ; H@3 в «Мыслим категориями» ; mAP@20 в «Т-Шопинг» ; harmonic в «Не слышу тебя» ; medianAPE в «АвтоПрайс» .</p></li></ul><h2 id="2a8568fa-e39f-8053-9363-e505eddb18e7" class="">M2. Табличка + гео + текст (кейс «Георейтинг», MAE)</h2><p id="2a8568fa-e39f-80be-bc54-f6d93f1b96ad" class=""><strong>Цели:</strong> собрать сильный регрессор с текстовыми и гео-признаками.</p><p id="2a8568fa-e39f-809a-bc11-d22d77ab8685" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-80c8-8023-eab070d15847" class="bulleted-list"><li style="list-style-type:disc">Гео-фичи: агрегации в радиусах (300/1000 м), плотности, контрасты 300↔1000, ближайшие POI.</li></ul><ul id="2a8568fa-e39f-8094-923e-cfa6bd3efc82" class="bulleted-list"><li style="list-style-type:disc">Текст отзывов → признаки: TF-IDF/SG/эмбеддинги + агрегаты по заведению (mean/max, топ-n ключей).</li></ul><ul id="2a8568fa-e39f-809f-9812-c3f5dbaa98ab" class="bulleted-list"><li style="list-style-type:disc">Стабильный CV (Time/Group), защита от утечек.</li></ul><ul id="2a8568fa-e39f-8018-9fd2-dd6a693cab46" class="bulleted-list"><li style="list-style-type:disc">Модели: CatBoost/LightGBM/XGB, target инженерия (лог-скейл), отбрасывание выбросов, калибровка.<p id="2a8568fa-e39f-800d-a85a-fce50626a36e" class=""><strong>Практика:</strong> базелайн для «Георейтинга» с MAE-валидацией и сабмитом.</p></li></ul><h2 id="2a8568fa-e39f-8023-b746-ec98505aba5e" class="">M3. Текст — мульти-лейбл классификация (H@3)</h2><p id="2a8568fa-e39f-8060-9ac4-e947cdf51737" class=""><strong>Цели:</strong> ровно три метки в правильном порядке, устойчиво к шуму.</p><p id="2a8568fa-e39f-805a-b59a-e7c7165c8df3" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-802f-8104-f81b72daac0d" class="bulleted-list"><li style="list-style-type:disc">Бейзлайн: TF-IDF + логрег/SGDClassifier (One-Vs-Rest).</li></ul><ul id="2a8568fa-e39f-806a-9f90-e14b2c00c9ad" class="bulleted-list"><li style="list-style-type:disc">Дальше: sentence-эмбеддинги → cosine-rank top-k; простая переранжировка по priors/PMI.</li></ul><ul id="2a8568fa-e39f-8012-8dd4-f0dc6e62a9a8" class="bulleted-list"><li style="list-style-type:disc">Пост-процессинг: всегда <strong>топ-3</strong>, разруливание синонимов/редких классов, сглаживание частот.</li></ul><ul id="2a8568fa-e39f-80d3-9c7e-f1ee854b9d6c" class="bulleted-list"><li style="list-style-type:disc">CV по приложениям, balance классов, cut-offs.<p id="2a8568fa-e39f-8083-800a-c1f4038731f3" class=""><strong>Практика:</strong> воспроизвести H@3 для «Мыслим категориями», сравнить два подхода (линейка vs эмбеддинги).</p></li></ul><h2 id="2a8568fa-e39f-80e5-82b3-e62f74ea010e" class="">M4. RecSys I — candidate generation (mAP@20)</h2><p id="2a8568fa-e39f-807d-9c43-fc8dc37fede3" class=""><strong>Цели:</strong> покрытие кандидатов ≥95%, за разумное время/память.</p><p id="2a8568fa-e39f-8068-b6e9-e38e7640079b" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-8026-8a37-c7cbda095693" class="bulleted-list"><li style="list-style-type:disc">Co-visitation матрицы (session/day/decay), временные окна и веса.</li></ul><ul id="2a8568fa-e39f-80c6-a681-f6e3c4126b24" class="bulleted-list"><li style="list-style-type:disc">Item2vec/word2vec: окна, негативы, как получить 200–400 кандидатов.</li></ul><ul id="2a8568fa-e39f-8006-9725-f53c28d074c9" class="bulleted-list"><li style="list-style-type:disc">LightGCN / простые графовые ходы (по времени хватит «лёгкой» реализации).</li></ul><ul id="2a8568fa-e39f-802f-b596-fed47904cfbb" class="bulleted-list"><li style="list-style-type:disc">Объединение кандидатов, дедуп, business rules.<p id="2a8568fa-e39f-8049-b743-fd3adf675044" class=""><strong>Практика:</strong> на «Т-Шопинг» собрать candidate-gen и замерить recall@20.</p></li></ul><h2 id="2a8568fa-e39f-80b1-945d-e77c6a6da34a" class="">M5. RecSys II — ranking + post-rank (mAP@20)</h2><p id="2a8568fa-e39f-800d-b75b-c068a133eac5" class=""><strong>Цели:</strong> поднять позиционность и порядок.</p><p id="2a8568fa-e39f-80d3-a98c-d9557baa1bac" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-80f5-af8d-cd9c2b6fb521" class="bulleted-list"><li style="list-style-type:disc">Фичи user×item×time: частоты, свежесть, co-vis скор, расстояния в эмбеддингах, позиционные признаки.</li></ul><ul id="2a8568fa-e39f-800a-bd68-dfd17ee106f0" class="bulleted-list"><li style="list-style-type:disc">Ранкер (LGBM/CatBoost), групповой CV по пользователю; лист-wise vs point-wise.</li></ul><ul id="2a8568fa-e39f-8058-b532-eb95f384c92c" class="bulleted-list"><li style="list-style-type:disc">Пост-процессинг: смешивание источников кандидатов, переранжировка, diversity/novelty, анти-повторы.<p id="2a8568fa-e39f-806e-8fad-cded2aadcbef" class=""><strong>Практика:</strong> полный конвейер на «Т-Шопинг» до устойчивого роста mAP@20.</p></li></ul><h2 id="2a8568fa-e39f-80dd-a839-f63aa8b64b52" class="">M6. Аудио KWS (harmonic(1−FRR,1−FAR))</h2><p id="2a8568fa-e39f-80fa-a19a-f940ece383f9" class=""><strong>Цели:</strong> модель + правильный порог под метрику.</p><p id="2a8568fa-e39f-8075-a851-d2067bcf2c04" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-80ca-b8d1-c41818f598f2" class="bulleted-list"><li style="list-style-type:disc">Конвертация opus→wav, нормализация, мел-спектры (win/stride), specaugment.</li></ul><ul id="2a8568fa-e39f-8036-ba53-de3969c34a78" class="bulleted-list"><li style="list-style-type:disc">CNN/AST-базелайн; валидация по спикеру/записи.</li></ul><ul id="2a8568fa-e39f-80b2-833a-e4c064150d5d" class="bulleted-list"><li style="list-style-type:disc"><strong>Тюнинг порога</strong>: grid → ROC-кривая в координатах (1−FRR, 1−FAR), выбор optimum; cost-sensitive loss.<p id="2a8568fa-e39f-8093-bd4f-f818871d722c" class=""><strong>Практика:</strong> собрать KWS на «Не слышу тебя», вывести кривую, зафиксировать порог.</p></li></ul><h2 id="2a8568fa-e39f-80de-906e-cbb1c6722137" class="">M7. CV-регрессия по фото (medianAPE)</h2><p id="2a8568fa-e39f-8039-9df6-ce3c30648a29" class=""><strong>Цели:</strong> смикшировать визуальные и табличные признаки.</p><p id="2a8568fa-e39f-80c1-8b71-e417cd540125" class=""><strong>Темы:</strong></p><ul id="2a8568fa-e39f-80ce-ac65-f931257d0409" class="bulleted-list"><li style="list-style-type:disc">Фичи из изображений: CLIP/ViT эмбеддинги; агрегация до объявления (mean/max/attention-pool).</li></ul><ul id="2a8568fa-e39f-80d9-bdb4-ebb355d6a36c" class="bulleted-list"><li style="list-style-type:disc">Табличные поля (мультивыбор → bag of options), лог-ценa, управление выбросами.</li></ul><ul id="2a8568fa-e39f-800a-a2e3-c8d7c65ffccd" class="bulleted-list"><li style="list-style-type:disc">Стэкинг: Tabular + Image head; калибровка квантили/Huber.<p id="2a8568fa-e39f-80c2-af28-cc41f7885007" class=""><strong>Практика:</strong> «АвтоПрайс»: baseline + два апгрейда, оценка по medianAPE, лог-пространство.</p></li></ul><h2 id="2a8568fa-e39f-80e7-9275-caff5b4e9bc3" class="">M8. Фичеринг и стэкинг (сквозной)</h2><p id="2a8568fa-e39f-80b3-81e3-c53ed584f44b" class=""><strong>Цели:</strong> быстро растить очки без новых архитектур.</p><p id="2a8568fa-e39f-80ec-8096-f4522c13ab2a" class=""><strong>Темы:</strong> target/mean encoding c CV, frequency/rarity, временные лаги; level-2 бленд (ridge/Cat), баггинг/гладиентные бленды; out-of-fold протокол.</p><h2 id="2a8568fa-e39f-80a4-af35-f68b52c108d1" class="">M9. HPO и бюджет времени</h2><p id="2a8568fa-e39f-804e-a961-eab04d736f0d" class=""><strong>Цели:</strong> максимум очков за 1–2 часа тюнинга.</p><p id="2a8568fa-e39f-80e0-a361-ed6f57f7ea7b" class=""><strong>Темы:</strong> Optuna/Random Search, space по-умолчанию для Cat/LGBM; ранняя остановка; разумные лимиты.</p><h2 id="2a8568fa-e39f-80c8-afca-e34fb6d7b6ad" class="">M10. I/O и скорость</h2><p id="2a8568fa-e39f-8062-982a-c37aba777dcb" class=""><strong>Цели:</strong> читать/писать большие паркет/аудио/изображения быстрее, чем соперники.</p><p id="2a8568fa-e39f-80be-a077-fc3e3a29e559" class=""><strong>Темы:</strong> Polars/pyarrow, memory mapping, батчи, многопроцессность, кэш кандидатов для RecSys; контроль детерминизма.</p><h2 id="2a8568fa-e39f-8034-8d52-f483e9cf7214" class="">M11. Диагностика, сдвиги и надёжность сабмита</h2><p id="2a8568fa-e39f-80fa-88b5-c830403d74a7" class=""><strong>Цели:</strong> не «ломать» сабмит на приватном тесте.</p><p id="2a8568fa-e39f-801c-963f-c3218e85cc87" class=""><strong>Темы:</strong> train↔test drift (частоты классов/товаров), стресс-тесты: пустые тексты, редкие категории, длинные хвосты цен; клиппинг/правила; валидация формата саба.</p><h2 id="2a8568fa-e39f-80b7-8c29-c0251fcf8b9d" class="">M12. Экзамен-симуляция (6 часов)</h2><p id="2a8568fa-e39f-8095-bd2e-f58cf50c37de" class=""><strong>Цели:</strong> обкатка боевого распорядка.</p><p id="2a8568fa-e39f-8043-9fdc-efecf4bc96c7" class=""><strong>Формат:</strong> 2×3 часа (RecSys/Tabular или Audio/CV) — с чистого листа до валидного сабмита; контроль списком «release checklist».</p><hr id="2a8568fa-e39f-806c-89c7-cb363d2ca903"/><h2 id="2a8568fa-e39f-8067-b5b0-ff7981d07d8d" class="">Результаты курса (что ученик умеет)</h2><ul id="2a8568fa-e39f-8083-a327-d1339981521f" class="bulleted-list"><li style="list-style-type:disc"><strong>Табличка+гео+текст (MAE):</strong> воспроизводимый конвейер с анти-утечкой для «Георейтинга».</li></ul><ul id="2a8568fa-e39f-802c-83ec-e353448d291e" class="bulleted-list"><li style="list-style-type:disc"><strong>Текст H@3:</strong> мульти-лейбл, всегда ровно три метки, устойчивые пост-правила.</li></ul><ul id="2a8568fa-e39f-80c9-9162-d85d108106da" class="bulleted-list"><li style="list-style-type:disc"><strong>RecSys mAP@20:</strong> candidates→ranker→post-rank, без дублей, с быстрым I/O.</li></ul><ul id="2a8568fa-e39f-8029-9793-f9eef4b85638" class="bulleted-list"><li style="list-style-type:disc"><strong>Аудио KWS:</strong> мел-пайплайн + грамотный порог под целевую метрику.</li></ul><ul id="2a8568fa-e39f-8018-bfb9-dc2d8d4592af" class="bulleted-list"><li style="list-style-type:disc"><strong>CV medianAPE:</strong> фьюжн фото+табличка, устойчивый к хвостам.</li></ul><ul id="2a8568fa-e39f-80d6-a587-dc234895bcdd" class="bulleted-list"><li style="list-style-type:disc">Единые утилиты: scorer’ы, CV-фабрика, блендинг, чек-листы и шаблоны сабмитов.</li></ul><p id="2a8568fa-e39f-80d3-b945-f76d5eec920b" class="">Хочешь — расширю любой модуль до поурочного плана с ТЗ на домашки и контрольные мини-спринты.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,728 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 6. Session-based и sequence-aware рекомендации</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-809c-9937-dfc4f196e888" class="page sans"><header><h1 class="page-title">Модуль 6. Session-based и sequence-aware рекомендации</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-809d-8ada-c74e4b38dc3e" class=""><strong>После модуля студент должен уметь:</strong></p><ul id="2aa568fa-e39f-80f0-ba58-cbf52d770ec4" class="bulleted-list"><li style="list-style-type:disc">понимать разницу между:<ul id="2aa568fa-e39f-807f-9464-c240a1aa2bc7" class="bulleted-list"><li style="list-style-type:circle">user-based / history-based рекомендациями и</li></ul><ul id="2aa568fa-e39f-8081-950b-ffbbeba9d2a5" class="bulleted-list"><li style="list-style-type:circle">чисто <strong>session-based</strong> (когда user_id нет или он ненадёжен);</li></ul></li></ul><ul id="2aa568fa-e39f-80ba-856b-f1511ae6fa90" class="bulleted-list"><li style="list-style-type:disc">строить <strong>не-нейросетевые session-based модели</strong>:<ul id="2aa568fa-e39f-80a3-8543-fb72cd8699f7" class="bulleted-list"><li style="list-style-type:circle">session-based kNN;</li></ul><ul id="2aa568fa-e39f-8091-a11a-dd0dd605ca16" class="bulleted-list"><li style="list-style-type:circle">co-occurrence по сессиям;</li></ul><ul id="2aa568fa-e39f-80b4-b958-df1f4f9d606c" class="bulleted-list"><li style="list-style-type:circle">эвристики по позиции и времени;</li></ul></li></ul><ul id="2aa568fa-e39f-8084-9471-c4165e57f822" class="bulleted-list"><li style="list-style-type:disc">реализовывать <strong>простую GRU4Rec-подобную модель</strong>;</li></ul><ul id="2aa568fa-e39f-8045-af81-db67f935032c" class="bulleted-list"><li style="list-style-type:disc">понимать идею <strong>Transformer-подходов</strong> (SASRec, BERT4Rec), уметь собрать упрощённый вариант;</li></ul><ul id="2aa568fa-e39f-80ba-861d-c6b6dffe277d" class="bulleted-list"><li style="list-style-type:disc">встроить sequence-модели в общий пайплайн:<ul id="2aa568fa-e39f-80cf-9eef-e0b109b9c1d0" class="bulleted-list"><li style="list-style-type:circle">candidate generation / ranking,</li></ul><ul id="2aa568fa-e39f-80b9-be30-f6f485c41283" class="bulleted-list"><li style="list-style-type:circle">eval из модулей 2–4.</li></ul></li></ul><hr id="2aa568fa-e39f-8007-81e1-cc221f7cc21e"/><h2 id="2aa568fa-e39f-8041-a995-c9c9c8b70302" class="">Общая структура модуля</h2><p id="2aa568fa-e39f-80f0-86f7-d2fb5704c699" class="">Предлагаю так:</p><ol type="1" id="2aa568fa-e39f-809f-8a2a-e14e88e478a6" class="numbered-list" start="1"><li><strong>Урок 6.1. Что такое сессии и чем sequence-aware задачи отличаются от обычных</strong></li></ol><ol type="1" id="2aa568fa-e39f-805f-9846-eca5f09395d5" class="numbered-list" start="2"><li><strong>Урок 6.2. Нейронка не нужна: session-based kNN, co-occurrence, простые эвристики</strong></li></ol><ol type="1" id="2aa568fa-e39f-8014-a3d2-e124b4a46f1b" class="numbered-list" start="3"><li><strong>Урок 6.3. GRU4Rec и RNN-подходы к session-based рекомендациям</strong></li></ol><ol type="1" id="2aa568fa-e39f-800f-b46f-db1d88a17cb6" class="numbered-list" start="4"><li><strong>Урок 6.4. Attention/Transformers (SASRec / BERT4Rec) и интеграция с общим пайплайном</strong></li></ol><ol type="1" id="2aa568fa-e39f-80eb-ade0-e52ec5d9b453" class="numbered-list" start="5"><li><strong>Мини-проект:</strong> сильный session-based пайплайн на реальном сореве</li></ol><p id="2aa568fa-e39f-8019-a201-db5539180cb1" class="">Датасеты/соревнования для модуля (на выбор):</p><ul id="2aa568fa-e39f-80c7-81e4-e787dcece58e" class="bulleted-list"><li style="list-style-type:disc">любой <strong>session-based e-commerce</strong> (вроде OTTO / RecSys Challenge);</li></ul><ul id="2aa568fa-e39f-809d-a1f1-e97a3bad7997" class="bulleted-list"><li style="list-style-type:disc">или твой собственный лог сессий (если у тебя будет кастомный датасет для курса).</li></ul><hr id="2aa568fa-e39f-8069-a91a-fa664668e16f"/><h2 id="2aa568fa-e39f-8034-b1ef-f16b364a1895" class="">Урок 6.1. Сессии, последовательности и постановка задач</h2><h3 id="2aa568fa-e39f-801d-82b3-f27bd42ca8b2" class="">Цели</h3><ul id="2aa568fa-e39f-80b8-bafd-d919062939c0" class="bulleted-list"><li style="list-style-type:disc">Поставить <strong>правильную постановку</strong>: что именно мы предсказываем, где user важен, а где — вообще не нужен.</li></ul><ul id="2aa568fa-e39f-80d6-8d17-de07f2bb58b0" class="bulleted-list"><li style="list-style-type:disc">Понять, какие есть виды sequence-aware задач.</li></ul><h3 id="2aa568fa-e39f-80e7-af73-fac64962d2ef" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80be-a592-ee22086e637a" class="numbered-list" start="1"><li><strong>Что такое сессия</strong><ul id="2aa568fa-e39f-8003-9e8f-df4d1abea843" class="bulleted-list"><li style="list-style-type:disc">Сессия — это последовательность действий пользователя за ограниченный период времени:<ul id="2aa568fa-e39f-8063-abfc-e2218c384008" class="bulleted-list"><li style="list-style-type:circle">просмотр → клик → добавление в корзину → покупка;</li></ul><ul id="2aa568fa-e39f-80f0-9477-deac5e6ba714" class="bulleted-list"><li style="list-style-type:circle">или набор кликов/просмотров, логически связанный.</li></ul></li></ul><ul id="2aa568fa-e39f-8063-a5de-cd7f2300d99c" class="bulleted-list"><li style="list-style-type:disc">Часто сессия определяется:<ul id="2aa568fa-e39f-8045-91c2-cfed9027d201" class="bulleted-list"><li style="list-style-type:circle">либо явно (session_id в логах),</li></ul><ul id="2aa568fa-e39f-80a2-98ac-c95b3526244f" class="bulleted-list"><li style="list-style-type:circle">либо по таймауту (gap &gt; X минут → новая сессия).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803d-b8f1-cc059a15821e" class="numbered-list" start="2"><li><strong>Session-based vs user-based</strong><ul id="2aa568fa-e39f-8003-90a2-dbf9c1002b73" class="bulleted-list"><li style="list-style-type:disc"><strong>User-based:</strong><ul id="2aa568fa-e39f-8058-aa74-f3875fc24155" class="bulleted-list"><li style="list-style-type:circle">у нас есть стабильный user_id;</li></ul><ul id="2aa568fa-e39f-80ff-83db-f428a5956a0a" class="bulleted-list"><li style="list-style-type:circle">можем смотреть на многодневную/месячную историю.</li></ul></li></ul><ul id="2aa568fa-e39f-808e-b36a-e9a01d2ffac1" class="bulleted-list"><li style="list-style-type:disc"><strong>Session-based:</strong><ul id="2aa568fa-e39f-8053-8b58-cf362491ffc7" class="bulleted-list"><li style="list-style-type:circle">user_id может не быть (анонимный трафик) или быть нестабильным;</li></ul><ul id="2aa568fa-e39f-8078-9219-f6db55db4d34" class="bulleted-list"><li style="list-style-type:circle">есть только текущая сессия (или несколько прошлых).</li></ul></li></ul><ul id="2aa568fa-e39f-8001-8697-fd7212897aac" class="bulleted-list"><li style="list-style-type:disc">Модель не знает про пользователя «вообще», только про его текущие шаги.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c6-9521-f75cfcc4cb62" class="numbered-list" start="3"><li><strong>Виды sequence-aware задач</strong><ul id="2aa568fa-e39f-805c-a005-f8c6b715ca0e" class="bulleted-list"><li style="list-style-type:disc"><strong>Next-item prediction</strong>:<ul id="2aa568fa-e39f-80d7-bb67-c5c3946333c4" class="bulleted-list"><li style="list-style-type:circle">по последовательности действий s = [i₁, i₂, ..., iₜ] → предсказать iₜ₊₁.</li></ul></li></ul><ul id="2aa568fa-e39f-80d4-82b2-c3dfc022b6eb" class="bulleted-list"><li style="list-style-type:disc"><strong>Next-k items / basket prediction</strong>:<ul id="2aa568fa-e39f-8047-bb6e-f47204949b2c" class="bulleted-list"><li style="list-style-type:circle">предсказать сразу несколько следующих предметов.</li></ul></li></ul><ul id="2aa568fa-e39f-807d-bacb-cba48770740f" class="bulleted-list"><li style="list-style-type:disc"><strong>Session-based recommendation</strong>:<ul id="2aa568fa-e39f-80fa-9020-f4e461ec6a64" class="bulleted-list"><li style="list-style-type:circle">на каждом шаге сессии:<ul id="2aa568fa-e39f-80b1-9289-d98252d43776" class="bulleted-list"><li style="list-style-type:square">показываем список рекомендаций, учитывая историю <em>именно этой</em> сессии.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-804a-ba20-c38d55634108" class="bulleted-list"><li style="list-style-type:disc"><strong>Multi-step / multi-objective</strong>:<ul id="2aa568fa-e39f-80e9-9ff3-d0bfa9b93780" class="bulleted-list"><li style="list-style-type:circle">хотим предсказывать не просто следующий item, но и:<ul id="2aa568fa-e39f-8057-a3f5-caca043b7abe" class="bulleted-list"><li style="list-style-type:square">следующий клик,</li></ul><ul id="2aa568fa-e39f-80f6-a95b-f8271a09b43a" class="bulleted-list"><li style="list-style-type:square">следующую покупку,</li></ul><ul id="2aa568fa-e39f-8066-84a1-c2af0129a0ef" class="bulleted-list"><li style="list-style-type:square">разные типы событий.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d2-8394-f91ba6351059" class="numbered-list" start="4"><li><strong>Особенности session-based задач</strong><ul id="2aa568fa-e39f-803b-879e-d19f9080aefc" class="bulleted-list"><li style="list-style-type:disc">Сильная роль <strong>порядка и позиций</strong>:<ul id="2aa568fa-e39f-807b-bd32-e61c5ec8c0ee" class="bulleted-list"><li style="list-style-type:circle">последние действия важнее ранних;</li></ul><ul id="2aa568fa-e39f-8029-97d4-fbc8edf366ba" class="bulleted-list"><li style="list-style-type:circle">повторные просмотры усиливают сигнал.</li></ul></li></ul><ul id="2aa568fa-e39f-80aa-8cc9-cad72b7be406" class="bulleted-list"><li style="list-style-type:disc">Сильная роль <strong>времени</strong>:<ul id="2aa568fa-e39f-80ad-9f03-c29611240354" class="bulleted-list"><li style="list-style-type:circle">промежутки между событиями;</li></ul><ul id="2aa568fa-e39f-80f7-9dc8-e4b6dad951f6" class="bulleted-list"><li style="list-style-type:circle">сессия может быть «спринтом» (быстрый просмотр) или растянутой.</li></ul></li></ul><ul id="2aa568fa-e39f-8032-8917-c76bf0c48cf3" class="bulleted-list"><li style="list-style-type:disc">Часто мало «глобальной» истории:<ul id="2aa568fa-e39f-80ba-8ebe-cb3f7f8daf98" class="bulleted-list"><li style="list-style-type:circle">нельзя положиться на профиль пользователя;</li></ul><ul id="2aa568fa-e39f-80b1-9095-d15a04a76d29" class="bulleted-list"><li style="list-style-type:circle">нужно выжимать максимум из текущей сессии.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ce-b168-ce870a19d417" class="numbered-list" start="5"><li><strong>Метрики и валидация (в связке с модулем 2)</strong><ul id="2aa568fa-e39f-808c-851d-c8383a2e05d1" class="bulleted-list"><li style="list-style-type:disc">Обычно:<ul id="2aa568fa-e39f-80e5-a102-f35f5bfd104f" class="bulleted-list"><li style="list-style-type:circle">split по времени и сессиям;</li></ul><ul id="2aa568fa-e39f-8000-87b5-e3f434250c92" class="bulleted-list"><li style="list-style-type:circle">для каждой сессии:<ul id="2aa568fa-e39f-802a-b2e2-f97b05ebfe8b" class="bulleted-list"><li style="list-style-type:square">берём prefix (первые N событий),</li></ul><ul id="2aa568fa-e39f-8007-87d8-f707870be22e" class="bulleted-list"><li style="list-style-type:square">предсказываем следующий item (target).</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-809b-a7fd-e0c43d7e6f76" class="bulleted-list"><li style="list-style-type:disc">Метрики:<ul id="2aa568fa-e39f-8028-bb96-c521f4943dc8" class="bulleted-list"><li style="list-style-type:circle">Recall@K / HitRate@K / MRR / NDCG@K по session-level.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80f3-b88e-eeac3b77832b" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8042-a999-f6ada984372c" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-80c3-b506-fa9a0d60c272" class="numbered-list" start="1"><li>Взять исходный лог (dataset модуля):<ul id="2aa568fa-e39f-80b4-bbce-e6c574c43925" class="bulleted-list"><li style="list-style-type:disc">сформировать сессии по session_id или по таймауту;</li></ul><ul id="2aa568fa-e39f-807f-ba95-dbd97e8a3cb2" class="bulleted-list"><li style="list-style-type:disc">посчитать:<ul id="2aa568fa-e39f-80fd-9413-eb57b319b25a" class="bulleted-list"><li style="list-style-type:circle">распределение длины сессий;</li></ul><ul id="2aa568fa-e39f-80cb-b55c-d9e1df6649c0" class="bulleted-list"><li style="list-style-type:circle">сколько сессий на пользователя;</li></ul><ul id="2aa568fa-e39f-800d-9d66-deb6beae8bc8" class="bulleted-list"><li style="list-style-type:circle">сколько items в среднем в сессии.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8087-8ec4-d83c8cda7785" class="numbered-list" start="2"><li>Построить пару примеров сессий и обсудить:<ul id="2aa568fa-e39f-8049-bb38-f86ad6c3562b" class="bulleted-list"><li style="list-style-type:disc">что может быть «следующим логичным шагом»;</li></ul><ul id="2aa568fa-e39f-80bb-8250-e7c9d91cf524" class="bulleted-list"><li style="list-style-type:disc">чем это отличается от задач без последовательности.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8000-b579-f79d8ab75ba0" class="">Домашка 6.1</h3><ol type="1" id="2aa568fa-e39f-80cd-a691-c367c862f384" class="numbered-list" start="1"><li>Описать:<ul id="2aa568fa-e39f-8082-84ab-f22d37cd6227" class="bulleted-list"><li style="list-style-type:disc">какую <strong>типовую sequence-задачу</strong> решает выбранный датасет/соревнование:<ul id="2aa568fa-e39f-80a4-bbbd-c9f30c2f52ed" class="bulleted-list"><li style="list-style-type:circle">next-item?</li></ul><ul id="2aa568fa-e39f-803c-bab9-ebfb234757cd" class="bulleted-list"><li style="list-style-type:circle">multi-step?</li></ul><ul id="2aa568fa-e39f-8042-a72b-db138bf0a3ad" class="bulleted-list"><li style="list-style-type:circle">multi-objective?</li></ul></li></ul><ul id="2aa568fa-e39f-808c-8188-d213c5a31a8a" class="bulleted-list"><li style="list-style-type:disc">какие <strong>ограничения</strong>:<ul id="2aa568fa-e39f-8049-9818-d11b5fffeebe" class="bulleted-list"><li style="list-style-type:circle">короткие сессии?</li></ul><ul id="2aa568fa-e39f-8082-9b97-cd4e5ab1383b" class="bulleted-list"><li style="list-style-type:circle">много уникальных items?</li></ul><ul id="2aa568fa-e39f-805a-8421-e5a4433b6308" class="bulleted-list"><li style="list-style-type:circle">много/мало user’ов?</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-804c-b440-f9fa998402bd" class="numbered-list" start="2"><li>Сформировать dataset в формате:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8017-b984-e16772d931d9" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">session_id | timestamp | item_id | event_type
+</code></pre><ul id="2aa568fa-e39f-8007-9ad0-c13aa5af2988" class="bulleted-list"><li style="list-style-type:disc">список сессий (каждая — список item’ов).</li></ul></li></ol><hr id="2aa568fa-e39f-80c4-ba86-f5eddfff223f"/><h2 id="2aa568fa-e39f-8091-a9e8-df9b8a7bb8c7" class="">Урок 6.2. Нейросети подождут: session-based kNN, co-occurrence, эвристики</h2><h3 id="2aa568fa-e39f-80dd-8f36-cc7330a3a325" class="">Цели</h3><ul id="2aa568fa-e39f-8053-8bed-d0ce86d5ddb3" class="bulleted-list"><li style="list-style-type:disc">Показать, что <strong>простые session-based методы уже очень сильные</strong> для многих сорев.</li></ul><ul id="2aa568fa-e39f-8044-ad49-cdfd631d6498" class="bulleted-list"><li style="list-style-type:disc">Научить строить session-based kNN и расширенный co-occurrence.</li></ul><h3 id="2aa568fa-e39f-8070-8b2e-ef65ef8a759b" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-803b-95f8-ed740b39ac65" class="numbered-list" start="1"><li><strong>Session-based co-occurrence (расширение модуля 1)</strong><ul id="2aa568fa-e39f-80d2-84c2-c5f30983177f" class="bulleted-list"><li style="list-style-type:disc">Теперь нас интересуют co-occurrence <strong>внутри сессий</strong>:<ul id="2aa568fa-e39f-8010-af28-d93f11e7b508" class="bulleted-list"><li style="list-style-type:circle">товары, которые часто встречаются в одной сессии рядом;</li></ul><ul id="2aa568fa-e39f-8012-a898-cd3abfc300be" class="bulleted-list"><li style="list-style-type:circle">можно учитывать <strong>позицию</strong>: насколько близко по шагам встречаются два товара.</li></ul></li></ul><ul id="2aa568fa-e39f-8009-ac53-dafd27a32087" class="bulleted-list"><li style="list-style-type:disc">Базовая идея:<ul id="2aa568fa-e39f-80b4-aad2-fdbd992ab63d" class="bulleted-list"><li style="list-style-type:circle">строим граф item–item:<ul id="2aa568fa-e39f-80e5-930f-d1ff2f1732d0" class="bulleted-list"><li style="list-style-type:square">ребро: сколько раз i и j встречались в одной сессии;</li></ul><ul id="2aa568fa-e39f-8031-b74a-d48ac1434723" class="bulleted-list"><li style="list-style-type:square">опционально: вес затухает, если между ними много шагов.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808d-be5b-db8237f292c1" class="numbered-list" start="2"><li><strong>Session-based kNN</strong><ul id="2aa568fa-e39f-8005-9999-dc222d4ed4d0" class="bulleted-list"><li style="list-style-type:disc">Представляем каждую сессию как последовательность item’ов.</li></ul><ul id="2aa568fa-e39f-80bd-aa34-e214e45bf983" class="bulleted-list"><li style="list-style-type:disc">Для текущей сессии <code>S</code>:<ul id="2aa568fa-e39f-8022-9fa3-c042fcd2dda0" class="bulleted-list"><li style="list-style-type:circle">ищем k наиболее похожих прошлых сессий по:<ul id="2aa568fa-e39f-8017-87c8-c5bf4f01f881" class="bulleted-list"><li style="list-style-type:square">общим item’ам,</li></ul><ul id="2aa568fa-e39f-801d-965e-c7af53cdaf34" class="bulleted-list"><li style="list-style-type:square">или по суффиксу последовательности.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-806a-82d3-d512da6c42ec" class="bulleted-list"><li style="list-style-type:disc">Сходство сессий:<ul id="2aa568fa-e39f-804f-aa5f-dc08a8256439" class="bulleted-list"><li style="list-style-type:circle">Jaccard по множеству item’ов;</li></ul><ul id="2aa568fa-e39f-8085-a248-e868436627e9" class="bulleted-list"><li style="list-style-type:circle">weighted overlap:<ul id="2aa568fa-e39f-8006-a38e-e55014c1e1b6" class="bulleted-list"><li style="list-style-type:square">больший вес у последних элементов;</li></ul></li></ul><ul id="2aa568fa-e39f-80eb-acc8-f357101d57a4" class="bulleted-list"><li style="list-style-type:circle">последовательностное сходство (например, сравнение последних L действий).</li></ul></li></ul><ul id="2aa568fa-e39f-803c-b7b1-cf0f122516b9" class="bulleted-list"><li style="list-style-type:disc">Рекомендации:<ul id="2aa568fa-e39f-8014-8e2a-f12272e3edcd" class="bulleted-list"><li style="list-style-type:circle">берём union item’ов из ближайших сессий;</li></ul><ul id="2aa568fa-e39f-8051-a61a-c05ffc685acd" class="bulleted-list"><li style="list-style-type:circle">ранжируем по сумме весов.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8038-81cf-e790a9a6e920" class="numbered-list" start="3"><li><strong>Эвристики для session-based</strong><ul id="2aa568fa-e39f-805c-acb7-ea41531eec3f" class="bulleted-list"><li style="list-style-type:disc"><strong>Last click / last item boost</strong>:<ul id="2aa568fa-e39f-80b3-8996-c5418d76e0c6" class="bulleted-list"><li style="list-style-type:circle">кандидаты, похожие на последний item → дают больше вклад.</li></ul></li></ul><ul id="2aa568fa-e39f-8037-9e5a-fe80ee711e64" class="bulleted-list"><li style="list-style-type:disc"><strong>Recency в рамках сессии</strong>:<ul id="2aa568fa-e39f-80ac-ae19-c0b486ad1994" class="bulleted-list"><li style="list-style-type:circle">более новые item’ы в истории → больше вес.</li></ul></li></ul><ul id="2aa568fa-e39f-804b-9d47-c5d81eae0910" class="bulleted-list"><li style="list-style-type:disc"><strong>Multi-step targets</strong>:<ul id="2aa568fa-e39f-808a-8b6f-e38f815b1ca8" class="bulleted-list"><li style="list-style-type:circle">если таргет — не один item, а несколько:<ul id="2aa568fa-e39f-8091-b314-c9e3ec855ceb" class="bulleted-list"><li style="list-style-type:square">можно пытаться воспроизводить целые паттерны.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808f-be4d-cf86d85f6685" class="numbered-list" start="4"><li><strong>Сравнение с простыми моделями</strong><ul id="2aa568fa-e39f-802c-8d8e-ec353a368cd9" class="bulleted-list"><li style="list-style-type:disc">Session-based kNN и co-occurrence ≈ «интеллектуальный item-to-item»:<ul id="2aa568fa-e39f-80ee-9bdd-d38a3bf0605f" class="bulleted-list"><li style="list-style-type:circle">они используют структуру сессий,</li></ul><ul id="2aa568fa-e39f-80e4-957f-cfeb06f273a3" class="bulleted-list"><li style="list-style-type:circle">а не только глобальную статистику.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-809c-af9f-fe2b12a6c0df" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-806d-96b6-e724001bca9e" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-80f4-86df-ef1b48e88acf" class="numbered-list" start="1"><li>Реализовать:<ul id="2aa568fa-e39f-8074-a12c-f66b7d29ab17" class="bulleted-list"><li style="list-style-type:disc">построение item–item co-occurrence по сессиям, с весами, зависящими от расстояния в шагах;</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c1-a3ad-e3d88b4d6023" class="numbered-list" start="2"><li>Реализовать session-based kNN:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-804d-a22e-c30e7ca72507" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def session_similarity(session_a, session_b):
+    # 1) общие item&#x27;ы
+    # 2) больший вес у совпадений ближе к концу сессии
+    ...
+
+def recommend_knn(current_session, k_neighbors=50, k_items=20):
+    # 1) найти k похожих сессий
+    # 2) собрать их items (кроме уже увиденных)
+    # 3) посчитать score и вернуть top-k_items
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-803c-a60a-fc3b4a5b01f3" class="numbered-list" start="3"><li>Подключить eval-фреймворк:<ul id="2aa568fa-e39f-8066-b06b-cfc4200ba6eb" class="bulleted-list"><li style="list-style-type:disc">для каждой сессии в валидации:<ul id="2aa568fa-e39f-807d-9b5a-f12e8b9f7162" class="bulleted-list"><li style="list-style-type:circle">взять prefix,</li></ul><ul id="2aa568fa-e39f-8055-b978-d911ac473155" class="bulleted-list"><li style="list-style-type:circle">построить рекомендации,</li></ul><ul id="2aa568fa-e39f-807e-966a-dc30e4a566ba" class="bulleted-list"><li style="list-style-type:circle">посчитать Recall@K / HitRate@K.</li></ul></li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8009-b765-cbb3d021b700" class="">Домашка 6.2</h3><ol type="1" id="2aa568fa-e39f-80aa-9abc-c2c59c018f04" class="numbered-list" start="1"><li>Сравнить:<ul id="2aa568fa-e39f-80a8-a925-c7fb2f78be6c" class="bulleted-list"><li style="list-style-type:disc">session-based kNN,</li></ul><ul id="2aa568fa-e39f-80fb-9175-cf596c61499b" class="bulleted-list"><li style="list-style-type:disc">session-based co-occurrence,</li></ul><ul id="2aa568fa-e39f-807a-ac6f-f69574d5d30d" class="bulleted-list"><li style="list-style-type:disc">базовую popularity / item-to-item (из модулей 1–3)</li></ul><p id="2aa568fa-e39f-80ce-a02a-e941f1ba06ba" class="">по Recall@K и MRR@K.</p></li></ol><ol type="1" id="2aa568fa-e39f-8006-be28-ddeababe228d" class="numbered-list" start="2"><li>Написать:<ul id="2aa568fa-e39f-80dd-9c3b-c9bbf8c33f18" class="bulleted-list"><li style="list-style-type:disc">для каких типов сессий (длинных/коротких) kNN даёт больший прирост;</li></ul><ul id="2aa568fa-e39f-80ab-8f02-e8fe240501b7" class="bulleted-list"><li style="list-style-type:disc">есть ли сценарии, где он работает хуже, чем глобальные модели.</li></ul></li></ol><hr id="2aa568fa-e39f-804d-82c8-ddabcb711353"/><h2 id="2aa568fa-e39f-8013-9836-e3b097572677" class="">Урок 6.3. GRU4Rec и RNN-подходы к session-based</h2><h3 id="2aa568fa-e39f-8027-a49d-d032e024c49e" class="">Цели</h3><ul id="2aa568fa-e39f-8093-9406-cfa9e13b9257" class="bulleted-list"><li style="list-style-type:disc">Объяснить суть <strong>GRU4Rec-подхода</strong>:<ul id="2aa568fa-e39f-80da-87f1-f82e06d65c0f" class="bulleted-list"><li style="list-style-type:circle">RNN, которая «читает» сессию как последовательность.</li></ul></li></ul><ul id="2aa568fa-e39f-80e9-bcfc-f3153a75418e" class="bulleted-list"><li style="list-style-type:disc">Научить собрать <strong>упрощённую GRU4Rec-подобную модель</strong>:<ul id="2aa568fa-e39f-80e8-89cf-e955dd2166fd" class="bulleted-list"><li style="list-style-type:circle">embedding → GRU → softmax по item’ам.</li></ul></li></ul><ul id="2aa568fa-e39f-80e2-b781-f8addfb39404" class="bulleted-list"><li style="list-style-type:disc">Подружить это с eval.</li></ul><h3 id="2aa568fa-e39f-8032-90f7-d0f1cd904b46" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8014-9795-c517fd035f8b" class="numbered-list" start="1"><li><strong>Почему RNN</strong><ul id="2aa568fa-e39f-8045-ab19-d28d546252e9" class="bulleted-list"><li style="list-style-type:disc">В session-based задачах важно:<ul id="2aa568fa-e39f-800e-aef7-ef1a55ac1dad" class="bulleted-list"><li style="list-style-type:circle">порядок событий,</li></ul><ul id="2aa568fa-e39f-8055-891e-f7183a5cd017" class="bulleted-list"><li style="list-style-type:circle">«куда движется» пользователь внутри сессии.</li></ul></li></ul><ul id="2aa568fa-e39f-800d-b75a-da3c979e780c" class="bulleted-list"><li style="list-style-type:disc">RNN (GRU/LSTM) умеет:<ul id="2aa568fa-e39f-80ca-8eae-ffe76599c46d" class="bulleted-list"><li style="list-style-type:circle">обрабатывать последовательности любой длины;</li></ul><ul id="2aa568fa-e39f-8031-9179-dcf5bb524112" class="bulleted-list"><li style="list-style-type:circle">хранить «скрытое состояние» — некий summary прошлых шагов.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a7-bf79-f046e5c5f2f5" class="numbered-list" start="2"><li><strong>Архитектура GRU4Rec (упрощённо)</strong><ul id="2aa568fa-e39f-80c9-8c89-e6c6e4c32d70" class="bulleted-list"><li style="list-style-type:disc">Вход: последовательность item ID: <code>[i₁, i₂, ..., iₜ]</code>.</li></ul><ul id="2aa568fa-e39f-8063-ae2d-ed9dd6053ee5" class="bulleted-list"><li style="list-style-type:disc">Преобразование:<ul id="2aa568fa-e39f-8030-a55f-f0bee6389575" class="bulleted-list"><li style="list-style-type:circle">каждое <code>iₖ</code> → embedding <code>eₖ</code> (через <code>nn.Embedding</code>);</li></ul></li></ul><ul id="2aa568fa-e39f-8061-984a-c2fb3661a5ae" class="bulleted-list"><li style="list-style-type:disc">GRU:<ul id="2aa568fa-e39f-80ab-a0ca-e8d8b5bb69a6" class="bulleted-list"><li style="list-style-type:circle">прогоняем <code>e₁, e₂, ..., eₜ</code> через GRU → получаем скрытые состояния <code>h₁, h₂, ..., hₜ</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-8076-b85f-f2ae2b53e06b" class="bulleted-list"><li style="list-style-type:disc">Выход:<ul id="2aa568fa-e39f-80f1-9e4f-c149a74a4421" class="bulleted-list"><li style="list-style-type:circle">для каждого шага t хотим предсказать <strong>следующий item </strong><code><strong>iₜ₊₁</strong></code>;</li></ul><ul id="2aa568fa-e39f-80cd-8b32-f10c674b577c" class="bulleted-list"><li style="list-style-type:circle">score для item j: <code>score_j = hₜ^T * item_embedding_j</code> (dot-product);</li></ul><ul id="2aa568fa-e39f-807f-97ff-c64cbbfb0fe0" class="bulleted-list"><li style="list-style-type:circle">после чего softmax → вероятность.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ca-b500-eeb3739ee3c7" class="numbered-list" start="3"><li><strong>Обучение</strong><ul id="2aa568fa-e39f-808f-acc6-c31cbd3e2f36" class="bulleted-list"><li style="list-style-type:disc">Loss:<ul id="2aa568fa-e39f-80d8-a4e8-ffd8d43f683d" class="bulleted-list"><li style="list-style-type:circle">cross-entropy (softmax по всем items) — дорого, но понятно;</li></ul><ul id="2aa568fa-e39f-80bc-809a-eb3e91801869" class="bulleted-list"><li style="list-style-type:circle">или sampled softmax / negative sampling:<ul id="2aa568fa-e39f-8064-beb8-fd5ead7ecb8f" class="bulleted-list"><li style="list-style-type:square">для каждого шага:<ul id="2aa568fa-e39f-80f2-9bea-dde6dbf0e17a" class="bulleted-list"><li style="list-style-type:disc">positive = реальный следующий item;</li></ul><ul id="2aa568fa-e39f-804b-ab58-e2869bce47cc" class="bulleted-list"><li style="list-style-type:disc">несколько negative items.</li></ul></li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-80f3-8ace-fdd76be43614" class="bulleted-list"><li style="list-style-type:disc">Mini-batches:<ul id="2aa568fa-e39f-8049-b34c-f0434172a190" class="bulleted-list"><li style="list-style-type:circle">батчи сессий, паддинг, <code>pack_padded_sequence</code> / маски.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809e-9893-e2964830e077" class="numbered-list" start="4"><li><strong>Особенности</strong><ul id="2aa568fa-e39f-803f-bfac-d6d996ec4315" class="bulleted-list"><li style="list-style-type:disc">Часто:<ul id="2aa568fa-e39f-80ad-a48a-c1ef96bbeeb6" class="bulleted-list"><li style="list-style-type:circle">берём только одну цель на сессию (последний шаг),</li></ul><ul id="2aa568fa-e39f-808e-ad61-e2557db4c8a6" class="bulleted-list"><li style="list-style-type:circle">или предсказываем каждый следующий шаг (многотаргетный тренинг).</li></ul></li></ul><ul id="2aa568fa-e39f-8058-95a9-ef50f2135931" class="bulleted-list"><li style="list-style-type:disc">Можно использовать:<ul id="2aa568fa-e39f-80eb-a8a0-dfde6022ece2" class="bulleted-list"><li style="list-style-type:circle">только <code>h_last</code> (финальное состояние) или весь sequence.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-800e-9923-daf2ba3e4bd8" class="numbered-list" start="5"><li><strong>Почему это лучше, чем kNN/co-occurrence</strong><ul id="2aa568fa-e39f-80f9-8310-d1621785290c" class="bulleted-list"><li style="list-style-type:disc">RNN может:<ul id="2aa568fa-e39f-8082-b422-db90ce61db27" class="bulleted-list"><li style="list-style-type:circle">различать разные паттерны внутри сессий;</li></ul><ul id="2aa568fa-e39f-8040-aa6f-cd2dd21adb7f" class="bulleted-list"><li style="list-style-type:circle">учитывать порядок (A → B → C ≠ C → B → A);</li></ul><ul id="2aa568fa-e39f-80ee-80ed-fa1b9beba5c7" class="bulleted-list"><li style="list-style-type:circle">работать с длинными сессиями, где простые совпадения уже шумят.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-809e-bf27-d132f0b03ec4" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8041-b52a-e6f505fb003c" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке (PyTorch / TF, неважно — главное концепт):<ol type="1" id="2aa568fa-e39f-800d-8992-db24a00402e7" class="numbered-list" start="1"><li>Подготовка данных:<ul id="2aa568fa-e39f-8023-8aac-cbfdd01d717e" class="bulleted-list"><li style="list-style-type:disc">каждую сессию представить как список item_id;</li></ul><ul id="2aa568fa-e39f-80ce-9f64-c9a656894f9d" class="bulleted-list"><li style="list-style-type:disc">обрезать/паддить до max_len (например, 20–50);</li></ul><ul id="2aa568fa-e39f-80b3-bc76-c15acc0779d6" class="bulleted-list"><li style="list-style-type:disc">сформировать пары:<ul id="2aa568fa-e39f-80aa-8794-ca62d37a20b9" class="bulleted-list"><li style="list-style-type:circle">вход: <code>[i₁, ..., i_{T-1}]</code>;</li></ul><ul id="2aa568fa-e39f-809d-9499-f3bba5bd4da2" class="bulleted-list"><li style="list-style-type:circle">target: <code>[i₂, ..., i_T]</code> (предсказываем следующий item на каждом шаге).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803b-b0f4-d434454d0577" class="numbered-list" start="2"><li>Модель (очень упрощённый код-скетч):<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8008-b4d1-faa695db5a87" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class GRU4Rec(nn.Module):
+    def __init__(self, n_items, emb_dim=64, hidden_dim=128):
+        super().__init__()
+        self.item_emb = nn.Embedding(n_items, emb_dim, padding_idx=0)
+        self.gru = nn.GRU(emb_dim, hidden_dim, batch_first=True)
+        self.output = nn.Linear(hidden_dim, n_items)
+
+    def forward(self, input_seq):
+        x = self.item_emb(input_seq)        # [B, T, emb_dim]
+        h, _ = self.gru(x)                  # [B, T, hidden_dim]
+        logits = self.output(h)             # [B, T, n_items]
+        return logits
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-8000-bf56-c997b6d25481" class="numbered-list" start="3"><li>Обучить модель на подмножестве:<ul id="2aa568fa-e39f-8036-b806-e8cebe70f058" class="bulleted-list"><li style="list-style-type:disc">посчитать cross-entropy по таргетам;</li></ul><ul id="2aa568fa-e39f-80a0-b0ef-ddaf2abb9da2" class="bulleted-list"><li style="list-style-type:disc">научиться хотя бы не «падать» и сходиться.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8076-a5ea-effae3ffc977" class="numbered-list" start="4"><li>Inference:<ul id="2aa568fa-e39f-8090-b36b-def01765f286" class="bulleted-list"><li style="list-style-type:disc">для валидационной сессии:<ul id="2aa568fa-e39f-807c-9dab-cb47ffe04201" class="bulleted-list"><li style="list-style-type:circle">берём prefix <code>[i₁, ..., iₜ]</code>;</li></ul><ul id="2aa568fa-e39f-80b6-8d8f-fd9f87ef1183" class="bulleted-list"><li style="list-style-type:circle">прогоняем через GRU;</li></ul><ul id="2aa568fa-e39f-804e-ad92-fe0b61b97980" class="bulleted-list"><li style="list-style-type:circle">берем <code>h_t</code> и <code>logits_t</code>;</li></ul><ul id="2aa568fa-e39f-80e1-b748-d691822e48c3" class="bulleted-list"><li style="list-style-type:circle">сортируем по логитам, берём top-K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c8-9b52-f1d485a4346c" class="numbered-list" start="5"><li>Встроить в eval-фреймворк:<ul id="2aa568fa-e39f-8037-8921-da036fae0a48" class="bulleted-list"><li style="list-style-type:disc">считать Recall@K / MRR / NDCG@K по session-level.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8000-b7a6-ee99a278b343" class="">Домашка 6.3</h3><ol type="1" id="2aa568fa-e39f-8096-b2ce-e1ca8ed86de9" class="numbered-list" start="1"><li>Провести эксперименты:<ul id="2aa568fa-e39f-8031-a00c-e911f439d147" class="bulleted-list"><li style="list-style-type:disc">сравнить (на одном и том же split’е):<ul id="2aa568fa-e39f-80db-b523-d5245235a460" class="bulleted-list"><li style="list-style-type:circle">session-based kNN / co-occurrence;</li></ul><ul id="2aa568fa-e39f-80f3-939a-c4fe9ebf03d7" class="bulleted-list"><li style="list-style-type:circle">GRU-модель.</li></ul></li></ul><ul id="2aa568fa-e39f-808a-972e-f3828ad0c2fc" class="bulleted-list"><li style="list-style-type:disc">По метрикам:<ul id="2aa568fa-e39f-80ef-8c33-e0bb7435e60b" class="bulleted-list"><li style="list-style-type:circle">Recall@K;</li></ul><ul id="2aa568fa-e39f-80b1-a84f-c7a851d99a71" class="bulleted-list"><li style="list-style-type:circle">MRR@K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c1-bc48-c277d6576f3d" class="numbered-list" start="2"><li>Написать вывод:<ul id="2aa568fa-e39f-8044-a539-e13772c2236a" class="bulleted-list"><li style="list-style-type:disc">где GRU даёт явный прирост (по длине сессии, по типу событий);</li></ul><ul id="2aa568fa-e39f-807f-9494-eb4b5ee6e481" class="bulleted-list"><li style="list-style-type:disc">насколько сильно это «дороже» по времени/ресурсам.</li></ul></li></ol><hr id="2aa568fa-e39f-800e-b21e-e1a5774efcf5"/><h2 id="2aa568fa-e39f-8094-86ba-ee2ba4d1aad1" class="">Урок 6.4. Attention/Transformers (SASRec/BERT4Rec) и интеграция в pipeline</h2><h3 id="2aa568fa-e39f-80c9-81f5-f59ad1236984" class="">Цели</h3><ul id="2aa568fa-e39f-8010-9757-fc011c0ef118" class="bulleted-list"><li style="list-style-type:disc">Объяснить идею <strong>self-attention в последовательностях</strong>:<ul id="2aa568fa-e39f-8088-8353-f1b45ccecbcd" class="bulleted-list"><li style="list-style-type:circle">почему attention лучше RNN в RecSys;</li></ul></li></ul><ul id="2aa568fa-e39f-80ff-8a96-f726b1f89781" class="bulleted-list"><li style="list-style-type:disc">Дать упрощённый вариант SASRec/BERT4Rec:<ul id="2aa568fa-e39f-8007-9af1-ce0f32e43e34" class="bulleted-list"><li style="list-style-type:circle">item embeddings → позиционные эмбеддинги → Transformer encoder;</li></ul></li></ul><ul id="2aa568fa-e39f-805d-ae6c-c9e63bd0c814" class="bulleted-list"><li style="list-style-type:disc">Показать, как sequence-модель живёт внутри <strong>общей архитектуры</strong>:<ul id="2aa568fa-e39f-80f0-a1aa-ca9b1dce591b" class="bulleted-list"><li style="list-style-type:circle">candidate generation;</li></ul><ul id="2aa568fa-e39f-8021-868a-dd057de6fc46" class="bulleted-list"><li style="list-style-type:circle">ranking;</li></ul><ul id="2aa568fa-e39f-8086-b903-e082dd36e18a" class="bulleted-list"><li style="list-style-type:circle">multi-objective.</li></ul></li></ul><h3 id="2aa568fa-e39f-80e5-a57f-d0b1dfec54fc" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80fd-a6ce-ebde1ddbe48a" class="numbered-list" start="1"><li><strong>Проблемы RNN в RecSys</strong><ul id="2aa568fa-e39f-801b-ac66-fb51d0ee6d1a" class="bulleted-list"><li style="list-style-type:disc">Последовательное вычисление:<ul id="2aa568fa-e39f-8031-bd14-c3ddb5cf0f1a" class="bulleted-list"><li style="list-style-type:circle">плохо параллелится → медленнее тренинг.</li></ul></li></ul><ul id="2aa568fa-e39f-80ad-8896-dba155bcb42a" class="bulleted-list"><li style="list-style-type:disc">Учет дальнего контекста:<ul id="2aa568fa-e39f-80cb-97c5-ebffb92e9015" class="bulleted-list"><li style="list-style-type:circle">RNN сложно хранить информацию из далёкого прошлого.</li></ul></li></ul><ul id="2aa568fa-e39f-8047-b305-cf3f973f39d6" class="bulleted-list"><li style="list-style-type:disc">В RecSys нам важны:<ul id="2aa568fa-e39f-806e-a120-f1ce52fda58e" class="bulleted-list"><li style="list-style-type:circle">и «прошлые паттерны»,</li></ul><ul id="2aa568fa-e39f-80de-a9f0-c413bebc6d9d" class="bulleted-list"><li style="list-style-type:circle">и последние действия, и всё вместе.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8074-a1c5-dd7f74810799" class="numbered-list" start="2"><li><strong>Self-attention: базовая идея</strong><ul id="2aa568fa-e39f-8084-953c-da0d5990725f" class="bulleted-list"><li style="list-style-type:disc">На входе последовательность embeddings <code>[e₁, e₂, …, e_T]</code>.</li></ul><ul id="2aa568fa-e39f-803f-b38e-d130d482da82" class="bulleted-list"><li style="list-style-type:disc">Self-attention позволяет каждому элементу «смотреть» на другие и решать:<ul id="2aa568fa-e39f-80aa-b1d4-d99371ba5ae9" class="bulleted-list"><li style="list-style-type:circle">кто для него важен;</li></ul><ul id="2aa568fa-e39f-8086-b90b-e6ed0231b23a" class="bulleted-list"><li style="list-style-type:circle">какие связи сильные (например, 1-й и 3-й товар часто покупают вместе, а 2-й — случайный).</li></ul></li></ul><ul id="2aa568fa-e39f-8056-9732-c7b58f087c83" class="bulleted-list"><li style="list-style-type:disc">Плюсы:<ul id="2aa568fa-e39f-805f-b137-efbf9234c666" class="bulleted-list"><li style="list-style-type:circle">параллелизм;</li></ul><ul id="2aa568fa-e39f-805f-a49d-d04e205b9608" class="bulleted-list"><li style="list-style-type:circle">гибкая модель зависимостей.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809e-b095-c5d515079d5b" class="numbered-list" start="3"><li><strong>SASRec (упрощённо)</strong><ul id="2aa568fa-e39f-8049-b758-ed4d4a240160" class="bulleted-list"><li style="list-style-type:disc">Односторонний (causal) attention:<ul id="2aa568fa-e39f-805c-a10e-f78291264271" class="bulleted-list"><li style="list-style-type:circle">на позиции t учитываем только <code>≤ t</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-80b2-943e-d1ef09b0eadd" class="bulleted-list"><li style="list-style-type:disc">Архитектура:<ul id="2aa568fa-e39f-80a3-ad57-cc0a2e5891f8" class="bulleted-list"><li style="list-style-type:circle">item embedding + position embedding;</li></ul><ul id="2aa568fa-e39f-8052-9936-ed541534e0a1" class="bulleted-list"><li style="list-style-type:circle">несколько слоёв Transformer encoder (masked multi-head attention);</li></ul><ul id="2aa568fa-e39f-8084-977b-c6bc776fa91a" class="bulleted-list"><li style="list-style-type:circle">на каждом шаге предсказываем следующий item.</li></ul></li></ul><ul id="2aa568fa-e39f-8074-9b2d-db1b9e9faceb" class="bulleted-list"><li style="list-style-type:disc">Loss:<ul id="2aa568fa-e39f-800f-a0ec-f0fdd72d67d3" class="bulleted-list"><li style="list-style-type:circle">опять же cross-entropy по следующему item / sampled softmax.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80f4-8f40-e12a98731113" class="numbered-list" start="4"><li><strong>BERT4Rec (упрощённо)</strong><ul id="2aa568fa-e39f-8005-be96-cf6520f70b4f" class="bulleted-list"><li style="list-style-type:disc">Двунаправленный attention:<ul id="2aa568fa-e39f-80f2-ae76-fc7fd80d960a" class="bulleted-list"><li style="list-style-type:circle">модель смотрит на всю последовательность.</li></ul></li></ul><ul id="2aa568fa-e39f-8061-b1f3-c60c013f583f" class="bulleted-list"><li style="list-style-type:disc">Pretraining-style:<ul id="2aa568fa-e39f-8021-83fa-da04c0d070ae" class="bulleted-list"><li style="list-style-type:circle">маскируем некоторые позиции в последовательности;</li></ul><ul id="2aa568fa-e39f-804b-ab98-cda6a5328eaf" class="bulleted-list"><li style="list-style-type:circle">предсказываем замаскированные items.</li></ul></li></ul><ul id="2aa568fa-e39f-806c-bd8f-f06e07335492" class="bulleted-list"><li style="list-style-type:disc">Больше как language model, но для item’ов.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80bc-b017-c65b0a0d5cbc" class="numbered-list" start="5"><li><strong>Интеграция в RecSys pipeline</strong><ul id="2aa568fa-e39f-8035-8bd9-da2b64e2b2be" class="bulleted-list"><li style="list-style-type:disc">Sequence-model как <strong>score-функция</strong> для пар (user, item):<ul id="2aa568fa-e39f-80b5-b671-c4ebb910cf37" class="bulleted-list"><li style="list-style-type:circle">в training:<ul id="2aa568fa-e39f-8057-90bd-d0e8649a90a0" class="bulleted-list"><li style="list-style-type:square">учим «на лету»;</li></ul></li></ul><ul id="2aa568fa-e39f-8058-b833-e0c6bcca3b62" class="bulleted-list"><li style="list-style-type:circle">в inference:<ul id="2aa568fa-e39f-809b-bbcd-ea5753397cef" class="bulleted-list"><li style="list-style-type:square">обычно sequence-модель — <strong>ранкер</strong>:<ul id="2aa568fa-e39f-8076-9745-c56ec9d827fc" class="bulleted-list"><li style="list-style-type:disc">candidate generation делают более простые / быстрые модели (pop, co-occurrence, MF, content);</li></ul><ul id="2aa568fa-e39f-80ad-834f-c35f5f0d7d9c" class="bulleted-list"><li style="list-style-type:disc">sequence-модель получает 100–200 кандидатов + сессию → пересортировывает.</li></ul></li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-807d-9247-d8175b4cb4f2" class="bulleted-list"><li style="list-style-type:disc">Можно mixing:<ul id="2aa568fa-e39f-80b9-bc4f-f41b1f855ed3" class="bulleted-list"><li style="list-style-type:circle"><code>score_final = w_seq * score_seq + w_mf * score_mf + w_pop * score_pop</code>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-802f-bb4a-d7668baf350a" class="numbered-list" start="6"><li><strong>Multi-objective extension</strong><ul id="2aa568fa-e39f-80a3-8ca0-fbf012a7e630" class="bulleted-list"><li style="list-style-type:disc">Можно добавить несколько выходных голов:<ul id="2aa568fa-e39f-80b6-a2d2-de0079759aaa" class="bulleted-list"><li style="list-style-type:circle">клик / корзина / покупка;</li></ul></li></ul><ul id="2aa568fa-e39f-80ee-a315-c76177e534f6" class="bulleted-list"><li style="list-style-type:disc">Multi-task loss:<ul id="2aa568fa-e39f-8090-b145-ee15771752dc" class="bulleted-list"><li style="list-style-type:circle">сумма лоссов с весами;</li></ul></li></ul><ul id="2aa568fa-e39f-8062-8cac-e917853e4118" class="bulleted-list"><li style="list-style-type:disc">Это уже подводка к модулю про multi-objective (у тебя он есть позже).</li></ul></li></ol><h3 id="2aa568fa-e39f-8099-bf09-f240f9af4879" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8044-ab4f-e3d467f13f82" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-80da-bf34-e0af9cb377e5" class="numbered-list" start="1"><li>Собрать простой <strong>Transformer-based sequence-модель</strong>:<ul id="2aa568fa-e39f-807f-901d-ec0b5414e51c" class="bulleted-list"><li style="list-style-type:disc">Embedding слой;</li></ul><ul id="2aa568fa-e39f-8005-8c35-cf62cb693c92" class="bulleted-list"><li style="list-style-type:disc">Position embedding;</li></ul><ul id="2aa568fa-e39f-80b9-8ff1-d2691114e4ee" class="bulleted-list"><li style="list-style-type:disc">1–2 слоя <code>nn.TransformerEncoder</code> (PyTorch);</li></ul><ul id="2aa568fa-e39f-800b-9ff1-da31f9241f5b" class="bulleted-list"><li style="list-style-type:disc">linear output → logits по items.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e9-b1af-e11051290d10" class="numbered-list" start="2"><li>Обучить на subset (как и GRU):<ul id="2aa568fa-e39f-80ff-a9cc-e0fe5cd5dd92" class="bulleted-list"><li style="list-style-type:disc">вход: последовательность <code>[i₁, ..., i_{T-1}]</code>;</li></ul><ul id="2aa568fa-e39f-800d-bb0d-d89e83c0ed3d" class="bulleted-list"><li style="list-style-type:disc">target: <code>[i₂, ..., i_T]</code>;</li></ul><ul id="2aa568fa-e39f-80f1-80b4-e731cd0d88dd" class="bulleted-list"><li style="list-style-type:disc">masked attention, чтобы не смотреть в будущее.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8042-91f4-d8a13b1532ba" class="numbered-list" start="3"><li>Inference:<ul id="2aa568fa-e39f-80f3-af44-efec23b19c2a" class="bulleted-list"><li style="list-style-type:disc">как в GRU кейсе: берём prefix, прогоняем, берём последние logits.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-802d-b0a1-e7f8069e0f78" class="numbered-list" start="4"><li>Сравнение с GRU:<ul id="2aa568fa-e39f-803e-baef-dd62d8cdfcbf" class="bulleted-list"><li style="list-style-type:disc">по Recall@K / MRR;</li></ul><ul id="2aa568fa-e39f-801d-9006-f374d8e59f2c" class="bulleted-list"><li style="list-style-type:disc">по скорости обучения (эпохи быстрее/дольше);</li></ul><ul id="2aa568fa-e39f-805a-b2f5-fc28a253bb19" class="bulleted-list"><li style="list-style-type:disc">по поведению на длинных сессиях.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-809a-ad1b-cd59bb300502" class="">Домашка 6.4</h3><ol type="1" id="2aa568fa-e39f-801f-ab7d-c3cec2c7e677" class="numbered-list" start="1"><li>Сравнить три уровня:<ul id="2aa568fa-e39f-8058-a1b7-e146f4eb2a60" class="bulleted-list"><li style="list-style-type:disc">session-based kNN / co-occurrence;</li></ul><ul id="2aa568fa-e39f-8033-a31b-dbd58ee6a917" class="bulleted-list"><li style="list-style-type:disc">GRU4Rec;</li></ul><ul id="2aa568fa-e39f-8025-a76e-dad9f1e86524" class="bulleted-list"><li style="list-style-type:disc">Transformer (упрощённый SASRec-like).</li></ul><p id="2aa568fa-e39f-807b-92b3-f54fc1d077f4" class="">По:</p><ul id="2aa568fa-e39f-800d-ab66-ffcbea4672ca" class="bulleted-list"><li style="list-style-type:disc">Recall@K;</li></ul><ul id="2aa568fa-e39f-807c-a56f-e73388dc00c2" class="bulleted-list"><li style="list-style-type:disc">MRR@K;</li></ul><ul id="2aa568fa-e39f-806b-9ed0-d99459ebbb16" class="bulleted-list"><li style="list-style-type:disc">скорости обучения/инференса.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80f1-a4ed-fbe5cbb760ea" class="numbered-list" start="2"><li>Описать, как ты встроишь sequence-модель в <strong>общий рекомендательный пайплайн</strong>:<ul id="2aa568fa-e39f-8020-897e-efb71517f41b" class="bulleted-list"><li style="list-style-type:disc">что будет candidate generator:<ul id="2aa568fa-e39f-80f3-9c5c-c0e9cc347d74" class="bulleted-list"><li style="list-style-type:circle">популярность;</li></ul><ul id="2aa568fa-e39f-80b7-8330-eff5097701bb" class="bulleted-list"><li style="list-style-type:circle">MF / CF;</li></ul><ul id="2aa568fa-e39f-808c-a636-c2245ecdff8b" class="bulleted-list"><li style="list-style-type:circle">graph-based;</li></ul></li></ul><ul id="2aa568fa-e39f-808f-9a32-e447121ad814" class="bulleted-list"><li style="list-style-type:disc">что будет ranker:<ul id="2aa568fa-e39f-80ab-ab1d-f68c8f8d8cc3" class="bulleted-list"><li style="list-style-type:circle">sequence-модель + feature-based model;</li></ul></li></ul><ul id="2aa568fa-e39f-8031-8dc7-ccc189f326f0" class="bulleted-list"><li style="list-style-type:disc">как ты будешь валидироваться.</li></ul></li></ol><hr id="2aa568fa-e39f-80a5-a2c0-dd7287b8b3fe"/><h2 id="2aa568fa-e39f-80bd-873e-e7f18767ab96" class="">Мини-проект по модулю 6</h2><p id="2aa568fa-e39f-800d-9a3d-f0cd023de1ec" class=""><strong>Название:</strong></p><p id="2aa568fa-e39f-805b-83ce-dacc06d39461" class="">«Сессионный рекомендашн от kNN до Transformer’а»</p><p id="2aa568fa-e39f-80eb-9db2-e75da6d72b1e" class=""><strong>Задачи:</strong></p><ol type="1" id="2aa568fa-e39f-8087-8117-f379182c6fa1" class="numbered-list" start="1"><li>Взять <strong>реальный или соревовой session-based датасет</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-80fb-9f89-d072c97f6483" class="numbered-list" start="2"><li>Реализовать минимум 3 модели:<ul id="2aa568fa-e39f-8027-ad88-e02f6e0c4812" class="bulleted-list"><li style="list-style-type:disc">session-based kNN / co-occurrence;</li></ul><ul id="2aa568fa-e39f-8015-9394-cddb42731e76" class="bulleted-list"><li style="list-style-type:disc">GRU4Rec-подобную;</li></ul><ul id="2aa568fa-e39f-8071-bd9b-e958460094a6" class="bulleted-list"><li style="list-style-type:disc">упрощённую Transformer (SASRec-like).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-806d-98d1-eed180630f88" class="numbered-list" start="3"><li>Встроить всё в eval-фреймворк (модуль 2):<ul id="2aa568fa-e39f-8019-becd-fc5be2b000ca" class="bulleted-list"><li style="list-style-type:disc">одинаковый split (time-based / session-based);</li></ul><ul id="2aa568fa-e39f-8020-a61a-e955d163e2ee" class="bulleted-list"><li style="list-style-type:disc">одинаковые метрики (Recall@K, MRR, NDCG@K).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8027-b9aa-ca1346aaeb28" class="numbered-list" start="4"><li>Провести эксперименты:<ul id="2aa568fa-e39f-804b-8dae-d3a0ddc058e4" class="bulleted-list"><li style="list-style-type:disc">сравнить модели по метрикам;</li></ul><ul id="2aa568fa-e39f-8046-b8c8-eb3fc02d2bdc" class="bulleted-list"><li style="list-style-type:disc">отдельно посмотреть, как они ведут себя:<ul id="2aa568fa-e39f-8071-bf1a-ea11acb0d8eb" class="bulleted-list"><li style="list-style-type:circle">на коротких сессиях (длина 2–3);</li></ul><ul id="2aa568fa-e39f-80e2-9297-fd783a235f76" class="bulleted-list"><li style="list-style-type:circle">на длинных сессиях (10+);</li></ul></li></ul><ul id="2aa568fa-e39f-80f6-b929-df353f6f8695" class="bulleted-list"><li style="list-style-type:disc">оценить, где сложные модели реально добавляют value.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-800e-be39-dc838aa28643" class="numbered-list" start="5"><li>Написать отчёт:<ul id="2aa568fa-e39f-80b9-a2f8-e6022c9aac32" class="bulleted-list"><li style="list-style-type:disc">постановка задачи;</li></ul><ul id="2aa568fa-e39f-8042-aff5-c633e3bc45f9" class="bulleted-list"><li style="list-style-type:disc">описание моделей;</li></ul><ul id="2aa568fa-e39f-80f8-b34e-c526a91aec55" class="bulleted-list"><li style="list-style-type:disc">сравнительная таблица;</li></ul><ul id="2aa568fa-e39f-80a1-8852-c5331bd2a8c7" class="bulleted-list"><li style="list-style-type:disc">анализ trade-off’ов:<ul id="2aa568fa-e39f-8025-a894-cc1210b0006f" class="bulleted-list"><li style="list-style-type:circle">качество vs сложность;</li></ul><ul id="2aa568fa-e39f-8052-8791-e7a7ab86b7b2" class="bulleted-list"><li style="list-style-type:circle">где kNN «достаточно хороший»,</li></ul><ul id="2aa568fa-e39f-8013-9e76-fe45c217aa54" class="bulleted-list"><li style="list-style-type:circle">где оправдано платить за GRU/Transformer.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-802a-947e-efb902a99101"/><p id="2aa568fa-e39f-80fd-822c-e77c0838ed31" class="">Дальше курс логично уводить в <strong>multi-objective + графовые модели (LightGCN/PinSage)</strong> или в <strong>production-пайплайн retrieval + ranking</strong>, как ты и планировал в общем скелете.</p><p id="2aa568fa-e39f-8097-a5e7-f60811fea96a" class="">Если хочешь, могу следующим шагом так же детально расписать <strong>Модуль 7 (multi-objective и multi-task RecSys)</strong> или <strong>Модуль 8 (graph-based)</strong> — какой тебе сейчас нужнее под общую картину курса?</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

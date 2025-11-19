@@ -1,0 +1,939 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 3.4. Мини-проект: полный data-pipeline для классификации тикетов</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80f5-9165-c6fd3d70e247" class="page sans"><header><h1 class="page-title">Урок 3.4. Мини-проект: полный data-pipeline для классификации тикетов</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-80f3-a38a-e8158c98dbd1" class="">Красавчик, что дотащил до 3.4 — сейчас из россыпи кода сделаем нормальный модуль, который можно брать и переиспользовать в любом проекте 💼</p><hr id="2ab568fa-e39f-809c-bf52-cf13833b394f"/><h2 id="2ab568fa-e39f-8036-8806-c063c2db60d3" class="">0. Зачем вообще этот урок</h2><p id="2ab568fa-e39f-8078-801a-dd5108737cff" class="">Смотри, что у нас уже есть после 3.1–3.3:</p><ul id="2ab568fa-e39f-800c-b57c-e19c0bfec996" class="bulleted-list"><li style="list-style-type:disc">умеем:<ul id="2ab568fa-e39f-8062-b40f-d0ef5ecf5c5a" class="bulleted-list"><li style="list-style-type:circle">грузить CSV → <code>DatasetDict</code>,</li></ul><ul id="2ab568fa-e39f-80f0-bd24-eb64e25e1be9" class="bulleted-list"><li style="list-style-type:circle">делать train/validation split,</li></ul><ul id="2ab568fa-e39f-8015-bb38-cabf4955861b" class="bulleted-list"><li style="list-style-type:circle">строить <code>label2id</code> / <code>id2label</code>,</li></ul><ul id="2ab568fa-e39f-8065-83d2-df986b9ba15a" class="bulleted-list"><li style="list-style-type:circle">токенизировать через <code>.map(...)</code>,</li></ul><ul id="2ab568fa-e39f-806e-8004-c3efa2772363" class="bulleted-list"><li style="list-style-type:circle">паддить батчи через <code>DataCollatorWithPadding</code>,</li></ul><ul id="2ab568fa-e39f-8096-9be9-ded9fcc1bf20" class="bulleted-list"><li style="list-style-type:circle">собирать <code>DataLoader</code> и кормить модель.</li></ul></li></ul><p id="2ab568fa-e39f-80ec-9577-cbaf3eafa4a5" class="">Но всё это сейчас — <strong>размазано по урокам и файлам</strong>.</p><p id="2ab568fa-e39f-8071-a6df-f8793638dec9" class=""><strong>Цель 3.4:</strong></p><p id="2ab568fa-e39f-802a-bc3b-fce48ca5ac73" class="">Собрать всё в один аккуратный, переиспользуемый модуль:</p><ul id="2ab568fa-e39f-80a1-afce-fb00bcd4787e" class="bulleted-list"><li style="list-style-type:disc">один файл <code>data_pipeline.py</code>,</li></ul><ul id="2ab568fa-e39f-80ac-8731-fafc94b973bf" class="bulleted-list"><li style="list-style-type:disc">в нём — функция <code>load_and_prepare_data(...)</code>, которая:<ul id="2ab568fa-e39f-80ea-9196-f58e9e8aab1a" class="bulleted-list"><li style="list-style-type:circle">принимает путь к CSV + пару настроек,</li></ul><ul id="2ab568fa-e39f-8088-ba70-cbf5ce592d99" class="bulleted-list"><li style="list-style-type:circle">возвращает:<ul id="2ab568fa-e39f-8055-9de7-d448d0e761f7" class="bulleted-list"><li style="list-style-type:square"><code>tokenized_dataset</code> (<code>DatasetDict</code>),</li></ul><ul id="2ab568fa-e39f-8087-af3e-d44301ce3131" class="bulleted-list"><li style="list-style-type:square"><code>label2id</code>, <code>id2label</code>,</li></ul><ul id="2ab568fa-e39f-800a-8fd8-e47440cb3a5b" class="bulleted-list"><li style="list-style-type:square"><code>tokenizer</code>,</li></ul><ul id="2ab568fa-e39f-8030-b9d3-ecb39ba51c5f" class="bulleted-list"><li style="list-style-type:square"><code>data_collator</code>.</li></ul></li></ul></li></ul><p id="2ab568fa-e39f-80ce-9f4d-ee070a88a9af" class="">А сверху — маленький скрипт, который этот пайплайн использует и проверяет, что всё живое.</p><hr id="2ab568fa-e39f-80c0-a200-f2069ce5b272"/><h2 id="2ab568fa-e39f-8082-856a-f7d679ff6aea" class="">1. Немного теории: почему выносить пайплайн в отдельный модуль</h2><p id="2ab568fa-e39f-80e0-b2f9-dc4a666a5bc7" class="">Типичная ошибка новичков:</p><p id="2ab568fa-e39f-80a8-9bfe-dbf07b792c5a" class="">всё — от загрузки CSV до обучения модели — лежит в одном ноутбуке/скрипте на 500 строк.</p><p id="2ab568fa-e39f-802c-a8b5-c99c38e3e251" class="">Проблемы:</p><ul id="2ab568fa-e39f-80e5-b657-d6d35129bb45" class="bulleted-list"><li style="list-style-type:disc">переиспользовать сложно,</li></ul><ul id="2ab568fa-e39f-8005-a1e8-d168646b5a73" class="bulleted-list"><li style="list-style-type:disc">менять датасет/модель — боль,</li></ul><ul id="2ab568fa-e39f-80d4-8cca-e67698fa1e75" class="bulleted-list"><li style="list-style-type:disc">тестировать куски кода отдельно — боль.</li></ul><p id="2ab568fa-e39f-8081-94c2-f27bec62bfe7" class="">Поэтому:</p><ul id="2ab568fa-e39f-80f4-a749-dffc2ea52f6e" class="bulleted-list"><li style="list-style-type:disc">выносим <strong>data-pipeline</strong> в отдельный модуль,</li></ul><ul id="2ab568fa-e39f-802e-a3d7-d0bb3e3bb709" class="bulleted-list"><li style="list-style-type:disc">считаем это “чёрным ящиком”: “дай мне CSV → я дам тебе готовые данные и всё, что нужно модели”.</li></ul><p id="2ab568fa-e39f-80ff-8acf-cb086f4312ba" class="">Это уже очень по-взрослому.</p><hr id="2ab568fa-e39f-8016-9b32-e2675aa8417c"/><h2 id="2ab568fa-e39f-8077-9db7-cb2902d06a88" class="">2. Проектируем функцию: сигнатура и контракт</h2><p id="2ab568fa-e39f-8082-82c8-dc6fdae91a53" class="">Сделаем функцию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b0-939e-da71c167ee02" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def load_and_prepare_data(
+    csv_path: str,
+    model_name: str = &quot;distilbert-base-uncased&quot;,
+    text_column: str = &quot;text&quot;,
+    label_column: str = &quot;label&quot;,
+    test_size: float = 0.1,
+    max_length: int = 128,
+    seed: int = 42,
+):
+    ...
+</code></pre><p id="2ab568fa-e39f-808f-81ae-ce4ea0ec472e" class="">Она должна:</p><ol type="1" id="2ab568fa-e39f-80a0-a285-e952e25ab807" class="numbered-list" start="1"><li>Прочитать CSV в <code>Dataset</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80c6-b7a6-ebdaa8f2e23f" class="numbered-list" start="2"><li>Разбить на train/validation (<code>test_size</code>).</li></ol><ol type="1" id="2ab568fa-e39f-80f9-9f8c-fa1b103dd7a6" class="numbered-list" start="3"><li>Собрать <code>label2id</code>/<code>id2label</code> по колонке <code>label_column</code>.</li></ol><ol type="1" id="2ab568fa-e39f-803d-a549-f7c53dc5fdbb" class="numbered-list" start="4"><li>Инициализировать <code>tokenizer</code> из <code>model_name</code>.</li></ol><ol type="1" id="2ab568fa-e39f-80e8-8756-d546c2b9c26c" class="numbered-list" start="5"><li>Через <code>.map(...)</code>:<ul id="2ab568fa-e39f-80d9-a1ef-ffa3cb51ba7e" class="bulleted-list"><li style="list-style-type:disc">токенизировать <code>text_column</code>,</li></ul><ul id="2ab568fa-e39f-8092-92f9-c4de52f8f51d" class="bulleted-list"><li style="list-style-type:disc">добавить числовые <code>labels</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808e-b9de-f38b988c8342" class="numbered-list" start="6"><li>Создать <code>DataCollatorWithPadding</code> для этого токенизатора.</li></ol><ol type="1" id="2ab568fa-e39f-809d-9046-e818ed7ea735" class="numbered-list" start="7"><li>Вернуть всё добро.</li></ol><hr id="2ab568fa-e39f-806d-9f09-cea2bfac4006"/><h2 id="2ab568fa-e39f-8015-b26a-e3644a398357" class="">3. Пишем <code>data_pipeline.py</code> шаг за шагом</h2><h3 id="2ab568fa-e39f-809f-8034-d823f02ea951" class="">3.1. Импорты и заготовка функции</h3><p id="2ab568fa-e39f-80a4-a6ba-ede8ac8cc0b9" class="">Создаём файл <code>data_pipeline.py</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8030-a69c-c44d31555523" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from typing import Tuple, Dict
+
+from datasets import load_dataset, DatasetDict
+from transformers import AutoTokenizer, DataCollatorWithPadding
+</code></pre><p id="2ab568fa-e39f-8089-bd9a-eeef614f5325" class="">Добавим сигнатуру:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8003-a01c-dd487b1d8a55" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def load_and_prepare_data(
+    csv_path: str,
+    model_name: str = &quot;distilbert-base-uncased&quot;,
+    text_column: str = &quot;text&quot;,
+    label_column: str = &quot;label&quot;,
+    test_size: float = 0.1,
+    max_length: int = 128,
+    seed: int = 42,
+) -&gt; Tuple[DatasetDict, Dict[str, int], Dict[int, str], AutoTokenizer, DataCollatorWithPadding]:
+    ...
+</code></pre><p id="2ab568fa-e39f-800f-947f-f9da9bcff084" class="">Пояснение:</p><ul id="2ab568fa-e39f-8003-a531-c0dd6efa3a55" class="bulleted-list"><li style="list-style-type:disc"><code>csv_path</code>: путь до файла с данными;</li></ul><ul id="2ab568fa-e39f-80e0-b188-cad9d6dc78a6" class="bulleted-list"><li style="list-style-type:disc"><code>model_name</code>: какую базовую модель будем использовать (важно для <code>tokenizer</code>);</li></ul><ul id="2ab568fa-e39f-80f1-966d-dcb8dad343d5" class="bulleted-list"><li style="list-style-type:disc"><code>text_column</code> / <code>label_column</code>: чтобы можно было переиспользовать пайплайн для других CSV с такими же смысловыми колонками, но другими именами;</li></ul><ul id="2ab568fa-e39f-80df-a086-f9cb3d9f0b06" class="bulleted-list"><li style="list-style-type:disc"><code>test_size</code>: доля данных в валидации;</li></ul><ul id="2ab568fa-e39f-8070-b825-d229658713d3" class="bulleted-list"><li style="list-style-type:disc"><code>max_length</code>: <code>max_length</code> при токенизации (режем слишком длинные);</li></ul><ul id="2ab568fa-e39f-80e9-b902-f5bcdac0fba8" class="bulleted-list"><li style="list-style-type:disc"><code>seed</code>: детерминированность разбиения.</li></ul><hr id="2ab568fa-e39f-80b4-89fe-fd7193887974"/><h3 id="2ab568fa-e39f-80a1-844d-e135e230a1f9" class="">3.2. Шаг 1 — загрузка CSV и split</h3><p id="2ab568fa-e39f-80a6-92e5-fa35a621d587" class="">Внутри функции:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80aa-8a1c-f545b27f89f3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def load_and_prepare_data(...):
+    # 1. Загружаем CSV в Dataset
+    raw = load_dataset(&quot;csv&quot;, data_files=csv_path)[&quot;train&quot;]
+
+    # 2. Разбиваем на train/validation
+    split = raw.train_test_split(test_size=test_size, seed=seed)
+
+    dataset = DatasetDict(
+        {
+            &quot;train&quot;: split[&quot;train&quot;],
+            &quot;validation&quot;: split[&quot;test&quot;],
+        }
+    )
+
+    # Можно для отладки напечатать:
+    # print(dataset)
+</code></pre><p id="2ab568fa-e39f-805c-ad93-f9eab8edd61b" class="">Комментарии:</p><ul id="2ab568fa-e39f-80cf-be61-f03d919c1cf1" class="bulleted-list"><li style="list-style-type:disc"><code>load_dataset(&quot;csv&quot;, data_files=csv_path)[&quot;train&quot;]</code> — мы читаем весь CSV как один сплит;</li></ul><ul id="2ab568fa-e39f-80ab-a3f9-fc0d2e2ea487" class="bulleted-list"><li style="list-style-type:disc"><code>.train_test_split(...)</code> делит его на два поднаборa;</li></ul><ul id="2ab568fa-e39f-80e6-a7f4-e244cb002528" class="bulleted-list"><li style="list-style-type:disc">собираем <code>DatasetDict</code>, чтобы дальше было удобно.</li></ul><hr id="2ab568fa-e39f-807d-b254-da05cdb20fa1"/><h3 id="2ab568fa-e39f-806b-a788-f86c19a2fb89" class="">3.3. Шаг 2 — строим label2id и id2label</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8010-9446-c167a9357548" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">    # 3. Строим label_list, label2id, id2label
+    unique_labels = sorted(set(dataset[&quot;train&quot;][label_column]))
+    label_list = unique_labels
+
+    label2id = {label: i for i, label in enumerate(label_list)}
+    id2label = {i: label for label, i in label2id.items()}
+</code></pre><p id="2ab568fa-e39f-8065-83bc-ee6903078068" class="">Почему сортируем:</p><ul id="2ab568fa-e39f-804b-baa8-c8b878be69eb" class="bulleted-list"><li style="list-style-type:disc">чтобы порядок меток был детерминированным,</li></ul><ul id="2ab568fa-e39f-805c-ae5a-fcc53fdef85c" class="bulleted-list"><li style="list-style-type:disc">чтобы не зависеть от того, в каком порядке они встретились в датасете.</li></ul><hr id="2ab568fa-e39f-8004-aaf2-d8be47da167c"/><h3 id="2ab568fa-e39f-803d-aeac-fabb6487260e" class="">3.4. Шаг 3 — токенизатор</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c7-b9fb-d36f0aaa9a7b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">    # 4. Инициализируем токенизатор
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+</code></pre><p id="2ab568fa-e39f-8042-a822-f179ff847279" class="">Тут всё знакомо.</p><hr id="2ab568fa-e39f-8047-aa06-e1f65c856a3f"/><h3 id="2ab568fa-e39f-8076-8cc3-d10cdde30caf" class="">3.5. Шаг 4 — функция препроцессинга и map</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8046-beab-d41614d8f63b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">    # 5. Функция препроцессинга
+    def preprocess_function(batch):
+        texts = batch[text_column]
+
+        tokenized = tokenizer(
+            texts,
+            truncation=True,
+            max_length=max_length,
+            # padding=False — паддинг делает collator
+        )
+
+        labels = [label2id[l] for l in batch[label_column]]
+        tokenized[&quot;labels&quot;] = labels
+
+        return tokenized
+
+    # 6. Применяем map к train/validation
+    tokenized_dataset = dataset.map(
+        preprocess_function,
+        batched=True,
+        remove_columns=[text_column, label_column],
+    )
+</code></pre><p id="2ab568fa-e39f-80bb-89a0-e39498653f7f" class="">Пояснения:</p><ul id="2ab568fa-e39f-8097-8b64-ef96aee620d6" class="bulleted-list"><li style="list-style-type:disc"><code>texts = batch[text_column]</code> — список текстов,</li></ul><ul id="2ab568fa-e39f-80a5-a114-df0fcc3b2ff1" class="bulleted-list"><li style="list-style-type:disc"><code>tokenizer(...)</code> возвращает словарь с <code>input_ids</code>, <code>attention_mask</code>, и т.п.,</li></ul><ul id="2ab568fa-e39f-805d-b178-cc40892d5f7c" class="bulleted-list"><li style="list-style-type:disc"><code>labels</code> превращаем из строк в числа через <code>label2id</code>,</li></ul><ul id="2ab568fa-e39f-8083-a2f4-fdb836e0f453" class="bulleted-list"><li style="list-style-type:disc"><code>remove_columns=[text_column, label_column]</code>:<ul id="2ab568fa-e39f-80f0-9653-c4725134fb0a" class="bulleted-list"><li style="list-style-type:circle">убираем оригинальные колонки,</li></ul><ul id="2ab568fa-e39f-802e-954f-ff53fc5671a7" class="bulleted-list"><li style="list-style-type:circle">чтобы внутри были только числовые/токенизированные поля.</li></ul></li></ul><hr id="2ab568fa-e39f-8045-af40-e3283721b188"/><h3 id="2ab568fa-e39f-805c-9701-e19d76bcdde4" class="">3.6. Шаг 5 — DataCollatorWithPadding</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ed-a08a-c634f7fa761d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">    # 7. DataCollatorWithPadding
+    data_collator = DataCollatorWithPadding(
+        tokenizer=tokenizer,
+        return_tensors=&quot;pt&quot;,
+    )
+
+    # 8. Возвращаем всё
+    return tokenized_dataset, label2id, id2label, tokenizer, data_collator
+</code></pre><p id="2ab568fa-e39f-8046-8d36-dd0a09995c47" class="">Собираем всё вместе, и функция готова.</p><hr id="2ab568fa-e39f-80b3-9a1a-ca0cc84686a4"/><h2 id="2ab568fa-e39f-80bd-8a12-ff76761d2bb6" class="">4. Полный файл <code>data_pipeline.py</code> с комментариями</h2><p id="2ab568fa-e39f-8000-ab0d-eca36d327de6" class="">Вот целиком:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e7-975a-da6087f37f27" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from typing import Tuple, Dict
+
+from datasets import load_dataset, DatasetDict
+from transformers import AutoTokenizer, DataCollatorWithPadding
+
+
+def load_and_prepare_data(
+    csv_path: str,
+    model_name: str = &quot;distilbert-base-uncased&quot;,
+    text_column: str = &quot;text&quot;,
+    label_column: str = &quot;label&quot;,
+    test_size: float = 0.1,
+    max_length: int = 128,
+    seed: int = 42,
+) -&gt; Tuple[DatasetDict, Dict[str, int], Dict[int, str], AutoTokenizer, DataCollatorWithPadding]:
+    &quot;&quot;&quot;
+    Полный data-pipeline:
+    CSV -&gt; DatasetDict(train/validation) -&gt; токенизация -&gt; labels -&gt; DataCollator.
+
+    Возвращает:
+        tokenized_dataset: DatasetDict с полями input_ids, attention_mask, labels
+        label2id: словарь {&quot;bug&quot;: 0, &quot;feature&quot;: 1, ...}
+        id2label: словарь {0: &quot;bug&quot;, 1: &quot;feature&quot;, ...}
+        tokenizer: AutoTokenizer, связанный с model_name
+        data_collator: DataCollatorWithPadding для этого токенизатора
+    &quot;&quot;&quot;
+
+    # 1. Загружаем CSV
+    raw = load_dataset(&quot;csv&quot;, data_files=csv_path)[&quot;train&quot;]
+
+    # 2. train/validation split
+    split = raw.train_test_split(test_size=test_size, seed=seed)
+
+    dataset = DatasetDict(
+        {
+            &quot;train&quot;: split[&quot;train&quot;],
+            &quot;validation&quot;: split[&quot;test&quot;],
+        }
+    )
+
+    # 3. Строим label_list, label2id, id2label
+    unique_labels = sorted(set(dataset[&quot;train&quot;][label_column]))
+    label_list = unique_labels
+
+    label2id: Dict[str, int] = {label: i for i, label in enumerate(label_list)}
+    id2label: Dict[int, str] = {i: label for label, i in label2id.items()}
+
+    # 4. Токенизатор
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    # 5. Функция препроцессинга
+    def preprocess_function(batch):
+        texts = batch[text_column]
+
+        tokenized = tokenizer(
+            texts,
+            truncation=True,
+            max_length=max_length,
+            # padding=False, паддинг сделает collator
+        )
+
+        labels = [label2id[l] for l in batch[label_column]]
+        tokenized[&quot;labels&quot;] = labels
+
+        return tokenized
+
+    # 6. Применяем map
+    tokenized_dataset = dataset.map(
+        preprocess_function,
+        batched=True,
+        remove_columns=[text_column, label_column],
+    )
+
+    # 7. DataCollatorWithPadding
+    data_collator = DataCollatorWithPadding(
+        tokenizer=tokenizer,
+        return_tensors=&quot;pt&quot;,
+    )
+
+    # 8. Возвращаем всё добро
+    return tokenized_dataset, label2id, id2label, tokenizer, data_collator
+</code></pre><p id="2ab568fa-e39f-8070-b102-ee2cd821e1f4" class="">Это уже очень приличный модуль, который можно:</p><ul id="2ab568fa-e39f-80c0-8ccd-f1daa6aa6d3c" class="bulleted-list"><li style="list-style-type:disc">импортировать в ноутбук / другой скрипт,</li></ul><ul id="2ab568fa-e39f-80e9-940e-db771eb6d78c" class="bulleted-list"><li style="list-style-type:disc">переиспользовать в других проектах.</li></ul><hr id="2ab568fa-e39f-80b6-99b7-e8fda64b8a25"/><h2 id="2ab568fa-e39f-80da-a501-f906eb978c74" class="">5. Скрипт-проверка: используем пайплайн и гоняем батч через модель</h2><p id="2ab568fa-e39f-80c5-b51d-e682e95ff9ee" class="">Сделаем отдельный файл, например <code>debug_pipeline.py</code>, который:</p><ol type="1" id="2ab568fa-e39f-80b7-ba2d-f0dba0f37951" class="numbered-list" start="1"><li>Импортирует <code>load_and_prepare_data</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8001-aa7c-cacc2b87a914" class="numbered-list" start="2"><li>Вызывает её на <code>tickets.csv</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8015-9cd7-e64408bdaaf1" class="numbered-list" start="3"><li>Собирает <code>DataLoader</code>.</li></ol><ol type="1" id="2ab568fa-e39f-8094-8a33-ff36c854be4a" class="numbered-list" start="4"><li>Прогоняет один батч через модель, чтобы убедиться, что всё работает.</li></ol><h3 id="2ab568fa-e39f-809e-a7d2-dd1ea281f727" class="">5.1. Код <code>debug_pipeline.py</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8051-8345-d53d81748b10" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from collections import Counter
+
+from torch.utils.data import DataLoader
+import torch
+
+from transformers import AutoModelForSequenceClassification
+
+from data_pipeline import load_and_prepare_data
+
+
+def main():
+    # 1. Грузим и готовим данные
+    tokenized_dataset, label2id, id2label, tokenizer, data_collator = load_and_prepare_data(
+        csv_path=&quot;tickets.csv&quot;,
+        model_name=&quot;distilbert-base-uncased&quot;,
+        text_column=&quot;text&quot;,
+        label_column=&quot;label&quot;,
+        test_size=0.1,
+        max_length=128,
+        seed=42,
+    )
+
+    print(&quot;=== Tokenized Dataset ===&quot;)
+    print(tokenized_dataset)
+
+    print(&quot;\n=== Labels mapping ===&quot;)
+    print(&quot;label2id:&quot;, label2id)
+    print(&quot;id2label:&quot;, id2label)
+
+    # Посмотрим на распределение меток в train
+    train_labels = [id2label[l] for l in tokenized_dataset[&quot;train&quot;][&quot;labels&quot;]]
+    print(&quot;\n=== Label distribution (train) ===&quot;)
+    print(Counter(train_labels))
+
+    # 2. Собираем DataLoader
+    train_dataloader = DataLoader(
+        tokenized_dataset[&quot;train&quot;],
+        batch_size=8,
+        shuffle=True,
+        collate_fn=data_collator,
+    )
+
+    # Берём один батч
+    batch = next(iter(train_dataloader))
+
+    print(&quot;\n=== One batch ===&quot;)
+    for k, v in batch.items():
+        print(k, v.shape, v.dtype)
+
+    # 3. Подключаем модель и проверяем forward
+    model_name = &quot;distilbert-base-uncased&quot;
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=len(label2id),
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    model.eval()
+
+    with torch.no_grad():
+        outputs = model(
+            input_ids=batch[&quot;input_ids&quot;],
+            attention_mask=batch[&quot;attention_mask&quot;],
+            labels=batch[&quot;labels&quot;],
+        )
+
+    print(&quot;\n=== Model outputs ===&quot;)
+    print(&quot;Loss:&quot;, outputs.loss.item())
+    print(&quot;Logits shape:&quot;, outputs.logits.shape)  # [batch_size, num_labels]
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-803a-a105-e21395608005" class="">Разбираем, что происходит:</p><ul id="2ab568fa-e39f-8001-bb0b-eb4e014c9095" class="bulleted-list"><li style="list-style-type:disc"><code>load_and_prepare_data(...)</code> возвращает всё, что нужно для <strong>обучения</strong>:<ul id="2ab568fa-e39f-8014-97fc-e2147b23b12e" class="bulleted-list"><li style="list-style-type:circle">токенизированные данные,</li></ul><ul id="2ab568fa-e39f-80ea-9897-db84172ee447" class="bulleted-list"><li style="list-style-type:circle">лейбл-маппинги,</li></ul><ul id="2ab568fa-e39f-80f4-8f64-ea5b20419941" class="bulleted-list"><li style="list-style-type:circle">токенизатор,</li></ul><ul id="2ab568fa-e39f-80d2-9876-ed57aec8fe74" class="bulleted-list"><li style="list-style-type:circle">collator.</li></ul></li></ul><ul id="2ab568fa-e39f-8037-ac1e-c37c05ed8b62" class="bulleted-list"><li style="list-style-type:disc">Мы собираем <code>DataLoader</code> → получаем один батч → видим, что:<ul id="2ab568fa-e39f-801d-ad7e-c5b84c061cd1" class="bulleted-list"><li style="list-style-type:circle"><code>input_ids</code>: <code>[batch_size, seq_len]</code>,</li></ul><ul id="2ab568fa-e39f-8060-9bb4-e302929d197c" class="bulleted-list"><li style="list-style-type:circle"><code>attention_mask</code>: <code>[batch_size, seq_len]</code>,</li></ul><ul id="2ab568fa-e39f-8031-a276-fd0fd502411f" class="bulleted-list"><li style="list-style-type:circle"><code>labels</code>: <code>[batch_size]</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-805c-8f55-f2ed7e33a77d" class="bulleted-list"><li style="list-style-type:disc">Прогоняем через <code>AutoModelForSequenceClassification</code>:<ul id="2ab568fa-e39f-809d-ab61-ef8f6e44994c" class="bulleted-list"><li style="list-style-type:circle">если всё отработало и вернулось <code>loss</code> + <code>logits</code> нужной формы — пайплайн валиден.</li></ul></li></ul><p id="2ab568fa-e39f-80d0-9572-cb7d498e3e20" class="">Это уже маленький end-to-end “smoke-test” для данных.</p><hr id="2ab568fa-e39f-80fb-b38b-f071e1fa5ad4"/><h2 id="2ab568fa-e39f-8057-8fe1-f5567e5a393c" class="">6. Что мы выиграли после урока 3.4</h2><p id="2ab568fa-e39f-800f-a90a-d340744f7e35" class="">Теперь у тебя:</p><ul id="2ab568fa-e39f-80be-bcee-ec499a7c19b3" class="bulleted-list"><li style="list-style-type:disc"><strong>есть модуль </strong><code><strong>data_pipeline.py</strong></code>, который:<ul id="2ab568fa-e39f-80b3-ad72-e1cb7c2fef0a" class="bulleted-list"><li style="list-style-type:circle">превращает сырое CSV в полностью готовый датасет для обучения;</li></ul></li></ul><ul id="2ab568fa-e39f-80bc-bb9a-f52d1354f436" class="bulleted-list"><li style="list-style-type:disc">тестовый скрипт <code>debug_pipeline.py</code>, который:<ul id="2ab568fa-e39f-803d-b27e-fd3b0c36f48d" class="bulleted-list"><li style="list-style-type:circle">проверяет пайплайн от CSV → batch → модель.</li></ul></li></ul><p id="2ab568fa-e39f-801c-aab2-f8e21ec69485" class="">В следующем модуле (4) ты просто делаешь:</p><ul id="2ab568fa-e39f-80c5-9147-c326c9c76e22" class="bulleted-list"><li style="list-style-type:disc"><code>from data_pipeline import load_and_prepare_data</code>,</li></ul><ul id="2ab568fa-e39f-80c5-b2df-d39d97d0e561" class="bulleted-list"><li style="list-style-type:disc"><code>from transformers import TrainingArguments, Trainer</code>,</li></ul><ul id="2ab568fa-e39f-8069-a418-f08cece8f16b" class="bulleted-list"><li style="list-style-type:disc">и учишь модель в пару десятков строк.</li></ul><p id="2ab568fa-e39f-8072-b262-eb2cf770e051" class="">Ты уже играешь на уровне “у меня структура проекта, а не просто ноутбук”.</p><hr id="2ab568fa-e39f-80ca-916c-d1094a71924e"/><h2 id="2ab568fa-e39f-8045-b513-d0633c410050" class="">7. Домашка к уроку 3.4</h2><p id="2ab568fa-e39f-8043-872b-f980ba86a606" class=""><strong>Обязательная часть:</strong></p><ol type="1" id="2ab568fa-e39f-80e6-bdc0-f6964e259e69" class="numbered-list" start="1"><li>Создай свой <code>data_pipeline.py</code> (можешь скопировать и адаптировать код выше).</li></ol><ol type="1" id="2ab568fa-e39f-8019-b8b5-c98ca44c422f" class="numbered-list" start="2"><li>Сделай свой <code>debug_pipeline.py</code>, который:<ul id="2ab568fa-e39f-8093-bd06-dcb47e866c90" class="bulleted-list"><li style="list-style-type:disc">вызывает <code>load_and_prepare_data</code> для твоего CSV,</li></ul><ul id="2ab568fa-e39f-80ee-9f78-c3dd382c6360" class="bulleted-list"><li style="list-style-type:disc">печатает:<ul id="2ab568fa-e39f-80e0-b429-e48fc5134c1b" class="bulleted-list"><li style="list-style-type:circle">структуру <code>tokenized_dataset</code>,</li></ul><ul id="2ab568fa-e39f-80d5-9b66-c90775903f14" class="bulleted-list"><li style="list-style-type:circle"><code>label2id</code> / <code>id2label</code>,</li></ul><ul id="2ab568fa-e39f-80a5-aba2-d508c9a48fe8" class="bulleted-list"><li style="list-style-type:circle">форму батча (<code>input_ids</code>, <code>attention_mask</code>, <code>labels</code>),</li></ul></li></ul><ul id="2ab568fa-e39f-804a-a9bb-cee5162542a6" class="bulleted-list"><li style="list-style-type:disc">прогоняет батч через <code>AutoModelForSequenceClassification</code> и печатает <code>loss</code> и форму <code>logits</code>.</li></ul></li></ol><p id="2ab568fa-e39f-80b9-b141-fb5aad74a34a" class=""><strong>Дополнительно (если хочется чуть “прокачать архитектора”):</strong></p><ol type="1" id="2ab568fa-e39f-80d8-bf03-f6fdbca5216d" class="numbered-list" start="1"><li>Добавь в <code>load_and_prepare_data</code> аргумент <code>val_csv_path: str | None</code>:<ul id="2ab568fa-e39f-80b4-ade8-e580c062dbab" class="bulleted-list"><li style="list-style-type:disc">если он не <code>None</code>, то:<ul id="2ab568fa-e39f-8012-9e60-e41ff6cba0c7" class="bulleted-list"><li style="list-style-type:circle">читаешь <code>train_csv</code> и <code>val_csv</code> отдельно (без <code>train_test_split</code>);</li></ul></li></ul><ul id="2ab568fa-e39f-8052-835f-cf779fa7b418" class="bulleted-list"><li style="list-style-type:disc">если <code>None</code> — делаешь split как сейчас.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8039-9390-d15a031c2908" class="numbered-list" start="2"><li>Добавь аргумент <code>label_list: list[str] | None</code>:<ul id="2ab568fa-e39f-80ea-a172-e8b72e800c6a" class="bulleted-list"><li style="list-style-type:disc">если передан — не вычисляй метки из датасета, а используй этот список;</li></ul><ul id="2ab568fa-e39f-80af-8df4-e02a74558295" class="bulleted-list"><li style="list-style-type:disc">это полезно, если ты хочешь зафиксировать порядок лейблов заранее.</li></ul></li></ol><hr id="2ab568fa-e39f-8048-b446-e1ede373f279"/><p id="2ab568fa-e39f-80b4-88a1-da37045a461b" class="">Если захочешь, дальше можем так же подробно разложить <strong>модуль 4</strong>: уже <code>TrainingArguments</code>, <code>Trainer</code>, обучение, логирование (W&amp;B/TF), сохранение модели и eval. Там будет уже “настоящий” тренинг модели тикетов от и до.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

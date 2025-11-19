@@ -1,0 +1,728 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 3. Классическая коллаборативная фильтрация (User-based / Item-based CF)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8060-a19e-dfff9666e233" class="page sans"><header><h1 class="page-title">Модуль 3. Классическая коллаборативная фильтрация (User-based / Item-based CF)</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-80cf-8a1c-daa0f78f2ea4" class=""><strong>После модуля студент должен уметь:</strong></p><ul id="2aa568fa-e39f-80db-af6e-d084f3e77661" class="bulleted-list"><li style="list-style-type:disc">понимать идею <strong>«похожие пользователи → похожие вкусы»</strong>,<p id="2aa568fa-e39f-8018-b153-dbead4258ec0" class="">и <strong>«похожие предметы → похожие рекомендации»</strong>;</p></li></ul><ul id="2aa568fa-e39f-801e-887e-fad94e92d6fa" class="bulleted-list"><li style="list-style-type:disc">реализовывать:<ul id="2aa568fa-e39f-809e-bf09-dd0ab0b34912" class="bulleted-list"><li style="list-style-type:circle">user-based CF;</li></ul><ul id="2aa568fa-e39f-8054-9099-e4309c472dfd" class="bulleted-list"><li style="list-style-type:circle">item-based CF;</li></ul></li></ul><ul id="2aa568fa-e39f-803f-bdf9-c73766e989de" class="bulleted-list"><li style="list-style-type:disc">считать разные меры сходства: cosine, Pearson, Jaccard;</li></ul><ul id="2aa568fa-e39f-8028-b31d-fce5b38b8e75" class="bulleted-list"><li style="list-style-type:disc">делать:<ul id="2aa568fa-e39f-808e-80a7-e20804e3c96f" class="bulleted-list"><li style="list-style-type:circle">предсказание рейтинга/скора;</li></ul><ul id="2aa568fa-e39f-80fb-8879-ff4daee75878" class="bulleted-list"><li style="list-style-type:circle">top-K рекомендации;</li></ul></li></ul><ul id="2aa568fa-e39f-80af-8453-dfa99102a892" class="bulleted-list"><li style="list-style-type:disc">интегрировать CF-модели в <strong>eval-фреймворк из модуля 2</strong> и сравнивать с бейзлайнами из модуля 1;</li></ul><ul id="2aa568fa-e39f-80b4-b5c2-f9a87f85318a" class="bulleted-list"><li style="list-style-type:disc">понимать ограничения CF:<ul id="2aa568fa-e39f-805d-952b-cd7e9a6bf008" class="bulleted-list"><li style="list-style-type:circle">разреженность, холодный старт, масштабируемость.</li></ul></li></ul><hr id="2aa568fa-e39f-80a2-bc43-d08a7d3aee67"/><h2 id="2aa568fa-e39f-8025-ad05-d72a57badde7" class="">Структура модуля</h2><p id="2aa568fa-e39f-80ef-9be5-f5995bfcac56" class="">4 урока + мини-проект:</p><ol type="1" id="2aa568fa-e39f-8009-abfd-cca5c8a2470b" class="numbered-list" start="1"><li><strong>Урок 3.1. Интуиция и математика user-based CF</strong><figure id="2aa568fa-e39f-8083-9bbb-ff22b868a265" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%203%20%D0%9A%D0%BB%D0%B0%D1%81%D1%81%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B1%D0%BE%D1%80%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20(/%D0%A3%D1%80%D0%BE%D0%BA%203%201%20%D0%98%D0%BD%D1%82%D1%83%D0%B8%D1%86%D0%B8%D1%8F%20%D0%B8%20%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0%20user-based%20CF%202aa568fae39f80839bbbff22b868a265.html">Урок 3.1. Интуиция и математика user-based CF</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-80be-b8f8-de27d2fe969d" class="numbered-list" start="2"><li><strong>Урок 3.2. Item-based CF и выбор метрик сходства</strong><figure id="2aa568fa-e39f-8028-a7c4-eaa456d7efc4" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%203%20%D0%9A%D0%BB%D0%B0%D1%81%D1%81%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B1%D0%BE%D1%80%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20(/%D0%A3%D1%80%D0%BE%D0%BA%203%202%20Item-based%20CF%20%D0%B8%20%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%20%D0%BC%D0%B5%D1%82%D1%80%D0%B8%D0%BA%20%D1%81%D1%85%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%B0%202aa568fae39f8028a7c4eaa456d7efc4.html">Урок 3.2. Item-based CF и выбор метрик сходства</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8025-9630-ee914e38756c" class="numbered-list" start="3"><li><strong>Урок 3.3. CF для implicit feedback и топ-K рекомендаций</strong><figure id="2aa568fa-e39f-8072-8cc8-e0f72a34b272" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%203%20%D0%9A%D0%BB%D0%B0%D1%81%D1%81%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B1%D0%BE%D1%80%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20(/%D0%A3%D1%80%D0%BE%D0%BA%203%203%20CF%20%D0%B4%D0%BB%D1%8F%20implicit%20feedback%20%D0%B8%20top-K%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%202aa568fae39f80728cc8e0f72a34b272.html">Урок 3.3. CF для implicit feedback и top-K рекомендаций</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8010-9c67-c2a825fdda36" class="numbered-list" start="4"><li><strong>Урок 3.4. Инженерия, масштабирование и сравнение с бейзлайнами</strong><figure id="2aa568fa-e39f-805b-8631-dbcf33be5289" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%203%20%D0%9A%D0%BB%D0%B0%D1%81%D1%81%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F%20%D0%BA%D0%BE%D0%BB%D0%BB%D0%B0%D0%B1%D0%BE%D1%80%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20(/%D0%A3%D1%80%D0%BE%D0%BA%203%204%20%D0%98%D0%BD%D0%B6%D0%B5%D0%BD%D0%B5%D1%80%D0%B8%D1%8F%20CF,%20%D0%BC%D0%B0%D1%81%D1%88%D1%82%D0%B0%D0%B1%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%B8%20%D1%81%D1%80%D0%B0%D0%B2%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5%202aa568fae39f805b8631dbcf33be5289.html">Урок 3.4. Инженерия CF, масштабирование и сравнение с бейзлайнами</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-80c1-8ade-e3234a186d38" class="numbered-list" start="5"><li><strong>Мини-проект:</strong> CF-модели против популярности и co-occurrence</li></ol><p id="2aa568fa-e39f-8082-87ba-e05a010d8357" class="">Будем работать на <strong>том же датасете/соревновании</strong>, что и в модулях 1–2, чтобы всё ложилось в один пайплайн.</p><hr id="2aa568fa-e39f-8097-8b76-e5d466d81bef"/><h2 id="2aa568fa-e39f-80d6-8e2c-d655e4d7075b" class="">Урок 3.1. Интуиция и математика user-based CF</h2><h3 id="2aa568fa-e39f-806e-ab54-eb97c4cb9838" class="">Цели</h3><ul id="2aa568fa-e39f-8020-b397-e7d73d973d95" class="bulleted-list"><li style="list-style-type:disc">Объяснить идею user-based CF на пальцах.</li></ul><ul id="2aa568fa-e39f-80d5-af5b-c83a340f072b" class="bulleted-list"><li style="list-style-type:disc">Разобрать базовую формулу предсказания рейтинга/скора.</li></ul><ul id="2aa568fa-e39f-8051-8c26-ea500e570167" class="bulleted-list"><li style="list-style-type:disc">Показать, как из матрицы «user–item» извлекаем «похожих пользователей».</li></ul><h3 id="2aa568fa-e39f-8069-95b2-c9b21f8d98d2" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8087-92b0-e120bdc6075e" class="numbered-list" start="1"><li><strong>Интуиция user-based CF</strong><ul id="2aa568fa-e39f-80d0-a792-ec16a1eb2d42" class="bulleted-list"><li style="list-style-type:disc">Если два пользователя ставили похожие оценки/совершали похожие действия:<ul id="2aa568fa-e39f-8058-b0d5-c5a83716a64b" class="bulleted-list"><li style="list-style-type:circle">у них похожие предпочтения.</li></ul></li></ul><ul id="2aa568fa-e39f-806e-acb6-f50a411f9398" class="bulleted-list"><li style="list-style-type:disc">Чтобы предсказать, понравится ли item пользователю <code>u</code>:<ul id="2aa568fa-e39f-8016-a644-f5e217ba7011" class="bulleted-list"><li style="list-style-type:circle">ищем «соседей» <code>u</code> (похожих пользователей);</li></ul><ul id="2aa568fa-e39f-80a3-a6e3-da47cf898306" class="bulleted-list"><li style="list-style-type:circle">смотрим, как они относятся к item;</li></ul><ul id="2aa568fa-e39f-805f-9c74-d387026884e0" class="bulleted-list"><li style="list-style-type:circle">усредняем их мнения с весами по похожести.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a0-b50d-c11bede6054f" class="numbered-list" start="2"><li><strong>Матрица взаимодействий</strong><ul id="2aa568fa-e39f-80c7-8f06-eb67a519f6fd" class="bulleted-list"><li style="list-style-type:disc"><code>R[u, i]</code> — рейтинг или сигнал взаимодействия (может быть 0/1).</li></ul><ul id="2aa568fa-e39f-80e6-8cf8-f7b25fd2f0fd" class="bulleted-list"><li style="list-style-type:disc">Очень разреженная матрица.</li></ul><ul id="2aa568fa-e39f-8022-b358-f3cefb03573e" class="bulleted-list"><li style="list-style-type:disc">Обозначения:<ul id="2aa568fa-e39f-8034-8f14-ee14f0078c02" class="bulleted-list"><li style="list-style-type:circle"><code>N(u)</code> — множество пользователей, похожих на <code>u</code>;</li></ul><ul id="2aa568fa-e39f-80fc-924c-fd17a26767b4" class="bulleted-list"><li style="list-style-type:circle"><code>I(u)</code> — множество items, с которыми взаимодействовал <code>u</code>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8013-95bb-c5fd2eef5e42" class="numbered-list" start="3"><li><strong>Similarity между пользователями</strong><ul id="2aa568fa-e39f-8061-ac91-c7d1391b1997" class="bulleted-list"><li style="list-style-type:disc">Косинусное сходство:<p id="2aa568fa-e39f-8007-9fb8-e1bfe7472255" class="">[</p><p id="2aa568fa-e39f-80c4-acf2-fce00c0a9ca6" class="">sim(u, v) = \frac{\sum_i R[u, i] R[v, i]}{\sqrt{\sum_i R[u, i]^2} \sqrt{\sum_i R[v, i]^2}}</p><p id="2aa568fa-e39f-8008-bcd4-ff89ab903518" class="">]</p><p id="2aa568fa-e39f-80f0-8c51-d25f322be2d3" class="">суммирование по общим item’ам.</p></li></ul><ul id="2aa568fa-e39f-80ef-bf84-c035bff26896" class="bulleted-list"><li style="list-style-type:disc">Pearson корреляция (для рейтингов):<ul id="2aa568fa-e39f-80f6-9951-f353794d7080" class="bulleted-list"><li style="list-style-type:circle">вычитаем средний рейтинг каждого пользователя.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b1-9f62-c7c1a6f6b876" class="numbered-list" start="4"><li><strong>Предсказание рейтинга: простой вариант</strong><ul id="2aa568fa-e39f-804e-99e0-e7e207991470" class="bulleted-list"><li style="list-style-type:disc">Без учёта смещений:<p id="2aa568fa-e39f-801e-8a39-ed0680373ccd" class="">[</p><p id="2aa568fa-e39f-807b-858b-cf36668e4bbf" class="">\hat{r}<em>{u, i} = \frac{ \sum</em>{v \in N_k(u)} sim(u, v) \cdot R[v, i] }{ \sum_{v \in N_k(u)} |sim(u, v)| }</p><p id="2aa568fa-e39f-8032-9a53-cfb6b9fe2dfb" class="">]</p><p id="2aa568fa-e39f-809b-b837-cf11cf75310f" class="">где <code>N_k(u)</code> — k ближайших соседей пользователя <code>u</code>.</p></li></ul><ul id="2aa568fa-e39f-8022-b230-ca0d46330c15" class="bulleted-list"><li style="list-style-type:disc">С учётом средних:<ul id="2aa568fa-e39f-807d-91c9-e020a26bc439" class="bulleted-list"><li style="list-style-type:circle">для рейтингов: используем отклонения от среднего рейтинга пользователя.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8090-a65b-f5f547fd4003" class="numbered-list" start="5"><li><strong>Top-K рекомендации из user-based CF</strong><ul id="2aa568fa-e39f-80b7-a00f-d6283e449eec" class="bulleted-list"><li style="list-style-type:disc">Для пользователя <code>u</code>:<ul id="2aa568fa-e39f-8080-a7b1-e8424d403ccf" class="bulleted-list"><li style="list-style-type:circle">собрать кандидатов — все items, которые выбирали его соседи <code>N_k(u)</code>, но не выбирал он сам;</li></ul><ul id="2aa568fa-e39f-808f-9b5c-e137fead2156" class="bulleted-list"><li style="list-style-type:circle">оценить <code>\hat{r}_{u, i}</code> для этих items;</li></ul><ul id="2aa568fa-e39f-8090-8917-c081f4adfdf5" class="bulleted-list"><li style="list-style-type:circle">отсортировать и взять топ-K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809b-af62-da1c71cfc597" class="numbered-list" start="6"><li><strong>Ограничения user-based CF</strong><ul id="2aa568fa-e39f-808a-ab47-ed1c3d5107e3" class="bulleted-list"><li style="list-style-type:disc">Требует относительно «плотных» профилей:<ul id="2aa568fa-e39f-80e7-bea9-c0f5f85ecc64" class="bulleted-list"><li style="list-style-type:circle">если у пользователя мало взаимодействий, соседей найти сложно;</li></ul></li></ul><ul id="2aa568fa-e39f-80c6-b934-c30c67b51918" class="bulleted-list"><li style="list-style-type:disc">При большом числе пользователей дорого хранить/считать <code>sim(u, v)</code>.</li></ul></li></ol><h3 id="2aa568fa-e39f-801e-8588-d1e4d686148a" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8002-bce1-fab6af3eedfd" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-80d8-90b5-d7d28bc869e9" class="numbered-list" start="1"><li>Из матрицы user–item (или из логов, агрегированных в матрицу):<ul id="2aa568fa-e39f-807a-aa1f-c6823042e6b1" class="bulleted-list"><li style="list-style-type:disc">выбрать подмножество пользователей и items (например, 5k × 5k) для учебных целей;</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80fe-ae73-e9b439ad6209" class="numbered-list" start="2"><li>Реализовать:<ul id="2aa568fa-e39f-80db-bed1-e73ea638ae72" class="bulleted-list"><li style="list-style-type:disc">функцию для подсчёта cosine similarity между двумя пользователями (по общим items);</li></ul><ul id="2aa568fa-e39f-8001-af6a-d2990f783735" class="bulleted-list"><li style="list-style-type:disc">функцию, которая находит <code>N_k(u)</code> — k ближайших соседей для пользователя <code>u</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80fa-a597-fbc43ce3d59b" class="numbered-list" start="3"><li>Для 2–3 пользователей:<ul id="2aa568fa-e39f-80d3-b98c-c623e17df42a" class="bulleted-list"><li style="list-style-type:disc">вывести список ближайших соседей;</li></ul><ul id="2aa568fa-e39f-80a4-a53a-c9830bcfad62" class="bulleted-list"><li style="list-style-type:disc">интерпретировать: действительно ли их поведение похоже.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8043-8628-c22e394d6809" class="">Домашка 3.1</h3><ol type="1" id="2aa568fa-e39f-8096-884f-f57f122a1370" class="numbered-list" start="1"><li>Реализовать функцию предсказания рейтинга/скора для user-based CF:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80b5-9e35-fb79c02d0d97" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def predict_user_based(u, i, k=50):
+    # 1) находим k ближайших соседей пользователя u
+    # 2) выбираем только тех, у кого есть оценка/взаимодействие с i
+    # 3) считаем взвешенное среднее
+    ...
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-8024-b876-fe2e7de12fb5" class="numbered-list" start="2"><li>Взять нескольких пользователей и items:<ul id="2aa568fa-e39f-809e-8cb6-fa6bd03fef21" class="bulleted-list"><li style="list-style-type:disc">сравнить:<ul id="2aa568fa-e39f-8053-8384-e7e59e0ed8a2" class="bulleted-list"><li style="list-style-type:circle">предсказания CF,</li></ul><ul id="2aa568fa-e39f-80b2-8382-d300c33de17e" class="bulleted-list"><li style="list-style-type:circle">средний рейтинг по item,</li></ul><ul id="2aa568fa-e39f-80f5-af36-ee0aa28e9447" class="bulleted-list"><li style="list-style-type:circle">средний рейтинг по пользователю.</li></ul></li></ul><ul id="2aa568fa-e39f-80f7-b961-ea34e583e778" class="bulleted-list"><li style="list-style-type:disc">Написать короткий вывод: где CF даёт «более персонализированный» ответ.</li></ul></li></ol><hr id="2aa568fa-e39f-8022-b53b-cc8bbcf30147"/><h2 id="2aa568fa-e39f-8055-9ab6-e3ccc84954c5" class="">Урок 3.2. Item-based CF и выбор метрик сходства</h2><h3 id="2aa568fa-e39f-80ce-aba2-ecf6fc23f809" class="">Цели</h3><ul id="2aa568fa-e39f-80d9-841a-e9a107e3b333" class="bulleted-list"><li style="list-style-type:disc">Показать, почему в реальности чаще используют <strong>item-based CF</strong>.</li></ul><ul id="2aa568fa-e39f-80b3-8328-d7a62d306f2f" class="bulleted-list"><li style="list-style-type:disc">Разобрать разные similarity-метрики.</li></ul><ul id="2aa568fa-e39f-80e0-bb28-c0a6140cced3" class="bulleted-list"><li style="list-style-type:disc">Реализовать item-based CF и сравнить с user-based.</li></ul><h3 id="2aa568fa-e39f-80ef-a23a-f4f1f84e01f3" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80c2-aca6-e31fcc714798" class="numbered-list" start="1"><li><strong>Интуиция item-based CF</strong><ul id="2aa568fa-e39f-8065-8d56-d0e47dfa729c" class="bulleted-list"><li style="list-style-type:disc">Если два предмета часто выбирают <strong>одни и те же пользователи</strong>, они похожи.</li></ul><ul id="2aa568fa-e39f-8059-bdf1-ff939d18b72f" class="bulleted-list"><li style="list-style-type:disc">Для рекомендации пользователю <code>u</code>:<ul id="2aa568fa-e39f-80c4-b7ab-d54a8e1aecf2" class="bulleted-list"><li style="list-style-type:circle">смотрим на items, с которыми он взаимодействовал;</li></ul><ul id="2aa568fa-e39f-809c-92ff-d6057b113a39" class="bulleted-list"><li style="list-style-type:circle">для каждого — находим похожие items;</li></ul><ul id="2aa568fa-e39f-800e-af63-f681c0850258" class="bulleted-list"><li style="list-style-type:circle">объединяем кандидатов и сортируем.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8041-871c-e23b304a99c1" class="numbered-list" start="2"><li><strong>Почему item-based часто практичнее</strong><ul id="2aa568fa-e39f-8029-af1d-d3bf047ffdbb" class="bulleted-list"><li style="list-style-type:disc">Пользователей обычно больше, чем предметов (или наоборот, но чаще так).</li></ul><ul id="2aa568fa-e39f-8060-af8e-d36bc872f6d6" class="bulleted-list"><li style="list-style-type:disc">Каталог предметов меняется медленнее, чем аудитория:<ul id="2aa568fa-e39f-805f-bfff-ec81ccec6aa4" class="bulleted-list"><li style="list-style-type:circle">проще заранее посчитать «item → похожие items» и кешировать;</li></ul><ul id="2aa568fa-e39f-80af-9ddd-cdd77e4d516a" class="bulleted-list"><li style="list-style-type:circle">при разработке: проще хранить матрицу сходств по items.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809b-ad2d-c80f726e135f" class="numbered-list" start="3"><li><strong>Меры сходства для items</strong><ul id="2aa568fa-e39f-806e-98d3-dcd145ff0b93" class="bulleted-list"><li style="list-style-type:disc">Косинус:<ul id="2aa568fa-e39f-80f5-84dd-d0780e0a3e89" class="bulleted-list"><li style="list-style-type:circle">вектора — строки/столбцы матрицы user–item.</li></ul></li></ul><ul id="2aa568fa-e39f-806d-b3d4-ed7921ab37e3" class="bulleted-list"><li style="list-style-type:disc">Jaccard (для бинарных взаимодействий):<p id="2aa568fa-e39f-809b-a8a5-fb033765acff" class="">[</p><p id="2aa568fa-e39f-80df-addb-c512ff56f9c4" class="">J(i, j) = \frac{|U(i) \cap U(j)|}{|U(i) \cup U(j)|}</p><p id="2aa568fa-e39f-80cd-a862-f50bb57ee816" class="">]</p><p id="2aa568fa-e39f-80a7-b11f-dfce89ec7a1e" class="">где <code>U(i)</code> — множество пользователей, взаимодействовавших с item <code>i</code>.</p></li></ul><ul id="2aa568fa-e39f-8013-ab94-c7d087fd43b1" class="bulleted-list"><li style="list-style-type:disc">Adjusted cosine:<ul id="2aa568fa-e39f-8041-b63f-cb570775eb52" class="bulleted-list"><li style="list-style-type:circle">учитываем средние рейтинги пользователей (для explicit).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8062-83dc-f5cb71915530" class="numbered-list" start="4"><li><strong>Предсказание рейтинга/скора по item-based CF</strong><ul id="2aa568fa-e39f-8037-92fe-c7b1e1b3f22a" class="bulleted-list"><li style="list-style-type:disc">Аналогично user-based:<p id="2aa568fa-e39f-8011-951f-c505979b38bd" class="">[</p><p id="2aa568fa-e39f-806c-b61e-df54a81ebfcd" class="">\hat{r}<em>{u, i} = \frac{\sum</em>{j \in I(u)} sim(i, j) \cdot R[u, j]}{\sum_{j \in I(u)} |sim(i, j)|}</p><p id="2aa568fa-e39f-800f-89d9-f0fa0248b4b6" class="">]</p><p id="2aa568fa-e39f-80dc-bf8a-f10c61eaced1" class="">где <code>I(u)</code> — items, с которыми взаимодействовал пользователь <code>u</code>.</p></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c3-b804-e34145c08a10" class="numbered-list" start="5"><li><strong>Построение топ-K рекомендаций</strong><ul id="2aa568fa-e39f-80cf-8e3a-c1dbfe3127c6" class="bulleted-list"><li style="list-style-type:disc">Для пользователя:<ul id="2aa568fa-e39f-80e5-9440-f1f0efb38f51" class="bulleted-list"><li style="list-style-type:circle">берём его <code>I(u)</code> (историю);</li></ul><ul id="2aa568fa-e39f-8086-8be0-d6aa0df6a947" class="bulleted-list"><li style="list-style-type:circle">для каждого item <code>j ∈ I(u)</code> — находим ближайшие items;</li></ul><ul id="2aa568fa-e39f-8071-9f73-f0f4abd1fa96" class="bulleted-list"><li style="list-style-type:circle">агрегируем кандидатов, суммируя/максимизируя <code>sim(i, j)</code> или предсказанный score;</li></ul><ul id="2aa568fa-e39f-80a0-b6e3-df4fb1235155" class="bulleted-list"><li style="list-style-type:circle">фильтруем те, что уже были;</li></ul><ul id="2aa568fa-e39f-80c7-a4e5-d7ec730f5b60" class="bulleted-list"><li style="list-style-type:circle">берём топ-K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8059-a6d4-c2e690fac2f3" class="numbered-list" start="6"><li><strong>Item-based vs user-based: сравнение</strong><ul id="2aa568fa-e39f-8031-92c5-e4a038c76c16" class="bulleted-list"><li style="list-style-type:disc">Item-based:<ul id="2aa568fa-e39f-8043-8b3c-fc502846e122" class="bulleted-list"><li style="list-style-type:circle">проще кешировать;</li></ul><ul id="2aa568fa-e39f-8021-be22-fbadb3046718" class="bulleted-list"><li style="list-style-type:circle">часто более устойчив к появлению новых пользователей;</li></ul></li></ul><ul id="2aa568fa-e39f-80d8-a372-de8ad65a06c7" class="bulleted-list"><li style="list-style-type:disc">User-based:<ul id="2aa568fa-e39f-8010-8541-eb169cd52cc1" class="bulleted-list"><li style="list-style-type:circle">интуитивно понятен;</li></ul><ul id="2aa568fa-e39f-803b-b7f8-d869fd81a676" class="bulleted-list"><li style="list-style-type:circle">иногда полезен, если профиль каждого пользователя очень плотный.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80ff-b34c-f35d4177a9f6" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80cf-8cc4-f17e69ee390b" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-8032-912d-c1484a13b33e" class="numbered-list" start="1"><li>Построить матрицу <code>item × item</code> сходств (на подвыборке):<ul id="2aa568fa-e39f-8017-8d36-dce9aa4978b8" class="bulleted-list"><li style="list-style-type:disc">cosine similarity;</li></ul><ul id="2aa568fa-e39f-803b-ae62-d9f498f1da6e" class="bulleted-list"><li style="list-style-type:disc">Jaccard similarity (если данные бинарные).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8006-838c-fcb626f45f77" class="numbered-list" start="2"><li>Для нескольких items:<ul id="2aa568fa-e39f-8091-9a14-c2b8ff5eccc6" class="bulleted-list"><li style="list-style-type:disc">вывести топ-10 похожих items;</li></ul><ul id="2aa568fa-e39f-80ce-bac6-e2f55ea2b1c3" class="bulleted-list"><li style="list-style-type:disc">сравнить cosine vs Jaccard — какие соседи меняются, что кажется более адекватным.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801f-9ec2-e7c52da8929c" class="numbered-list" start="3"><li>Реализовать item-based CF-рекомендации:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8029-a062-e7e2ed14b502" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_item_based(u, k=10):
+    # 1) взять историю I(u)
+    # 2) для каждого из I(u) собрать похожие items
+    # 3) агрегировать score
+    # 4) вернуть топ-K
+</code></pre></li></ol></li></ul><h3 id="2aa568fa-e39f-80ae-86c3-e775cff66aec" class="">Домашка 3.2</h3><ol type="1" id="2aa568fa-e39f-8037-8409-c265814e9804" class="numbered-list" start="1"><li>Сравнить user-based и item-based CF:<ul id="2aa568fa-e39f-80a9-985f-fa947b0a5311" class="bulleted-list"><li style="list-style-type:disc">выбрать 5–10 пользователей;</li></ul><ul id="2aa568fa-e39f-8082-8e59-f4f264309ad9" class="bulleted-list"><li style="list-style-type:disc">сгенерировать для них рекомендации:<ul id="2aa568fa-e39f-8033-8f69-c71349f861c2" class="bulleted-list"><li style="list-style-type:circle">user-based;</li></ul><ul id="2aa568fa-e39f-80a4-975d-cd2cea679452" class="bulleted-list"><li style="list-style-type:circle">item-based;</li></ul></li></ul><ul id="2aa568fa-e39f-80d7-a02d-f1a9802b29d8" class="bulleted-list"><li style="list-style-type:disc">сравнить:<ul id="2aa568fa-e39f-80ad-b228-f7c86630ffae" class="bulleted-list"><li style="list-style-type:circle">насколько списки пересекаются;</li></ul><ul id="2aa568fa-e39f-8071-9d35-f9b625935c91" class="bulleted-list"><li style="list-style-type:circle">что более осмысленно выглядит.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c7-bdf9-e10b35b231ef" class="numbered-list" start="2"><li>В отчёте (0.5–1 страница) ответить:<ul id="2aa568fa-e39f-80e7-a8de-d85174801eba" class="bulleted-list"><li style="list-style-type:disc">при каком типе данных (много пользователей/мало items, много items/мало пользователей, плотные/редкие профили) ты бы предпочёл user-based или item-based.</li></ul></li></ol><hr id="2aa568fa-e39f-80ea-940b-f205e6d625a7"/><h2 id="2aa568fa-e39f-8046-a86e-f3ce8eeb8d3c" class="">Урок 3.3. CF для implicit feedback и топ-K рекомендаций</h2><h3 id="2aa568fa-e39f-80df-ab05-e4022e2ae160" class="">Цели</h3><ul id="2aa568fa-e39f-805e-9359-e1f75654af03" class="bulleted-list"><li style="list-style-type:disc">Перейти от «рейтингов» к <strong>implicit feedback</strong> (клики, покупки).</li></ul><ul id="2aa568fa-e39f-806f-81a7-e75fa701b286" class="bulleted-list"><li style="list-style-type:disc">Показать, что CF можно использовать не для регрессии, а сразу для top-K ranking.</li></ul><ul id="2aa568fa-e39f-8095-9d4b-f48e0e9243b3" class="bulleted-list"><li style="list-style-type:disc">Подружить CF-модели с eval-фреймворком из модуля 2.</li></ul><h3 id="2aa568fa-e39f-804b-9fe3-de055bf3e120" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8094-968d-cec8b3a4177b" class="numbered-list" start="1"><li><strong>Explicit vs implicit в контексте CF</strong><ul id="2aa568fa-e39f-806c-b96f-e46a72b8568b" class="bulleted-list"><li style="list-style-type:disc">Explicit:<ul id="2aa568fa-e39f-803d-b089-ce1c96c6f982" class="bulleted-list"><li style="list-style-type:circle">рейтинги 1–5, лайки/дизлайки;</li></ul></li></ul><ul id="2aa568fa-e39f-8044-bf8a-d7ade482bc89" class="bulleted-list"><li style="list-style-type:disc">Implicit:<ul id="2aa568fa-e39f-8086-8292-fbc66167a5ad" class="bulleted-list"><li style="list-style-type:circle">просмотр, клик, покупка, добавление в корзину и т.п., часто без оценок;</li></ul></li></ul><ul id="2aa568fa-e39f-80ef-8811-cbc84818bf24" class="bulleted-list"><li style="list-style-type:disc">Как кодировать implicit:<ul id="2aa568fa-e39f-8019-9f18-e092186ae368" class="bulleted-list"><li style="list-style-type:circle">бинарно (0/1);</li></ul><ul id="2aa568fa-e39f-80d2-9c7b-ec7ff409840a" class="bulleted-list"><li style="list-style-type:circle">взвешенно (view &lt; click &lt; cart &lt; purchase).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ff-b8c0-e5a0c12f6ef6" class="numbered-list" start="2"><li><strong>CF для implicit: основная идея</strong><ul id="2aa568fa-e39f-8084-8098-cc3af0e6e2a0" class="bulleted-list"><li style="list-style-type:disc">Матрица <code>R[u, i]</code> = «есть взаимодействие» или «есть взвешенное взаимодействие».</li></ul><ul id="2aa568fa-e39f-80a3-8cbd-f2440c252302" class="bulleted-list"><li style="list-style-type:disc">Сходство считаем по таким векторам.</li></ul><ul id="2aa568fa-e39f-80f6-a635-d09a33f97545" class="bulleted-list"><li style="list-style-type:disc">Предсказанный score = «как сильно мы ожидаем взаимодействия».</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8031-9003-c3c00e19aeda" class="numbered-list" start="3"><li><strong>Top-K напрямую</strong><ul id="2aa568fa-e39f-805f-8649-f1e27ad0099d" class="bulleted-list"><li style="list-style-type:disc">Не обязательно предсказывать точный рейтинг.</li></ul><ul id="2aa568fa-e39f-8077-a105-f2bb6ec6cb67" class="bulleted-list"><li style="list-style-type:disc">Можно сразу:<ul id="2aa568fa-e39f-80f6-97a3-f289502fe60d" class="bulleted-list"><li style="list-style-type:circle">считать similarity;</li></ul><ul id="2aa568fa-e39f-8029-b60f-c66050645e62" class="bulleted-list"><li style="list-style-type:circle">генерить кандидатов;</li></ul><ul id="2aa568fa-e39f-8009-b646-d38d5072b3fb" class="bulleted-list"><li style="list-style-type:circle">сортировать по суммарному весу.</li></ul></li></ul><ul id="2aa568fa-e39f-80e1-89af-ff376bcb1b8b" class="bulleted-list"><li style="list-style-type:disc">Метрики:<ul id="2aa568fa-e39f-800f-b4eb-e84082b5ea27" class="bulleted-list"><li style="list-style-type:circle">HitRate@K, Recall@K, MAP@K, NDCG@K — всё из модуля 2.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a0-9770-c7482d62a27b" class="numbered-list" start="4"><li><strong>Схема работы в implicit CF</strong><ul id="2aa568fa-e39f-80ed-b114-f02c922cb274" class="bulleted-list"><li style="list-style-type:disc">Обучение = просто подсчёт статистик (similarities).</li></ul><ul id="2aa568fa-e39f-8003-bb1d-f141c553022a" class="bulleted-list"><li style="list-style-type:disc">Для каждого пользователя:<ul id="2aa568fa-e39f-8096-96f4-d621d54b523e" class="bulleted-list"><li style="list-style-type:circle">история <code>I(u)</code> → кандидаты через ближайшие items/users;</li></ul><ul id="2aa568fa-e39f-8098-9876-d1ccde963b42" class="bulleted-list"><li style="list-style-type:circle">score = агрегированный similarity/вес;</li></ul><ul id="2aa568fa-e39f-80d1-ba92-dc90b7206039" class="bulleted-list"><li style="list-style-type:circle">top-K → eval с теми же метриками, что и соревовая.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a6-ac45-f7cc2b0cf849" class="numbered-list" start="5"><li><strong>Тонкости</strong><ul id="2aa568fa-e39f-801f-a5bf-ed29cd6b1d5b" class="bulleted-list"><li style="list-style-type:disc">Сильно популярные items:<ul id="2aa568fa-e39f-8069-8cfe-f1a778c77189" class="bulleted-list"><li style="list-style-type:circle">тянут similarity вверх (если не нормировать);</li></ul><ul id="2aa568fa-e39f-80b4-b283-de7d7ce7cfdb" class="bulleted-list"><li style="list-style-type:circle">могут доминировать.</li></ul></li></ul><ul id="2aa568fa-e39f-801f-a798-e3be7c699f81" class="bulleted-list"><li style="list-style-type:disc">Нужно:<ul id="2aa568fa-e39f-80c8-9005-c061cb1c07df" class="bulleted-list"><li style="list-style-type:circle">нормировки;</li></ul><ul id="2aa568fa-e39f-804e-963e-eb7509db0875" class="bulleted-list"><li style="list-style-type:circle">отсечение слишком популярных items;</li></ul><ul id="2aa568fa-e39f-8030-b856-d75239ab218b" class="bulleted-list"><li style="list-style-type:circle">комбинирование с популярностью/recency (из модуля 1).</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80cd-aa92-d8d76f637eaa" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80d4-9f50-d44109370c25" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-802c-96ee-c1e378e361ec" class="numbered-list" start="1"><li>Превратить данные в implicit формат:<ul id="2aa568fa-e39f-8065-a77c-c73f4edd9a5c" class="bulleted-list"><li style="list-style-type:disc"><code>R[u, i] = 1</code>, если было событие нужного типа (или &gt;0, если взвешиваем).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8050-b72b-e35fb79a81e0" class="numbered-list" start="2"><li>Пересчитать similarity (item-based или user-based) по этой матрице.</li></ol><ol type="1" id="2aa568fa-e39f-8040-880f-e37407c5a58a" class="numbered-list" start="3"><li>Реализовать:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80c3-b2a4-e325b5797749" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class CFImplicitRecommender:
+    def recommend(self, user_id, k=20):
+        # 1) берём историю пользователя
+        # 2) собираем кандидатов через похожие items/users
+        # 3) считаем score
+        # 4) фильтруем уже просмотренное (или не фильтруем - обсуждаемо)
+        # 5) возвращаем топ-K
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-80ca-a401-cff96740479a" class="numbered-list" start="4"><li>Подключить eval-функцию из модуля 2:<ul id="2aa568fa-e39f-80fd-9905-c6e3ae378ea4" class="bulleted-list"><li style="list-style-type:disc">посчитать Recall@K / MAP@K / NDCG@K для CF-модели;</li></ul><ul id="2aa568fa-e39f-80ca-8b80-fbab2c53049a" class="bulleted-list"><li style="list-style-type:disc">сравнить с бейзлайнами популярности и co-occurrence.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8092-9f3e-de312fca0089" class="">Домашка 3.3</h3><ol type="1" id="2aa568fa-e39f-801a-8a8f-d286cc5c1950" class="numbered-list" start="1"><li>Настроить веса для разных типов событий (если они есть):<ul id="2aa568fa-e39f-805b-b5f7-fb9564d04a17" class="bulleted-list"><li style="list-style-type:disc">например:<ul id="2aa568fa-e39f-8020-9055-f5949ad140ee" class="bulleted-list"><li style="list-style-type:circle">view = 1;</li></ul><ul id="2aa568fa-e39f-8058-ba9d-e11c585e7e66" class="bulleted-list"><li style="list-style-type:circle">click = 2;</li></ul><ul id="2aa568fa-e39f-8013-b0d3-ed65cdbee0bd" class="bulleted-list"><li style="list-style-type:circle">cart = 3;</li></ul><ul id="2aa568fa-e39f-801a-a6b7-ee92c96eb45f" class="bulleted-list"><li style="list-style-type:circle">purchase = 4;</li></ul></li></ul><ul id="2aa568fa-e39f-80cc-a99e-f9753d7685bc" class="bulleted-list"><li style="list-style-type:disc">пересчитать матрицу <code>R[u, i]</code> и similarity;</li></ul><ul id="2aa568fa-e39f-80bf-b29e-d502478f5d43" class="bulleted-list"><li style="list-style-type:disc">оценить, как поменялись рекомендации и метрики.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8000-b117-fc8549918d50" class="numbered-list" start="2"><li>Написать вывод:<ul id="2aa568fa-e39f-800e-85f1-f0a1ee17f617" class="bulleted-list"><li style="list-style-type:disc">добавление взвешенных событий:<ul id="2aa568fa-e39f-8071-ac32-e2fb559423cc" class="bulleted-list"><li style="list-style-type:circle">улучшило ли метрики?</li></ul><ul id="2aa568fa-e39f-8090-a1dd-d515bce2c52e" class="bulleted-list"><li style="list-style-type:circle">стало ли субъективно логичнее, что пользователю советуют?</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-80bf-a9ee-f6ad4fd1b561"/><h2 id="2aa568fa-e39f-80a0-95c5-db6ad86bac12" class="">Урок 3.4. Инженерия CF, масштабирование и сравнение с бейзлайнами</h2><h3 id="2aa568fa-e39f-806b-a738-ebc6d5800f06" class="">Цели</h3><ul id="2aa568fa-e39f-8013-9e63-fbe92d71e563" class="bulleted-list"><li style="list-style-type:disc">Показать, как CF живёт в реальном мире: память, скорость, препроцессинг.</li></ul><ul id="2aa568fa-e39f-80fd-8830-d20d01c43e44" class="bulleted-list"><li style="list-style-type:disc">Обсудить масштабирование и приближённые методы.</li></ul><ul id="2aa568fa-e39f-8007-ba89-e72c78e00244" class="bulleted-list"><li style="list-style-type:disc">Научить сравнивать CF-модели с простыми бейзлайнами и делать выводы.</li></ul><h3 id="2aa568fa-e39f-8094-bc37-c6cbe7b2a9e1" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80f4-9228-c059dfbaa071" class="numbered-list" start="1"><li><strong>Сложность и память</strong><ul id="2aa568fa-e39f-8099-9e49-eaf46d82ebfb" class="bulleted-list"><li style="list-style-type:disc">Если мы наивно считаем similarity для всех пар пользователей/items:<ul id="2aa568fa-e39f-80c8-a39c-d176e8d574f4" class="bulleted-list"><li style="list-style-type:circle"><code>O(N^2 * d)</code> — ужас;</li></ul></li></ul><ul id="2aa568fa-e39f-80e2-b1ad-c5313264275a" class="bulleted-list"><li style="list-style-type:disc">Нам обычно нужны <strong>только топ-N соседей</strong>:<ul id="2aa568fa-e39f-8027-90e5-c7cce9c0fe69" class="bulleted-list"><li style="list-style-type:circle">заранее храним только <code>k</code> лучших соседей для каждого пользователя/item.</li></ul></li></ul><ul id="2aa568fa-e39f-80b3-9e62-d709a1db46c6" class="bulleted-list"><li style="list-style-type:disc">Sparse представление:<ul id="2aa568fa-e39f-8035-a187-ed9940e44b31" class="bulleted-list"><li style="list-style-type:circle">матрицы храним в CSR/CSC;</li></ul><ul id="2aa568fa-e39f-8014-96b4-e048e18036d0" class="bulleted-list"><li style="list-style-type:circle">считаем similarity только для пар с пересечением.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a6-aa41-c0f0f83f605e" class="numbered-list" start="2"><li><strong>Pre-computation и кеширование</strong><ul id="2aa568fa-e39f-8032-92e0-edc4d693d21e" class="bulleted-list"><li style="list-style-type:disc">Precompute:<ul id="2aa568fa-e39f-803b-bbc0-f4b59af6411f" class="bulleted-list"><li style="list-style-type:circle">similarity между items (item-based) → сохраняем top-N соседи.</li></ul></li></ul><ul id="2aa568fa-e39f-8072-ad3f-c1ffc01943f4" class="bulleted-list"><li style="list-style-type:disc">В онлайне:<ul id="2aa568fa-e39f-80eb-be42-f12d723850ff" class="bulleted-list"><li style="list-style-type:circle">для каждого пользователя строим рекомендацию за счёт уже посчитанного <code>sim(i, j)</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-80e2-91d8-f9337953f1e5" class="bulleted-list"><li style="list-style-type:disc">Трюки:<ul id="2aa568fa-e39f-80d5-ac65-fef576ac2526" class="bulleted-list"><li style="list-style-type:circle">ограничивать число «соседей»;</li></ul><ul id="2aa568fa-e39f-80e1-9ee2-e086f9f68f61" class="bulleted-list"><li style="list-style-type:circle">выкидывать супер-редкие items;</li></ul><ul id="2aa568fa-e39f-80f1-8731-d02ffdbf9cc1" class="bulleted-list"><li style="list-style-type:circle">выкидывать супер-популярные items из similarity.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ec-8cb7-ffd293b9fdb2" class="numbered-list" start="3"><li><strong>Approximate methods (на будущее)</strong><ul id="2aa568fa-e39f-809f-8b97-da48db1f7e27" class="bulleted-list"><li style="list-style-type:disc">ANN-поиск (FAISS и т.п.) — упоминание, без деталей:<ul id="2aa568fa-e39f-80bc-a674-fc232ebc7d79" class="bulleted-list"><li style="list-style-type:circle">можно хранить эмбеддинги и искать ближайших соседей быстро;</li></ul></li></ul><ul id="2aa568fa-e39f-80a8-a354-fbb71792d564" class="bulleted-list"><li style="list-style-type:disc">В курс можем дать это как «тизер» к более продвинутым модулям.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8063-9061-fa48fb40872e" class="numbered-list" start="4"><li><strong>Комбинирование CF с прошлым опытом (модуль 1)</strong><ul id="2aa568fa-e39f-80db-8565-c5e773717d3c" class="bulleted-list"><li style="list-style-type:disc">CF + популярность:<ul id="2aa568fa-e39f-806b-9a52-d8116330cd86" class="bulleted-list"><li style="list-style-type:circle">когда у пользователя мало истории → fallback к сегментной популярности;</li></ul></li></ul><ul id="2aa568fa-e39f-800c-b653-c36c4d32abd4" class="bulleted-list"><li style="list-style-type:disc">CF + co-occurrence:<ul id="2aa568fa-e39f-80dc-9f76-f34336b2cec0" class="bulleted-list"><li style="list-style-type:circle">co-occurrence можно использовать как быстрый генератор кандидатов;</li></ul><ul id="2aa568fa-e39f-80e6-8414-d9270664bf3f" class="bulleted-list"><li style="list-style-type:circle">CF — как более точный ranker.</li></ul></li></ul><ul id="2aa568fa-e39f-80da-92ef-f3cb39ed691f" class="bulleted-list"><li style="list-style-type:disc">CF + «бизнес-правила»:<ul id="2aa568fa-e39f-8084-a90f-f7941d2ec4ca" class="bulleted-list"><li style="list-style-type:circle">фильтрация по наличию, цене, категориям и т.п.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8060-bc52-fd3b15ff2198" class="numbered-list" start="5"><li><strong>Анализ результатов</strong><ul id="2aa568fa-e39f-809d-9454-c23bbe539e7a" class="bulleted-list"><li style="list-style-type:disc">Сравнение по метрикам (из модуля 2):<ul id="2aa568fa-e39f-8095-a3fc-c6cd6088bd37" class="bulleted-list"><li style="list-style-type:circle">Recall@K, MAP@K, NDCG@K.</li></ul></li></ul><ul id="2aa568fa-e39f-803f-99ac-fbdb1451987d" class="bulleted-list"><li style="list-style-type:disc">Субъективная проверка:<ul id="2aa568fa-e39f-808f-9091-f051246cd3e5" class="bulleted-list"><li style="list-style-type:circle">для нескольких пользователей смотреть топ-K списки разных моделей;</li></ul><ul id="2aa568fa-e39f-80ae-9b17-f218a77ab9a8" class="bulleted-list"><li style="list-style-type:circle">оценивать: есть ли диверсификация, нет ли спама одним item’ом.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-805e-8a81-dd63009faf7e" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-802a-b1e6-dff1e0f2e078" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-808a-aaf2-e00646742ab0" class="numbered-list" start="1"><li>Оптимизировать код CF:<ul id="2aa568fa-e39f-80c1-b84e-d7fba03017fd" class="bulleted-list"><li style="list-style-type:disc">перейти от «двойных for» к работе с разреженными матрицами;</li></ul><ul id="2aa568fa-e39f-80be-933f-cd64ad16b4b7" class="bulleted-list"><li style="list-style-type:disc">посчитать и сохранить только топ-N соседей для каждого item/user.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a9-8a1b-e710c1c9168b" class="numbered-list" start="2"><li>Реализовать гибрид:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d5-b0c9-e1f3059a6916" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class HybridRecommender:
+    def recommend(self, user_id, k=20):
+        # 1) если истории мало -&gt; популярность/segment
+        # 2) если истории достаточно -&gt; CF (item-based)
+        # 3) объединить и отсортировать кандидатов
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-803c-b4b3-e742ddb27b8e" class="numbered-list" start="3"><li>Провести сравнение:<ul id="2aa568fa-e39f-801d-b733-c999e9a872e9" class="bulleted-list"><li style="list-style-type:disc">pure popularity,</li></ul><ul id="2aa568fa-e39f-802c-bac0-f07e7abbdc56" class="bulleted-list"><li style="list-style-type:disc">item-to-item co-occurrence,</li></ul><ul id="2aa568fa-e39f-805c-aebb-c68cf978b3f2" class="bulleted-list"><li style="list-style-type:disc">item-based CF (implicit),</li></ul><ul id="2aa568fa-e39f-80e7-9761-db9cc364dac3" class="bulleted-list"><li style="list-style-type:disc">hybrid.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8013-82e4-eda0be5f3fa6" class="numbered-list" start="4"><li>Посчитать метрики:<ul id="2aa568fa-e39f-8008-bb19-ff4f7d2e5190" class="bulleted-list"><li style="list-style-type:disc">Recall@K / MAP@K / NDCG@K;</li></ul><ul id="2aa568fa-e39f-8066-81de-f617d4744d14" class="bulleted-list"><li style="list-style-type:disc">занести в таблицу.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-80ec-92bd-e1f8901f8707" class="">Домашка 3.4</h3><ol type="1" id="2aa568fa-e39f-80f6-9155-e7a6fd842c64" class="numbered-list" start="1"><li>Сделать отчёт по экспериментам:<ul id="2aa568fa-e39f-80af-bd70-cbfb7ac1fef9" class="bulleted-list"><li style="list-style-type:disc">табличка:<table id="2aa568fa-e39f-801e-8609-df2e2b8d1931" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-803b-afce-fd4bc83dfa3b"><th id="jIo`" class="simple-table-header-color simple-table-header">Модель</th><th id="X_uF" class="simple-table-header-color simple-table-header">Recall@K</th><th id="?^}Y" class="simple-table-header-color simple-table-header">MAP@K</th><th id="eNSb" class="simple-table-header-color simple-table-header">NDCG@K</th><th id="dXKb" class="simple-table-header-color simple-table-header">Комментарий</th></tr></thead><tbody><tr id="2aa568fa-e39f-8093-90b7-ece0d53a16c6"><td id="jIo`" class="">Popularity</td><td id="X_uF" class=""></td><td id="?^}Y" class=""></td><td id="eNSb" class=""></td><td id="dXKb" class=""></td></tr><tr id="2aa568fa-e39f-8050-83b8-fdde19b698ab"><td id="jIo`" class="">Co-occurrence</td><td id="X_uF" class=""></td><td id="?^}Y" class=""></td><td id="eNSb" class=""></td><td id="dXKb" class=""></td></tr><tr id="2aa568fa-e39f-80f2-b52c-dfaa1a087fae"><td id="jIo`" class="">User-based CF</td><td id="X_uF" class=""></td><td id="?^}Y" class=""></td><td id="eNSb" class=""></td><td id="dXKb" class=""></td></tr><tr id="2aa568fa-e39f-8050-b30b-f273066ba213"><td id="jIo`" class="">Item-based CF</td><td id="X_uF" class=""></td><td id="?^}Y" class=""></td><td id="eNSb" class=""></td><td id="dXKb" class=""></td></tr><tr id="2aa568fa-e39f-8042-ba52-d5136481b91e"><td id="jIo`" class="">Hybrid (CF + popular)</td><td id="X_uF" class=""></td><td id="?^}Y" class=""></td><td id="eNSb" class=""></td><td id="dXKb" class=""></td></tr></tbody></table></li></ul><ul id="2aa568fa-e39f-8060-bc46-d3e98e376c94" class="bulleted-list"><li style="list-style-type:disc">текстовый анализ:<ul id="2aa568fa-e39f-80c3-85c5-c10926e264d8" class="bulleted-list"><li style="list-style-type:circle">какая модель лучше по каким метрикам;</li></ul><ul id="2aa568fa-e39f-8044-8a95-f414af086ef1" class="bulleted-list"><li style="list-style-type:circle">насколько CF реально добавил value относительно «тупой» популярности;</li></ul><ul id="2aa568fa-e39f-8009-a47e-fc283fb9d232" class="bulleted-list"><li style="list-style-type:circle">есть ли переобучение (если offline метрика не коррелирует с LB).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8088-97a9-cf063e2dfb2f" class="numbered-list" start="2"><li>Подумать и записать идеи:<ul id="2aa568fa-e39f-80d3-8ac5-d1f4995330a3" class="bulleted-list"><li style="list-style-type:disc">какие следующие шаги по улучшению CF:<ul id="2aa568fa-e39f-801e-b2ba-da872ead27ea" class="bulleted-list"><li style="list-style-type:circle">более умная нормировка;</li></ul><ul id="2aa568fa-e39f-80da-8568-dd632c4b8d8c" class="bulleted-list"><li style="list-style-type:circle">более сложные признаки;</li></ul><ul id="2aa568fa-e39f-80ad-8691-e938662af5da" class="bulleted-list"><li style="list-style-type:circle">переход к MF (тизер модуля 4).</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-8093-ad16-e2fd155332e2"/><h2 id="2aa568fa-e39f-8057-a975-c134532678f1" class="">Мини-проект по модулю 3</h2><p id="2aa568fa-e39f-80a3-9b6b-e5f5c5a5c6eb" class=""><strong>Название:</strong></p><p id="2aa568fa-e39f-8021-a339-e3a367c16f5c" class="">«User-based и Item-based CF против простых бейзлайнов: кто побеждает?»</p><p id="2aa568fa-e39f-8031-939c-c2ee22871a0a" class=""><strong>Задачи:</strong></p><ol type="1" id="2aa568fa-e39f-8005-b38b-c8814f87d19a" class="numbered-list" start="1"><li><strong>Выбрать один датасет/соревнование</strong> (тот же, что в модулях 1–2).</li></ol><ol type="1" id="2aa568fa-e39f-80a2-a485-f91d426ffab5" class="numbered-list" start="2"><li>Реализовать 3 типа моделей:<ul id="2aa568fa-e39f-80aa-9fdf-f45465388447" class="bulleted-list"><li style="list-style-type:disc">Popularity / co-occurrence (из модуля 1) — как baseline;</li></ul><ul id="2aa568fa-e39f-804f-b326-e346f9b301f8" class="bulleted-list"><li style="list-style-type:disc">User-based CF;</li></ul><ul id="2aa568fa-e39f-80d5-9a3a-d62067f9629d" class="bulleted-list"><li style="list-style-type:disc">Item-based CF (implicit).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809f-83c7-f7a759cc6e30" class="numbered-list" start="3"><li>Встроить их в <strong>общий eval-фреймворк</strong> (модуль 2) и:<ul id="2aa568fa-e39f-80f7-abc0-ebaea9af2ede" class="bulleted-list"><li style="list-style-type:disc">посчитать Recall@K, MAP@K, NDCG@K;</li></ul><ul id="2aa568fa-e39f-80c4-a3c2-c27965afa8cb" class="bulleted-list"><li style="list-style-type:disc">при желании — ещё HitRate@K / MRR.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-802a-b060-f4b79d4cb1df" class="numbered-list" start="4"><li>Провести <strong>качественный анализ</strong>:<ul id="2aa568fa-e39f-8056-bd5a-e8a323a38ca7" class="bulleted-list"><li style="list-style-type:disc">посмотреть списки рекомендаций для нескольких пользователей;</li></ul><ul id="2aa568fa-e39f-80cf-8139-e686614124d7" class="bulleted-list"><li style="list-style-type:disc">оценить, где CF ведёт себя разумно/неразумно.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ce-8d6b-c5827e1cea29" class="numbered-list" start="5"><li>Оформить отчёт:<ul id="2aa568fa-e39f-80e5-9f6f-f62aee520202" class="bulleted-list"><li style="list-style-type:disc">постановка задачи;</li></ul><ul id="2aa568fa-e39f-804f-84eb-ebf2063a4495" class="bulleted-list"><li style="list-style-type:disc">описание моделей;</li></ul><ul id="2aa568fa-e39f-8034-a5bc-fc04cd8de9d5" class="bulleted-list"><li style="list-style-type:disc">результаты по метрикам;</li></ul><ul id="2aa568fa-e39f-8090-970a-fa04692ce3ed" class="bulleted-list"><li style="list-style-type:disc">анализ плюсов/минусов CF;</li></ul><ul id="2aa568fa-e39f-80f1-a985-fbb74f2837b6" class="bulleted-list"><li style="list-style-type:disc">идеи, как развить модель дальше (подводка к МФ/implicit ALS/BPR).</li></ul></li></ol><hr id="2aa568fa-e39f-80e9-9351-eff3ad40c9ef"/><p id="2aa568fa-e39f-8023-b956-d042358d55ac" class="">Дальше логично продолжать в <strong>Модуль 4: матричная факторизация и implicit MF (ALS/BPR)</strong> — то есть перейти от «neighbor methods» к «latent factors», но при этом использовать тот же eval-пайплайн и сравнивать head-to-head.</p><p id="2aa568fa-e39f-8093-bbd3-c495ac0d7c51" class="">Если хочешь, я могу следующим шагом расписать <strong>Модуль 4</strong> так же детально или собрать для тебя <strong>шаблон репозитория курса</strong>: структура папок <code>module_0/1/2/3</code>, ноутбуки, <code>Recommender</code> интерфейс, <code>evaluate.py</code> и т.п.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

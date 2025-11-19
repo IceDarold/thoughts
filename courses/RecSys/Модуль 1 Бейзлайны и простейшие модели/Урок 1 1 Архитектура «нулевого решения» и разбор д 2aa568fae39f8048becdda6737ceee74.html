@@ -1,0 +1,775 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 1.1. Архитектура «нулевого решения» и разбор датасета</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8048-becd-da6737ceee74" class="page sans"><header><h1 class="page-title">Урок 1.1. Архитектура «нулевого решения» и разбор датасета</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2aa568fa-e39f-80c1-ad33-c3fa0472cf31" class="">1. Формальные параметры урока</h2><ul id="2aa568fa-e39f-805d-afd1-e128b79cba63" class="bulleted-list"><li style="list-style-type:disc"><strong>Цель урока:</strong><p id="2aa568fa-e39f-80af-88b8-e960ebdac663" class="">С нуля взять RecSys-датасет (желательно реальное соревнование) и:</p><ul id="2aa568fa-e39f-8044-a92b-f23284534be5" class="bulleted-list"><li style="list-style-type:circle">понять постановку задачи;</li></ul><ul id="2aa568fa-e39f-809f-b985-db38536e08d0" class="bulleted-list"><li style="list-style-type:circle">разобрать структуру данных;</li></ul><ul id="2aa568fa-e39f-8017-839d-ff6faac91f40" class="bulleted-list"><li style="list-style-type:circle">посчитать базовую статистику;</li></ul><ul id="2aa568fa-e39f-807d-a2bd-c559d03ee768" class="bulleted-list"><li style="list-style-type:circle">заложить каркас будущего бейзлайна (функция <code>recommend_for_user</code> + структура проекта).</li></ul></li></ul><ul id="2aa568fa-e39f-8011-943d-ef665eee2b97" class="bulleted-list"><li style="list-style-type:disc"><strong>Предварительные знания:</strong><ul id="2aa568fa-e39f-807d-a82a-cea69420a664" class="bulleted-list"><li style="list-style-type:circle">базовый Python (pandas, numpy);</li></ul><ul id="2aa568fa-e39f-80a5-a50d-cdaed4ef4d5e" class="bulleted-list"><li style="list-style-type:circle">базовое понимание того, что такое <code>user_id</code>, <code>item_id</code>, лог событий (из Модуля 0).</li></ul></li></ul><ul id="2aa568fa-e39f-80e8-ae4d-ee777bc67f03" class="bulleted-list"><li style="list-style-type:disc"><strong>Формат:</strong> 90–120 минут (можно делить на 2 пары).</li></ul><ul id="2aa568fa-e39f-8095-ba7e-f498cc6be01b" class="bulleted-list"><li style="list-style-type:disc"><strong>Итог урока:</strong> готовый EDA-ноутбук + первая заготовка бейзлайна.</li></ul><hr id="2aa568fa-e39f-800e-8ff4-c97776d9aea8"/><h2 id="2aa568fa-e39f-80da-abad-f739df70c849" class="">2. Структура урока по времени</h2><p id="2aa568fa-e39f-8088-9b29-c886e2b786ed" class="">Предположим 90 минут. Можно адаптировать.</p><ol type="1" id="2aa568fa-e39f-808b-a8f7-e68ff74182ec" class="numbered-list" start="1"><li><strong>0–10 мин</strong> — вводная: зачем нам этот урок.</li></ol><ol type="1" id="2aa568fa-e39f-808b-a616-e5eeea053670" class="numbered-list" start="2"><li><strong>10–25 мин</strong> — совместное чтение описания соревнования и формализация задачи.</li></ol><ol type="1" id="2aa568fa-e39f-80a5-aa90-f05b0137f9a9" class="numbered-list" start="3"><li><strong>25–50 мин</strong> — разбор структуры данных и схема сущностей.</li></ol><ol type="1" id="2aa568fa-e39f-8066-bf56-c679de62ea9b" class="numbered-list" start="4"><li><strong>50–75 мин</strong> — базовая статистика по данным (код в ноутбуке).</li></ol><ol type="1" id="2aa568fa-e39f-805e-8ad4-fe1447d560a9" class="numbered-list" start="5"><li><strong>75–90 мин</strong> — каркас «нулевого решения» + задавание домашки.</li></ol><p id="2aa568fa-e39f-807b-bdd6-dc960eb19e14" class="">Дальше распишу каждый блок.</p><hr id="2aa568fa-e39f-8091-bb46-f71d1ac11842"/><h2 id="2aa568fa-e39f-8076-860c-ebdacfae11d6" class="">3. Блок 0–10 мин: Вводная</h2><h3 id="2aa568fa-e39f-809a-ae0a-cb31b3918c61" class="">Что объясняет преподаватель</h3><ol type="1" id="2aa568fa-e39f-8023-b81d-fbc6a2e66c10" class="numbered-list" start="1"><li><strong>Связь с модулем 0:</strong><ul id="2aa568fa-e39f-8089-af7a-decf3493be7e" class="bulleted-list"><li style="list-style-type:disc">В модуле 0 мы рисовали «карту мира» RecSys.</li></ul><ul id="2aa568fa-e39f-80e0-94bf-f4d947ea83bb" class="bulleted-list"><li style="list-style-type:disc">Теперь начинаем <strong>первый реальный проект</strong>: берём конкретный датасет и строим решенийный пайплайн.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8093-b8c5-c76229ce0a2e" class="numbered-list" start="2"><li><strong>Что будем делать сегодня:</strong><ul id="2aa568fa-e39f-80be-b0de-dbea9bb7ed49" class="bulleted-list"><li style="list-style-type:disc">разберём постановку задачи;</li></ul><ul id="2aa568fa-e39f-806a-a459-e36e408653ab" class="bulleted-list"><li style="list-style-type:disc">посмотрим на данные;</li></ul><ul id="2aa568fa-e39f-80b8-9c16-d5eb192de0dc" class="bulleted-list"><li style="list-style-type:disc">посчитаем базовую статистику (users, items, sparsity…);</li></ul><ul id="2aa568fa-e39f-809b-84a7-d5f0bb300e27" class="bulleted-list"><li style="list-style-type:disc">напишем первую заглушку для <code>recommend_for_user</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d1-85e5-e7ab9f3e5fb0" class="numbered-list" start="3"><li><strong>Главная идея урока:</strong><ul id="2aa568fa-e39f-80ce-b6fb-c61b3623f464" class="bulleted-list"><li style="list-style-type:disc">Любое RecSys-решение — это не «сложная нейросетка», а <strong>цепочка шагов</strong>:<ul id="2aa568fa-e39f-80a1-aeff-df328963b665" class="bulleted-list"><li style="list-style-type:circle">понять, что просят;</li></ul><ul id="2aa568fa-e39f-8085-b315-c1e5c1d62307" class="bulleted-list"><li style="list-style-type:circle">понять, какие есть данные;</li></ul><ul id="2aa568fa-e39f-8046-b8d6-d2b064be3a95" class="bulleted-list"><li style="list-style-type:circle">придумать базовый способ выдавать рекомендации;</li></ul><ul id="2aa568fa-e39f-80cd-9866-e21146e98819" class="bulleted-list"><li style="list-style-type:circle">только потом накручивать уже модели.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80ed-98f1-fb93db1cbf14" class="">Мини-активность</h3><p id="2aa568fa-e39f-80e2-b1c3-e173b3e48c95" class="">Вопрос студентам:</p><blockquote id="2aa568fa-e39f-80cc-85ad-c75499e1a76f" class="">«Если бы вам дали лог &quot;user, item, timestamp&quot; и сказали — сделай рекомендации, что бы вы сделали в первую очередь?»</blockquote><p id="2aa568fa-e39f-8000-891d-db59b97b75f8" class="">Цель — поймать интуицию: большинство начнёт говорить про «самое популярное» или «похожее», и это хорошо — ты покажешь, что это и есть нормальный старт.</p><hr id="2aa568fa-e39f-80c9-9a06-d0aa03a61a1b"/><h2 id="2aa568fa-e39f-80dc-8a86-ccd96b1edc3f" class="">4. Блок 10–25 мин: Постановка задачи и описание соревнования</h2><h3 id="2aa568fa-e39f-8095-9548-e53389a0d586" class="">Шаг 1. Выбор соревнования/датасета</h3><p id="2aa568fa-e39f-8085-b89c-cade4639eec2" class="">Ты заранее выбираешь <strong>один конкретный датасет/соревнование</strong>, с которым группа будет работать в модуле 1 (и, возможно, дальше). Примеры формата (абстрактно):</p><ul id="2aa568fa-e39f-80db-a565-c014632c5fd4" class="bulleted-list"><li style="list-style-type:disc">Табличка <code>interactions.csv</code>:<ul id="2aa568fa-e39f-806e-8762-f2879596a3c5" class="bulleted-list"><li style="list-style-type:circle"><code>user_id, item_id, timestamp, event_type</code></li></ul></li></ul><ul id="2aa568fa-e39f-801f-8de6-d5fc8f6efd55" class="bulleted-list"><li style="list-style-type:disc">Иногда есть ещё <code>items.csv</code> и/или <code>users.csv</code>.</li></ul><h3 id="2aa568fa-e39f-8029-9b09-fca9fcfd4fae" class="">Шаг 2. Читаем описание задачи</h3><p id="2aa568fa-e39f-809d-b233-d1108a570864" class="">Прямо на уроке:</p><ul id="2aa568fa-e39f-807f-a8b8-e19bc4b0d44e" class="bulleted-list"><li style="list-style-type:disc">Открываешь описание (например, текст задания).</li></ul><ul id="2aa568fa-e39f-80e7-a2a3-da4ef188e4f0" class="bulleted-list"><li style="list-style-type:disc">Студенты вместе с тобой находят ответы на вопросы:<ol type="1" id="2aa568fa-e39f-804f-b1f7-fffdfb8d0f43" class="numbered-list" start="1"><li><strong>Кто наш &quot;user&quot;?</strong><ul id="2aa568fa-e39f-8077-b6a5-d22971d27ddd" class="bulleted-list"><li style="list-style-type:disc">это человек, сессия, аккаунт, устройство?</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-806f-8d2a-d74939e89b08" class="numbered-list" start="2"><li><strong>Что такое &quot;item&quot;?</strong><ul id="2aa568fa-e39f-8048-b33f-d9d856689c5a" class="bulleted-list"><li style="list-style-type:disc">товар, фильм, трек, пост, статья?</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e4-a0a3-cb5e80e31873" class="numbered-list" start="3"><li><strong>Что нужно предсказать?</strong><ul id="2aa568fa-e39f-80c2-8657-e23c68d02bc0" class="bulleted-list"><li style="list-style-type:disc">список топ-K айтемов для пользователя?</li></ul><ul id="2aa568fa-e39f-809d-9e42-c93177e3a358" class="bulleted-list"><li style="list-style-type:disc">один следующий item?</li></ul><ul id="2aa568fa-e39f-8078-91e2-f39adde11e61" class="bulleted-list"><li style="list-style-type:disc">рейтинг/оценку?</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8091-a391-e8401a6e5050" class="numbered-list" start="4"><li><strong>В каком виде нужно выдать ответ?</strong><ul id="2aa568fa-e39f-80ea-b817-e6142c6bc837" class="bulleted-list"><li style="list-style-type:disc">формат сабмита: что в колонках, какие идентификаторы, как кодируются списки.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801a-bb42-e22ef6f60f06" class="numbered-list" start="5"><li><strong>Есть ли ограничения/подсказки?</strong><ul id="2aa568fa-e39f-80ca-959d-e095d313b6da" class="bulleted-list"><li style="list-style-type:disc">метрика (Recall@K, MAP@K, RMSE…);</li></ul><ul id="2aa568fa-e39f-806e-8dc4-c019ce27c24e" class="bulleted-list"><li style="list-style-type:disc">baseline в описании;</li></ul><ul id="2aa568fa-e39f-807c-8d9e-e6f5906ebc42" class="bulleted-list"><li style="list-style-type:disc">ограничение по времени выполнения или размеру данных.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-801a-97f3-f32efff3f2e7" class="">Мини-практика</h3><ul id="2aa568fa-e39f-80b0-9440-dc511836130f" class="bulleted-list"><li style="list-style-type:disc">Дать студентам 3–4 минуты в парах:<ul id="2aa568fa-e39f-80d2-83de-d3fa021a17fa" class="bulleted-list"><li style="list-style-type:circle">сформулировать задачу в одну фразу:<blockquote id="2aa568fa-e39f-8075-a7da-e8642d1c890e" class="">«Для каждого X нужно предложить список Y объектов из множества Z, чтобы максимизировать метрику W».</blockquote></li></ul></li></ul><ul id="2aa568fa-e39f-80cc-bb9b-e13e272bf423" class="bulleted-list"><li style="list-style-type:disc">Несколько человек зачитывают, вы чуть корректируете формулировку.</li></ul><hr id="2aa568fa-e39f-80be-9e46-e0695ec278a5"/><h2 id="2aa568fa-e39f-8013-85e3-ec35eea5d6d3" class="">5. Блок 25–50 мин: Структура данных и схема сущностей</h2><h3 id="2aa568fa-e39f-808f-9b0c-f6228ef0e9ed" class="">Шаг 1. Смотрим на файлы</h3><p id="2aa568fa-e39f-8011-81d3-c76cf04bddb3" class="">Открываете Jupyter/Colab ноутбук. Пример структуры проекта:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-805a-a92d-d21a933709a6" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">rec_course/
+  data/
+    train_interactions.csv
+    test_interactions.csv
+    items.csv
+    users.csv
+  notebooks/
+    01_eda.ipynb
+  src/
+    data_utils.py
+    baseline_popularity.py
+</code></pre><p id="2aa568fa-e39f-80e3-a8bc-fe2d284bd5ed" class="">В ноутбуке:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-802d-98b9-ee87226f6bd1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import pandas as pd
+
+train = pd.read_csv(&quot;../data/train_interactions.csv&quot;)
+train.head()
+train.info()
+</code></pre><p id="2aa568fa-e39f-805b-84a7-c75864bca12b" class="">Разбираете:</p><ul id="2aa568fa-e39f-8008-945f-d6fdf202ffa7" class="bulleted-list"><li style="list-style-type:disc">Какие есть столбцы?<ul id="2aa568fa-e39f-80d7-bcef-ee18951d4d85" class="bulleted-list"><li style="list-style-type:circle"><code>user_id</code></li></ul><ul id="2aa568fa-e39f-80f6-a34e-d4cf57b8958c" class="bulleted-list"><li style="list-style-type:circle"><code>item_id</code></li></ul><ul id="2aa568fa-e39f-8039-8788-e61b6faa5dcb" class="bulleted-list"><li style="list-style-type:circle"><code>timestamp</code></li></ul><ul id="2aa568fa-e39f-8097-b4b9-cc77df0a4249" class="bulleted-list"><li style="list-style-type:circle"><code>event_type</code> (если есть)</li></ul><ul id="2aa568fa-e39f-80d3-8509-d97f1a67232b" class="bulleted-list"><li style="list-style-type:circle">контекстные фичи (device, country…)</li></ul></li></ul><h3 id="2aa568fa-e39f-8033-bce3-f043038f4b92" class="">Шаг 2. Рисуем схему сущностей</h3><p id="2aa568fa-e39f-8042-95c3-eaed64458fbe" class="">На доске / в ноутбуке:</p><ul id="2aa568fa-e39f-8023-97cf-c658aeb0ae8b" class="bulleted-list"><li style="list-style-type:disc">Сущности:<ul id="2aa568fa-e39f-8060-9b03-ed8e49f709d1" class="bulleted-list"><li style="list-style-type:circle">User</li></ul><ul id="2aa568fa-e39f-807d-8e96-d9133ead0dc8" class="bulleted-list"><li style="list-style-type:circle">Item</li></ul><ul id="2aa568fa-e39f-8029-ae51-c7ec35e9a61c" class="bulleted-list"><li style="list-style-type:circle">Interaction (user–item–time–event)</li></ul><ul id="2aa568fa-e39f-808f-b9ee-d04801701567" class="bulleted-list"><li style="list-style-type:circle">Возможно, Session</li></ul><ul id="2aa568fa-e39f-804e-9c22-e2171c3616e3" class="bulleted-list"><li style="list-style-type:circle">Возможно, Context (device, country и т.д.)</li></ul></li></ul><ul id="2aa568fa-e39f-80ca-894f-f2dca014f88e" class="bulleted-list"><li style="list-style-type:disc">Связи:<ul id="2aa568fa-e39f-8005-bab1-c1b036a2d199" class="bulleted-list"><li style="list-style-type:circle">User —&lt; Interaction &gt;— Item</li></ul><ul id="2aa568fa-e39f-804e-ab9a-f518a1a43e2b" class="bulleted-list"><li style="list-style-type:circle">Interaction — Context</li></ul></li></ul><p id="2aa568fa-e39f-80c0-b0cb-de1cf491fb55" class="">Студенты визуально видят: «у нас лог событий + возможные справочники».</p><h3 id="2aa568fa-e39f-80a3-8a67-ca9cb9b6ea21" class="">Шаг 3. Идентификация ключевых полей</h3><p id="2aa568fa-e39f-80a4-bf25-d27a5cfb8b58" class="">Обсуждаете:</p><ul id="2aa568fa-e39f-80e9-af84-e7e28221b79a" class="bulleted-list"><li style="list-style-type:disc">Какой столбец точно:<ul id="2aa568fa-e39f-80f6-9979-d98215f3df12" class="bulleted-list"><li style="list-style-type:circle">уникальный идентификатор пользователя?</li></ul><ul id="2aa568fa-e39f-8037-988c-d1e4d0c1a751" class="bulleted-list"><li style="list-style-type:circle">уникальный идентификатор предмета?</li></ul></li></ul><ul id="2aa568fa-e39f-80c1-bd87-d42045e95a13" class="bulleted-list"><li style="list-style-type:disc">Есть ли:<ul id="2aa568fa-e39f-804b-aaf2-d31a9679862a" class="bulleted-list"><li style="list-style-type:circle">дубликаты;</li></ul><ul id="2aa568fa-e39f-8029-8675-f80df5e3401c" class="bulleted-list"><li style="list-style-type:circle">пропуски;</li></ul><ul id="2aa568fa-e39f-80a5-b1e6-f96f9a31f218" class="bulleted-list"><li style="list-style-type:circle">странные значения.</li></ul></li></ul><p id="2aa568fa-e39f-8012-b23f-c73ba2abf6b6" class="">Показываешь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-806e-a2bf-cd5c7ece9a0f" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">train[&#x27;user_id&#x27;].nunique(), train[&#x27;item_id&#x27;].nunique(), len(train)
+train.isna().mean()
+train[&#x27;event_type&#x27;].value_counts(normalize=True)  # если есть event_type
+</code></pre><h3 id="2aa568fa-e39f-805b-8953-eef96d5d5c99" class="">Мини-практика</h3><p id="2aa568fa-e39f-80d4-a660-d9598f517a47" class="">Попросить студентов (индивидуально/в мини-группах) ответить на вопросы по данным:</p><ol type="1" id="2aa568fa-e39f-80d7-8f76-c548f3e859af" class="numbered-list" start="1"><li>Сколько у нас пользователей? Сколько товаров?</li></ol><ol type="1" id="2aa568fa-e39f-8018-9cff-d8831ba3f89e" class="numbered-list" start="2"><li>Есть ли пользователи с «слишком маленьким» количеством событий (1–2)?</li></ol><ol type="1" id="2aa568fa-e39f-80b5-b10a-ca858ac51943" class="numbered-list" start="3"><li>Есть ли товары, с которыми почти никто не взаимодействует?</li></ol><p id="2aa568fa-e39f-805e-bd03-e1a9f0f742a3" class="">Можно дать 5 минут, они сами запускают код и пишут числа в ноутбуке.</p><hr id="2aa568fa-e39f-8098-93db-f8ba1031323e"/><h2 id="2aa568fa-e39f-800d-9900-f2b0d78af3e9" class="">6. Блок 50–75 мин: Базовая статистика + sparsity</h2><h3 id="2aa568fa-e39f-80bd-9452-eff40adb49d3" class="">Шаг 1. Распределения</h3><p id="2aa568fa-e39f-80cf-a03c-c12093ada53e" class="">В ноутбуке:</p><ul id="2aa568fa-e39f-809e-9302-f1d009e5517c" class="bulleted-list"><li style="list-style-type:disc">Распределение количества интеракций на пользователя:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80d8-be09-d822ec741eb4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">user_counts = train.groupby(&#x27;user_id&#x27;)[&#x27;item_id&#x27;].nunique()
+user_counts.describe()
+</code></pre><ul id="2aa568fa-e39f-8066-9926-c7126c1f2b07" class="bulleted-list"><li style="list-style-type:disc">Распределение количества интеракций на item:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80cd-94f1-ec11b6efe6dc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">item_counts = train.groupby(&#x27;item_id&#x27;)[&#x27;user_id&#x27;].nunique()
+item_counts.describe()
+</code></pre><p id="2aa568fa-e39f-8061-903e-c736f8df575d" class="">Обсуждаете:</p><ul id="2aa568fa-e39f-80f1-81ec-de2f713c1bd0" class="bulleted-list"><li style="list-style-type:disc">Есть ли «whales» — супер-активные пользователи?</li></ul><ul id="2aa568fa-e39f-80d5-855f-edc1343c646e" class="bulleted-list"><li style="list-style-type:disc">Есть ли «long tail» товаров, у которых почти нет взаимодействий?</li></ul><h3 id="2aa568fa-e39f-8007-b4cc-c6ec1e9296cb" class="">Шаг 2. Приблизительная sparsity</h3><p id="2aa568fa-e39f-80dd-8a32-db7192cf7331" class="">Поясняешь концепт:</p><blockquote id="2aa568fa-e39f-8020-a637-c75425347114" class="">У нас есть матрица user × item. В неё можно мысленно поставить 1, если пользователь взаимодействовал с товаром, и 0 — если нет. Какую долю клеток занимают единицы?</blockquote><p id="2aa568fa-e39f-80cf-87de-c8bb966c9feb" class="">Код (очень приблизительно):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80c9-9a2e-ddf4b78382ef" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">n_users = train[&#x27;user_id&#x27;].nunique()
+n_items = train[&#x27;item_id&#x27;].nunique()
+n_interactions = len(train)
+
+sparsity = n_interactions / (n_users * n_items)
+print(&quot;Sparsity:&quot;, sparsity)
+print(&quot;Matrix density:&quot;, sparsity * 100, &quot;%&quot;)
+</code></pre><p id="2aa568fa-e39f-80b4-81b5-e27b5cf998ec" class="">Обсуждение:</p><ul id="2aa568fa-e39f-8071-8ad5-fe0affa982e1" class="bulleted-list"><li style="list-style-type:disc">почему даже «0.1% плотность» — это нормально;</li></ul><ul id="2aa568fa-e39f-8055-841e-fab58a77c5bb" class="bulleted-list"><li style="list-style-type:disc">что это значит для алгоритмов:<ul id="2aa568fa-e39f-8027-a2dc-eae3332277ab" class="bulleted-list"><li style="list-style-type:circle">не можем хранить dense-матрицу;</li></ul><ul id="2aa568fa-e39f-80a9-93b4-c8b795808628" class="bulleted-list"><li style="list-style-type:circle">нужно работать с разреженными структурами и эвристиками.</li></ul></li></ul><h3 id="2aa568fa-e39f-8094-aceb-eae4c40d6abe" class="">Шаг 3. Первые топ-листы</h3><p id="2aa568fa-e39f-804d-83d7-c15a042f3712" class="">Посчитать:</p><ul id="2aa568fa-e39f-8025-90fe-eded4f839cc6" class="bulleted-list"><li style="list-style-type:disc">Топ-10 самых популярных items:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80dc-bc90-efedf78ddf14" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">pop_items = train[&#x27;item_id&#x27;].value_counts().head(10)
+pop_items
+</code></pre><ul id="2aa568fa-e39f-809b-acc1-de80edb91a5f" class="bulleted-list"><li style="list-style-type:disc">Топ-10 самых активных пользователей:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-800e-b7e6-d8a958d21782" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">top_users = train[&#x27;user_id&#x27;].value_counts().head(10)
+top_users
+</code></pre><p id="2aa568fa-e39f-8068-8f71-ef9fdb64231e" class="">Обсуждаете:</p><blockquote id="2aa568fa-e39f-8029-8e34-ed5cc82da065" class="">есть ли перекосы, разумно ли это, заметны ли какие-то паттерны (например, есть предметы, которые всем навязаны).</blockquote><h3 id="2aa568fa-e39f-80d1-a230-ed30909ce9ea" class="">Мини-практика</h3><p id="2aa568fa-e39f-801b-a2b9-e2cf507d0915" class="">Студенты делают по ноутбуку:</p><ol type="1" id="2aa568fa-e39f-80b7-b872-ee5198bbe0a2" class="numbered-list" start="1"><li>Считают <code>user_counts</code> и <code>item_counts</code> и строят хотя бы простые гистограммы (можно без визуала, просто describe + value_counts по бинам).</li></ol><ol type="1" id="2aa568fa-e39f-80c1-9377-de4d93cbee34" class="numbered-list" start="2"><li>Пишут короткий текстовый вывод в конце ячейки:<ul id="2aa568fa-e39f-8089-bbdc-c4820cd322ef" class="bulleted-list"><li style="list-style-type:disc">«кажется, у нас много…»,</li></ul><ul id="2aa568fa-e39f-8043-9fd1-f8b7cfe7d996" class="bulleted-list"><li style="list-style-type:disc">«пользователи в среднем…»,</li></ul><ul id="2aa568fa-e39f-80e0-a603-ccb27f65d040" class="bulleted-list"><li style="list-style-type:disc">«каталог явно…».</li></ul></li></ol><hr id="2aa568fa-e39f-8072-8020-c6004d17f190"/><h2 id="2aa568fa-e39f-8023-82bf-eff1b72939f0" class="">7. Блок 75–90 мин: Каркас «нулевого решения» + домашка</h2><h3 id="2aa568fa-e39f-809d-b1d1-eda6e403682b" class="">Шаг 1. Каркас функции recommend_for_user</h3><p id="2aa568fa-e39f-80b6-8d23-c559053c948a" class="">Объясняешь:</p><ul id="2aa568fa-e39f-804f-b4f9-ca3301dd4735" class="bulleted-list"><li style="list-style-type:disc">Мы хотим, чтобы <strong>все решения по курсу</strong> строились на одном интерфейсе:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-800b-bd00-eae23e5f0087" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_for_user(user_id, k=10):
+    &quot;&quot;&quot;Вернуть список из k item_id, рекомендованных этому пользователю&quot;&quot;&quot;
+    ...
+</code></pre></li></ul><ul id="2aa568fa-e39f-8060-96db-e0e1c43a0543" class="bulleted-list"><li style="list-style-type:disc">На этом уроке мы <strong>ещё не делаем умные рекомендации</strong>, а делаем «заглушку», чтобы:<ul id="2aa568fa-e39f-80ad-a884-e55e584dd3ac" class="bulleted-list"><li style="list-style-type:circle">понять формат;</li></ul><ul id="2aa568fa-e39f-80bc-83ab-f549a6d92071" class="bulleted-list"><li style="list-style-type:circle">иметь, от чего отталкиваться.</li></ul></li></ul><p id="2aa568fa-e39f-80a3-8850-ef6f21550005" class="">Прямо в ноутбуке делаете:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80da-8fac-e81efaf03dbc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># Популярность по всем событиям
+item_popularity = train[&#x27;item_id&#x27;].value_counts().index.tolist()
+
+def recommend_for_user_dummy(user_id, k=10):
+    # пока просто возвращаем самые популярные товары
+    return item_popularity[:k]
+</code></pre><p id="2aa568fa-e39f-80eb-a0d3-d0337a583db3" class="">Поясняешь:</p><ul id="2aa568fa-e39f-8073-b875-fcd62f89fe86" class="bulleted-list"><li style="list-style-type:disc">Это «нулевой» baseline:<ul id="2aa568fa-e39f-8011-8d0e-e766ef2bde5d" class="bulleted-list"><li style="list-style-type:circle">не учитывает пользователя;</li></ul><ul id="2aa568fa-e39f-80d4-a9de-d99740b7e329" class="bulleted-list"><li style="list-style-type:circle">не учитывает контекст;</li></ul><ul id="2aa568fa-e39f-80df-89f8-de9060be4ec7" class="bulleted-list"><li style="list-style-type:circle">но это уже <strong>валидная функция</strong>, которую можно обернуть в сабмит.</li></ul></li></ul><h3 id="2aa568fa-e39f-80c3-80de-e97ec50ce858" class="">Шаг 2. Структура проекта</h3><p id="2aa568fa-e39f-80de-99bf-dc3efd093e91" class="">Очень кратко показываешь, как вы хотите, чтобы студенты организовывали код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8045-a9ff-cd83ebb489be" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">rec_course/
+  data/
+  notebooks/
+    01_eda.ipynb         # текущий урок
+  src/
+    baseline.py          # сюда позже выносится логика recommend_for_user
+    utils.py             # вспомогательные функции
+</code></pre><p id="2aa568fa-e39f-80de-8fc8-c46feca73596" class="">И пример переноса:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8025-b2f0-f35312f9e5d2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># src/baseline.py
+
+import pandas as pd
+
+def load_data(path=&quot;../data/train_interactions.csv&quot;):
+    return pd.read_csv(path)
+
+def build_popularity_model(train):
+    return train[&#x27;item_id&#x27;].value_counts().index.tolist()
+
+class PopularityRecommender:
+    def __init__(self, popular_items):
+        self.popular_items = popular_items
+
+    def recommend(self, user_id, k=10):
+        return self.popular_items[:k]
+</code></pre><p id="2aa568fa-e39f-804a-8f0f-c3404bdc2c81" class="">Это задел на следующие уроки.</p><h3 id="2aa568fa-e39f-80ba-b19e-d88f5067f33d" class="">Домашка 1.1</h3><p id="2aa568fa-e39f-806e-a217-c0fe7557d637" class=""><strong>Форма сдачи:</strong> ноутбук (или несколько файлов) + короткий текстовый файл/markdown.</p><ol type="1" id="2aa568fa-e39f-802f-980e-ed7ce165d766" class="numbered-list" start="1"><li><strong>Ноутбук </strong><code><strong>01_eda.ipynb</strong></code><strong> (или его продолжение):</strong><ul id="2aa568fa-e39f-8041-962f-d1d19d0f75db" class="bulleted-list"><li style="list-style-type:disc">Загрузить train-данные.</li></ul><ul id="2aa568fa-e39f-803f-b87f-eb8f9b5b7df3" class="bulleted-list"><li style="list-style-type:disc">Посчитать и вывести:<ul id="2aa568fa-e39f-809c-8839-fdb25bf6cb25" class="bulleted-list"><li style="list-style-type:circle"><code>n_users</code>, <code>n_items</code>, <code>n_interactions</code>;</li></ul><ul id="2aa568fa-e39f-8068-847e-d77d89e70a31" class="bulleted-list"><li style="list-style-type:circle">примерную sparsity;</li></ul><ul id="2aa568fa-e39f-80d9-bf1c-ea0a7e0ba704" class="bulleted-list"><li style="list-style-type:circle">describe по <code>user_counts</code> и <code>item_counts</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-80b8-8c53-fa6710fefc8d" class="bulleted-list"><li style="list-style-type:disc">Показать топ-10 популярных items.</li></ul><ul id="2aa568fa-e39f-80d2-9eee-e4e2657e6fcb" class="bulleted-list"><li style="list-style-type:disc">Реализовать простую функцию:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80bb-9e04-f021b17966bf" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_for_user_dummy(user_id, k=10):
+    return top_popular_items[:k]
+</code></pre></li></ul><ul id="2aa568fa-e39f-80bc-981f-f764d59a5bda" class="bulleted-list"><li style="list-style-type:disc">Внизу ноутбука — несколько вызовов:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8057-b495-ce277186aba2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">recommend_for_user_dummy(user_id_example, k=5)
+</code></pre></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8083-954c-c74445481d90" class="numbered-list" start="2"><li><strong>Короткий текст (можно markdown-ячейкой в конце ноутбука):</strong><ul id="2aa568fa-e39f-802f-921a-d6a9e902052a" class="bulleted-list"><li style="list-style-type:disc">Ответить на вопросы:<ul id="2aa568fa-e39f-8029-9737-f697f036db03" class="bulleted-list"><li style="list-style-type:circle">Насколько «разрежена» наша матрица user×item?</li></ul><ul id="2aa568fa-e39f-8090-9105-d9187895f0d0" class="bulleted-list"><li style="list-style-type:circle">Есть ли «суперпопулярные» товары? О чем это говорит?</li></ul><ul id="2aa568fa-e39f-804b-92c5-ee77210f2703" class="bulleted-list"><li style="list-style-type:circle">Почему простая популярность уже лучше, чем ничего, но явно недостаточна?</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8000-a7ae-ed391446150b" class="numbered-list" start="3"><li>(Опционально, если хочешь жёстче):<ul id="2aa568fa-e39f-802c-8dc4-fd76fdd0fc86" class="bulleted-list"><li style="list-style-type:disc">Сделать мини-класс <code>DummyRecommender</code>, как в примере, чтобы студенты сразу привыкали к ООП-обёртке.</li></ul></li></ol><hr id="2aa568fa-e39f-803f-93fa-e33952e2b0f4"/><p id="2aa568fa-e39f-801f-939a-ef95b3b54bd8" class="">Если хочешь, дальше могу:</p><ul id="2aa568fa-e39f-80d8-90e2-d535b5544f40" class="bulleted-list"><li style="list-style-type:disc">расписать <strong>урок 1.2</strong> в том же стиле (с конкретными формулами для time-decayed popularity),</li></ul><ul id="2aa568fa-e39f-808c-89b2-c09f3718d04f" class="bulleted-list"><li style="list-style-type:disc">или сделать шаблон <strong>структуры репозитория и ноутбуков</strong> для всего курса (чтобы студенты везде работали в одном формате).</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

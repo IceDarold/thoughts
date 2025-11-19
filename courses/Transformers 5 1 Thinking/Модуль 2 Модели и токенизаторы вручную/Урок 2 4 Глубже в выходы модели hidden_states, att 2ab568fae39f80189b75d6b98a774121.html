@@ -1,0 +1,895 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 2.4. Глубже в выходы модели: hidden_states, attention и ручной NER</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8018-9b75-d6b98a774121" class="page sans"><header><h1 class="page-title">Урок 2.4. Глубже в выходы модели: hidden_states, attention и ручной NER</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-804b-99c8-e61713259f31" class="">Добиваем модуль 2 и заглядываем «в кишки» трансформера 💉🧠</p><p id="2ab568fa-e39f-80c5-9ab5-d8aae80c42ef" class="">Это будет самый техничный урок из модуля: hidden states, attention и ручной NER.</p><hr id="2ab568fa-e39f-808e-a6d7-eb5c874bc1ac"/><h2 id="2ab568fa-e39f-805c-bce0-d259a6c6a672" class="">0. Что делаем в этом уроке</h2><p id="2ab568fa-e39f-80dd-85a6-c4d07a19ea47" class="">Цели:</p><ol type="1" id="2ab568fa-e39f-80aa-84b9-d797b98c7e7a" class="numbered-list" start="1"><li>Научиться получать <strong>скрытые слои</strong> (<code>hidden_states</code>) и <strong>матрицы внимания</strong> (<code>attentions</code>) из модели.</li></ol><ol type="1" id="2ab568fa-e39f-80c8-8250-c357d1264dd0" class="numbered-list" start="2"><li>Понять, какие у них <strong>формы</strong> и смыслы.</li></ol><ol type="1" id="2ab568fa-e39f-8059-a873-cc7a1a10383e" class="numbered-list" start="3"><li>Научиться делать <strong>token classification (NER) вручную</strong>, без <code>pipeline</code>, используя:<ul id="2ab568fa-e39f-801b-91c1-fceec91ac19b" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForTokenClassification</code>,</li></ul><ul id="2ab568fa-e39f-8085-8250-e10ba2e825d4" class="bulleted-list"><li style="list-style-type:disc"><code>return_offsets_mapping</code>,</li></ul><ul id="2ab568fa-e39f-80f8-a84b-f9ab4869d800" class="bulleted-list"><li style="list-style-type:disc">аккуратную связку токен → кусок строки.</li></ul></li></ol><p id="2ab568fa-e39f-807c-aa6c-d0a1b05a40a2" class="">Вся практика — на кейсе тикетов/текстов поддержки, как и раньше.</p><hr id="2ab568fa-e39f-8097-be35-cddc5a07e558"/><h2 id="2ab568fa-e39f-8022-9e5c-d64602be9aa6" class="">1. Зачем нам hidden_states и attention</h2><h3 id="2ab568fa-e39f-80bd-b98a-cb13d22bafc4" class="">1.1. Hidden states</h3><p id="2ab568fa-e39f-8003-9834-fad80467bf86" class=""><code>hidden_states</code> — это <strong>все промежуточные представления</strong> для каждого токена на каждом слое сети.</p><ul id="2ab568fa-e39f-8056-b560-f10b24e10b55" class="bulleted-list"><li style="list-style-type:disc">Типичный размер:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80cf-bece-de7865ad6648" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">hidden_states[layer_idx].shape == [batch_size, seq_len, hidden_size]
+</code></pre></li></ul><ul id="2ab568fa-e39f-8094-9025-f6949861a133" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states[0]</code> — эмбеддинги до трансформер-слоёв (embedding layer).</li></ul><ul id="2ab568fa-e39f-80f3-9c7c-dfa2e14a1a25" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states[-1]</code> — выход <strong>последнего</strong> слоя (то, что мы обычно берём для классификации).</li></ul><p id="2ab568fa-e39f-8049-b427-db99bb30a94e" class="">Зачем нужны:</p><ul id="2ab568fa-e39f-803a-94b1-fdf3be4d73ea" class="bulleted-list"><li style="list-style-type:disc">для <strong>диагностики</strong> (смотреть, что происходит на разных слоях);</li></ul><ul id="2ab568fa-e39f-809c-aec8-f1583eaf544d" class="bulleted-list"><li style="list-style-type:disc">для <strong>feature extraction</strong> (забирать не только последний слой);</li></ul><ul id="2ab568fa-e39f-80e2-a5c5-f96b2dd36790" class="bulleted-list"><li style="list-style-type:disc">для продвинутых трюков (layer mixing, probing и т.п.).</li></ul><h3 id="2ab568fa-e39f-803f-9fba-d339ab4c976f" class="">1.2. Attention</h3><p id="2ab568fa-e39f-8055-b95a-ff60a51cdd48" class=""><code>attentions</code> — это <strong>матрицы внимания</strong>: кто на кого смотрит внутри self-attention.</p><ul id="2ab568fa-e39f-809a-aba3-f6df553d234f" class="bulleted-list"><li style="list-style-type:disc">Типичный размер:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ed-93b8-c19153238353" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">attentions[layer_idx].shape == [batch_size, num_heads, seq_len, seq_len]
+</code></pre></li></ul><ul id="2ab568fa-e39f-80e7-bbf4-e18100f4dddc" class="bulleted-list"><li style="list-style-type:disc"><code>attentions[layer][head, i, j]</code> ≈ «насколько токен <code>i</code> обращает внимание на токен <code>j</code>».</li></ul><p id="2ab568fa-e39f-8042-96c9-e91e3f724b88" class="">Зачем нужны:</p><ul id="2ab568fa-e39f-8046-b488-d416aa08c489" class="bulleted-list"><li style="list-style-type:disc">для <strong>интерпретации</strong>: посмотреть, на какие слова модель смотрит при обработке;</li></ul><ul id="2ab568fa-e39f-80c2-be4d-c4159a8f0f1e" class="bulleted-list"><li style="list-style-type:disc">чтобы рисовать красивые картиночки;</li></ul><ul id="2ab568fa-e39f-80ee-b3f5-d1047a7ac8ae" class="bulleted-list"><li style="list-style-type:disc">для исследований.</li></ul><p id="2ab568fa-e39f-807b-9280-d36237b6e3bb" class="">В этом уроке мы не будем строить супер-сложные визуализации — ограничимся пониманием форм и простым инспектом.</p><hr id="2ab568fa-e39f-807f-8d2a-d224342213b3"/><h2 id="2ab568fa-e39f-8087-a449-ff2a1709236d" class="">2. Практика 1: получаем hidden_states и attentions</h2><h3 id="2ab568fa-e39f-80fe-94c8-ea75de6b3609" class="">2.1. Включаем вывод hidden_states и attentions</h3><p id="2ab568fa-e39f-80e5-834b-d0bbe2f07c12" class="">У большинства моделей это можно:</p><ul id="2ab568fa-e39f-8026-af5f-efd7dfd1e8ca" class="bulleted-list"><li style="list-style-type:disc">либо задать в конфиге,</li></ul><ul id="2ab568fa-e39f-80e7-a140-fea34bb3dd13" class="bulleted-list"><li style="list-style-type:disc">либо передать аргументы при <code>from_pretrained</code>.</li></ul><p id="2ab568fa-e39f-8000-94fb-c649db547469" class="">Сделаем через <code>from_pretrained</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f2-b44e-c9223c0a6472" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModel
+
+model_id = &quot;distilbert-base-uncased&quot;
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModel.from_pretrained(
+    model_id,
+    output_hidden_states=True,
+    output_attentions=True,
+)
+</code></pre><p id="2ab568fa-e39f-8057-b035-cc50a0d5f0af" class="">Это значит:</p><ul id="2ab568fa-e39f-8068-8796-d6cc99a2903c" class="bulleted-list"><li style="list-style-type:disc">каждый вызов <code>model(...)</code> вернёт:<ul id="2ab568fa-e39f-80b9-b517-fd52caa314fe" class="bulleted-list"><li style="list-style-type:circle"><code>last_hidden_state</code>,</li></ul><ul id="2ab568fa-e39f-8029-a9ab-cd750e72b07f" class="bulleted-list"><li style="list-style-type:circle"><code>hidden_states</code>,</li></ul><ul id="2ab568fa-e39f-80d0-a7f9-ca1a026db07c" class="bulleted-list"><li style="list-style-type:circle"><code>attentions</code>.</li></ul></li></ul><h3 id="2ab568fa-e39f-804d-a428-f58c88b242df" class="">2.2. Прогоняем пример</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e7-bec0-c01ceb59c1aa" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+
+text = &quot;The app crashes on iOS 17.1 in the Pro plan.&quot;
+
+enc = tokenizer(
+    text,
+    return_tensors=&quot;pt&quot;,
+    padding=True,
+    truncation=True,
+)
+
+with torch.no_grad():
+    outputs = model(**enc)
+
+print(outputs.keys())
+</code></pre><p id="2ab568fa-e39f-808b-abad-c2e061c39d4a" class="">Ожидаемо что-то типа:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8087-989e-e828d3858cb6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">dict_keys([&#x27;last_hidden_state&#x27;, &#x27;hidden_states&#x27;, &#x27;attentions&#x27;])
+</code></pre><h3 id="2ab568fa-e39f-80fb-956b-f57a809ec9cc" class="">2.3. Смотрим на формы</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8017-abe6-ca31e6c7b546" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">hidden_states = outputs.hidden_states
+attentions = outputs.attentions
+
+print(&quot;num hidden layers (with embeddings):&quot;, len(hidden_states))
+print(&quot;num attention layers:&quot;, len(attentions))
+
+print(&quot;hidden_states[0].shape:&quot;, hidden_states[0].shape)    # embedding layer
+print(&quot;hidden_states[-1].shape:&quot;, hidden_states[-1].shape)  # last layer
+
+print(&quot;attentions[0].shape:&quot;, attentions[0].shape)
+print(&quot;attentions[-1].shape:&quot;, attentions[-1].shape)
+</code></pre><p id="2ab568fa-e39f-8015-8275-f7bcf8890ea1" class="">Типично:</p><ul id="2ab568fa-e39f-80cc-8a19-ec08f88dc1ef" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states[0]</code> → <code>[1, seq_len, hidden_size]</code></li></ul><ul id="2ab568fa-e39f-8004-b798-df0ec9668f21" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states[-1]</code> → <code>[1, seq_len, hidden_size]</code></li></ul><ul id="2ab568fa-e39f-80dd-8b49-db5e7239dfbf" class="bulleted-list"><li style="list-style-type:disc"><code>attentions[layer]</code> → <code>[1, num_heads, seq_len, seq_len]</code></li></ul><p id="2ab568fa-e39f-806f-9ba3-cd4b75c9aa1c" class="">Объясняем ученикам:</p><ul id="2ab568fa-e39f-80a3-ba80-eba2bb5b5df9" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states</code> — кортеж длиной <code>num_layers + 1</code>:<ul id="2ab568fa-e39f-809d-915c-eb14be64eb55" class="bulleted-list"><li style="list-style-type:circle">0-й элемент — эмбеддинги,</li></ul><ul id="2ab568fa-e39f-80f4-8f3e-f0f16c0dcc52" class="bulleted-list"><li style="list-style-type:circle">1..N — выходы слоёв.</li></ul></li></ul><ul id="2ab568fa-e39f-80b6-85f7-fdd92465b994" class="bulleted-list"><li style="list-style-type:disc"><code>attentions</code> — кортеж длиной <code>num_layers</code>:<ul id="2ab568fa-e39f-80cf-8f06-ccbe83087f4a" class="bulleted-list"><li style="list-style-type:circle">каждый элемент — attention одной энкодер-слойки.</li></ul></li></ul><hr id="2ab568fa-e39f-8072-a4c7-f1efa3ea192e"/><h2 id="2ab568fa-e39f-8063-a390-e763b2a43ca3" class="">3. Небольшой пример: mean-pooling с attention_mask</h2><p id="2ab568fa-e39f-8019-b68a-e946afc15f69" class="">Покажем, как использовать <code>hidden_states[-1]</code> + <code>attention_mask</code> для более аккуратного <strong>mean-pooling</strong> (с учётом паддинга). Это уже реально полезно для feature extraction.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800d-be0e-c1d31ae59a24" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">last_hidden = hidden_states[-1]  # [batch, seq_len, hidden_size]
+mask = enc[&quot;attention_mask&quot;]     # [batch, seq_len]
+
+print(&quot;last_hidden:&quot;, last_hidden.shape)
+print(&quot;mask:&quot;, mask.shape)
+</code></pre><h3 id="2ab568fa-e39f-8051-82f0-ee79bf1d2481" class="">3.1. Считаем средний эмбеддинг по непаддинговым токенам</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800a-92a6-def255152d1b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># Преобразуем mask к [batch, seq_len, 1] для broadcast
+mask_expanded = mask.unsqueeze(-1)  # [batch, seq_len, 1]
+
+# Обнуляем паддинговые токены
+masked_hidden = last_hidden * mask_expanded  # [batch, seq_len, hidden_size]
+
+# Суммируем по длине
+sum_hidden = masked_hidden.sum(dim=1)  # [batch, hidden_size]
+
+# Считаем, сколько непаддинговых токенов в каждом тексте
+lengths = mask.sum(dim=1).unsqueeze(-1)  # [batch, 1]
+
+mean_pooled = sum_hidden / lengths       # [batch, hidden_size]
+
+print(&quot;mean_pooled shape:&quot;, mean_pooled.shape)
+</code></pre><p id="2ab568fa-e39f-80e3-b536-d52fa06f2b8a" class="">Объясняем:</p><ul id="2ab568fa-e39f-8015-bdcf-c32f2d1bb00f" class="bulleted-list"><li style="list-style-type:disc">это альтернатива «взять CLS»;</li></ul><ul id="2ab568fa-e39f-8075-8ea6-ce97ee68e44d" class="bulleted-list"><li style="list-style-type:disc">такой mean-pooling очень часто используется для sentence embeddings.</li></ul><hr id="2ab568fa-e39f-8029-83ab-c9da33f710b9"/><h2 id="2ab568fa-e39f-8067-bd16-d602846ad167" class="">4. Практика 2: ручной NER с AutoModelForTokenClassification</h2><p id="2ab568fa-e39f-809a-8a49-f0f5fcad5573" class="">Теперь — вторая большая часть урока: <strong>token classification руками</strong>.</p><h3 id="2ab568fa-e39f-8045-b9ae-c601ec97644c" class="">4.1. Зачем делать NER без <code>pipeline</code></h3><p id="2ab568fa-e39f-80f3-95de-f00f5f9f0fb0" class=""><code>pipeline(&quot;token-classification&quot;)</code> удобен, но:</p><ul id="2ab568fa-e39f-8012-9bd9-d9ecd3b961dc" class="bulleted-list"><li style="list-style-type:disc">он сам решает, как сгруппировать токены;</li></ul><ul id="2ab568fa-e39f-807d-a747-d63cbf45ce17" class="bulleted-list"><li style="list-style-type:disc">сам что-то делает с <code>offset_mapping</code>;</li></ul><ul id="2ab568fa-e39f-8080-a378-e3eb2810d0fc" class="bulleted-list"><li style="list-style-type:disc">возвращает уже пост-обработанный результат.</li></ul><p id="2ab568fa-e39f-80ef-955f-cca28d8ef640" class="">Если нам нужно <strong>тонко контролировать</strong>, например:</p><ul id="2ab568fa-e39f-80e2-9ed8-e3a59b93b4bd" class="bulleted-list"><li style="list-style-type:disc">как именно склеивать токены (<code>##</code> и т.п.),</li></ul><ul id="2ab568fa-e39f-8024-abb3-ee9cd524d6d1" class="bulleted-list"><li style="list-style-type:disc">какие лейблы нас интересуют,</li></ul><ul id="2ab568fa-e39f-8013-9ec6-ff6f49f2fea0" class="bulleted-list"><li style="list-style-type:disc">какие пороги <code>score</code> использовать,</li></ul><p id="2ab568fa-e39f-801e-8599-ee3a215c77fb" class="">— лучше пройти полный путь вручную.</p><hr id="2ab568fa-e39f-80b7-985b-c483bd8c1ca0"/><h3 id="2ab568fa-e39f-808b-80b7-e0f17646ee86" class="">4.2. Загружаем модель и токенизатор NER</h3><p id="2ab568fa-e39f-806e-873b-f94a1bc127ad" class="">Возьмём классический англоязычный NER-чекпоинт:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8014-b34c-d2886eb70a65" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModelForTokenClassification
+
+ner_model_id = &quot;dslim/bert-base-NER&quot;
+
+ner_tokenizer = AutoTokenizer.from_pretrained(ner_model_id)
+ner_model = AutoModelForTokenClassification.from_pretrained(ner_model_id)
+</code></pre><h3 id="2ab568fa-e39f-8058-a23b-d0c91ea3b20e" class="">4.3. Текст тикета</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a2-a6f6-d631c6d4f529" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">text = &quot;App crashes on iOS 17.1 in the Pro plan for user john.doe@example.com.&quot;
+</code></pre><h3 id="2ab568fa-e39f-8055-8ab3-d93c031ed005" class="">4.4. Токенизация с offsets</h3><p id="2ab568fa-e39f-8079-a0b4-ec7e3933e870" class="">Ключевой момент: просим <code>return_offsets_mapping=True</code>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8052-bd43-d10b8d6a8bcb" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">enc = ner_tokenizer(
+    text,
+    return_tensors=&quot;pt&quot;,
+    padding=True,
+    truncation=True,
+    return_offsets_mapping=True,
+)
+
+print(enc.keys())
+# dict_keys([&#x27;input_ids&#x27;, &#x27;token_type_ids&#x27;, &#x27;attention_mask&#x27;, &#x27;offset_mapping&#x27;])
+</code></pre><p id="2ab568fa-e39f-80f4-b7c0-c6c33b480070" class="">Но важно: <strong>модель не ждёт </strong><code><strong>offset_mapping</strong></code><strong> в </strong><code><strong>forward</strong></code>, так что надо его убрать:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8069-b41a-fea452888873" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">offsets = enc.pop(&quot;offset_mapping&quot;)  # сохраняем отдельно
+</code></pre><p id="2ab568fa-e39f-80c5-a918-c4ce94791571" class="">Теперь <code>enc</code> содержит только то, что надо модели: <code>input_ids</code>, <code>token_type_ids</code>, <code>attention_mask</code>.</p><hr id="2ab568fa-e39f-8081-bfbe-d48c372dc42d"/><h3 id="2ab568fa-e39f-80a0-afb2-e1405746059d" class="">4.5. Прогон через модель и предсказания по токенам</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80de-9305-e9dcd1927253" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+
+with torch.no_grad():
+    outputs = ner_model(**enc)
+
+logits = outputs.logits  # [batch, seq_len, num_labels]
+print(&quot;logits shape:&quot;, logits.shape)
+
+pred_ids = torch.argmax(logits, dim=-1)  # [batch, seq_len]
+pred_ids = pred_ids[0]                   # берём первый (и единственный) элемент батча
+</code></pre><p id="2ab568fa-e39f-801d-937c-cc600a9377d0" class="">Список токенов:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809b-bfcb-ec0cec03eeea" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tokens = ner_tokenizer.convert_ids_to_tokens(enc[&quot;input_ids&quot;][0])
+id2label = ner_model.config.id2label
+
+print(&quot;Tokens:&quot;)
+print(tokens)
+</code></pre><hr id="2ab568fa-e39f-803f-b6ae-d142075ddb87"/><h3 id="2ab568fa-e39f-8001-b249-f2b18fbbcb29" class="">4.6. Связываем токены с оригинальной строкой</h3><p id="2ab568fa-e39f-8064-898f-e5a21f2685a7" class=""><code>offsets</code> даёт нам список из <code>(start, end)</code> для каждого токена:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b3-a5f9-eeae3b4386ef" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">offsets_for_text = offsets[0]  # [seq_len, 2]
+
+for token, pred_id, (start, end) in zip(tokens, pred_ids, offsets_for_text):
+    label = id2label[pred_id.item()]
+    substring = text[start:end]
+    print(f&quot;{token:15} | {label:10} | &#x27;{substring}&#x27;&quot;)
+</code></pre><p id="2ab568fa-e39f-805b-a199-ebb56bf4c853" class="">Объясняем:</p><ul id="2ab568fa-e39f-8029-bf5c-e026a80b43bd" class="bulleted-list"><li style="list-style-type:disc"><code>start</code>, <code>end</code> — позиции в исходной строке <code>text</code>;</li></ul><ul id="2ab568fa-e39f-8067-9da7-cc86d98c8442" class="bulleted-list"><li style="list-style-type:disc">для спец-токенов (<code>[CLS]</code>, <code>[SEP]</code>, паддинги) offsets могут быть <code>(0, 0)</code>, и substring будет <code>&#x27;&#x27;</code>;</li></ul><ul id="2ab568fa-e39f-80f8-bcc3-d751e4da095a" class="bulleted-list"><li style="list-style-type:disc"><code>token</code> может быть «сломанным»: <code>i</code>, <code>##OS</code>, <code>Pro</code>, <code>plan</code>, …</li></ul><p id="2ab568fa-e39f-80b2-ac19-d60f0b6390e9" class="">Это уже полноценный <strong>ручной NER</strong>: для каждого токена мы знаем метку и позицию в тексте.</p><hr id="2ab568fa-e39f-8040-88dd-e5da12a5fcd5"/><h2 id="2ab568fa-e39f-805d-ad2d-c24a72c0a623" class="">5. Склеивание WordPiece-токенов в целые сущности</h2><p id="2ab568fa-e39f-8011-ab8c-e7c0dfd202d4" class="">Сейчас у нас сущности могут быть разбиты на куски:</p><ul id="2ab568fa-e39f-8046-b0a6-eca7c3920246" class="bulleted-list"><li style="list-style-type:disc"><code>&quot;iOS&quot;</code> → <code>[&quot;i&quot;, &quot;##OS&quot;]</code></li></ul><ul id="2ab568fa-e39f-8028-ab44-fee847eb6e7a" class="bulleted-list"><li style="list-style-type:disc"><code>&quot;john.doe@example.com&quot;</code> может быть разрезан ещё жёстче.</li></ul><p id="2ab568fa-e39f-806d-b9c5-f97dad88e520" class="">Нам нужно:</p><ul id="2ab568fa-e39f-80db-ab9f-d62ac53e11d4" class="bulleted-list"><li style="list-style-type:disc">собрать токены с одинаковым NE-лейблом,</li></ul><ul id="2ab568fa-e39f-8043-9ce3-e8df3ef6167c" class="bulleted-list"><li style="list-style-type:disc">и объединить их в одну строку/спан.</li></ul><p id="2ab568fa-e39f-8021-b58e-d83f265b5056" class="">Сделаем простой алгоритм склейки:</p><h3 id="2ab568fa-e39f-80f2-ab93-e077e37ccadd" class="">5.1. Простейшая группировка по схеме BIO/IOB (упрощённо)</h3><p id="2ab568fa-e39f-8011-8051-ff88fa64b41f" class="">Большинство NER-моделей используют лейблы вида <code>B-ORG</code>, <code>I-ORG</code>, <code>B-PER</code>, <code>I-PER</code>. В <code>dslim/bert-base-NER</code> именно так.</p><p id="2ab568fa-e39f-80f7-992e-f774a2fd694e" class="">Пример:</p><ul id="2ab568fa-e39f-80dd-9b9e-ea94d8c6048e" class="bulleted-list"><li style="list-style-type:disc"><code>B-ORG</code> / <code>I-ORG</code> → части одной организации;</li></ul><ul id="2ab568fa-e39f-8057-a7aa-fe4ca41781ec" class="bulleted-list"><li style="list-style-type:disc"><code>O</code> → не сущность.</li></ul><p id="2ab568fa-e39f-802a-953e-c6c1cdd1da4f" class="">Упростим:</p><ul id="2ab568fa-e39f-80a1-b550-f4be4d938401" class="bulleted-list"><li style="list-style-type:disc">если текущий label начинается с <code>B-</code>, начинаем новую сущность;</li></ul><ul id="2ab568fa-e39f-8072-a782-fcfddcd7ef36" class="bulleted-list"><li style="list-style-type:disc">если <code>I-</code> того же типа, расширяем текущую;</li></ul><ul id="2ab568fa-e39f-8054-9453-e771b33bdf77" class="bulleted-list"><li style="list-style-type:disc"><code>O</code> — закрываем сущность.</li></ul><h3 id="2ab568fa-e39f-8004-a862-fb429843fe09" class="">5.2. Реализуем</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802a-b458-d61f60b2e606" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def merge_wordpieces_and_labels(tokens, pred_ids, offsets, text, id2label):
+    entities = []
+    current_entity = None
+
+    for token, pred_id, (start, end) in zip(tokens, pred_ids, offsets):
+        start = start.item()
+        end = end.item()
+        label = id2label[pred_id.item()]
+
+        if end == 0 and start == 0:
+            # спец-токен ([CLS], [SEP], паддинг)
+            continue
+
+        # BIO схема: label может быть &#x27;B-ORG&#x27;, &#x27;I-ORG&#x27;, &#x27;O&#x27;
+        if label == &quot;O&quot;:
+            # закрываем текущую сущность, если была
+            if current_entity is not None:
+                entities.append(current_entity)
+                current_entity = None
+            continue
+
+        # Иначе сущность:
+        label_prefix, label_type = label.split(&quot;-&quot;, maxsplit=1)
+
+        if label_prefix == &quot;B&quot; or current_entity is None or current_entity[&quot;type&quot;] != label_type:
+            # начинаем новую сущность
+            if current_entity is not None:
+                entities.append(current_entity)
+            current_entity = {
+                &quot;type&quot;: label_type,
+                &quot;start&quot;: start,
+                &quot;end&quot;: end,
+            }
+        else:
+            # продолжаем сущность (I-...)
+            current_entity[&quot;end&quot;] = end
+
+    # не забываем добавить последнюю
+    if current_entity is not None:
+        entities.append(current_entity)
+
+    # добавим текст сущности
+    for ent in entities:
+        ent[&quot;text&quot;] = text[ent[&quot;start&quot;]:ent[&quot;end&quot;]]
+
+    return entities
+</code></pre><h3 id="2ab568fa-e39f-80a5-a639-c7f63098396c" class="">5.3. Используем эту функцию</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802b-ae1d-f705329d60a9" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">entities = merge_wordpieces_and_labels(tokens, pred_ids, offsets_for_text, text, id2label)
+
+print(&quot;ENTITIES:&quot;)
+for e in entities:
+    print(f&quot;{e[&#x27;type&#x27;]:5} | &#x27;{e[&#x27;text&#x27;]}&#x27; (span=({e[&#x27;start&#x27;]}, {e[&#x27;end&#x27;]}))&quot;)
+</code></pre><p id="2ab568fa-e39f-80b8-a746-fbd430398bc2" class="">Пример вывода:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805c-bc40-fb2ced78345f" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">LOC   | &#x27;iOS 17.1&#x27; (span=(17, 26))
+ORG   | &#x27;Pro&#x27; (span=(34, 37))
+PER   | &#x27;john.doe@example.com&#x27; (span=(48, 69))
+</code></pre><p id="2ab568fa-e39f-8058-83ca-f0a5bf4805cd" class="">Это уже очень похоже на то, что делает <code>pipeline(&quot;token-classification&quot;, grouped_entities=True)</code>, только:</p><ul id="2ab568fa-e39f-808f-862e-d11f24aa7d94" class="bulleted-list"><li style="list-style-type:disc">мы <strong>точно понимаем</strong>, как всё устроено,</li></ul><ul id="2ab568fa-e39f-8050-b3ac-c0513f20ee12" class="bulleted-list"><li style="list-style-type:disc">можем кастомизировать правила (например, учитывать только <code>ORG</code> и <code>LOC</code>, игнорировать <code>PER</code>).</li></ul><hr id="2ab568fa-e39f-801f-987d-cecb29acc9ae"/><h2 id="2ab568fa-e39f-804e-bdf6-d47f1d6df3ee" class="">6. Мини-интеграция в функцию «из текста → сущности»</h2><p id="2ab568fa-e39f-80d6-aea9-efb50bd6dbf6" class="">Сделаем аккуратную функцию, которую можно переиспользовать в проекте.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801c-a005-f8aa6bb686a3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def extract_ner_entities(text: str, tokenizer, model):
+    enc = tokenizer(
+        text,
+        return_tensors=&quot;pt&quot;,
+        padding=True,
+        truncation=True,
+        return_offsets_mapping=True,
+    )
+
+    offsets = enc.pop(&quot;offset_mapping&quot;)[0]  # [seq_len, 2]
+
+    with torch.no_grad():
+        outputs = model(**enc)
+
+    logits = outputs.logits  # [1, seq_len, num_labels]
+    pred_ids = torch.argmax(logits, dim=-1)[0]  # [seq_len]
+
+    tokens = tokenizer.convert_ids_to_tokens(enc[&quot;input_ids&quot;][0])
+    id2label = model.config.id2label
+
+    entities = merge_wordpieces_and_labels(tokens, pred_ids, offsets, text, id2label)
+    return entities
+</code></pre><p id="2ab568fa-e39f-8077-a0ac-fcd23182bbfa" class="">Пользуемся:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b3-9039-d61ea4b91326" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">text = &quot;App crashes on iOS 17.1 in the Pro plan for user john.doe@example.com.&quot;
+
+entities = extract_ner_entities(text, ner_tokenizer, ner_model)
+
+for e in entities:
+    print(e)
+</code></pre><p id="2ab568fa-e39f-8004-81c1-c1335dac8dc9" class="">Вывод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809a-bd57-e6e9c6bea98a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{&#x27;type&#x27;: &#x27;LOC&#x27;, &#x27;start&#x27;: 17, &#x27;end&#x27;: 26, &#x27;text&#x27;: &#x27;iOS 17.1&#x27;}
+{&#x27;type&#x27;: &#x27;ORG&#x27;, &#x27;start&#x27;: 34, &#x27;end&#x27;: 37, &#x27;text&#x27;: &#x27;Pro&#x27;}
+{&#x27;type&#x27;: &#x27;PER&#x27;, &#x27;start&#x27;: 48, &#x27;end&#x27;: 69, &#x27;text&#x27;: &#x27;john.doe@example.com&#x27;}
+</code></pre><hr id="2ab568fa-e39f-8059-aa25-dd2d351384bd"/><h2 id="2ab568fa-e39f-802e-babb-e828e19c0307" class="">7. Что важно понять из урока</h2><ol type="1" id="2ab568fa-e39f-80bf-a6df-ec38e54502da" class="numbered-list" start="1"><li><strong>Модель может возвращать много всего:</strong><ul id="2ab568fa-e39f-80f4-82f8-f36f0b230c6e" class="bulleted-list"><li style="list-style-type:disc"><code>last_hidden_state</code>,</li></ul><ul id="2ab568fa-e39f-80d4-a2ac-ed4cac140a28" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states</code> (все слои),</li></ul><ul id="2ab568fa-e39f-803a-abec-f0381e0f9673" class="bulleted-list"><li style="list-style-type:disc"><code>attentions</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-801d-92bc-f1793617efe2" class="numbered-list" start="2"><li><strong>Формы тензоров критичны:</strong><ul id="2ab568fa-e39f-8005-8b07-f7f17d3cbc6f" class="bulleted-list"><li style="list-style-type:disc"><code>hidden_states[layer]</code> → <code>[batch, seq_len, hidden_size]</code>,</li></ul><ul id="2ab568fa-e39f-80a0-9784-e2b72f783fb8" class="bulleted-list"><li style="list-style-type:disc"><code>attentions[layer]</code> → <code>[batch, num_heads, seq_len, seq_len]</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8011-8f68-dd1cc6bae1b9" class="numbered-list" start="3"><li><strong>NER без </strong><code><strong>pipeline</strong></code><strong> — это просто:</strong><ul id="2ab568fa-e39f-80aa-9438-fd5ec20c5316" class="bulleted-list"><li style="list-style-type:disc">токенизация с <code>return_offsets_mapping</code>,</li></ul><ul id="2ab568fa-e39f-8018-8513-e3e2781a794b" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForTokenClassification</code>,</li></ul><ul id="2ab568fa-e39f-809c-83e0-e53154754818" class="bulleted-list"><li style="list-style-type:disc"><code>argmax</code> по logits,</li></ul><ul id="2ab568fa-e39f-80e8-ab3d-cbb31db7590d" class="bulleted-list"><li style="list-style-type:disc">маппинг индексов в лейблы (<code>id2label</code>),</li></ul><ul id="2ab568fa-e39f-8038-8ca4-fd73c4cef453" class="bulleted-list"><li style="list-style-type:disc">немного логики по BIO, чтобы склеить сущности.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d1-a229-d849afa6e946" class="numbered-list" start="4"><li>Ты теперь можешь:<ul id="2ab568fa-e39f-805d-9011-dbe9de0dcf0f" class="bulleted-list"><li style="list-style-type:disc">самостоятельно вытаскивать эмбеддинги с любого слоя;</li></ul><ul id="2ab568fa-e39f-8095-a11b-d6c12cc60770" class="bulleted-list"><li style="list-style-type:disc">собирать кастомные NER пайплайны;</li></ul><ul id="2ab568fa-e39f-8014-86b5-ce5fa4ccd8ae" class="bulleted-list"><li style="list-style-type:disc">при желании добавлять свои пороги/условия.</li></ul></li></ol><hr id="2ab568fa-e39f-800a-b0ca-da63bd1a42db"/><h2 id="2ab568fa-e39f-80bc-9226-df5233b92e4c" class="">8. Домашка для урока 2.4</h2><h3 id="2ab568fa-e39f-8066-be3f-f6fdac4a6626" class="">Обязательная часть</h3><ol type="1" id="2ab568fa-e39f-80e0-8934-e8a919025e1f" class="numbered-list" start="1"><li>Взять любую NER-модель с Hugging Face (можно <code>dslim/bert-base-NER</code>, можно другую).</li></ol><ol type="1" id="2ab568fa-e39f-8058-9396-ff5c17eae5c5" class="numbered-list" start="2"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-80fe-bf04-cef62b7ed5db" class="bulleted-list"><li style="list-style-type:disc">читает строку <code>text</code>,</li></ul><ul id="2ab568fa-e39f-8077-81b0-e0a41dc40176" class="bulleted-list"><li style="list-style-type:disc">делает:<ul id="2ab568fa-e39f-802e-a654-d572248cf169" class="bulleted-list"><li style="list-style-type:circle"><code>tokenizer(..., return_offsets_mapping=True)</code>,</li></ul><ul id="2ab568fa-e39f-8043-b58c-e1785140d0b8" class="bulleted-list"><li style="list-style-type:circle">прогоняет через <code>AutoModelForTokenClassification</code>,</li></ul><ul id="2ab568fa-e39f-80bd-94aa-dcfd96555df3" class="bulleted-list"><li style="list-style-type:circle">печатает таблицу вида:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8081-be23-f5f8cc702dd3" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">token            | label      | substring
+------------------------------------------------
+[CLS]            | O          | &#x27;&#x27;
+App              | O          | &#x27;App&#x27;
+crashes          | O          | &#x27;crashes&#x27;
+...
+</code></pre></li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8027-b6c9-db2e3cf407ce" class="numbered-list" start="3"><li>Затем добавить свою функцию склейки (по BIO-схеме) и выводить <strong>уже сущности</strong>, а не отдельные токены.</li></ol><h3 id="2ab568fa-e39f-80c6-8ce4-f3af6be0bd57" class="">Дополнительная часть</h3><ol type="1" id="2ab568fa-e39f-8092-9e5b-e62f8d919355" class="numbered-list" start="1"><li>Включить <code>output_hidden_states=True</code> и:<ul id="2ab568fa-e39f-80f2-bddb-d4df08fedbec" class="bulleted-list"><li style="list-style-type:disc">сравнить нормы векторов из разных слоёв (например, <code>hidden_states[1]</code>, <code>hidden_states[-1]</code>);</li></ul><ul id="2ab568fa-e39f-8081-ace3-de3e4d0840fe" class="bulleted-list"><li style="list-style-type:disc">попробовать mean-pooling по последнему слою и по среднему из нескольких слоёв (например, среднее по последним 4).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8074-833f-f9e056df76cd" class="numbered-list" start="2"><li>Включить <code>output_attentions=True</code> и:<ul id="2ab568fa-e39f-80f2-99c5-f60e29c38247" class="bulleted-list"><li style="list-style-type:disc">посмотреть на <code>attentions[-1][0, 0]</code> — внимание <code>head 0</code> последнего слоя;</li></ul><ul id="2ab568fa-e39f-80cc-96ec-ceb1d2a0ebcf" class="bulleted-list"><li style="list-style-type:disc">найти токен, который больше всего «смотрит» на себя / на другие токены.</li></ul></li></ol><hr id="2ab568fa-e39f-809d-8e6e-ff9f1529ef17"/><p id="2ab568fa-e39f-80b7-af0d-fe6f1a422c0c" class="">Если захочешь, дальше можем перейти уже к <strong>модулю 3</strong> — там логично начать готовить реальные датасеты (<code>datasets</code>, <code>map</code>, <code>DataCollator</code>) к тренингу моделей, которые мы в модуле 4 будем fine-tюнить.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

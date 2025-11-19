@@ -1,0 +1,1004 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 6.2. Формат диалога и chat templates для Causal LM</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8077-8937-c1c128eb5401" class="page sans"><header><h1 class="page-title">Урок 6.2. Формат диалога и chat templates для Causal LM</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-808d-babb-ff3062cf0d17" class="">Поехали оформлять диалоги красиво, а не как попало 💬</p><p id="2ab568fa-e39f-807c-8e0c-d5bcfe7eaace" class="">Ниже — <strong>полный урок 6.2</strong>: теория → несколько кусков кода → подробные объяснения.</p><hr id="2ab568fa-e39f-803d-b321-d25a75fa407b"/><h2 id="2ab568fa-e39f-80fe-9f2e-e597d5c25bdd" class="">0. Цели урока</h2><p id="2ab568fa-e39f-8011-87bf-fb9d66467090" class="">После этого урока ученик:</p><ul id="2ab568fa-e39f-8032-b0b9-d529be222f86" class="bulleted-list"><li style="list-style-type:disc">понимает, <strong>зачем вообще формализовать диалог</strong> (system / user / assistant);</li></ul><ul id="2ab568fa-e39f-807b-a627-ee580de182d4" class="bulleted-list"><li style="list-style-type:disc">умеет хранить историю диалога в виде списка сообщений <code>messages</code>;</li></ul><ul id="2ab568fa-e39f-8060-bf92-c1f8f2be6f67" class="bulleted-list"><li style="list-style-type:disc">может:<ul id="2ab568fa-e39f-8025-8e6b-dc6f439fc308" class="bulleted-list"><li style="list-style-type:circle">вручную собрать текстовый промпт <code>&quot;System: ...\nUser: ...\nSupport: ...&quot;</code> из <code>messages</code>,</li></ul><ul id="2ab568fa-e39f-8077-a992-d4b228c27c2a" class="bulleted-list"><li style="list-style-type:circle">скормить его каузалке и получить ответ;</li></ul></li></ul><ul id="2ab568fa-e39f-8019-a98d-d4d38cb07b15" class="bulleted-list"><li style="list-style-type:disc">знает, что такое <code>tokenizer.apply_chat_template</code>, и как им пользоваться для моделей с чат-шаблоном;</li></ul><ul id="2ab568fa-e39f-801e-ab06-e30977d91efa" class="bulleted-list"><li style="list-style-type:disc">может написать примитивный <strong>чат-луп в терминале</strong> с сохранением контекста.</li></ul><hr id="2ab568fa-e39f-804f-b58d-f2029e9022fb"/><h2 id="2ab568fa-e39f-803a-b528-c3d94fd9334b" class="">1. Теория: почему просто “User: … Support:” — не всегда достаточно</h2><h3 id="2ab568fa-e39f-8059-a7ec-f9d60656a018" class="">1.1. Что мы делали в 6.1</h3><p id="2ab568fa-e39f-8014-b10c-e518ee581b15" class="">В 6.1 мы сделали так:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8088-a3f0-d537ed117550" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: You are a helpful support assistant.
+User: The app crashes after the last update.
+Support:
+</code></pre><p id="2ab568fa-e39f-8072-9f9e-cd7913fb3117" class="">И попросили каузалку продолжить.</p><p id="2ab568fa-e39f-80c8-bf63-ca839c2688fa" class="">Это уже неплохо, но:</p><ul id="2ab568fa-e39f-80ed-9a46-dd6df73f755e" class="bulleted-list"><li style="list-style-type:disc">контекста мало — только один вопрос;</li></ul><ul id="2ab568fa-e39f-8073-90b0-d6a814c87b26" class="bulleted-list"><li style="list-style-type:disc">история диалога не учитывается;</li></ul><ul id="2ab568fa-e39f-80d3-9345-df8b50729312" class="bulleted-list"><li style="list-style-type:disc">непонятно, где заканчивается системная инструкция, а где пользователь, если мы начнём наворачивать сложные сценарии.</li></ul><h3 id="2ab568fa-e39f-8051-8a47-cc6965b540a9" class="">1.2. Зачем нам формальный формат диалога</h3><p id="2ab568fa-e39f-8053-8d46-ea4725b24f2f" class="">Когда мы строим <strong>чат-бота</strong>, нам нужно:</p><ol type="1" id="2ab568fa-e39f-8006-9ff0-ebdba6c7a689" class="numbered-list" start="1"><li>Хранить историю:<ul id="2ab568fa-e39f-803d-8dd6-f4f19cdb68d4" class="bulleted-list"><li style="list-style-type:disc">несколько реплик User,</li></ul><ul id="2ab568fa-e39f-80e4-b5e7-d3aea9931ee2" class="bulleted-list"><li style="list-style-type:disc">несколько ответов Support.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f6-9421-f4f8ddda7e08" class="numbered-list" start="2"><li>Иногда — иметь <strong>system-промпт</strong> (“ты саппорт такого-то приложения, отвечай вежливо и кратко”).</li></ol><ol type="1" id="2ab568fa-e39f-803a-adf5-e78e4889fe69" class="numbered-list" start="3"><li>Уметь <strong>ограничивать</strong> историю до последних N сообщений, чтобы не упереться в ограничение длины контекста.</li></ol><p id="2ab568fa-e39f-80ed-8eb6-eba96de8058b" class="">Удобнее всего держать диалог так:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809d-a317-f3dc4ce2079b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">messages = [
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, my app crashes when I open the gallery.&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Sorry to hear that! What device do you use?&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;iPhone 13 with iOS 17.1.&quot;},
+]
+</code></pre><p id="2ab568fa-e39f-8047-b940-f123f113bd53" class="">И потом превращать это в строку под конкретную модель.</p><hr id="2ab568fa-e39f-80d1-ae32-e638e00acb24"/><h3 id="2ab568fa-e39f-80b3-9c3d-ca3b6f919e76" class="">1.3. Два пути форматирования</h3><ol type="1" id="2ab568fa-e39f-8060-bc4e-e565033c8517" class="numbered-list" start="1"><li><strong>Ручной формат (универсальный)</strong><p id="2ab568fa-e39f-808a-8c8d-e45a2abce37f" class="">Мы сами решаем, как будет выглядеть текст:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800e-846e-dac2415d1cb5" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: ...
+User: ...
+Support: ...
+</code></pre><p id="2ab568fa-e39f-8048-8069-f06a611fe677" class="">Это работает с <strong>любой</strong> каузалкой (<code>gpt2</code>, ruGPT, LLaMA, всё что угодно), потому что в итоге это просто текст.</p></li></ol><ol type="1" id="2ab568fa-e39f-804d-aee6-cee373b1deec" class="numbered-list" start="2"><li><strong>Chat template (</strong><code><strong>apply_chat_template</strong></code><strong>)</strong><p id="2ab568fa-e39f-8058-aa48-c2d658cf910b" class="">Современные чат-ориентированные модели имеют в <code>tokenizer</code> шаблон, который знает, как:</p><ul id="2ab568fa-e39f-80b7-bbab-cff25deeebe4" class="bulleted-list"><li style="list-style-type:disc">вставлять спецтокены (<code>&lt;|system|&gt;</code>, <code>&lt;|assistant|&gt;</code>, и т.п.),</li></ul><ul id="2ab568fa-e39f-80f7-9f20-f35bd60f47b6" class="bulleted-list"><li style="list-style-type:disc">форматировать роли.</li></ul><p id="2ab568fa-e39f-8023-8bb5-fc723ee2a9ad" class="">Мы даём список <code>messages</code>, а токенизатор сам собирает правильный текст.</p></li></ol><p id="2ab568fa-e39f-80d8-a181-d63d401b8072" class="">В этом уроке покажем оба подхода.</p><hr id="2ab568fa-e39f-8068-819d-cbd9aeb127fd"/><h2 id="2ab568fa-e39f-808c-99bb-d8f196138d5f" class="">2. Ручной формат: собираем промпт из messages</h2><h3 id="2ab568fa-e39f-801f-bbec-c41f4f2e679e" class="">2.1. Структура messages</h3><p id="2ab568fa-e39f-805c-bfb8-e45c025eb765" class="">Договоримся использовать такой формат:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c5-bcb5-d75b86fe9059" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">messages = [
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;...&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;...&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;...&quot;},
+]
+</code></pre><ul id="2ab568fa-e39f-8037-b26a-cdf31d2d6d58" class="bulleted-list"><li style="list-style-type:disc"><code>role</code>: <code>&quot;system&quot; | &quot;user&quot; | &quot;assistant&quot;</code> (или <code>&quot;support&quot;</code>, но лучше <code>&quot;assistant&quot;</code> как стандарт).</li></ul><ul id="2ab568fa-e39f-80a5-bec3-cedade33945f" class="bulleted-list"><li style="list-style-type:disc"><code>content</code>: текст реплики.</li></ul><p id="2ab568fa-e39f-804a-90cb-c2b560c5b5bf" class="">В промпте мы будем писать <code>System:</code>, <code>User:</code>, <code>Support:</code> (или <code>Assistant:</code> — на твой вкус, главное быть консистентным).</p><hr id="2ab568fa-e39f-805f-aa2b-d3d36556c96c"/><h3 id="2ab568fa-e39f-80b0-a437-e8f3d1083138" class="">2.2. Функция build_prompt(messages)</h3><p id="2ab568fa-e39f-802f-8a00-e7158c27968e" class="">Полный код:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8073-b492-dfa1effec7be" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_prompt(messages):
+    &quot;&quot;&quot;
+    Превращает список сообщений в строку для подачи в Causal LM.
+    Формат:
+    System: ...
+    User: ...
+    Support: ...
+    и в конце оставляем &quot;Support:&quot; без текста для генерации.
+    &quot;&quot;&quot;
+    lines = []
+
+    for msg in messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        elif role in (&quot;assistant&quot;, &quot;support&quot;):
+            lines.append(f&quot;Support: {content}&quot;)
+        else:
+            # на всякий случай
+            lines.append(f&quot;{role.capitalize()}: {content}&quot;)
+
+    # последний шаг: мы хотим, чтобы модель сгенерировала НОВЫЙ ответ саппорта
+    # поэтому добавляем новую строку &quot;Support:&quot; без текста
+    prompt = &quot;\n&quot;.join(lines) + &quot;\nSupport:&quot;
+
+    return prompt
+</code></pre><p id="2ab568fa-e39f-807c-978d-cd8f23e19e2f" class=""><strong>Что важно объяснить:</strong></p><ul id="2ab568fa-e39f-8050-8258-e95087587ac4" class="bulleted-list"><li style="list-style-type:disc">Мы явно кодируем роль → префикс строки (<code>System:</code>, <code>User:</code>, <code>Support:</code>).</li></ul><ul id="2ab568fa-e39f-80a2-8e05-c4f7b8ad9c64" class="bulleted-list"><li style="list-style-type:disc">В конце добавляем строку <code>Support:</code> без текста — как “крючок” для генерации.</li></ul><ul id="2ab568fa-e39f-80bb-995a-d316e2747a7b" class="bulleted-list"><li style="list-style-type:disc">Модель будет дописывать текст именно после этой точки.</li></ul><hr id="2ab568fa-e39f-804d-9ca9-e134204b28c8"/><h3 id="2ab568fa-e39f-8058-ab67-dc190e208f56" class="">2.3. Пример: один контекстный диалог → промпт</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806d-8463-ef387ee97d7e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">messages = [
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful and concise support assistant.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, the app crashes when I open the gallery.&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Sorry to hear that. What device are you using?&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;I&#x27;m using an iPhone 13 with iOS 17.1.&quot;},
+]
+
+prompt = build_prompt(messages)
+print(prompt)
+</code></pre><p id="2ab568fa-e39f-80f5-b55f-d8f0a0359a95" class="">Полезно вывести глазами — получится примерно:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802e-b146-fbd3da1ff5ab" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: You are a helpful and concise support assistant.
+User: Hi, the app crashes when I open the gallery.
+Support: Sorry to hear that. What device are you using?
+User: I&#x27;m using an iPhone 13 with iOS 17.1.
+Support:
+</code></pre><p id="2ab568fa-e39f-80c2-9e61-d1d263249ade" class="">То есть мы <strong>сохранили историю</strong> диалога и попросили продолжить.</p><hr id="2ab568fa-e39f-80be-9a44-e5737397e19a"/><h3 id="2ab568fa-e39f-80b3-86e3-c8f31e885b7d" class="">2.4. Генерируем ответ с этим промптом</h3><p id="2ab568fa-e39f-80bf-8858-dd5c1c6d9f62" class="">Полный пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8085-95bd-fc652624f9d0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+def build_prompt(messages):
+    lines = []
+    for msg in messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        elif role in (&quot;assistant&quot;, &quot;support&quot;):
+            lines.append(f&quot;Support: {content}&quot;)
+        else:
+            lines.append(f&quot;{role.capitalize()}: {content}&quot;)
+    prompt = &quot;\n&quot;.join(lines) + &quot;\nSupport:&quot;
+    return prompt
+
+
+def generate_reply_from_messages(
+    model,
+    tokenizer,
+    messages,
+    max_new_tokens=80,
+    do_sample=True,
+    top_p=0.9,
+    temperature=0.7,
+):
+    prompt = build_prompt(messages)
+    inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;)
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=do_sample,
+            top_p=top_p,
+            temperature=temperature,
+            repetition_penalty=1.1,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+
+    # Отделим только новую часть
+    input_len = inputs[&quot;input_ids&quot;].shape[1]
+    new_tokens = output_ids[0][input_len:]
+    reply = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+    # На всякий случай обрезать, если модель дописала &quot;User:&quot; и дальше
+    if &quot;User:&quot; in reply:
+        reply = reply.split(&quot;User:&quot;)[0].strip()
+
+    return reply
+
+
+def main():
+    model_name = &quot;gpt2&quot;  # пример
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    messages = [
+        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful and concise support assistant.&quot;},
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, the app crashes when I open the gallery.&quot;},
+        {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Sorry to hear that. What device are you using?&quot;},
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;I&#x27;m using an iPhone 13 with iOS 17.1.&quot;},
+    ]
+
+    reply = generate_reply_from_messages(model, tokenizer, messages)
+    print(&quot;Support:&quot;, reply)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-8091-99dd-ca1d593f9a81" class=""><strong>Пояснения:</strong></p><ul id="2ab568fa-e39f-802d-a8e7-cba14557109d" class="bulleted-list"><li style="list-style-type:disc"><code>build_prompt(messages)</code> — всю магию форматирования мы вынесли в одну функцию, которую потом будем переиспользовать.</li></ul><ul id="2ab568fa-e39f-80aa-b1cd-f7436afe8da7" class="bulleted-list"><li style="list-style-type:disc"><code>generate_reply_from_messages</code>:<ul id="2ab568fa-e39f-80d7-b1df-d4fa33617942" class="bulleted-list"><li style="list-style-type:circle">берёт список сообщений,</li></ul><ul id="2ab568fa-e39f-80d7-abfe-d99ba7f237b0" class="bulleted-list"><li style="list-style-type:circle">строит промпт,</li></ul><ul id="2ab568fa-e39f-80c7-b8e8-ef128b3ef22e" class="bulleted-list"><li style="list-style-type:circle">генерит ответ,</li></ul><ul id="2ab568fa-e39f-80c0-8873-d04db972064d" class="bulleted-list"><li style="list-style-type:circle">возвращает только текст ответа.</li></ul></li></ul><ul id="2ab568fa-e39f-80ed-9071-c2a8ee0db1f8" class="bulleted-list"><li style="list-style-type:disc">Простая пост-обработка:<ul id="2ab568fa-e39f-80a6-8fd8-d19d2091cfa7" class="bulleted-list"><li style="list-style-type:circle">если модель сама дописала <code>&quot;User:&quot;</code> дальше — отрежем по этому токену.</li></ul></li></ul><hr id="2ab568fa-e39f-80d1-93e6-d171feb6a909"/><h2 id="2ab568fa-e39f-80fc-b610-c08c37bcb93c" class="">3. Chat templates: <code>tokenizer.apply_chat_template</code></h2><p id="2ab568fa-e39f-8021-a493-cab02c76045d" class="">Теперь покажем “цивилизованный” способ для моделей, у которых в <code>tokenizer</code> уже прописан чат-шаблон.</p><h3 id="2ab568fa-e39f-8006-ae2e-e8c86f2cd5eb" class="">3.1. Идея</h3><p id="2ab568fa-e39f-8055-87c8-d9c970df3dd4" class="">У многих chat/instruct-моделей (LLaMA, Mistral, Qwen и т.п.) в <code>tokenizer</code> есть метод:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8043-a2ca-dd4876a049c8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">tokenizer.apply_chat_template(messages, tokenize=False/True, add_generation_prompt=True/False)
+</code></pre><p id="2ab568fa-e39f-8013-9eb5-c2c58ff6ec9a" class="">Он:</p><ul id="2ab568fa-e39f-80b4-a5b2-efa211e2642d" class="bulleted-list"><li style="list-style-type:disc">принимает список сообщений <code>messages</code> в стандартном виде:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804a-81cf-ec96fec15407" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">[{&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: ...}, {&quot;role&quot;: &quot;user&quot;, ...}, {&quot;role&quot;: &quot;assistant&quot;, ...}]
+</code></pre></li></ul><ul id="2ab568fa-e39f-80a2-b06a-ed2c5210ba7f" class="bulleted-list"><li style="list-style-type:disc">возвращает:<ul id="2ab568fa-e39f-80d4-bbd6-d1d57cd8f1b6" class="bulleted-list"><li style="list-style-type:circle">либо <strong>строку</strong> (если <code>tokenize=False</code>),</li></ul><ul id="2ab568fa-e39f-80e2-a444-fa142dd1ba37" class="bulleted-list"><li style="list-style-type:circle">либо <strong>готовые токены</strong> (если <code>tokenize=True</code>),</li></ul></li></ul><ul id="2ab568fa-e39f-80e5-b847-dc6adf878da3" class="bulleted-list"><li style="list-style-type:disc">сам подставляет внутри все нужные спецтокены, разделители, тэги ролей.</li></ul><p id="2ab568fa-e39f-80a2-bf5e-ff0d7e29a6ef" class="">Это сильно снижает шанс “сломать формат” модели.</p><hr id="2ab568fa-e39f-80c6-9b23-ef97cc2e6060"/><h3 id="2ab568fa-e39f-801b-9c3b-c1c8d9d65f74" class="">3.2. Пример с <code>apply_chat_template</code> (общий шаблон)</h3><p id="2ab568fa-e39f-8076-b2ba-fe220cbdda6d" class="">Код (модель-ид можно будет заменить на реально доступную):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8048-a0e8-e205e504668b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+
+def main():
+    model_name = &quot;meta-llama/Llama-3-8B-Instruct&quot;  # ПРИМЕР! можно использовать любую chat-модель
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map=&quot;auto&quot;)
+
+    messages = [
+        {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant for a mobile app.&quot;},
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, the app crashes when I open the gallery.&quot;},
+    ]
+
+    # 1. Собираем промпт через chat template (в текстовом виде)
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,  # добавит &quot;assistant&quot; роль в конец
+    )
+
+    print(&quot;=== PROMPT TEXT ===&quot;)
+    print(prompt[:500], &quot;...&quot;)
+    print()
+
+    # 2. Токенизируем и генерим
+    inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;).to(model.device)
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=128,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+        )
+
+    full_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    print(&quot;=== FULL TEXT ===&quot;)
+    print(full_text)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre><p id="2ab568fa-e39f-8061-8b5c-f9bf08f7bb6b" class=""><strong>Что здесь важно:</strong></p><ul id="2ab568fa-e39f-80c3-9d37-cf1986ca6d8f" class="bulleted-list"><li style="list-style-type:disc"><code>add_generation_prompt=True</code>:<ul id="2ab568fa-e39f-8005-aedf-e8437884003c" class="bulleted-list"><li style="list-style-type:circle">говорит токенизатору: “считай, что сейчас начинается ответ ассистента”;</li></ul><ul id="2ab568fa-e39f-806d-aa33-fcbf6ede0544" class="bulleted-list"><li style="list-style-type:circle">он добавляет соответствующие токены/теги ролей.</li></ul></li></ul><ul id="2ab568fa-e39f-80d1-9c9d-eb8b805064ac" class="bulleted-list"><li style="list-style-type:disc">Сам формат (как именно выглядят роли и спецтокены) зашит в <code>tokenizer.chat_template</code>.</li></ul><p id="2ab568fa-e39f-80e2-b6b1-d13be7dd543d" class="">Для инференса <strong>идеально</strong> использовать именно такой подход для чат-моделей.</p><hr id="2ab568fa-e39f-8040-aee6-cd514d20e177"/><h2 id="2ab568fa-e39f-8077-af54-ffc5f62c654c" class="">4. Чат-луп в терминале с историей диалога</h2><p id="2ab568fa-e39f-80f8-be22-f8cb40830d2e" class="">Теперь соберём всё в простой “консольный” чат: ты пишешь вопрос → модель отвечает → контекст копится.</p><p id="2ab568fa-e39f-80b3-9a0d-f639ffbee772" class="">Покажу вариант на <strong>ручном формате</strong> (он универсальный, будет работать даже с gpt2). Для моделей с <code>apply_chat_template</code> логику легко адаптировать.</p><h3 id="2ab568fa-e39f-8090-bf78-e1caae951f94" class="">4.1. Полный чат-луп с build_prompt</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800e-a9fc-ed9980f62944" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+def build_prompt(messages, max_turns=6):
+    &quot;&quot;&quot;
+    Собирает промпт из последних max_turns диалоговых сообщений (плюс system).
+    messages: список dict&#x27;ов с role/content.
+    &quot;&quot;&quot;
+    # отделяем system и остальные
+    system_messages = [m for m in messages if m[&quot;role&quot;] == &quot;system&quot;]
+    other_messages = [m for m in messages if m[&quot;role&quot;] != &quot;system&quot;]
+
+    # сохраняем максимум 1 system сообщение
+    system_part = system_messages[:1]
+
+    # берём последние max_turns остальных сообщений
+    other_part = other_messages[-max_turns:]
+
+    # склеиваем обратно
+    use_messages = system_part + other_part
+
+    lines = []
+    for msg in use_messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        elif role in (&quot;assistant&quot;, &quot;support&quot;):
+            lines.append(f&quot;Support: {content}&quot;)
+        else:
+            lines.append(f&quot;{role.capitalize()}: {content}&quot;)
+
+    prompt = &quot;\n&quot;.join(lines) + &quot;\nSupport:&quot;
+    return prompt
+
+
+def generate_reply(model, tokenizer, messages, max_new_tokens=128):
+    prompt = build_prompt(messages)
+    inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;, truncation=True, max_length=512)
+    inputs = {k: v.to(model.device) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+
+    input_len = inputs[&quot;input_ids&quot;].shape[1]
+    new_tokens = output_ids[0][input_len:]
+    reply = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+
+    # обрежем по &quot;User:&quot;, если модель сама его дописала
+    if &quot;User:&quot; in reply:
+        reply = reply.split(&quot;User:&quot;)[0].strip()
+
+    return reply
+
+
+def chat():
+    model_name = &quot;gpt2&quot;  # пример; лучше взять инструкционную модель, если есть
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+    model.to(device)
+
+    messages = [
+        {
+            &quot;role&quot;: &quot;system&quot;,
+            &quot;content&quot;: &quot;You are a helpful and concise support assistant for a mobile app.&quot;,
+        }
+    ]
+
+    print(&quot;Type &#x27;exit&#x27; to quit.\n&quot;)
+
+    while True:
+        user_input = input(&quot;User: &quot;).strip()
+        if user_input.lower() in {&quot;exit&quot;, &quot;quit&quot;} or not user_input:
+            break
+
+        # добавляем сообщение пользователя в историю
+        messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input})
+
+        # генерим ответ модели
+        reply = generate_reply(model, tokenizer, messages)
+        print(&quot;Support:&quot;, reply)
+
+        # добавляем ответ ассистента в историю
+        messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: reply})
+
+
+if __name__ == &quot;__main__&quot;:
+    chat()
+</code></pre><h3 id="2ab568fa-e39f-8052-8cae-dc58464fe1a3" class="">4.2. Разбор ключевых моментов</h3><ol type="1" id="2ab568fa-e39f-8065-8f37-c5268e387adb" class="numbered-list" start="1"><li><strong>Ограничение истории</strong>: <code>max_turns=6</code> в <code>build_prompt</code><ul id="2ab568fa-e39f-80e9-8df7-da50ae0cb600" class="bulleted-list"><li style="list-style-type:disc">не таскаем за собой <strong>весь</strong> диалог,</li></ul><ul id="2ab568fa-e39f-809d-a0ac-e00353ec8713" class="bulleted-list"><li style="list-style-type:disc">берём только последние 6 (например, <code>user/assistant</code> сообщений) + system,</li></ul><ul id="2ab568fa-e39f-80c2-aaca-f82d8ec3e6b2" class="bulleted-list"><li style="list-style-type:disc">это защищает нас от:<ul id="2ab568fa-e39f-8038-884e-d758f15f92cf" class="bulleted-list"><li style="list-style-type:circle">переполнения контекстного окна,</li></ul><ul id="2ab568fa-e39f-8037-98cb-e78a816c1ea5" class="bulleted-list"><li style="list-style-type:circle">экспоненциального роста стоимости.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8031-a94a-e97f74a1bdba" class="numbered-list" start="2"><li><strong>messages — единый источник правды</strong><ul id="2ab568fa-e39f-8065-bdff-ea59e2a5cf40" class="bulleted-list"><li style="list-style-type:disc">вместо того чтобы каждый раз собирать промпт руками, мы:<ul id="2ab568fa-e39f-8057-b80e-ef4a4a630ad5" class="bulleted-list"><li style="list-style-type:circle">пушим новые сообщения в <code>messages</code>,</li></ul><ul id="2ab568fa-e39f-8059-8d16-cbe26e486f00" class="bulleted-list"><li style="list-style-type:circle"><code>build_prompt(messages)</code> делает всё остальное.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80ee-9a53-c5214844b402" class="numbered-list" start="3"><li><strong>Логика остановки</strong>:<ul id="2ab568fa-e39f-80da-871c-e46dfca16c82" class="bulleted-list"><li style="list-style-type:disc"><code>eos_token_id</code> говорит модели, когда можно завершить,</li></ul><ul id="2ab568fa-e39f-80c2-9e61-e4f2923b2a9a" class="bulleted-list"><li style="list-style-type:disc">мы дополнительно подрезаем по <code>&quot;User:&quot;</code> на случай, если модель ушла дальше и начала “играть за юзера”.</li></ul></li></ol><hr id="2ab568fa-e39f-807e-ac5c-e22b4d1b4ecc"/><h2 id="2ab568fa-e39f-8096-8644-e4ca09f72ff1" class="">5. Домашка по уроку 6.2 (для закрепления)</h2><h3 id="2ab568fa-e39f-80f0-bddf-ffdabb5f60dc" class="">Задание 1. Свой формат build_prompt</h3><ol type="1" id="2ab568fa-e39f-80a8-a4eb-f547763f083e" class="numbered-list" start="1"><li>Реализуй свою функцию <code>build_prompt</code>, но:<ul id="2ab568fa-e39f-8019-96c2-d9e15d64836a" class="bulleted-list"><li style="list-style-type:disc">используй другой стиль, например:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a7-81a3-f62ec6e624d1" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">[SYSTEM] ...
+[USER] ...
+[ASSISTANT] ...
+</code></pre></li></ul><ul id="2ab568fa-e39f-80c4-b944-cf155d8e2571" class="bulleted-list"><li style="list-style-type:disc">убедись, что всё равно получаешь адекватные ответы.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c1-9a67-c8cc62aef75b" class="numbered-list" start="2"><li>Запусти чат-луп с этим форматом, попробуй несколько диалогов.</li></ol><hr id="2ab568fa-e39f-8060-bbf9-f7e60666e68a"/><h3 id="2ab568fa-e39f-805f-a8fb-fde5aa0a14f3" class="">Задание 2. Ограничение истории</h3><p id="2ab568fa-e39f-803e-b3ef-c77f065ff485" class="">Добавь в свой чат:</p><ul id="2ab568fa-e39f-80a9-b2d9-e13de11da630" class="bulleted-list"><li style="list-style-type:disc">параметр <code>max_turns</code>, который легко менять (2, 4, 6, 8).</li></ul><ul id="2ab568fa-e39f-803f-b480-c81801e283ab" class="bulleted-list"><li style="list-style-type:disc">поэкспериментируй:<ul id="2ab568fa-e39f-80ab-a273-e3b8d78162a2" class="bulleted-list"><li style="list-style-type:circle">как меняется качество ответов при очень короткой истории (2) vs длинной (8),</li></ul><ul id="2ab568fa-e39f-8056-ad69-c9d919630a40" class="bulleted-list"><li style="list-style-type:circle">где появляется ощущение, что модель “забывает контекст”.</li></ul></li></ul><hr id="2ab568fa-e39f-805a-b12f-d2279f677702"/><h3 id="2ab568fa-e39f-80e0-93d5-d712810cd1ff" class="">Задание 3. Вариант с chat template (если есть подходящая модель)</h3><ol type="1" id="2ab568fa-e39f-800e-83eb-ec5f641ebd6b" class="numbered-list" start="1"><li>Выбери любую модель с поддержкой чат-шаблона (любой <em>instruct</em> чекпоинт).</li></ol><ol type="1" id="2ab568fa-e39f-80c1-8d41-d037ea674a87" class="numbered-list" start="2"><li>Реализуй функцию:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807a-bf7e-f6d341c437ec" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def generate_reply_chat_template(model, tokenizer, messages):
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+    ...
+</code></pre></li></ol><ol type="1" id="2ab568fa-e39f-80b3-982f-dd1920259668" class="numbered-list" start="3"><li>Сравни ответы:<ul id="2ab568fa-e39f-8016-b63d-cca05774ba1d" class="bulleted-list"><li style="list-style-type:disc"><code>build_prompt</code> (ручной формат),</li></ul><ul id="2ab568fa-e39f-8031-bdca-e5c768ac5934" class="bulleted-list"><li style="list-style-type:disc"><code>apply_chat_template</code> (шаблон токенизатора).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8048-905f-e825eb974dac" class="numbered-list" start="4"><li>Напиши краткое сравнение: где ответы более стабильны/осмысленны.</li></ol><hr id="2ab568fa-e39f-8068-b5f8-fd08f969b6b7"/><p id="2ab568fa-e39f-8039-b25b-f55a603a7816" class="">На этом уроке ты научился главному: <strong>диалог — это не просто строка</strong>, это структура, которую можно:</p><ul id="2ab568fa-e39f-8014-8d3b-c4916046185a" class="bulleted-list"><li style="list-style-type:disc">хранить (<code>messages</code>),</li></ul><ul id="2ab568fa-e39f-8089-aa51-f696d1f9d243" class="bulleted-list"><li style="list-style-type:disc">нарезать (последние N реплик),</li></ul><ul id="2ab568fa-e39f-8077-91c5-dc122057a709" class="bulleted-list"><li style="list-style-type:disc">рендерить под конкретную модель (ручной формат / chat template).</li></ul><p id="2ab568fa-e39f-8076-b69c-f4727e9c2fca" class="">В следующем уроке (6.3) мы будем <strong>дообучать</strong> каузалку на таких диалогах (SFT), чтобы бот отвечал уже не просто “как GPT-2”, а как <strong>твой</strong> саппорт.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

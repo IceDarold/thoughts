@@ -1,0 +1,718 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М1. Валидирование без самообмана</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a1568fa-e39f-802e-a185-d0a1f89d528a" class="page sans"><header><h1 class="page-title">М1. Валидирование без самообмана</h1><p class="page-description"></p></header><div class="page-body"><h2 id="2a1568fa-e39f-800a-bca1-e7be37da69af" class="">1) Цели модуля</h2><ul id="2a1568fa-e39f-8018-b4b3-f03a4af37965" class="bulleted-list"><li style="list-style-type:disc">Научиться <strong>распознавать структуру данных</strong> (IID / группы / время / ранжирование) и выбирать корректный сплит.</li></ul><ul id="2a1568fa-e39f-80f5-82b1-ccee24456005" class="bulleted-list"><li style="list-style-type:disc">Собрать <strong>CV-фабрику</strong> (единый интерфейс для Stratified/Group/Time/Purged) + конфиги сплитов.</li></ul><ul id="2a1568fa-e39f-80ca-b044-f629c4705de2" class="bulleted-list"><li style="list-style-type:disc">Освоить <strong>adversarial validation</strong> (AV) и базовые метрики дрифта (PSI/KS/Hellinger).</li></ul><ul id="2a1568fa-e39f-803d-9a8f-c5d3d8cc3992" class="bulleted-list"><li style="list-style-type:disc">Наладить <strong>процесс контроля CV↔LB</strong> (корреляция, shake-up-риск, паник-план).</li></ul><p id="2a1568fa-e39f-80d8-b09c-dc5b4636d60b" class=""><strong>Выход модуля:</strong> «Паспорт валидации» для любого табличного кейса + готовые скрипты сплитов/AV.</p><hr id="2a1568fa-e39f-80d7-965e-dddccec71d00"/><h2 id="2a1568fa-e39f-802c-82c1-d017b8859a25" class="">2) Формат и тайминг</h2><ul id="2a1568fa-e39f-80b0-8848-fc8904f66647" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a1568fa-e39f-8076-b3a0-f26c183b59ce" class="bulleted-list"><li style="list-style-type:disc">1 практикум-миниспринт (2–3 часа) между занятиями.</li></ul><ul id="2a1568fa-e39f-808f-97cb-f483fe8fb3ce" class="bulleted-list"><li style="list-style-type:disc">Защита «Паспорта валидации» (5–7 минут/чел).</li></ul><hr id="2a1568fa-e39f-8017-a5c2-de84dff85a06"/><h2 id="2a1568fa-e39f-80fd-bf29-c75ad18010a6" class="">3) Карта решений: как выбрать сплит за 15 минут</h2><ol type="1" id="2a1568fa-e39f-80e5-8947-e432590e4321" class="numbered-list" start="1"><li><strong>Проверка структуры:</strong><ul id="2a1568fa-e39f-8067-801a-fd4563e2dcdb" class="bulleted-list"><li style="list-style-type:disc">Есть ли <strong>время</strong> (timestamp, месяц, неделя, транзакции)?</li></ul><ul id="2a1568fa-e39f-80a0-9741-eebcf83d6fd1" class="bulleted-list"><li style="list-style-type:disc">Есть ли <strong>группы/идентификаторы</strong> (user_id, session_id, building_id, ticker)?</li></ul><ul id="2a1568fa-e39f-8078-b5f5-df2e19f922f5" class="bulleted-list"><li style="list-style-type:disc">Задача <strong>IID</strong> или наблюдения <strong>зависимы</strong> (повторы, сессии, иерархии)?</li></ul></li></ol><ol type="1" id="2a1568fa-e39f-8029-be41-d47908ea2c72" class="numbered-list" start="2"><li><strong>Выбор схемы:</strong><ul id="2a1568fa-e39f-80b7-b32a-e650e7aee7ce" class="bulleted-list"><li style="list-style-type:disc">IID классификация/регрессия → <code>KFold / StratifiedKFold (k=5, repeats=1–3)</code>.</li></ul><ul id="2a1568fa-e39f-8037-bc30-f6da341cd84d" class="bulleted-list"><li style="list-style-type:disc">Группы (утечки внутри группы) → <code>GroupKFold</code> (k=5), иногда <code>LeaveOneGroupOut</code>.</li></ul><ul id="2a1568fa-e39f-80aa-9bcb-f3fff5aea7e8" class="bulleted-list"><li style="list-style-type:disc">Время → <code>TimeSeriesSplit</code> (+gap) или <code>PurgedKFold</code> (embargo).</li></ul><ul id="2a1568fa-e39f-80c2-b4d7-f64101e8dcba" class="bulleted-list"><li style="list-style-type:disc">Ранжирование/CTR с user/session → <code>GroupKFold</code> по сущности запроса/сессии.</li></ul><ul id="2a1568fa-e39f-80ec-982c-fec681e37a32" class="bulleted-list"><li style="list-style-type:disc">Мультисущности во времени → <strong>rolling origin</strong>: сплиты по времени с удержанием групп.</li></ul></li></ol><ol type="1" id="2a1568fa-e39f-80c2-b6fe-f16974f76abf" class="numbered-list" start="3"><li><strong>Параметры по умолчанию (разумные):</strong><ul id="2a1568fa-e39f-8051-ae06-f728dd56af80" class="bulleted-list"><li style="list-style-type:disc">k=5, минимальный размер валидации ≥10% и ≥1k наблюдений (если доступно).</li></ul><ul id="2a1568fa-e39f-80b5-8959-def4864f112f" class="bulleted-list"><li style="list-style-type:disc">Для дисбаланса — <strong>stratify по таргету</strong> (классы/бинирование регрессии).</li></ul><ul id="2a1568fa-e39f-8095-bb5f-c618ecd0ca41" class="bulleted-list"><li style="list-style-type:disc">Для времени — <strong>gap (embargo) ≥ 1 шаг</strong> между train и valid.</li></ul></li></ol><hr id="2a1568fa-e39f-8095-8c2d-d7e5e34fbb4a"/><h2 id="2a1568fa-e39f-809f-815b-c1a36a289625" class="">4) Антипаттерны (поймать и обезвредить)</h2><ul id="2a1568fa-e39f-8029-a047-cec600a416c6" class="bulleted-list"><li style="list-style-type:disc">Target encoding <strong>на всём датасете</strong>, а не внутри фолда.</li></ul><ul id="2a1568fa-e39f-807e-86d2-f835e0f3fafe" class="bulleted-list"><li style="list-style-type:disc">Лаги/роллинги с заглядыванием в будущее.</li></ul><ul id="2a1568fa-e39f-8040-a4c4-e83423e7bcb6" class="bulleted-list"><li style="list-style-type:disc">Разрезание групп между train/valid.</li></ul><ul id="2a1568fa-e39f-80aa-a091-e9ecb1dadfa5" class="bulleted-list"><li style="list-style-type:disc">Подбор порога/метрик на публичном LB.</li></ul><ul id="2a1568fa-e39f-80f9-b473-eac6149c326d" class="bulleted-list"><li style="list-style-type:disc">Выбор фич/гиперов «под приватный» через обратный инжиниринг публичного лидера (shake-up).</li></ul><hr id="2a1568fa-e39f-805d-afd3-c7e7c1c44686"/><h2 id="2a1568fa-e39f-80ad-9a76-c5926fcccc5d" class="">5) CV-фабрика (скелет)</h2><p id="2a1568fa-e39f-8056-9475-c4ffe0c18271" class=""><strong>Идея:</strong> единый конструктор сплитов + декларативные конфиги.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a1568fa-e39f-806f-b100-c452963cceb9" class="code code-wrap"><code class="language-YAML" style="white-space:pre-wrap;word-break:break-all"># config/cv.yaml
+schema: time|group|iid|rank
+folds: 5
+repeats: 1
+group_key: user_id
+time_key: date
+time_gap: 1D            # embargo/gap
+stratify: target        # или bin(target, 10) для регрессии
+seed: 42
+</code></pre><p id="2a1568fa-e39f-80f2-baf2-c2f8f18cb910" class="">API:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a1568fa-e39f-8009-945c-db214d289b8c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">cv = CVFactory.from_config(&quot;config/cv.yaml&quot;).make_splitter(df)
+for fold, (trn_idx, val_idx) in enumerate(cv.split(df, y, groups)):
+    ...
+</code></pre><p id="2a1568fa-e39f-80ae-a5fe-daeb63b9f966" class=""><strong>Плюс:</strong> тест-набор «здравого смысла»:</p><ul id="2a1568fa-e39f-806d-bed5-f0355011370c" class="bulleted-list"><li style="list-style-type:disc">нет пересечений индексов,</li></ul><ul id="2a1568fa-e39f-8001-882a-f3d98a1af3b6" class="bulleted-list"><li style="list-style-type:disc">доли классов в каждом фолде ≈ исходной,</li></ul><ul id="2a1568fa-e39f-806a-889c-c4d499304e25" class="bulleted-list"><li style="list-style-type:disc">группы не «рвутся»,</li></ul><ul id="2a1568fa-e39f-80c8-9043-cf85b3b0caee" class="bulleted-list"><li style="list-style-type:disc">при time/purged — нет «будущего» в train.</li></ul><hr id="2a1568fa-e39f-808e-9e7c-eba0b430ec3b"/><h2 id="2a1568fa-e39f-8044-9ac5-c75fa887dcab" class="">6) Adversarial validation (AV) за 10–15 минут</h2><ul id="2a1568fa-e39f-80f1-859e-ffc889e51026" class="bulleted-list"><li style="list-style-type:disc">Слить <code>train</code> и <code>test</code>, метка <code>is_test</code> ∈ {0,1}.</li></ul><ul id="2a1568fa-e39f-80d4-887f-c5ebfb6c2fb0" class="bulleted-list"><li style="list-style-type:disc">Лёгкий бустинг на базовых фичах (без таргета!) → AUC(AV).</li></ul><ul id="2a1568fa-e39f-80af-945f-fc8aff4b8a1a" class="bulleted-list"><li style="list-style-type:disc"><strong>Интерпретация:</strong><ul id="2a1568fa-e39f-803c-98c6-ed95b89fece2" class="bulleted-list"><li style="list-style-type:circle">AUC(AV) ≤ 0.55 — сэмплы похожи; классический сплит ок.</li></ul><ul id="2a1568fa-e39f-80f3-b15f-e4d9b3dabf4b" class="bulleted-list"><li style="list-style-type:circle">0.55–0.65 — умеренный дрифт; усиливаем регуляризацию/стабилизацию, подбираем сплит ближе к тесту.</li></ul><ul id="2a1568fa-e39f-80c9-b550-e96febf629f4" class="bulleted-list"><li style="list-style-type:circle">≥ 0.65 — сильный дрифт; нужен <strong>time/group-aware</strong> сплит, фильтрация токсичных фич, стресс-тест.</li></ul></li></ul><ul id="2a1568fa-e39f-8044-a825-dbba30167744" class="bulleted-list"><li style="list-style-type:disc">Используем AV-importance: выкидываем фичи, объясняющие «train vs test», если они искусственно подгоняют CV.</li></ul><hr id="2a1568fa-e39f-80a0-baa9-c2965cfd102e"/><h2 id="2a1568fa-e39f-8093-ac57-d8c2f72b1e98" class="">7) Метрики дрифта и стабильности</h2><ul id="2a1568fa-e39f-8042-91f9-f3c482fcda09" class="bulleted-list"><li style="list-style-type:disc"><strong>PSI</strong> по бинам/квантилям (числовые и закодированные категориальные).</li></ul><ul id="2a1568fa-e39f-8000-8846-f4e3a35a2f61" class="bulleted-list"><li style="list-style-type:disc"><strong>KS-статистика</strong>, <strong>Hellinger</strong> — быстрая проверка распределений train vs test и train-fold vs valid-fold.</li></ul><ul id="2a1568fa-e39f-8076-ab02-ef70be7fed4e" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность OOF:</strong> std по фолдам; межфолдовая корреляция предсказаний; разброс метрик в <code>RepeatedKFold</code>.</li></ul><hr id="2a1568fa-e39f-80b0-935a-f7b5dce9e0c3"/><h2 id="2a1568fa-e39f-8088-b057-e2596a9362f5" class="">8) CV ↔ LB: как держать связку</h2><ul id="2a1568fa-e39f-80b2-9006-fcca64a73aa5" class="bulleted-list"><li style="list-style-type:disc">Вести таблицу сабмитов: <code>sub_id, cv_score, lb_public, model_tag, features_tag, split_tag</code>.</li></ul><ul id="2a1568fa-e39f-807f-9596-e0088f554474" class="bulleted-list"><li style="list-style-type:disc">Смотреть <strong>корреляцию Spearman(cv_score, lb_public)</strong> по ≥3 сабмитам.</li></ul><ul id="2a1568fa-e39f-80bc-b110-e65e3c968221" class="bulleted-list"><li style="list-style-type:disc">Если корреляция низкая:<ol type="1" id="2a1568fa-e39f-801c-a05c-d2182df519a7" class="numbered-list" start="1"><li>сменить сплит (Group/Time/Purged),</li></ol><ol type="1" id="2a1568fa-e39f-803a-a069-e8c29885b438" class="numbered-list" start="2"><li>смягчить фичи с высоким AV-importance,</li></ol><ol type="1" id="2a1568fa-e39f-806c-8c25-eefed73efb77" class="numbered-list" start="3"><li>кросс-проверка на альтернативном hold-out.</li></ol></li></ul><ul id="2a1568fa-e39f-80ff-b744-ff2ba7754253" class="bulleted-list"><li style="list-style-type:disc"><strong>План на shake-up:</strong> финальный ансамбль из 2–3 моделей с разными сплитами/фичсетами, веса по OOF.</li></ul><hr id="2a1568fa-e39f-80fd-9dd6-ffe943ae69bb"/><h2 id="2a1568fa-e39f-80f6-90d5-e7ab1492043f" class="">9) Мини-практикум A (лайв-код, 60–90 мин)</h2><p id="2a1568fa-e39f-80ae-916f-dd13ec1fa597" class=""><strong>Кейс:</strong> классификация с дисбалансом + группами (например, транзакции по пользователям).</p><p id="2a1568fa-e39f-80fa-adfd-e2013642c604" class=""><strong>Шаги:</strong></p><ol type="1" id="2a1568fa-e39f-8064-89aa-d81b63502003" class="numbered-list" start="1"><li>Бейзлайн с <code>StratifiedKFold</code> → OOF, сабмит_1.</li></ol><ol type="1" id="2a1568fa-e39f-8005-a7b1-c8c4bbecd632" class="numbered-list" start="2"><li><code>GroupKFold(user_id)</code> → OOF, сабмит_2.</li></ol><ol type="1" id="2a1568fa-e39f-808c-9448-ca2ff516f495" class="numbered-list" start="3"><li>AV (train vs test): AUC(AV), top-фичи AV → фильтрация/смягчение.</li></ol><ol type="1" id="2a1568fa-e39f-8088-a7db-e682c094d3d1" class="numbered-list" start="4"><li>Сравнить std OOF и CV↔LB, выбрать рабочую схему.</li></ol><p id="2a1568fa-e39f-8032-bbee-ea77c0201804" class=""><strong>Артефакты:</strong> <code>cv.yaml (2 схемы)</code>, отчет «почему выбран GroupKFold».</p><hr id="2a1568fa-e39f-80f7-9805-cb6b8d1300e9"/><h2 id="2a1568fa-e39f-80fb-b084-ed10be778147" class="">10) Мини-практикум B (лайв-код, 60–90 мин)</h2><p id="2a1568fa-e39f-8060-b733-cc2230ec32db" class=""><strong>Кейс:</strong> временные данные (ежедневные продажи/счётчики).</p><p id="2a1568fa-e39f-80b1-95f1-f28c7232cc46" class=""><strong>Шаги:</strong></p><ol type="1" id="2a1568fa-e39f-807a-944c-da90884a4f20" class="numbered-list" start="1"><li><code>KFold</code> (намеренно неверно) → показать переоценку CV.</li></ol><ol type="1" id="2a1568fa-e39f-80bb-905c-dd42e98b01e7" class="numbered-list" start="2"><li><code>TimeSeriesSplit</code> с <code>gap</code> → OOF, стабильность по фолдам.</li></ol><ol type="1" id="2a1568fa-e39f-80fb-b47a-c924032a90eb" class="numbered-list" start="3"><li><code>PurgedKFold</code> с <code>embargo</code> → сравнить c TSS.</li></ol><ol type="1" id="2a1568fa-e39f-8032-bdd4-d1644fff1717" class="numbered-list" start="4"><li>PSI/KS между train-fold и valid-fold; выбор финального сплита.</li></ol><p id="2a1568fa-e39f-8049-81f8-d09565bead43" class=""><strong>Артефакты:</strong> <code>cv.yaml (TSS vs Purged)</code>, графики распределений и дрейфа.</p><hr id="2a1568fa-e39f-802e-b993-d80811b20d6d"/><h2 id="2a1568fa-e39f-8055-aa26-ccf94c711afd" class="">11) Инструменты и кодовые заготовки</h2><ul id="2a1568fa-e39f-80e8-85f0-d40180e7e48b" class="bulleted-list"><li style="list-style-type:disc"><strong>Функция биннинга</strong> для регрессии: квантильные бины (m=10) → StratifiedKFold по бинам.</li></ul><ul id="2a1568fa-e39f-808a-a3ab-d81ec581d1d9" class="bulleted-list"><li style="list-style-type:disc"><strong>Генератор репитов:</strong> <code>Repeated(Stratified)KFold</code> для снижения дисперсии OOF.</li></ul><ul id="2a1568fa-e39f-80e1-8c5c-fe99065d0560" class="bulleted-list"><li style="list-style-type:disc"><strong>Быстрый AV-скрипт:</strong> fit→AUC→feature_importance→droplist.</li></ul><ul id="2a1568fa-e39f-805e-a628-cdcd6da257cd" class="bulleted-list"><li style="list-style-type:disc"><strong>Стресс-тест сплита:</strong> перестановка сидов, перетасовка групп, проверка устойчивости.</li></ul><hr id="2a1568fa-e39f-80ca-8fca-f0cb6d778e3c"/><h2 id="2a1568fa-e39f-802e-91fc-fd9c4242802b" class="">12) Чек-лист «нет утечки» (версия модуля)</h2><ul id="2a1568fa-e39f-808b-8e0d-e45a83de3d7a" class="bulleted-list"><li style="list-style-type:disc">Кодировки по таргету — <strong>внутри фолда</strong>; хранить ключи фолдов.</li></ul><ul id="2a1568fa-e39f-80cb-9ca6-d2507c0ea85f" class="bulleted-list"><li style="list-style-type:disc">Лаги/роллинги — только из прошлого; <strong>gap/embargo</strong> задан.</li></ul><ul id="2a1568fa-e39f-8077-8827-e38d420b57b2" class="bulleted-list"><li style="list-style-type:disc">Группы целиком в train <strong>или</strong> valid; не делим.</li></ul><ul id="2a1568fa-e39f-804b-b534-f0799912d2f9" class="bulleted-list"><li style="list-style-type:disc">Фичи, коррелирующие с <code>is_test</code> по AV, просматриваем вручную.</li></ul><hr id="2a1568fa-e39f-80cb-8b69-dbc688b7cdb3"/><h2 id="2a1568fa-e39f-8063-8311-cab580fa6632" class="">13) Мини-спринт (2–3 часа) между занятиями</h2><p id="2a1568fa-e39f-8095-87e5-e50a10f80e20" class=""><strong>Задача на выбор (преподаватель выдаёт датасет):</strong></p><ul id="2a1568fa-e39f-809c-852a-fc5e33bf6bb9" class="bulleted-list"><li style="list-style-type:disc">Вариант G (группы) <strong>или</strong> вариант T (время).<p id="2a1568fa-e39f-8074-b589-f598e3256b5e" class=""><strong>Требования:</strong></p></li></ul><ul id="2a1568fa-e39f-8038-b34d-c334bcd0b198" class="bulleted-list"><li style="list-style-type:disc">2 альтернативные CV-схемы, AV-отчёт, PSI/KS для 5–10 топ-фич, 2 сабмита.</li></ul><ul id="2a1568fa-e39f-80dc-8204-da4d20768816" class="bulleted-list"><li style="list-style-type:disc">Короткий «Паспорт валидации» (1 стр): что за структура, какой сплит выбран и почему, риски, паник-план.</li></ul><hr id="2a1568fa-e39f-80dc-a94d-fa5f796aacdc"/><h2 id="2a1568fa-e39f-80d5-883e-e8268f8d01b5" class="">14) Оценивание</h2><ul id="2a1568fa-e39f-80be-a661-c15ad7d0f7f0" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность сплита (35%)</strong> — структура данных обоснована, утечек нет.</li></ul><ul id="2a1568fa-e39f-8005-9dde-eb7d5285660e" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность (25%)</strong> — низкий разброс OOF, разумная корреляция CV↔LB.</li></ul><ul id="2a1568fa-e39f-8021-b8b0-eb24d6dc596c" class="bulleted-list"><li style="list-style-type:disc"><strong>Инструменты (25%)</strong> — рабочая CV-фабрика + AV/PSI/KS скрипты.</li></ul><ul id="2a1568fa-e39f-8007-b02a-fcab33e26877" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong> — ясная аргументация и next steps.</li></ul><hr id="2a1568fa-e39f-8071-a373-e243c401da0a"/><h2 id="2a1568fa-e39f-80c3-8a5f-fa0599fa82bd" class="">15) Что берём в «рюкзак» после М1</h2><ul id="2a1568fa-e39f-8090-a232-c66e9ecce05b" class="bulleted-list"><li style="list-style-type:disc"><code>cv.yaml</code> + <code>CVFactory</code> (IID/Group/Time/Purged).</li></ul><ul id="2a1568fa-e39f-8074-9366-c214a97be1d7" class="bulleted-list"><li style="list-style-type:disc">Скрипты AV и PSI/KS, шаблон отчёта «Паспорт валидации».</li></ul><ul id="2a1568fa-e39f-8008-9134-fe8086e893de" class="bulleted-list"><li style="list-style-type:disc">Набор sanity-тестов (shuffle-target, null-importance, repeated-CV).</li></ul><hr id="2a1568fa-e39f-80fa-a79b-e5e8b64e776b"/><h2 id="2a1568fa-e39f-809a-8852-cc0f11e65a8e" class="">16) Встроено в 5-часовой формат</h2><ul id="2a1568fa-e39f-806c-80be-c966b9960bd3" class="bulleted-list"><li style="list-style-type:disc"><strong>Первые 20 минут спринта</strong> уходят на: выбор сплита → быстрый AV → фиксация решения в <code>cv.yaml</code>.</li></ul><ul id="2a1568fa-e39f-8087-b187-ccc996f6f76b" class="bulleted-list"><li style="list-style-type:disc">Дальше — только безопасные фичи, и <strong>никаких</strong> правок CV «по ощущениям» после первого сабмита.</li></ul><p id="2a1568fa-e39f-8070-bae7-e3c237400f85" class="">Хочешь — подготовлю «боевой» шаблон <code>CVFactory</code> (python-скелет + примеры конфигов) и бланк «Паспорта валидации», чтобы сразу вставить в репо.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

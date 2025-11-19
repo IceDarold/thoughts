@@ -1,0 +1,918 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>9.3</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8008-a17c-d4770a56af49" class="page sans"><header><h1 class="page-title">9.3</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8048-9011-deeece31a161" class="">Окей, вот тут начинается настоящий RAG, а не просто “я слышал это слово” 😄</p><p id="2ab568fa-e39f-80cf-93f6-fe41d7cfbc21" class="">Урок 9.3 — это момент, когда:</p><ul id="2ab568fa-e39f-80a6-b1d6-cbd010649ec6" class="bulleted-list"><li style="list-style-type:disc">куски базы знаний (из 9.2),</li></ul><ul id="2ab568fa-e39f-804e-be45-ebb9718ac447" class="bulleted-list"><li style="list-style-type:disc">эмбеддинги и поиск (из 9.1–9.2),</li></ul><ul id="2ab568fa-e39f-8031-80cb-cdba7321f9e2" class="bulleted-list"><li style="list-style-type:disc">и генеративная модель (из М5–М8)</li></ul><p id="2ab568fa-e39f-8071-a7db-d116bd79326f" class="">склеиваются в <strong>один рабочий пайплайн</strong>:</p><p id="2ab568fa-e39f-8016-9395-e3c183b3fce8" class=""><code>retrieve → prompt → generate</code>.</p><hr id="2ab568fa-e39f-805a-b7b9-c61e08cbbcf8"/><h2 id="2ab568fa-e39f-8055-8913-f18e3e121851" class="">Цели урока 9.3</h2><p id="2ab568fa-e39f-80ae-a777-f7ba85192066" class="">После урока ученик должен уметь:</p><ol type="1" id="2ab568fa-e39f-80be-98ca-d0935335d445" class="numbered-list" start="1"><li>Объяснить, что такое RAG и чем он отличается от “голой” LLM.</li></ol><ol type="1" id="2ab568fa-e39f-8082-b9bd-cf25682352d0" class="numbered-list" start="2"><li>Реализовать функцию, которая:<ul id="2ab568fa-e39f-808b-a7a6-c16b8f1f1836" class="bulleted-list"><li style="list-style-type:disc">принимает вопрос пользователя,</li></ul><ul id="2ab568fa-e39f-803f-945b-e72c13c67693" class="bulleted-list"><li style="list-style-type:disc">ищет по базе знаний релевантные чанки,</li></ul><ul id="2ab568fa-e39f-8022-97f2-fbd53b2606bd" class="bulleted-list"><li style="list-style-type:disc">строит промпт с контекстом,</li></ul><ul id="2ab568fa-e39f-808b-9c20-fccebdc3cc27" class="bulleted-list"><li style="list-style-type:disc">генерирует ответ с помощью модели.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808f-aa4b-f851ebc7de19" class="numbered-list" start="3"><li>Понимать базовые проблемы:<ul id="2ab568fa-e39f-8006-9622-fcb4277e8d48" class="bulleted-list"><li style="list-style-type:disc">галлюцинации,</li></ul><ul id="2ab568fa-e39f-807c-95a4-d0e18b844365" class="bulleted-list"><li style="list-style-type:disc">игнорирование контекста,</li></ul><ul id="2ab568fa-e39f-8058-b0f5-e2ddf4a081ad" class="bulleted-list"><li style="list-style-type:disc">неуверенность, когда в базе нет ответа.</li></ul></li></ol><hr id="2ab568fa-e39f-8024-bbb7-ed689923251e"/><h2 id="2ab568fa-e39f-804c-adbe-c4ef12c7930b" class="">9.3.1. Что такое RAG на пальцах</h2><p id="2ab568fa-e39f-80d7-a708-e0caf48d824a" class="">Классическая LLM-логика:</p><blockquote id="2ab568fa-e39f-8029-bdb3-e6aa363c7afb" class="">Пользователь: “После обновления приложение вылетает при загрузке фото, что делать?”<p id="2ab568fa-e39f-8057-9390-f240cbd7aa90" class="">Модель: <em>что-то придумывает исходя из своего pretraining’а и дообучения.</em></p></blockquote><p id="2ab568fa-e39f-8048-a00d-d82e58c44e4e" class="">Это всегда риск:</p><ul id="2ab568fa-e39f-80ff-8e99-c64b9c65fc6a" class="bulleted-list"><li style="list-style-type:disc">модель может не знать о конкретном бага в версии 5.2.1,</li></ul><ul id="2ab568fa-e39f-803f-abe1-e72c441b4220" class="bulleted-list"><li style="list-style-type:disc">может предложить шаги, которые противоречат актуальной документации.</li></ul><p id="2ab568fa-e39f-80fc-8bb9-c8fbf0d55c6c" class="">RAG (Retrieval-Augmented Generation) делает иначе:</p><ol type="1" id="2ab568fa-e39f-805f-8614-cc3020604c18" class="numbered-list" start="1"><li>Берём вопрос.</li></ol><ol type="1" id="2ab568fa-e39f-80f3-baf4-ea054e475908" class="numbered-list" start="2"><li>Ищем релевантные <strong>куски базы знаний</strong> (документация, FAQ, мануалы).</li></ol><ol type="1" id="2ab568fa-e39f-809c-b8fd-df04508806d0" class="numbered-list" start="3"><li>Кормим модели <strong>вопрос + контекст</strong>, с явной инструкцией использовать только его.</li></ol><p id="2ab568fa-e39f-805f-a83f-d52141041684" class="">То есть модель становится не “источником знаний”, а <strong>голосом, который красиво формулирует то, что написано в документации</strong>.</p><p id="2ab568fa-e39f-8037-8c7d-dd7d62167886" class="">Формула:</p><blockquote id="2ab568fa-e39f-8048-b4a6-e6dcb4ecb8f5" class="">LLM(x) → просто “разговорный автокомплит”.<p id="2ab568fa-e39f-80c2-9270-e88c545cd857" class=""><strong>RAG(x)</strong> → LLM(<code>x + retrieve(x)</code>).</p></blockquote><hr id="2ab568fa-e39f-80c5-953b-fcedd70ff17a"/><h2 id="2ab568fa-e39f-803e-915d-ea12a8102a4d" class="">9.3.2. Что у нас уже есть к этому уроку</h2><p id="2ab568fa-e39f-802b-b089-d8c14cc12c33" class="">Из предыдущих уроков мы предполагаем:</p><ul id="2ab568fa-e39f-8056-b230-c8e5d7e104d7" class="bulleted-list"><li style="list-style-type:disc"><code>embed_model</code> — модель эмбеддингов (<code>SentenceTransformer</code> или своя),</li></ul><ul id="2ab568fa-e39f-8068-b0b1-d0d7e47fd1df" class="bulleted-list"><li style="list-style-type:disc"><code>kb_index</code> — структура:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805a-b923-c0b7d1e1c8e6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">kb_index = {
+    &quot;chunks&quot;: [  # список словарей
+        {&quot;doc_id&quot;: ..., &quot;chunk_id&quot;: ..., &quot;text&quot;: &quot;...&quot;},
+        ...
+    ],
+    &quot;embeddings&quot;: np.ndarray shape = (num_chunks, dim)
+}
+</code></pre></li></ul><ul id="2ab568fa-e39f-80c6-9c56-e6542573feac" class="bulleted-list"><li style="list-style-type:disc">функция поиска (пример из 9.2):<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8097-99d0-d80c277b268e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def search_kb(query, kb_index, embed_model, top_k=5):
+    ...
+    return results  # список словарей {score, doc_id, chunk_id, text}
+</code></pre></li></ul><ul id="2ab568fa-e39f-8027-893a-e12b912bc59d" class="bulleted-list"><li style="list-style-type:disc">генеративная модель, например Causal LM (из М6–М8):<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809a-bca4-f9f8e24315b1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">bot_tokenizer, bot_model
+</code></pre></li></ul><p id="2ab568fa-e39f-80f9-a97b-dcae226f096f" class="">Мы будем опираться на эту инфраструктуру.</p><hr id="2ab568fa-e39f-80c6-bfec-cae2cede1e8f"/><h2 id="2ab568fa-e39f-8042-b65c-d337586cad79" class="">9.3.3. Шаг 1. Получаем контекст из базы по запросу</h2><p id="2ab568fa-e39f-8062-adf7-d0bb98fc3ad5" class="">Наша задача: написать функцию, которая:</p><ul id="2ab568fa-e39f-80f1-bdaf-d3c55a938fde" class="bulleted-list"><li style="list-style-type:disc">берёт <code>query</code> (вопрос пользователя),</li></ul><ul id="2ab568fa-e39f-80b8-a70b-cf7fb773cfd7" class="bulleted-list"><li style="list-style-type:disc">вызывает <code>search_kb</code>,</li></ul><ul id="2ab568fa-e39f-8051-a13c-c3e847a9009c" class="bulleted-list"><li style="list-style-type:disc">форматирует найденные чанки в большой текст “Context: …”.</li></ul><h3 id="2ab568fa-e39f-80c7-80e9-da6e7722b981" class="">Код: <code>build_context_for_query</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ee-b023-d95ce9ae955a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_context_for_query(query, kb_index, embed_model, top_k=3):
+    &quot;&quot;&quot;
+    Ищет релевантные чанки в базе знаний и собирает их в один текстовый блок.
+    Возвращает:
+      - context (str) — готовый текст для промпта
+      - results (list) — подробная инфа о найденных чанках
+    &quot;&quot;&quot;
+    results = search_kb(query, kb_index, embed_model, top_k=top_k)
+
+    blocks = []
+    for r in results:
+        header = f&quot;[{r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]} | score={r[&#x27;score&#x27;]:.3f}]&quot;
+        blocks.append(header + &quot;\n&quot; + r[&quot;text&quot;])
+
+    context = &quot;\n\n---\n\n&quot;.join(blocks)  # разделяем чанки линиями
+
+    return context, results
+</code></pre><p id="2ab568fa-e39f-8014-b6fe-d59af908ca2d" class=""><strong>Что объяснить:</strong></p><ul id="2ab568fa-e39f-80a8-a745-fca388e855ec" class="bulleted-list"><li style="list-style-type:disc"><code>top_k=3</code> — берём 3 самых релевантных чанка; можно изменять.</li></ul><ul id="2ab568fa-e39f-8022-9ecc-e88bd8785145" class="bulleted-list"><li style="list-style-type:disc">Мы явно <strong>сохраняем </strong><code><strong>results</strong></code>:<ul id="2ab568fa-e39f-8063-9da1-dab4c37322bc" class="bulleted-list"><li style="list-style-type:circle">иногда полезно показать пользователю, откуда взялся ответ (sources).</li></ul></li></ul><ul id="2ab568fa-e39f-80d7-a149-c7d27ad62996" class="bulleted-list"><li style="list-style-type:disc">Формат: <code>[doc_id#chunk_id | score=...]</code> + текст:<ul id="2ab568fa-e39f-8016-bc1f-d72e40f3afb9" class="bulleted-list"><li style="list-style-type:circle">это просто удобная подпись, модель можно и не кормить id/score,</li></ul><ul id="2ab568fa-e39f-80ee-a549-f415bfb8186c" class="bulleted-list"><li style="list-style-type:circle">но человеку (или логам) полезно видеть.</li></ul></li></ul><p id="2ab568fa-e39f-80f6-aaf4-d27ddfacacf4" class="">Можно вывести:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c7-b760-f0a4c4b7a269" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">query = &quot;После обновления приложение вылетает при загрузке фото&quot;
+context, results = build_context_for_query(query, kb_index, embed_model, top_k=3)
+print(context)
+</code></pre><p id="2ab568fa-e39f-806a-9e6d-d98f995d18c6" class="">И посмотреть глазами: действительно ли туда попали нужные точки документации.</p><hr id="2ab568fa-e39f-8093-9621-e83fb12f4872"/><h2 id="2ab568fa-e39f-806b-92b7-f8e1d30ed52c" class="">9.3.4. Шаг 2. Конструируем промпт для модели</h2><p id="2ab568fa-e39f-80fb-bb29-d346d121677e" class="">Теперь нам надо собрать промпт такого вида:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f4-bdb2-cf875d3c18f9" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: You are a helpful support assistant. Use only the information from the context to answer the question. If the answer is not in the context, say that you don&#x27;t know.
+
+Context:
+&lt;chunk 1&gt;
+---
+&lt;chunk 2&gt;
+---
+&lt;chunk 3&gt;
+
+Question: &lt;вопрос пользователя&gt;
+Answer:
+</code></pre><p id="2ab568fa-e39f-8050-a725-cf8b3af5ade1" class="">То есть мы:</p><ul id="2ab568fa-e39f-805b-9c06-e677459a3048" class="bulleted-list"><li style="list-style-type:disc">жёстко говорим модели: “используй только контекст”,</li></ul><ul id="2ab568fa-e39f-8055-a38b-f7ca1482f0fd" class="bulleted-list"><li style="list-style-type:disc">проходимся по чанкам,</li></ul><ul id="2ab568fa-e39f-8068-aa25-f8e0afa68b9e" class="bulleted-list"><li style="list-style-type:disc">вставляем вопрос,</li></ul><ul id="2ab568fa-e39f-80f1-b954-f3a463bfbc36" class="bulleted-list"><li style="list-style-type:disc">даём маркер <code>Answer:</code>, после которого модель дописывает.</li></ul><h3 id="2ab568fa-e39f-8065-880d-ccb8ecc067bf" class="">Код: <code>build_rag_prompt</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bf-a606-ec12398922a1" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_rag_prompt(question, context):
+    &quot;&quot;&quot;
+    Строит промпт для RAG: system-инструкция + контекст из KB + вопрос.
+    &quot;&quot;&quot;
+    system_instruction = (
+        &quot;System: You are a helpful support assistant for a mobile app. &quot;
+        &quot;Use only the information from the context below to answer the question. &quot;
+        &quot;If the answer is not in the context, say that you don&#x27;t know.&quot;
+    )
+
+    prompt = (
+        system_instruction
+        + &quot;\n\nContext:\n&quot;
+        + context
+        + &quot;\n\nQuestion: &quot;
+        + question.strip()
+        + &quot;\nAnswer:&quot;
+    )
+
+    return prompt
+</code></pre><p id="2ab568fa-e39f-80b8-bcb9-c023e6f94798" class=""><strong>Объяснить:</strong></p><ul id="2ab568fa-e39f-80d4-9ac1-f01b2e03c901" class="bulleted-list"><li style="list-style-type:disc"><code>System:</code> — это просто стилистика. Для моделей без chat-template норм ок.</li></ul><ul id="2ab568fa-e39f-80ee-8b1e-d0473a46de84" class="bulleted-list"><li style="list-style-type:disc">Ключевая мысль: модель <strong>должна</strong> знать, что:<ul id="2ab568fa-e39f-80c9-88de-d8d4d6d47279" class="bulleted-list"><li style="list-style-type:circle">у неё есть “источник правды” (Context),</li></ul><ul id="2ab568fa-e39f-8032-bfc5-dc0987a95a66" class="bulleted-list"><li style="list-style-type:circle">нельзя фантазировать, если там ничего нет.</li></ul></li></ul><p id="2ab568fa-e39f-80fc-a918-d36c36b8493d" class="">Можно показать пример промпта:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805e-8481-fdf7aa86cc2e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">print(build_rag_prompt(
+    &quot;После обновления приложение вылетает при загрузке фото&quot;,
+    context
+))
+</code></pre><hr id="2ab568fa-e39f-808a-8984-f6c89d9c5627"/><h2 id="2ab568fa-e39f-8072-bcb9-cf439629a2c5" class="">9.3.5. Шаг 3. Генерируем ответ с помощью Causal LM</h2><p id="2ab568fa-e39f-80d0-8055-d85b1b3068ce" class="">Используем <code>bot_tokenizer</code> и <code>bot_model</code> (например, тот же саппорт-бот из М6/М8, но теперь с контекстом).</p><h3 id="2ab568fa-e39f-8076-9e9d-cf33bb2de74f" class="">Базовая функция генерации</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801c-96e8-f5d26f933eb5" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+
+def generate_answer_from_prompt(
+    prompt,
+    bot_model,
+    bot_tokenizer,
+    max_new_tokens=128,
+    temperature=0.7,
+    top_p=0.9,
+):
+    inputs = bot_tokenizer(
+        prompt,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=1024,
+    ).to(bot_model.device)
+
+    with torch.no_grad():
+        out_ids = bot_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            top_p=top_p,
+            temperature=temperature,
+            repetition_penalty=1.1,
+            eos_token_id=bot_tokenizer.eos_token_id,
+        )
+
+    full_text = bot_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+
+    # Обрезаем всё, что было до &quot;Answer:&quot; (если модель его повторит)
+    if &quot;Answer:&quot; in full_text:
+        answer = full_text.split(&quot;Answer:&quot;, 1)[-1].strip()
+    else:
+        # fallback: просто берём хвост после исходного промпта
+        answer = full_text[len(prompt):].strip()
+
+    return answer, full_text
+</code></pre><p id="2ab568fa-e39f-805f-83b2-ce33e91f8620" class=""><strong>Пояснения:</strong></p><ul id="2ab568fa-e39f-8053-958c-f673d154ff3f" class="bulleted-list"><li style="list-style-type:disc"><code>max_length=1024</code> — ограничиваем длину <strong>входа</strong> (контекст + вопрос + прочее).</li></ul><ul id="2ab568fa-e39f-80f6-a09d-f091ec92dcf9" class="bulleted-list"><li style="list-style-type:disc"><code>max_new_tokens</code> — сколько новых токенов модель может сгенерировать.</li></ul><ul id="2ab568fa-e39f-802f-abe6-d35b3dcaa4c4" class="bulleted-list"><li style="list-style-type:disc"><code>do_sample=True</code>, <code>top_p</code>, <code>temperature</code>:<ul id="2ab568fa-e39f-80bd-83ff-d572b15ea67a" class="bulleted-list"><li style="list-style-type:circle">как и раньше, контролируем разнообразие.</li></ul></li></ul><ul id="2ab568fa-e39f-80e1-9b24-d8d9f3772856" class="bulleted-list"><li style="list-style-type:disc"><code>repetition_penalty</code>:<ul id="2ab568fa-e39f-8032-8f8e-db7330661b07" class="bulleted-list"><li style="list-style-type:circle">помогает бороться с заиканиями.</li></ul></li></ul><hr id="2ab568fa-e39f-806a-84a8-fa835ec210fb"/><h2 id="2ab568fa-e39f-80ca-ad64-fc5a19fdb8b5" class="">9.3.6. Шаг 4. Собираем всё в один RAG-метод</h2><p id="2ab568fa-e39f-80e0-b4a9-e370643ee243" class="">Теперь напишем одну функцию:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803d-a016-f30b30d13b55" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def answer_with_rag(
+    question,
+    kb_index,
+    embed_model,
+    bot_model,
+    bot_tokenizer,
+    top_k=3,
+    max_new_tokens=128,
+):
+    &quot;&quot;&quot;
+    Полный RAG-пайплайн:
+      1) достаем контекст из KB,
+      2) строим промпт,
+      3) генерим ответ.
+
+    Возвращаем:
+      - answer: строка с ответом модели
+      - context: текст контекста для промпта
+      - retrieved: список чанков с метаданными
+      - prompt: итоговый промпт (для дебага/логов)
+      - full_model_output: вся строка, которую выдала модель
+    &quot;&quot;&quot;
+    # 1. Ищем контекст
+    context, retrieved = build_context_for_query(
+        query=question,
+        kb_index=kb_index,
+        embed_model=embed_model,
+        top_k=top_k,
+    )
+
+    # 2. Строим промпт
+    prompt = build_rag_prompt(question, context)
+
+    # 3. Генерируем ответ
+    answer, full_output = generate_answer_from_prompt(
+        prompt=prompt,
+        bot_model=bot_model,
+        bot_tokenizer=bot_tokenizer,
+        max_new_tokens=max_new_tokens,
+    )
+
+    return {
+        &quot;answer&quot;: answer,
+        &quot;context&quot;: context,
+        &quot;retrieved&quot;: retrieved,
+        &quot;prompt&quot;: prompt,
+        &quot;full_model_output&quot;: full_output,
+    }
+</code></pre><p id="2ab568fa-e39f-8020-841e-ce5b2582170b" class="">Пример использования:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807f-bd33-d66327caeb0a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">question = &quot;После обновления приложение вылетает при загрузке фото. Что делать?&quot;
+
+result = answer_with_rag(
+    question=question,
+    kb_index=kb_index,
+    embed_model=embed_model,
+    bot_model=bot_model,
+    bot_tokenizer=bot_tokenizer,
+    top_k=3,
+    max_new_tokens=120,
+)
+
+print(&quot;QUESTION:\n&quot;, question)
+print(&quot;\nCONTEXT:\n&quot;, result[&quot;context&quot;])
+print(&quot;\nANSWER:\n&quot;, result[&quot;answer&quot;])
+</code></pre><p id="2ab568fa-e39f-802d-bd5f-dd96f22d93e9" class=""><strong>Что обсудить с учениками:</strong></p><ul id="2ab568fa-e39f-80da-adc6-d68e4a5edf23" class="bulleted-list"><li style="list-style-type:disc">Очень важно логировать <strong>prompt</strong>, <strong>context</strong> и <strong>retrieved</strong> чанки:<ul id="2ab568fa-e39f-80d3-9b2c-e21cdc37cc0b" class="bulleted-list"><li style="list-style-type:circle">так можно понять, где проблема — поиск плохой или модель игнорирует контекст.</li></ul></li></ul><ul id="2ab568fa-e39f-804e-8e0b-cfbd3cf90a91" class="bulleted-list"><li style="list-style-type:disc"><code>answer</code> — уже “чистый” ответ, который можно показывать пользователю.</li></ul><ul id="2ab568fa-e39f-808d-bd43-c015f7132124" class="bulleted-list"><li style="list-style-type:disc"><code>full_model_output</code> можно использовать для дебага, если модель странно повторяет части промпта.</li></ul><hr id="2ab568fa-e39f-80c8-bfb4-ffbb14cc9276"/><h2 id="2ab568fa-e39f-801d-8cc5-f55ba3fa1547" class="">9.3.7. Базовые проверки и работа с “я не знаю”</h2><p id="2ab568fa-e39f-8075-aad9-e41fbf0d1384" class="">Даже с RAG модель может:</p><ul id="2ab568fa-e39f-80d3-9693-c71461c588f8" class="bulleted-list"><li style="list-style-type:disc"><strong>игнорировать контекст</strong>,</li></ul><ul id="2ab568fa-e39f-80cf-8866-f385bb78adf2" class="bulleted-list"><li style="list-style-type:disc"><strong>галлюцинировать</strong> что-то, чего нет в документации.</li></ul><p id="2ab568fa-e39f-8076-b961-d3b4256b1aef" class="">Минимальные вещи, которые стоит заложить:</p><h3 id="2ab568fa-e39f-80be-8f98-d324f48adb12" class="">1) Правильный system-промпт</h3><p id="2ab568fa-e39f-80a5-a5b8-f715fbf1d681" class="">Мы уже написали:</p><blockquote id="2ab568fa-e39f-8085-a932-e35f743aed6e" class="">“Use only the information from the context below. If the answer is not in the context, say that you don&#x27;t know.”</blockquote><p id="2ab568fa-e39f-806e-8520-cce29233a64e" class="">Можно ещё усилить:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80bf-a972-fcba3572588d" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">If the answer is not fully covered in the context, say that you don&#x27;t know and suggest contacting human support. Do not use any external knowledge.
+</code></pre><p id="2ab568fa-e39f-80ce-87c0-fd6328ad3064" class="">Это реально помогает.</p><h3 id="2ab568fa-e39f-80b6-9353-c80234191bba" class="">2) Порог по похожести (на уровне retrieve)</h3><p id="2ab568fa-e39f-80ee-994c-c003588a7941" class="">Из 9.2 мы можем добавить логку:</p><ul id="2ab568fa-e39f-8052-a04f-d21d57948b75" class="bulleted-list"><li style="list-style-type:disc">если <strong>максимальный score</strong> среди чанков &lt; порога (например, 0.4),</li></ul><ul id="2ab568fa-e39f-808c-aee3-e8da996dc5b7" class="bulleted-list"><li style="list-style-type:disc">то говорить: “Я не нашёл информации в базе”.</li></ul><p id="2ab568fa-e39f-80e2-b00f-d7122e0ce13b" class="">Пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e5-8634-e5299cd90ea8" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def answer_with_rag_safe(
+    question,
+    kb_index,
+    embed_model,
+    bot_model,
+    bot_tokenizer,
+    top_k=3,
+    max_new_tokens=128,
+    min_score_threshold=0.35,
+):
+    # 1. Ищем контекст
+    context, retrieved = build_context_for_query(question, kb_index, embed_model, top_k)
+
+    # Проверяем максимальный score
+    max_score = max(r[&quot;score&quot;] for r in retrieved) if retrieved else 0.0
+    if max_score &lt; min_score_threshold:
+        # Считаем, что база не знает ответа
+        fallback_answer = (
+            &quot;I couldn&#x27;t find any relevant information in the knowledge base. &quot;
+            &quot;Please contact human support for further assistance.&quot;
+        )
+        return {
+            &quot;answer&quot;: fallback_answer,
+            &quot;context&quot;: context,
+            &quot;retrieved&quot;: retrieved,
+            &quot;prompt&quot;: None,
+            &quot;full_model_output&quot;: None,
+            &quot;max_score&quot;: max_score,
+        }
+
+    # 2. Строим промпт + генерим, как раньше
+    prompt = build_rag_prompt(question, context)
+    answer, full_output = generate_answer_from_prompt(
+        prompt, bot_model, bot_tokenizer, max_new_tokens=max_new_tokens
+    )
+
+    return {
+        &quot;answer&quot;: answer,
+        &quot;context&quot;: context,
+        &quot;retrieved&quot;: retrieved,
+        &quot;prompt&quot;: prompt,
+        &quot;full_model_output&quot;: full_output,
+        &quot;max_score&quot;: max_score,
+    }
+</code></pre><p id="2ab568fa-e39f-8082-8cc6-e493e67c5b03" class=""><strong>Объяснить:</strong></p><ul id="2ab568fa-e39f-80d8-91fb-d092fd78c53c" class="bulleted-list"><li style="list-style-type:disc">этот порог — чисто эмпирическая штука:<ul id="2ab568fa-e39f-8017-9f20-d34e0709cd7c" class="bulleted-list"><li style="list-style-type:circle">0.3–0.5 — норм стартовый диапазон,</li></ul><ul id="2ab568fa-e39f-8048-bf11-eb52009a46c3" class="bulleted-list"><li style="list-style-type:circle">его нужно подбирать под свои данные.</li></ul></li></ul><ul id="2ab568fa-e39f-80a2-bf8f-d4d7ec8c811b" class="bulleted-list"><li style="list-style-type:disc">если никаких релевантных чанков нет — лучше честно сказать “не знаю”.</li></ul><hr id="2ab568fa-e39f-8023-869c-fc201cffe63e"/><h2 id="2ab568fa-e39f-8056-ba11-fb85f86118e3" class="">9.3.8. Типичные проблемы и как их обсуждать</h2><ol type="1" id="2ab568fa-e39f-80d2-80c9-c5f37753ad2d" class="numbered-list" start="1"><li><strong>Модель отвечает вещами, которых нет в контексте.</strong><ul id="2ab568fa-e39f-8021-aad1-c11fb1e14870" class="bulleted-list"><li style="list-style-type:disc">Возможные причины:<ul id="2ab568fa-e39f-809f-b3fb-f5e1c9acf232" class="bulleted-list"><li style="list-style-type:circle">слабый system-промпт,</li></ul><ul id="2ab568fa-e39f-806f-aa6c-d069a6608a00" class="bulleted-list"><li style="list-style-type:circle">слишком мало контекста → модель “добивает” своими знаниями,</li></ul><ul id="2ab568fa-e39f-801e-8c32-e203db92df07" class="bulleted-list"><li style="list-style-type:circle">у модели сильный pretraining и она “знает лучше”.</li></ul></li></ul><ul id="2ab568fa-e39f-801b-8518-e4e70258d933" class="bulleted-list"><li style="list-style-type:disc">Что делать:<ul id="2ab568fa-e39f-8028-802c-ffc9baecce4e" class="bulleted-list"><li style="list-style-type:circle">усилить запрещающие инструкции,</li></ul><ul id="2ab568fa-e39f-8075-8f1d-ff136ec07f29" class="bulleted-list"><li style="list-style-type:circle">уменьшить <code>max_new_tokens</code>,</li></ul><ul id="2ab568fa-e39f-803a-993a-ed201c3e7e6c" class="bulleted-list"><li style="list-style-type:circle">при необходимости добавить правило post-processing (например, запрещать конкретные типы утверждений).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e5-985b-e1ac6b8e1d63" class="numbered-list" start="2"><li><strong>Модель повторяет куски контекста почти дословно.</strong><ul id="2ab568fa-e39f-806a-8a97-e30faced23dd" class="bulleted-list"><li style="list-style-type:disc">Иногда это даже норм (ответ в формате “см. инструкцию”).</li></ul><ul id="2ab568fa-e39f-807f-ba65-f4e045144ea4" class="bulleted-list"><li style="list-style-type:disc">Можно попросить её: “переформулируй своими словами”.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8093-9200-ecadf4bd4613" class="numbered-list" start="3"><li><strong>Модель игнорирует важный кусок, когда контекста слишком много.</strong><ul id="2ab568fa-e39f-8021-a646-fb0477e4264b" class="bulleted-list"><li style="list-style-type:disc">Нужно ограничивать <code>top_k</code> и/или длину чанков;</li></ul><ul id="2ab568fa-e39f-8048-9fcb-e54c1a0b7eaf" class="bulleted-list"><li style="list-style-type:disc">Иногда помогает сделать “prefilter” по типу тикета (будет в 9.4).</li></ul></li></ol><hr id="2ab568fa-e39f-8032-8a27-e6c5baa3eaac"/><h2 id="2ab568fa-e39f-80ff-98e5-fc4ccdd64d9b" class="">9.3.9. Домашка 9.3</h2><p id="2ab568fa-e39f-8012-9d12-ed54701cc482" class=""><strong>Основное задание:</strong></p><ol type="1" id="2ab568fa-e39f-8060-b5ae-c13b9bae0675" class="numbered-list" start="1"><li>Реализуй функции:<ul id="2ab568fa-e39f-806f-8497-d999955c5063" class="bulleted-list"><li style="list-style-type:disc"><code>build_context_for_query(query, kb_index, embed_model, top_k=3)</code></li></ul><ul id="2ab568fa-e39f-80c1-aedb-f864836068d0" class="bulleted-list"><li style="list-style-type:disc"><code>build_rag_prompt(question, context)</code></li></ul><ul id="2ab568fa-e39f-8051-a36e-e9b855e6e8f6" class="bulleted-list"><li style="list-style-type:disc"><code>generate_answer_from_prompt(prompt, bot_model, bot_tokenizer, ...)</code></li></ul><ul id="2ab568fa-e39f-80a0-884d-cf9fb467c1f8" class="bulleted-list"><li style="list-style-type:disc"><code>answer_with_rag(...)</code> (полный пайплайн)</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80eb-b9d3-f16ba6d82e60" class="numbered-list" start="2"><li>Используй свою базу знаний из 9.2 и свою (или базовую) генеративную модель:<ul id="2ab568fa-e39f-8091-a36e-c6db4fd0b3cc" class="bulleted-list"><li style="list-style-type:disc">минимум <strong>10 реальных запросов</strong>, покрывающих:<ul id="2ab568fa-e39f-8032-aca0-f6823f119db7" class="bulleted-list"><li style="list-style-type:circle">баги,</li></ul><ul id="2ab568fa-e39f-8016-aa6e-e0cacb22cb9e" class="bulleted-list"><li style="list-style-type:circle">биллинг,</li></ul><ul id="2ab568fa-e39f-8058-a53b-e86b5a83fe08" class="bulleted-list"><li style="list-style-type:circle">настройки/UX,</li></ul><ul id="2ab568fa-e39f-805c-ac6f-d0cfa6870155" class="bulleted-list"><li style="list-style-type:circle">2–3 “левых” вопроса, на которые в базе точно нет ответа.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80b7-a27c-f3a10b6d7aba" class="numbered-list" start="3"><li>Для каждого запроса:<ul id="2ab568fa-e39f-80e0-911e-fec7e029b18d" class="bulleted-list"><li style="list-style-type:disc">выведи:<ul id="2ab568fa-e39f-80b3-9bc5-d4a43406bb80" class="bulleted-list"><li style="list-style-type:circle">сам вопрос,</li></ul><ul id="2ab568fa-e39f-803c-a5ed-c95179e31d3a" class="bulleted-list"><li style="list-style-type:circle">контекст (top-чанки),</li></ul><ul id="2ab568fa-e39f-805f-a6d5-cd5420c3a421" class="bulleted-list"><li style="list-style-type:circle">ответ модели,</li></ul></li></ul><ul id="2ab568fa-e39f-80cc-882d-cb94b8a03467" class="bulleted-list"><li style="list-style-type:disc">глазами оцени:<ul id="2ab568fa-e39f-80b3-b754-fd22c45234a3" class="bulleted-list"><li style="list-style-type:circle">использует ли модель именно тот контекст,</li></ul><ul id="2ab568fa-e39f-8059-b7dd-d37c7243b092" class="bulleted-list"><li style="list-style-type:circle">где она галлюцинирует.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8075-ac26-db5c376a35ec" class="numbered-list" start="4"><li>Сделай короткий отчёт (можно markdown):<ul id="2ab568fa-e39f-803b-b4f4-dbc654eb9327" class="bulleted-list"><li style="list-style-type:disc">в скольких случаях ответ:<ul id="2ab568fa-e39f-80db-bf04-c8f081a490c9" class="bulleted-list"><li style="list-style-type:circle">точный и по делу,</li></ul><ul id="2ab568fa-e39f-807d-8fd4-decf3fdceea9" class="bulleted-list"><li style="list-style-type:circle">“что-то полезное, но не идеально”,</li></ul><ul id="2ab568fa-e39f-801c-b5ee-ef8ef407f90a" class="bulleted-list"><li style="list-style-type:circle">явная галлюцинация / мимо.</li></ul></li></ul><ul id="2ab568fa-e39f-80a4-b1dc-cab8af04ab25" class="bulleted-list"><li style="list-style-type:disc">какие идеи улучшения (порог по score, изменение промпта, уменьшение <code>top_k</code>).</li></ul></li></ol><p id="2ab568fa-e39f-8055-89fc-f198c681055b" class=""><strong>Доп. задание (по желанию):</strong></p><ul id="2ab568fa-e39f-80f3-af71-f37e8d44437b" class="bulleted-list"><li style="list-style-type:disc">Реализуй <code>answer_with_rag_safe</code> с <code>min_score_threshold</code>:<ul id="2ab568fa-e39f-8083-ab21-c986653463c4" class="bulleted-list"><li style="list-style-type:circle">протестируй запросы, на которые в базе нет ответа,</li></ul><ul id="2ab568fa-e39f-804c-b18e-ee2afa37e616" class="bulleted-list"><li style="list-style-type:circle">проверь, что модель в этих случаях действительно пишет что-то вроде “не знаю”,</li></ul><ul id="2ab568fa-e39f-8060-897f-dea2b02270d2" class="bulleted-list"><li style="list-style-type:circle">а не фантазирует.</li></ul></li></ul><hr id="2ab568fa-e39f-8061-b73f-d9d3a5b673f4"/><p id="2ab568fa-e39f-805e-b5c3-ea7be0ac8e9d" class="">После 9.3 у ученика уже есть <strong>полноценный RAG-блок</strong>:</p><ul id="2ab568fa-e39f-808b-8dd2-df8dc72cec85" class="bulleted-list"><li style="list-style-type:disc">приём вопроса,</li></ul><ul id="2ab568fa-e39f-8019-af9c-def1f87f4077" class="bulleted-list"><li style="list-style-type:disc">векторный поиск по KB,</li></ul><ul id="2ab568fa-e39f-8077-bcf6-d0dfa3f0dcf5" class="bulleted-list"><li style="list-style-type:disc">подготовка промпта,</li></ul><ul id="2ab568fa-e39f-809e-9337-fce3d5d4ffa9" class="bulleted-list"><li style="list-style-type:disc">ответ генеративной моделью.</li></ul><p id="2ab568fa-e39f-802d-b074-ebf4a4bfb4c0" class="">В 9.4 вы уже склеите это с:</p><ul id="2ab568fa-e39f-80f7-b10d-f1a3da8aa3d3" class="bulleted-list"><li style="list-style-type:disc">классификатором тикетов (М4),</li></ul><ul id="2ab568fa-e39f-8095-80a6-e9d0d08ba8e2" class="bulleted-list"><li style="list-style-type:disc">суммаризатором диалога (М5/М8),</li></ul><ul id="2ab568fa-e39f-80e2-9a03-ff3473ef363c" class="bulleted-list"><li style="list-style-type:disc">саппорт-ботом (М6/М8),</li></ul><p id="2ab568fa-e39f-8072-897f-e02104bffadf" class="">и получите прям взрослого Support Assistant.</p><p id="2ab568fa-e39f-8006-b956-fc900b388693" class="">Если хочешь, дальше можем разобрать 9.4 так же подробно — как собрать всё в один end-to-end скрипт/сервис.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

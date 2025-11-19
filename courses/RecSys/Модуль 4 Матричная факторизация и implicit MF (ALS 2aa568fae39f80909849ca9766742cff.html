@@ -1,0 +1,722 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 4. Матричная факторизация и implicit MF (ALS / BPR)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-8090-9849-ca9766742cff" class="page sans"><header><h1 class="page-title">Модуль 4. Матричная факторизация и implicit MF (ALS / BPR)</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-8023-8795-fa6e92bfdf8e" class=""><strong>После модуля студент должен уметь:</strong></p><ul id="2aa568fa-e39f-8035-b404-c9d1efd9cd36" class="bulleted-list"><li style="list-style-type:disc">понимать идею <strong>latent space</strong>: пользователь и товар как векторы в общем пространстве;</li></ul><ul id="2aa568fa-e39f-801c-8ac7-fbcda0eefb59" class="bulleted-list"><li style="list-style-type:disc">реализовывать <strong>матричную факторизацию</strong>:<ul id="2aa568fa-e39f-8045-af4f-c937a6a0aae3" class="bulleted-list"><li style="list-style-type:circle">для explicit рейтингов (SGD / biased MF),</li></ul><ul id="2aa568fa-e39f-8035-a3b0-e458ce47f03a" class="bulleted-list"><li style="list-style-type:circle">для implicit feedback (ALS, confidence weights);</li></ul></li></ul><ul id="2aa568fa-e39f-8017-8b39-fa5e7aa576be" class="bulleted-list"><li style="list-style-type:disc">понимать и уметь реализовать <strong>BPR (Bayesian Personalized Ranking)</strong> как pairwise MF;</li></ul><ul id="2aa568fa-e39f-8029-bdcc-cf265bddf0e7" class="bulleted-list"><li style="list-style-type:disc">интегрировать MF-модели в eval-фреймворк из модуля 2 и сравнивать с:<ul id="2aa568fa-e39f-80ed-bf77-f776ff23e966" class="bulleted-list"><li style="list-style-type:circle">популярностью,</li></ul><ul id="2aa568fa-e39f-8072-b262-df51112ebc20" class="bulleted-list"><li style="list-style-type:circle">co-occurrence,</li></ul><ul id="2aa568fa-e39f-80f2-b104-e022184e42d6" class="bulleted-list"><li style="list-style-type:circle">user-/item-based CF (модуль 3);</li></ul></li></ul><ul id="2aa568fa-e39f-802a-8dcb-c370424dbf78" class="bulleted-list"><li style="list-style-type:disc">понимать, <strong>когда MF «заходит», а когда лучше sequence/graph/hybrid</strong>.</li></ul><hr id="2aa568fa-e39f-809f-84f2-f07b0fcd78a1"/><h2 id="2aa568fa-e39f-8088-ba57-f558a2245de6" class="">Структура модуля</h2><p id="2aa568fa-e39f-8084-a9ce-ff3945b06672" class="">4 урока + мини-проект:</p><ol type="1" id="2aa568fa-e39f-80d7-87f3-cf125d503cbf" class="numbered-list" start="1"><li><strong>Урок 4.1. Интуиция латентных факторов и базовая матричная факторизация</strong><figure id="2aa568fa-e39f-80af-9e1b-f512bf626c6f" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20%D0%9C%D0%B0%D1%82%D1%80%D0%B8%D1%87%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20implicit%20MF%20(ALS/%D0%A3%D1%80%D0%BE%D0%BA%204%201%20%D0%98%D0%BD%D1%82%D1%83%D0%B8%D1%86%D0%B8%D1%8F%20%D0%BB%D0%B0%D1%82%D0%B5%D0%BD%D1%82%D0%BD%D1%8B%D1%85%20%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80%D0%BE%D0%B2%20%D0%B8%20%D0%B1%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D1%8F%20%D0%BC%D0%B0%D1%82%202aa568fae39f80af9e1bf512bf626c6f.html">Урок 4.1. Интуиция латентных факторов и базовая матричная факторизация</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-80a2-871e-cc6eba29f6ce" class="numbered-list" start="2"><li><strong>Урок 4.2. Explicit MF: biased MF, регуляризация, реализация на SGD</strong><figure id="2aa568fa-e39f-805d-a055-ead4415adbd0" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20%D0%9C%D0%B0%D1%82%D1%80%D0%B8%D1%87%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20implicit%20MF%20(ALS/%D0%A3%D1%80%D0%BE%D0%BA%204%202%20Explicit%20MF%20biased%20MF,%20%D1%80%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20%D1%81%D0%B2%202aa568fae39f805da055ead4415adbd0.html">Урок 4.2. Explicit MF: biased MF, регуляризация и связь с топ-K</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-802b-8977-d6c92c463e9e" class="numbered-list" start="3"><li><strong>Урок 4.3. Implicit MF: ALS, confidence weights и top-K рекомендации</strong><figure id="2aa568fa-e39f-80cd-91c4-c07bb317d2d2" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%204%20%D0%9C%D0%B0%D1%82%D1%80%D0%B8%D1%87%D0%BD%D0%B0%D1%8F%20%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B8%20implicit%20MF%20(ALS/%D0%A3%D1%80%D0%BE%D0%BA%204%203%20Implicit%20MF%20ALS,%20confidence%20weights%20%D0%B8%20top%202aa568fae39f80cd91c4c07bb317d2d2.html">Урок 4.3. Implicit MF: ALS, confidence weights и top-K рекомендации</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-80ec-8849-e4a506618bf3" class="numbered-list" start="4"><li><strong>Урок 4.4. BPR (pairwise MF), сравнение MF-моделей и гибриды</strong></li></ol><ol type="1" id="2aa568fa-e39f-80a8-9e91-db89f3a319f4" class="numbered-list" start="5"><li><strong>Мини-проект:</strong> MF-лаборатория для твоего соревнования</li></ol><p id="2aa568fa-e39f-8056-b0b5-ef302c612c97" class="">Для практики:</p><ul id="2aa568fa-e39f-80b3-ad09-ee0b1352ef74" class="bulleted-list"><li style="list-style-type:disc">для <strong>explicit</strong> части удобно взять MovieLens / rating-based dataset;</li></ul><ul id="2aa568fa-e39f-8036-ab06-c8c15a485437" class="bulleted-list"><li style="list-style-type:disc">для <strong>implicit</strong> части — тот же e-commerce/session датасет, с которым вы работали в модулях 1–3.</li></ul><hr id="2aa568fa-e39f-80ab-a1c6-fb169cb60433"/><h2 id="2aa568fa-e39f-8036-9e9c-c4ccded9fd84" class="">Урок 4.1. Интуиция латентных факторов и базовая MF</h2><h3 id="2aa568fa-e39f-8029-a03d-c247c8b856d2" class="">Цели</h3><ul id="2aa568fa-e39f-800c-98a5-efb906affcd2" class="bulleted-list"><li style="list-style-type:disc">Сместить мышление от «соседей» к <strong>векторному представлению</strong>.</li></ul><ul id="2aa568fa-e39f-800d-aabf-c41c73d6cf61" class="bulleted-list"><li style="list-style-type:disc">Понять, что:<ul id="2aa568fa-e39f-80a6-a001-fcb81eea1bea" class="bulleted-list"><li style="list-style-type:circle">user ≈ вектор предпочтений,</li></ul><ul id="2aa568fa-e39f-8019-9d04-dc09be45ee77" class="bulleted-list"><li style="list-style-type:circle">item ≈ вектор характеристик,</li></ul><ul id="2aa568fa-e39f-8072-8f47-caac5c7ec69b" class="bulleted-list"><li style="list-style-type:circle">их скалярное произведение ≈ «насколько заходит».</li></ul></li></ul><h3 id="2aa568fa-e39f-8013-88cc-e5094d28bac7" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-803f-a3cb-fa94d2d59a0e" class="numbered-list" start="1"><li><strong>Проблемы классической CF (модуль 3)</strong><ul id="2aa568fa-e39f-80ce-8a2c-e8d4570bd977" class="bulleted-list"><li style="list-style-type:disc">Сложность:<ul id="2aa568fa-e39f-80a5-85d3-ee1cb5bc6c8a" class="bulleted-list"><li style="list-style-type:circle">хранить все similarities для user-based / item-based;</li></ul></li></ul><ul id="2aa568fa-e39f-8012-89fa-d3699e877716" class="bulleted-list"><li style="list-style-type:disc">Нестабильность:<ul id="2aa568fa-e39f-8012-91bf-e272425384ac" class="bulleted-list"><li style="list-style-type:circle">при сильной разреженности часто не хватает пересечений;</li></ul></li></ul><ul id="2aa568fa-e39f-809a-b00c-ea36b96e14de" class="bulleted-list"><li style="list-style-type:disc">Сложно обобщать:<ul id="2aa568fa-e39f-8085-98d2-daf66eeefc06" class="bulleted-list"><li style="list-style-type:circle">нет явного «пространства вкусов», только локальные соседства.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cc-9069-d1c3087e40d6" class="numbered-list" start="2"><li><strong>Идея матричной факторизации</strong><ul id="2aa568fa-e39f-8040-8e13-fa3502a1249e" class="bulleted-list"><li style="list-style-type:disc">Есть матрица взаимодействий <code>R</code> размера <code>U × I</code> (пользователи × товары).</li></ul><ul id="2aa568fa-e39f-800b-9904-c611f27c9098" class="bulleted-list"><li style="list-style-type:disc">Предположение: <code>R</code> имеет <strong>низкий ранг</strong> → можно приблизить её произведением двух матриц:<p id="2aa568fa-e39f-80ae-b371-f28d1459fb94" class="">[</p><p id="2aa568fa-e39f-80c2-abf3-d6ec37834b8e" class="">R \approx P Q^T,</p><p id="2aa568fa-e39f-80a7-9eb2-ee957a1bd2bf" class="">]</p><p id="2aa568fa-e39f-8019-a2c2-f97ca6be643a" class="">где:</p><ul id="2aa568fa-e39f-801b-8c0f-ebe51aa1bf59" class="bulleted-list"><li style="list-style-type:circle"><code>P</code> — матрица пользователей <code>U × d</code>,</li></ul><ul id="2aa568fa-e39f-8076-bdde-c71536a6d280" class="bulleted-list"><li style="list-style-type:circle"><code>Q</code> — матрица товаров <code>I × d</code>,</li></ul><ul id="2aa568fa-e39f-800a-880f-c75dc68ef0f8" class="bulleted-list"><li style="list-style-type:circle"><code>d</code> — размер латентного пространства (обычно 16–200).</li></ul></li></ul><ul id="2aa568fa-e39f-8092-acc1-c8976a37db22" class="bulleted-list"><li style="list-style-type:disc">Предсказание:<p id="2aa568fa-e39f-800d-b973-f87effbb13b0" class="">[</p><p id="2aa568fa-e39f-8035-bc78-d27d28aee02f" class="">\hat{r}_{u,i} = \langle p_u, q_i \rangle.</p><p id="2aa568fa-e39f-8079-b1d7-f38658a92112" class="">]</p></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8093-9073-c12216882487" class="numbered-list" start="3"><li><strong>Геометрическая интерпретация</strong><ul id="2aa568fa-e39f-8062-8475-cfb998ce3c12" class="bulleted-list"><li style="list-style-type:disc">Каждый пользователь — точка в d-мерном пространстве «интересов».</li></ul><ul id="2aa568fa-e39f-80ad-88fb-ef02bbd86644" class="bulleted-list"><li style="list-style-type:disc">Каждый item — точка в том же пространстве.</li></ul><ul id="2aa568fa-e39f-80d7-b373-ec67224be85d" class="bulleted-list"><li style="list-style-type:disc">Скалярное произведение / косинус между ними = «насколько совпали».</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8090-961b-d745a94835d2" class="numbered-list" start="4"><li><strong>Функция потерь (explicit вариант)</strong><ul id="2aa568fa-e39f-8097-95c2-c65dc64a80ac" class="bulleted-list"><li style="list-style-type:disc">Для заданных наблюдаемых пар <code>(u, i)</code>:<p id="2aa568fa-e39f-8020-8035-e45000f2d2f3" class="">[</p><p id="2aa568fa-e39f-809c-9d96-d4a80f602387" class="">L = \sum_{(u,i) \in \Omega} (r_{u,i} - \langle p_u, q_i \rangle)^2 + \lambda (|p_u|^2 + |q_i|^2)</p><p id="2aa568fa-e39f-808e-b6cb-d697fea92bf7" class="">]</p></li></ul><ul id="2aa568fa-e39f-802f-a030-c6217b0a95a8" class="bulleted-list"><li style="list-style-type:disc">Где:<ul id="2aa568fa-e39f-808a-add0-f94a819ee6f3" class="bulleted-list"><li style="list-style-type:circle"><code>Ω</code> — множество известных взаимодействий;</li></ul><ul id="2aa568fa-e39f-8085-9407-e2d20e97581d" class="bulleted-list"><li style="list-style-type:circle"><code>λ</code> — регуляризация.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80f0-9395-ee141d16e317" class="numbered-list" start="5"><li><strong>Оптимизация</strong><ul id="2aa568fa-e39f-80b6-b424-d9324363fd06" class="bulleted-list"><li style="list-style-type:disc">Градиентный спуск / SGD:<ul id="2aa568fa-e39f-802a-9de0-d4fc9340ae4d" class="bulleted-list"><li style="list-style-type:circle">итерируем по <code>(u, i)</code>,</li></ul><ul id="2aa568fa-e39f-80ae-98b5-e4f569c766f6" class="bulleted-list"><li style="list-style-type:circle">обновляем <code>p_u</code> и <code>q_i</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-8080-8f05-f1ed0334759f" class="bulleted-list"><li style="list-style-type:disc">ALS (по идее) тоже можно использовать для explicit, но в этом уроке только упоминаем.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801d-8bd2-f40d49eac654" class="numbered-list" start="6"><li><strong>Связь с CF</strong><ul id="2aa568fa-e39f-8091-9a98-e84ac23a0847" class="bulleted-list"><li style="list-style-type:disc">CF искала похожих пользователей/items в оригинальной матрице.</li></ul><ul id="2aa568fa-e39f-803d-b57f-c90a354ae180" class="bulleted-list"><li style="list-style-type:disc">MF учится <strong>латентному пространству</strong>, где сходство уже естественно через <code>p_u</code> и <code>q_i</code>.</li></ul></li></ol><h3 id="2aa568fa-e39f-80f8-aa46-d997940bbac5" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-80e8-89c5-c97d16c35e07" class="bulleted-list"><li style="list-style-type:disc">На маленьком поднаборе rating-датасета (MovieLens mini):<ol type="1" id="2aa568fa-e39f-8067-a157-f881a4603535" class="numbered-list" start="1"><li>Показать матрицу <code>user × item</code> (очень разреженную).</li></ol><ol type="1" id="2aa568fa-e39f-80d6-b26d-c8fccab979da" class="numbered-list" start="2"><li>С помощью готовой библиотеки (Surprise / implicit / self-written) обучить простую MF-модель с маленьким <code>d</code>.</li></ol><ol type="1" id="2aa568fa-e39f-807c-83eb-d1a9b822e8c9" class="numbered-list" start="3"><li>Для пары пользователей:<ul id="2aa568fa-e39f-8094-8fa8-f4875466e32c" class="bulleted-list"><li style="list-style-type:disc">вывести их вектора <code>p_u</code>;</li></ul><ul id="2aa568fa-e39f-80da-a761-ce5288beda75" class="bulleted-list"><li style="list-style-type:disc">посмотреть cosine similarity между ними;</li></ul><ul id="2aa568fa-e39f-80e3-92be-f522b3050183" class="bulleted-list"><li style="list-style-type:disc">проверить, действительно ли их вкусы похожи по топ-рейтинговым фильмам.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8025-8a85-da6b853c664c" class="">Домашка 4.1</h3><ol type="1" id="2aa568fa-e39f-80a2-95c7-f39adaaf56a9" class="numbered-list" start="1"><li>Реализовать <strong>простую MF-модель</strong> (без bias) на SGD:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8092-a080-f3650f9a9801" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class SimpleMF:
+    def __init__(self, n_users, n_items, n_factors=32, lr=0.01, reg=0.1):
+        ...
+
+    def fit(self, train_ratings, n_epochs=10):
+        # train_ratings: список (u, i, r)
+        ...
+
+    def predict(self, u, i):
+        ...
+
+</code></pre></li></ol><ol type="1" id="2aa568fa-e39f-80a4-a8be-d46b83418fe2" class="numbered-list" start="2"><li>Обучить на подмножестве rating-датасета:<ul id="2aa568fa-e39f-80f2-96d4-c6a9ca4df0ac" class="bulleted-list"><li style="list-style-type:disc">посчитать RMSE на validation;</li></ul><ul id="2aa568fa-e39f-80d7-b21b-f7a19f1ca1b4" class="bulleted-list"><li style="list-style-type:disc">сравнить с:<ul id="2aa568fa-e39f-800e-9992-cc52d01f114a" class="bulleted-list"><li style="list-style-type:circle">средним рейтингом по item,</li></ul><ul id="2aa568fa-e39f-80fd-b945-f14461cddce7" class="bulleted-list"><li style="list-style-type:circle">простым user-based CF (если реализован для рейтингов).</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-80df-9625-ec1c1bd913b6"/><h2 id="2aa568fa-e39f-806b-a478-daa0bc84aef3" class="">Урок 4.2. Explicit MF: biased MF, регуляризация, реализация на SGD</h2><h3 id="2aa568fa-e39f-80fc-84fd-cdf1a8dc512b" class="">Цели</h3><ul id="2aa568fa-e39f-8095-aad2-d771d2a657b9" class="bulleted-list"><li style="list-style-type:disc">Показать <strong>biased MF</strong> (учёт глобального среднего и смещений user/item).</li></ul><ul id="2aa568fa-e39f-8039-864f-c5e4863fda04" class="bulleted-list"><li style="list-style-type:disc">Показать важность <strong>регуляризации и тюнинга гиперпараметров</strong>.</li></ul><ul id="2aa568fa-e39f-8024-ba1d-d583e9437b89" class="bulleted-list"><li style="list-style-type:disc">Привязать MF не только к RMSE, но и к <strong>top-K метрикам</strong>.</li></ul><h3 id="2aa568fa-e39f-8090-bf73-e8b05297e0f7" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8055-b882-f4a3f05e71b7" class="numbered-list" start="1"><li><strong>Biases (смещения)</strong><ul id="2aa568fa-e39f-806f-a2b3-f49f94535907" class="bulleted-list"><li style="list-style-type:disc">Не все пользователи ставят оценки одинаково:<ul id="2aa568fa-e39f-80d6-ae5f-e77d9bc3049e" class="bulleted-list"><li style="list-style-type:circle">кто-то всегда ставит 4–5;</li></ul><ul id="2aa568fa-e39f-8090-92b6-f0b38ce3c942" class="bulleted-list"><li style="list-style-type:circle">кто-то ставит строго 1–3.</li></ul></li></ul><ul id="2aa568fa-e39f-80ff-8572-ff7243359386" class="bulleted-list"><li style="list-style-type:disc">Не все фильмы (items) равны:<ul id="2aa568fa-e39f-801b-892d-eacf52bab6b8" class="bulleted-list"><li style="list-style-type:circle">есть «общие любимцы»;</li></ul><ul id="2aa568fa-e39f-80c5-979d-fe46c5faf0ea" class="bulleted-list"><li style="list-style-type:circle">есть «общие ненавистники».</li></ul></li></ul><p id="2aa568fa-e39f-8009-9fde-d0e81040e5b6" class="">Вводим:</p><ul id="2aa568fa-e39f-8002-9c39-d093d609dfec" class="bulleted-list"><li style="list-style-type:disc">глобальное среднее <code>μ</code>;</li></ul><ul id="2aa568fa-e39f-80f4-97ee-f6a70a8439b7" class="bulleted-list"><li style="list-style-type:disc">bias пользователя <code>b_u</code>;</li></ul><ul id="2aa568fa-e39f-80cc-9a33-cfa32053bbc5" class="bulleted-list"><li style="list-style-type:disc">bias item’а <code>b_i</code>.</li></ul><p id="2aa568fa-e39f-8072-8393-f66d45996c5e" class="">Предсказание:</p><p id="2aa568fa-e39f-8053-becd-c44d7afe54ac" class="">[</p><p id="2aa568fa-e39f-8056-9584-d7b451989d37" class="">\hat{r}_{u,i} = μ + b_u + b_i + \langle p_u, q_i \rangle.</p><p id="2aa568fa-e39f-808a-af72-c1c944211c1c" class="">]</p></li></ol><ol type="1" id="2aa568fa-e39f-80a5-aa7a-cd30853178d7" class="numbered-list" start="2"><li><strong>Функция потерь biased MF</strong><p id="2aa568fa-e39f-8048-8904-c560318b331b" class="">[</p><p id="2aa568fa-e39f-8069-808b-def0187db692" class="">L = \sum_{(u,i) \in \Omega} (r_{u,i} - μ - b_u - b_i - \langle p_u, q_i \rangle)^2 + λ ( |p_u|^2 + |q_i|^2 + b_u^2 + b_i^2).</p><p id="2aa568fa-e39f-80f1-95f9-e8873dfec6ec" class="">]</p></li></ol><ol type="1" id="2aa568fa-e39f-803b-9c19-ea77ac6050cf" class="numbered-list" start="3"><li><strong>Обучение SGD</strong><ul id="2aa568fa-e39f-8057-a70a-e5cd74738093" class="bulleted-list"><li style="list-style-type:disc">Для каждого <code>(u, i, r_ui)</code>:<ul id="2aa568fa-e39f-8069-a9b5-e12afc85aca2" class="bulleted-list"><li style="list-style-type:circle">считаем ошибку <code>e_ui</code>;</li></ul><ul id="2aa568fa-e39f-8078-9b61-d1799dece5c4" class="bulleted-list"><li style="list-style-type:circle">обновляем:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8070-bac6-c45bb75472b4" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">b_u ← b_u + lr * (e_ui - λ * b_u)
+b_i ← b_i + lr * (e_ui - λ * b_i)
+p_u ← p_u + lr * (e_ui * q_i - λ * p_u)
+q_i ← q_i + lr * (e_ui * p_u - λ * q_i)
+</code></pre></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8044-bd19-e716558e3387" class="numbered-list" start="4"><li><strong>Регуляризация и переобучение</strong><ul id="2aa568fa-e39f-80d5-af6a-c8944216b5fc" class="bulleted-list"><li style="list-style-type:disc">Без регуляризации:<ul id="2aa568fa-e39f-8059-b00c-d56ac398f2a7" class="bulleted-list"><li style="list-style-type:circle">факторы и bias’ы «подгоняют» все известные рейтинги;</li></ul><ul id="2aa568fa-e39f-800a-86c8-c91863030559" class="bulleted-list"><li style="list-style-type:circle">плохо обобщается на новые.</li></ul></li></ul><ul id="2aa568fa-e39f-809b-a081-c3c8f83c94df" class="bulleted-list"><li style="list-style-type:disc">С регуляризацией:<ul id="2aa568fa-e39f-8096-85e0-c8a2d5699959" class="bulleted-list"><li style="list-style-type:circle">компромисс между точностью и обобщением.</li></ul></li></ul><ul id="2aa568fa-e39f-8008-8a10-d8ce4c066468" class="bulleted-list"><li style="list-style-type:disc">Важно:<ul id="2aa568fa-e39f-8056-aceb-ebc8308ea732" class="bulleted-list"><li style="list-style-type:circle">подбирать <code>λ</code>, <code>lr</code>, <code>n_factors</code>, <code>n_epochs</code> по validation метрике.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b6-897f-fdb6ca1e374b" class="numbered-list" start="5"><li><strong>Top-K рекомендации на основе explicit MF</strong><ul id="2aa568fa-e39f-8026-ae6c-dfb5fb3043b1" class="bulleted-list"><li style="list-style-type:disc">Хотя MF оптимизирует MSE, можно:<ul id="2aa568fa-e39f-80b7-bf58-d88d6291680f" class="bulleted-list"><li style="list-style-type:circle">для каждого пользователя сортировать items по <code>\hat{r}_{u,i}</code>;</li></ul><ul id="2aa568fa-e39f-8052-b8e8-f652040647f7" class="bulleted-list"><li style="list-style-type:circle">взять top-K;</li></ul><ul id="2aa568fa-e39f-8085-97bd-d05c77c9c181" class="bulleted-list"><li style="list-style-type:circle">считать Recall@K, NDCG@K (из модуля 2).</li></ul></li></ul><ul id="2aa568fa-e39f-8053-9956-d3da74ab24fa" class="bulleted-list"><li style="list-style-type:disc">Обсуждение:<ul id="2aa568fa-e39f-80bd-9f0f-e09711ae9db9" class="bulleted-list"><li style="list-style-type:circle">почему модель, обученная по MSE, может быть не оптимальна для ранжирования.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8020-ae7f-fc5dff393a24" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8060-a48b-f1c78314f6ab" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-805a-8cc2-ca4c360f12e7" class="numbered-list" start="1"><li>Расширить <code>SimpleMF</code> до <strong>biased MF</strong>:<ul id="2aa568fa-e39f-80bf-92b3-e36eac7d0ec3" class="bulleted-list"><li style="list-style-type:disc">добавить <code>μ</code>, <code>b_u</code>, <code>b_i</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8006-aedb-eff631833b06" class="numbered-list" start="2"><li>Обучать на rating-датасете:<ul id="2aa568fa-e39f-80be-8af1-ec03ec234eb8" class="bulleted-list"><li style="list-style-type:disc">контролировать RMSE по validation каждую эпоху;</li></ul><ul id="2aa568fa-e39f-80bd-8355-c071fc42b21e" class="bulleted-list"><li style="list-style-type:disc">смотреть, как влияет размер факторов, регуляризация.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801b-8d80-d358c59af39f" class="numbered-list" start="3"><li>С помощью eval-фреймворка:<ul id="2aa568fa-e39f-80a9-b872-fe4bd6c83cff" class="bulleted-list"><li style="list-style-type:disc">пересчитать top-K метрики по <code>Recall@K</code>, <code>NDCG@K</code> для MovieLens:<ul id="2aa568fa-e39f-8096-84db-c590dd910d20" class="bulleted-list"><li style="list-style-type:circle">сравнить:<ul id="2aa568fa-e39f-8086-a082-c6a982eed92d" class="bulleted-list"><li style="list-style-type:square">средний рейтинг по item;</li></ul><ul id="2aa568fa-e39f-8033-b5c0-e5ffd684a465" class="bulleted-list"><li style="list-style-type:square">item-based CF;</li></ul><ul id="2aa568fa-e39f-8047-b079-e43836ad796e" class="bulleted-list"><li style="list-style-type:square">biased MF.</li></ul></li></ul></li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8093-b123-f860a1dabac4" class="">Домашка 4.2</h3><ol type="1" id="2aa568fa-e39f-80a9-9bf5-e5f5cb761bfb" class="numbered-list" start="1"><li>Сравнить 3 модели на rating-датасете:<ul id="2aa568fa-e39f-80ca-ba09-ff022c140745" class="bulleted-list"><li style="list-style-type:disc">item-based CF;</li></ul><ul id="2aa568fa-e39f-8074-8c3c-e596be2b1e94" class="bulleted-list"><li style="list-style-type:disc">Simple MF;</li></ul><ul id="2aa568fa-e39f-80b1-9b4e-c013863fc046" class="bulleted-list"><li style="list-style-type:disc">biased MF.</li></ul><p id="2aa568fa-e39f-8084-918b-f6d451d23df0" class="">По метрикам:</p><ul id="2aa568fa-e39f-80eb-8f02-d10be23111b9" class="bulleted-list"><li style="list-style-type:disc">RMSE;</li></ul><ul id="2aa568fa-e39f-8016-804d-c3be9e25cf88" class="bulleted-list"><li style="list-style-type:disc">Recall@K;</li></ul><ul id="2aa568fa-e39f-80b0-a6f0-e2adce7634cc" class="bulleted-list"><li style="list-style-type:disc">NDCG@K.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e2-81cd-e768f9a58ac5" class="numbered-list" start="2"><li>Написать вывод (0.5–1 страница):<ul id="2aa568fa-e39f-8091-99e1-c50deaa79569" class="bulleted-list"><li style="list-style-type:disc">какая модель лучше по RMSE;</li></ul><ul id="2aa568fa-e39f-80d8-9b76-eeb5b2eb34c7" class="bulleted-list"><li style="list-style-type:disc">всегда ли меньший RMSE даёт лучшие top-K?</li></ul><ul id="2aa568fa-e39f-8007-aab9-d10d825c2c8e" class="bulleted-list"><li style="list-style-type:disc">какую из моделей ты бы взял в реальный RecSys и почему.</li></ul></li></ol><hr id="2aa568fa-e39f-800e-840f-e5d3e4e7d811"/><h2 id="2aa568fa-e39f-8015-95b5-d8995bca36b6" class="">Урок 4.3. Implicit MF: ALS, confidence weights и top-K</h2><h3 id="2aa568fa-e39f-80e4-bdce-d1e113ddea1b" class="">Цели</h3><ul id="2aa568fa-e39f-8091-958f-c0babd28de18" class="bulleted-list"><li style="list-style-type:disc">Перейти на <strong>implicit feedback</strong> (основной реальный сценарий).</li></ul><ul id="2aa568fa-e39f-80b5-aa2e-eb5d24e532b7" class="bulleted-list"><li style="list-style-type:disc">Понять идею Hu–Koren–Volinsky implicit MF:<ul id="2aa568fa-e39f-80ae-8629-df5628b1da01" class="bulleted-list"><li style="list-style-type:circle"><code>r_ui</code> — бинарный интерес,</li></ul><ul id="2aa568fa-e39f-8080-864d-f352f8204595" class="bulleted-list"><li style="list-style-type:circle"><code>c_ui</code> — уверенность.</li></ul></li></ul><ul id="2aa568fa-e39f-801a-a344-d74584c6f822" class="bulleted-list"><li style="list-style-type:disc">Показать ALS (Alternating Least Squares) как эффективный способ оптимизации.</li></ul><h3 id="2aa568fa-e39f-8079-b3e1-e377236b6d72" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8021-8833-cdd5510c259d" class="numbered-list" start="1"><li><strong>Почему explicit мало где есть</strong><ul id="2aa568fa-e39f-80d3-b371-cfdd53788141" class="bulleted-list"><li style="list-style-type:disc">Рейтинги/оценки далеко не всегда присутствуют.</li></ul><ul id="2aa568fa-e39f-809d-abe2-d4de4b9adfa5" class="bulleted-list"><li style="list-style-type:disc">В логах чаще:<ul id="2aa568fa-e39f-802c-929f-c9b29a207dc6" class="bulleted-list"><li style="list-style-type:circle">просмотры, клики, корзины, покупки.</li></ul></li></ul><ul id="2aa568fa-e39f-808e-8f08-c47f463839c3" class="bulleted-list"><li style="list-style-type:disc">Нужно уметь работать только с implicit сигналами.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8031-b8b0-d2e5dca47ab6" class="numbered-list" start="2"><li><strong>Implicit MF: базовая идея</strong><ul id="2aa568fa-e39f-80d0-8c34-d0a5cad28964" class="bulleted-list"><li style="list-style-type:disc"><code>r_ui ∈ {0, 1}</code> — факт интереса (было взаимодействие или нет).</li></ul><ul id="2aa568fa-e39f-80d2-9eff-cecb412f4679" class="bulleted-list"><li style="list-style-type:disc"><code>c_ui ≥ 1</code> — уверенность:<ul id="2aa568fa-e39f-80d1-8f84-cb3ae592e618" class="bulleted-list"><li style="list-style-type:circle">чем больше действий, тем больше <code>c_ui</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-80c2-8c57-dadb1622395b" class="bulleted-list"><li style="list-style-type:disc">Например:<ul id="2aa568fa-e39f-80d3-b9c4-f6afd551f445" class="bulleted-list"><li style="list-style-type:circle"><code>r_ui = 1, если есть хотя бы одно действие</code>;</li></ul><ul id="2aa568fa-e39f-804d-8461-e367855f91ac" class="bulleted-list"><li style="list-style-type:circle"><code>c_ui = 1 + α * n_interactions</code>.</li></ul></li></ul><p id="2aa568fa-e39f-80df-bce4-fbd9c75bb3f1" class="">Потеря:</p><p id="2aa568fa-e39f-80b2-a22b-caa65ac6f07d" class="">[</p><p id="2aa568fa-e39f-80b3-a917-d1f105b1c19a" class="">L = \sum_{u,i} c_{u,i} (r_{u,i} - \langle p_u, q_i \rangle)^2 + λ(\sum_u |p_u|^2 + \sum_i |q_i|^2).</p><p id="2aa568fa-e39f-804b-99b0-d15dbe0b5d59" class="">]</p></li></ol><ol type="1" id="2aa568fa-e39f-80ad-a59e-db0683ffaceb" class="numbered-list" start="3"><li><strong>ALS (Alternating Least Squares)</strong><ul id="2aa568fa-e39f-80f2-ba81-f15860910efb" class="bulleted-list"><li style="list-style-type:disc">Фиксируем <code>Q</code>, оптимизируем <code>P</code>:<ul id="2aa568fa-e39f-80f1-ac79-cd41ee904d6b" class="bulleted-list"><li style="list-style-type:circle">для каждого пользователя решаем задачу линейной регрессии.</li></ul></li></ul><ul id="2aa568fa-e39f-807f-90f0-e8f169b63ea1" class="bulleted-list"><li style="list-style-type:disc">Фиксируем <code>P</code>, оптимизируем <code>Q</code>.</li></ul><ul id="2aa568fa-e39f-809b-af8f-cb8c0e0e9b35" class="bulleted-list"><li style="list-style-type:disc">Повторяем шаги до сходимости.</li></ul><ul id="2aa568fa-e39f-80a3-94c2-cad898a8d188" class="bulleted-list"><li style="list-style-type:disc">Плюсы:<ul id="2aa568fa-e39f-804d-87c8-df82103a7241" class="bulleted-list"><li style="list-style-type:circle">хорошо параллелится;</li></ul><ul id="2aa568fa-e39f-80d6-a15f-f6a35108a459" class="bulleted-list"><li style="list-style-type:circle">устойчиво для больших разреженных матриц.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ae-880c-e4548088aeca" class="numbered-list" start="4"><li><strong>Реализация (концептуально)</strong><ul id="2aa568fa-e39f-8092-80b5-e6e6957dfeca" class="bulleted-list"><li style="list-style-type:disc">На практике:<ul id="2aa568fa-e39f-8080-9642-d9742e82160c" class="bulleted-list"><li style="list-style-type:circle">можно использовать библиотеку (например, <code>implicit.als.AlternatingLeastSquares</code>);</li></ul><ul id="2aa568fa-e39f-8017-bc18-cb6f7683e065" class="bulleted-list"><li style="list-style-type:circle">но полезно разобрать формулы для одного пользователя.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ee-9ccd-d56d81129a5c" class="numbered-list" start="5"><li><strong>Top-K рекомендации с implicit ALS</strong><ul id="2aa568fa-e39f-80db-900d-f5436dec942b" class="bulleted-list"><li style="list-style-type:disc">После обучения:<ul id="2aa568fa-e39f-80f7-92cc-e084a1634905" class="bulleted-list"><li style="list-style-type:circle">у каждого пользователя есть <code>p_u</code>,</li></ul><ul id="2aa568fa-e39f-801f-9614-ecef8b547883" class="bulleted-list"><li style="list-style-type:circle">у каждого item — <code>q_i</code>.</li></ul></li></ul><ul id="2aa568fa-e39f-80d4-a413-c19cf043dd86" class="bulleted-list"><li style="list-style-type:disc">Рекомендации:<ul id="2aa568fa-e39f-80c0-9d59-f48eefb00792" class="bulleted-list"><li style="list-style-type:circle">считаем <code>score_i = p_u^T q_i</code> для всех (или большого подмножества) items;</li></ul><ul id="2aa568fa-e39f-8088-8886-f93f91d6b1a6" class="bulleted-list"><li style="list-style-type:circle">берём top-K;</li></ul><ul id="2aa568fa-e39f-809c-aaff-c5cd71f82742" class="bulleted-list"><li style="list-style-type:circle">считаем Recall@K / MAP@K / NDCG@K (модуль 2).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b4-b775-e98d909fd2ca" class="numbered-list" start="6"><li><strong>Тонкости</strong><ul id="2aa568fa-e39f-8032-b13f-d39afaae485b" class="bulleted-list"><li style="list-style-type:disc">Выбор α и преобразования событий → <code>c_ui</code>:<ul id="2aa568fa-e39f-80ea-ae10-c3cf4f22d5d8" class="bulleted-list"><li style="list-style-type:circle">разные действия (view/click/cart/purchase) можно по-разному взвешивать;</li></ul></li></ul><ul id="2aa568fa-e39f-8002-9f61-f1d06fd3eec3" class="bulleted-list"><li style="list-style-type:disc">Даже «0» (нет взаимодействия) участвует в сумме:<ul id="2aa568fa-e39f-80a0-8a6a-e80a6cfd52af" class="bulleted-list"><li style="list-style-type:circle">но с низкой уверенностью.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80c4-bfdb-d8b92e77cfad" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8023-a648-c6bf20a479af" class="bulleted-list"><li style="list-style-type:disc">На <strong>implicit-датасете</strong> курса:<ol type="1" id="2aa568fa-e39f-80bf-bbb6-fd070327abaa" class="numbered-list" start="1"><li>Собрать матрицу взаимодействий <code>R</code>:<ul id="2aa568fa-e39f-80cc-b010-d8dbc0f14170" class="bulleted-list"><li style="list-style-type:disc"><code>r_ui = 1</code>, если есть хотя бы одно действие целевого типа;</li></ul><ul id="2aa568fa-e39f-805f-9c29-c5cbcaccd021" class="bulleted-list"><li style="list-style-type:disc"><code>c_ui = 1 + α * n_interactions</code>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8068-a8b2-f4523ae38898" class="numbered-list" start="2"><li>Обучить implicit ALS (или свою реализацию на подвыборке).</li></ol><ol type="1" id="2aa568fa-e39f-806e-a177-cbea8144990d" class="numbered-list" start="3"><li>С помощью eval-фреймворка:<ul id="2aa568fa-e39f-800a-b743-ef4d8d6ba431" class="bulleted-list"><li style="list-style-type:disc">посчитать Recall@K, MAP@K, NDCG@K;</li></ul><ul id="2aa568fa-e39f-8054-8935-df738e14a9de" class="bulleted-list"><li style="list-style-type:disc">сравнить с:<ul id="2aa568fa-e39f-80f1-9355-f37711df51ba" class="bulleted-list"><li style="list-style-type:circle">популярностью,</li></ul><ul id="2aa568fa-e39f-8092-902e-f1a456d18ebf" class="bulleted-list"><li style="list-style-type:circle">co-occurrence,</li></ul><ul id="2aa568fa-e39f-80f2-a49e-d41735b97dba" class="bulleted-list"><li style="list-style-type:circle">item-based CF.</li></ul></li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8065-ad67-c750595acf42" class="">Домашка 4.3</h3><ol type="1" id="2aa568fa-e39f-803c-a288-ec20f457ddf4" class="numbered-list" start="1"><li>Поиграть с параметрами implicit ALS:<ul id="2aa568fa-e39f-801e-a4a5-d95afc921fed" class="bulleted-list"><li style="list-style-type:disc"><code>n_factors</code>, <code>regularization</code>, <code>α</code>, <code>n_iterations</code>.</li></ul><ul id="2aa568fa-e39f-806d-9d7b-dec807009103" class="bulleted-list"><li style="list-style-type:disc">Найти конфигурацию, дающую лучший Recall@K / NDCG@K.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-806f-bc62-d9f3979172f6" class="numbered-list" start="2"><li>Написать вывод:<ul id="2aa568fa-e39f-80e7-99af-f287af1767a3" class="bulleted-list"><li style="list-style-type:disc">как влияет увеличение <code>α</code> (больше веса событиям);</li></ul><ul id="2aa568fa-e39f-8097-a886-edecdcc2e249" class="bulleted-list"><li style="list-style-type:disc">важнее ли <code>n_factors</code> или <code>регуляризация</code> для твоего датасета;</li></ul><ul id="2aa568fa-e39f-80d5-b603-e8f27c812f99" class="bulleted-list"><li style="list-style-type:disc">стала ли модель менее/более склонной к популярности.</li></ul></li></ol><hr id="2aa568fa-e39f-808f-a042-f93a8533d8ef"/><h2 id="2aa568fa-e39f-80dd-8c0f-e7b5e68a9a1a" class="">Урок 4.4. BPR (pairwise MF), сравнение MF-моделей и гибриды</h2><h3 id="2aa568fa-e39f-80b1-b0fd-d2782c8aceec" class="">Цели</h3><ul id="2aa568fa-e39f-80f5-b5da-e8b666804742" class="bulleted-list"><li style="list-style-type:disc">Показать BPR как <strong>pairwise оптимизацию ранжирования</strong>, а не MSE.</li></ul><ul id="2aa568fa-e39f-80fc-b4ca-ed04aa807cfb" class="bulleted-list"><li style="list-style-type:disc">Реализовать <strong>простую BPR-модель</strong>.</li></ul><ul id="2aa568fa-e39f-80c5-a231-d68cf7acba46" class="bulleted-list"><li style="list-style-type:disc">Сравнить:<ul id="2aa568fa-e39f-801c-8d8b-f6b078b0e55c" class="bulleted-list"><li style="list-style-type:circle">explicit MF,</li></ul><ul id="2aa568fa-e39f-8053-bfed-c4e9e93e03db" class="bulleted-list"><li style="list-style-type:circle">implicit ALS,</li></ul><ul id="2aa568fa-e39f-80df-82ee-f250efbc879a" class="bulleted-list"><li style="list-style-type:circle">BPR<p id="2aa568fa-e39f-807d-97c7-db9386d4c399" class="">→ по top-K метрикам;</p></li></ul></li></ul><ul id="2aa568fa-e39f-80d9-8016-cf5c26828183" class="bulleted-list"><li style="list-style-type:disc">Показать, как <strong>комбинировать MF с бейзлайнами из модулей 1–3</strong>.</li></ul><h3 id="2aa568fa-e39f-80a6-bf64-cee7dd5903d2" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80b2-8aa7-ed6dd9de3d5b" class="numbered-list" start="1"><li><strong>Проблема MSE для ранжирования</strong><ul id="2aa568fa-e39f-803e-910d-c8a6eda31740" class="bulleted-list"><li style="list-style-type:disc">MF по MSE/ALS пытается приблизить значения <code>r_ui</code>.</li></ul><ul id="2aa568fa-e39f-80b3-bb43-e79af0a3868b" class="bulleted-list"><li style="list-style-type:disc">Нас же интересует <strong>порядок</strong>: чтобы <code>score(u, i⁺) &gt; score(u, j⁻)</code>.</li></ul><ul id="2aa568fa-e39f-807b-ba23-dfafe9ef2500" class="bulleted-list"><li style="list-style-type:disc">Отсюда idea pairwise learning to rank.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8027-bf89-f73ca7d64d1d" class="numbered-list" start="2"><li><strong>BPR: постановка</strong><ul id="2aa568fa-e39f-806a-b5c8-e20e4c746d9c" class="bulleted-list"><li style="list-style-type:disc">Для каждого <code>(u, i⁺, j⁻)</code>:<ul id="2aa568fa-e39f-80e9-b6b5-f0150539abf7" class="bulleted-list"><li style="list-style-type:circle"><code>i⁺</code> — item, с которым пользователь взаимодействовал;</li></ul><ul id="2aa568fa-e39f-8074-b8dd-e8270abfa06f" class="bulleted-list"><li style="list-style-type:circle"><code>j⁻</code> — item, с которым не взаимодействовал.</li></ul></li></ul><ul id="2aa568fa-e39f-805d-9f36-e2dba9e7ace2" class="bulleted-list"><li style="list-style-type:disc">Хотим:<ul id="2aa568fa-e39f-8033-a114-c98c5b8fafc6" class="bulleted-list"><li style="list-style-type:circle"><code>\hat{x}_{u,i⁺} &gt; \hat{x}_{u,j⁻}</code>.</li></ul></li></ul><p id="2aa568fa-e39f-8033-b17e-caeef153584d" class="">Оптимизируем:</p><p id="2aa568fa-e39f-80fe-a1af-f1b3e8edf87a" class="">[</p><p id="2aa568fa-e39f-806b-9443-e2c5ab601b3a" class="">L = - \sum_{(u,i,j)} \ln \sigma(\hat{x}<em>{u,i} - \hat{x}</em>{u,j}) + λ(|p_u|^2 + |q_i|^2 + |q_j|^2),</p><p id="2aa568fa-e39f-8000-a97f-e99ea7fec81a" class="">]</p><p id="2aa568fa-e39f-8050-b474-d132e98de4c9" class="">где:</p><ul id="2aa568fa-e39f-80e4-a034-e3d905b56508" class="bulleted-list"><li style="list-style-type:disc"><code>\hat{x}_{u,i} = \langle p_u, q_i \rangle</code> (можно добавить bias).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ed-b925-dc0c7491386e" class="numbered-list" start="3"><li><strong>Обучение BPR</strong><ul id="2aa568fa-e39f-80d9-b07f-e4af8e0ea05e" class="bulleted-list"><li style="list-style-type:disc">Сэмплинг триплетов <code>(u, i, j)</code>:<ul id="2aa568fa-e39f-808f-9e9d-c098f5f294f9" class="bulleted-list"><li style="list-style-type:circle">выбираем пользователя <code>u</code>;</li></ul><ul id="2aa568fa-e39f-80de-a57e-da8bcef9880d" class="bulleted-list"><li style="list-style-type:circle">выбираем <code>i</code>, с которым он взаимодействовал;</li></ul><ul id="2aa568fa-e39f-8069-b136-c74b500309dd" class="bulleted-list"><li style="list-style-type:circle">выбираем <code>j</code>, с которым не взаимодействовал (negative sampling).</li></ul></li></ul><ul id="2aa568fa-e39f-8051-be41-dee9558584f9" class="bulleted-list"><li style="list-style-type:disc">Обновления SGD:<ul id="2aa568fa-e39f-8087-b8fd-fca8d666f9f6" class="bulleted-list"><li style="list-style-type:circle">считаем <code>diff = x_ui - x_uj</code>;</li></ul><ul id="2aa568fa-e39f-8075-a0f5-d2a45863d617" class="bulleted-list"><li style="list-style-type:circle"><code>grad = σ(-diff)</code> и обновляем <code>p_u</code>, <code>q_i</code>, <code>q_j</code>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e5-92da-c28510b3c38b" class="numbered-list" start="4"><li><strong>Ранжирование и топ-K</strong><ul id="2aa568fa-e39f-8018-bea5-d4e37d1cf4d3" class="bulleted-list"><li style="list-style-type:disc">После обучения:<ul id="2aa568fa-e39f-80f8-bb21-daab5c9e4ec2" class="bulleted-list"><li style="list-style-type:circle">для пользователя <code>u</code> считаем <code>score</code> для всех items;</li></ul><ul id="2aa568fa-e39f-8082-93c1-c042d20b0e75" class="bulleted-list"><li style="list-style-type:circle">сортируем, берём top-K;</li></ul><ul id="2aa568fa-e39f-808c-9fe6-f6a2d2c07fdd" class="bulleted-list"><li style="list-style-type:circle">метрики те же: Recall@K, MAP@K, NDCG@K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-803e-bf29-dce5420f82b3" class="numbered-list" start="5"><li><strong>Сравнение MF-моделей</strong><ul id="2aa568fa-e39f-803c-84a5-dab1b7dec38c" class="bulleted-list"><li style="list-style-type:disc">Explicit MF (biased):<ul id="2aa568fa-e39f-80ec-96d1-eb3ed024d048" class="bulleted-list"><li style="list-style-type:circle">оптимизирует MSE, удобен для рейтингов;</li></ul></li></ul><ul id="2aa568fa-e39f-8064-aa00-dd430209786a" class="bulleted-list"><li style="list-style-type:disc">Implicit ALS:<ul id="2aa568fa-e39f-8048-b437-e539e92a0e15" class="bulleted-list"><li style="list-style-type:circle">оптимизирует взвешенный MSE по implicit сигналам;</li></ul><ul id="2aa568fa-e39f-80a5-8542-f266d58de681" class="bulleted-list"><li style="list-style-type:circle">хорошо для больших логов;</li></ul></li></ul><ul id="2aa568fa-e39f-8063-b2ba-ca4f5cc94956" class="bulleted-list"><li style="list-style-type:disc">BPR:<ul id="2aa568fa-e39f-80ed-a936-c6a68b7b7a93" class="bulleted-list"><li style="list-style-type:circle">оптимизирует <strong>ranking напрямую</strong>;</li></ul><ul id="2aa568fa-e39f-8003-96fb-f419680d2a65" class="bulleted-list"><li style="list-style-type:circle">часто даёт лучший top-K, особенно на implicit данных.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ef-849c-e6e0631828ad" class="numbered-list" start="6"><li><strong>Гибриды с предыдущими модулями</strong><ul id="2aa568fa-e39f-8050-8194-f8d7b490ed02" class="bulleted-list"><li style="list-style-type:disc">MF как <strong>ranker</strong>;</li></ul><ul id="2aa568fa-e39f-80f0-b39d-cc7a23e45b6c" class="bulleted-list"><li style="list-style-type:disc">popularity / co-occurrence / CF как <strong>candidate generators</strong>:<ul id="2aa568fa-e39f-807d-a899-efdb84276147" class="bulleted-list"><li style="list-style-type:circle">generate candidates → score them через MF → сортируем;</li></ul></li></ul><ul id="2aa568fa-e39f-8005-a162-c092da153a26" class="bulleted-list"><li style="list-style-type:disc">можно ансамблировать:<ul id="2aa568fa-e39f-80ec-9825-e68ca9214389" class="bulleted-list"><li style="list-style-type:circle"><code>final_score = w_MF * score_MF + w_pop * score_pop + w_cooc * score_cooc</code>.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80a8-980c-de733d75639e" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-805c-ad7d-e8f0aa9e5bc1" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-80e4-bada-f2305c2897bc" class="numbered-list" start="1"><li>Реализовать BPR на implicit-датасете:<ul id="2aa568fa-e39f-8025-a8e7-e53c7b1f53f5" class="bulleted-list"><li style="list-style-type:disc">без сверх-оптимизации, на подвыборке.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8074-9b56-e83164bf4fcf" class="numbered-list" start="2"><li>Обучить BPR-модель:<ul id="2aa568fa-e39f-8020-a3d8-fc8931f5854e" class="bulleted-list"><li style="list-style-type:disc">проверить, как меняется Recall@K / NDCG@K с количеством эпох.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b7-ab1f-f86b2531166e" class="numbered-list" start="3"><li>Сравнить:<ul id="2aa568fa-e39f-804b-9801-ea1a58d6b890" class="bulleted-list"><li style="list-style-type:disc">implicit ALS vs BPR vs popularity/co-occurrence.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80bb-b963-fc1fa3eb6dd5" class="numbered-list" start="4"><li>Реализовать простой гибрид:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80e9-9026-da744e04946a" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">final_score = w_mf * score_mf + w_pop * score_pop
+</code></pre><ul id="2aa568fa-e39f-805e-800d-c921b35b8acf" class="bulleted-list"><li style="list-style-type:disc">где <code>score_pop</code> = нормированная популярность из модуля 1.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-800c-b7b5-c6acaa7e0c7c" class="">Домашка 4.4</h3><ol type="1" id="2aa568fa-e39f-808b-b4bb-e4d530802498" class="numbered-list" start="1"><li>Табличное сравнение:<table id="2aa568fa-e39f-806c-837d-f5995f86cc92" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-8041-b406-d60906676c47"><th id="q@i:" class="simple-table-header-color simple-table-header">Модель</th><th id="}eVI" class="simple-table-header-color simple-table-header">Recall@K</th><th id="GCq=" class="simple-table-header-color simple-table-header">MAP@K</th><th id="\WG=" class="simple-table-header-color simple-table-header">NDCG@K</th><th id="kGP\" class="simple-table-header-color simple-table-header">Комментарий</th></tr></thead><tbody><tr id="2aa568fa-e39f-8036-802e-ca8ebfd85a02"><td id="q@i:" class="">Popularity</td><td id="}eVI" class=""></td><td id="GCq=" class=""></td><td id="\WG=" class=""></td><td id="kGP\" class=""></td></tr><tr id="2aa568fa-e39f-805e-acc8-f1d50d706c23"><td id="q@i:" class="">Co-occurrence</td><td id="}eVI" class=""></td><td id="GCq=" class=""></td><td id="\WG=" class=""></td><td id="kGP\" class=""></td></tr><tr id="2aa568fa-e39f-8011-ad14-f9ec710b26e9"><td id="q@i:" class="">Item-based CF</td><td id="}eVI" class=""></td><td id="GCq=" class=""></td><td id="\WG=" class=""></td><td id="kGP\" class=""></td></tr><tr id="2aa568fa-e39f-80ae-8899-c1ca84967dfa"><td id="q@i:" class="">Implicit ALS MF</td><td id="}eVI" class=""></td><td id="GCq=" class=""></td><td id="\WG=" class=""></td><td id="kGP\" class=""></td></tr><tr id="2aa568fa-e39f-8085-91df-c6376b1a5774"><td id="q@i:" class="">BPR MF</td><td id="}eVI" class=""></td><td id="GCq=" class=""></td><td id="\WG=" class=""></td><td id="kGP\" class=""></td></tr><tr id="2aa568fa-e39f-8057-ad68-d66f952ed3c1"><td id="q@i:" class="">Hybrid (MF+pop)</td><td id="}eVI" class=""></td><td id="GCq=" class=""></td><td id="\WG=" class=""></td><td id="kGP\" class=""></td></tr></tbody></table></li></ol><ol type="1" id="2aa568fa-e39f-80af-b7f5-f97697526d77" class="numbered-list" start="2"><li>Краткий отчёт:<ul id="2aa568fa-e39f-8045-b39b-e8323a44781e" class="bulleted-list"><li style="list-style-type:disc">где MF даёт максимальный выигрыш;</li></ul><ul id="2aa568fa-e39f-80b0-8668-cb53396f3ffc" class="bulleted-list"><li style="list-style-type:disc">где простые модели почти не хуже;</li></ul><ul id="2aa568fa-e39f-8017-a933-cde30c0221e5" class="bulleted-list"><li style="list-style-type:disc">в каких сценариях ты бы предпочёл MF, а где — CF/graph/sequence.</li></ul></li></ol><hr id="2aa568fa-e39f-8022-b42a-d16b0a8f1c95"/><h2 id="2aa568fa-e39f-8002-9717-eb49eb4d48d0" class="">Мини-проект по модулю 4</h2><p id="2aa568fa-e39f-80ac-9f86-cb9569216494" class=""><strong>Название:</strong></p><p id="2aa568fa-e39f-80c0-83fb-e8dc4d842206" class="">«MF-лаборатория: ALS и BPR против классической CF»</p><p id="2aa568fa-e39f-8029-bbf5-c62f695fa5c8" class=""><strong>Задачи:</strong></p><ol type="1" id="2aa568fa-e39f-80c4-ba50-fc3600e39688" class="numbered-list" start="1"><li>Выбрать <strong>один implicit-датасет</strong> (желательно тот же, что в модулях 1–3).</li></ol><ol type="1" id="2aa568fa-e39f-8064-b65a-eb5507470412" class="numbered-list" start="2"><li>Реализовать и обучить:<ul id="2aa568fa-e39f-80f5-98fa-c6861761ede8" class="bulleted-list"><li style="list-style-type:disc">implicit ALS MF;</li></ul><ul id="2aa568fa-e39f-806c-9710-c46c70269d1e" class="bulleted-list"><li style="list-style-type:disc">BPR MF.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-804c-b9fd-de81e36675ef" class="numbered-list" start="3"><li>Интегрировать их в eval-фреймворк:<ul id="2aa568fa-e39f-80c6-b420-d61b8d87cfa3" class="bulleted-list"><li style="list-style-type:disc">использовать те же split’ы и метрики (Recall@K, MAP@K, NDCG@K).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801d-ad3b-eeb200187834" class="numbered-list" start="4"><li>Сравнить:<ul id="2aa568fa-e39f-8036-8d78-ecda337a9090" class="bulleted-list"><li style="list-style-type:disc">с популярностью,</li></ul><ul id="2aa568fa-e39f-80ac-b3a0-e653ad73556c" class="bulleted-list"><li style="list-style-type:disc">co-occurrence,</li></ul><ul id="2aa568fa-e39f-806c-8d7d-ce47fccf1a74" class="bulleted-list"><li style="list-style-type:disc">item-based CF.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8009-9bdd-dae887497fae" class="numbered-list" start="5"><li>Сделать отчёт (как для статьи / ноутбука Kaggle):<ul id="2aa568fa-e39f-8027-8fc3-e7217bfa13d9" class="bulleted-list"><li style="list-style-type:disc">постановка задачи и описание датасета;</li></ul><ul id="2aa568fa-e39f-801d-91e2-f44399c749c3" class="bulleted-list"><li style="list-style-type:disc">описание моделей;</li></ul><ul id="2aa568fa-e39f-807e-bd8f-fd1ad725c083" class="bulleted-list"><li style="list-style-type:disc">таблица результатов;</li></ul><ul id="2aa568fa-e39f-80ff-8363-d45bd0b3f40c" class="bulleted-list"><li style="list-style-type:disc">анализ: где MF выстреливает, где нет;</li></ul><ul id="2aa568fa-e39f-80f2-91cf-e69a2b2db228" class="bulleted-list"><li style="list-style-type:disc">мысли «что дальше» (подводка к sequence/graph моделям в следующих модулях).</li></ul></li></ol><hr id="2aa568fa-e39f-805d-8b51-e140b95e8ce7"/><p id="2aa568fa-e39f-80f0-96fe-c136e70e2bb4" class="">Если хочешь, дальше могу:</p><ul id="2aa568fa-e39f-806c-84ed-eddb6b2b05a5" class="bulleted-list"><li style="list-style-type:disc">либо расписать <strong>Модуль 5 (content-based и гибридные модели)</strong> так же детально,</li></ul><ul id="2aa568fa-e39f-8042-a315-f4839ac5f113" class="bulleted-list"><li style="list-style-type:disc">либо помочь тебе собрать структуру <strong>репозитория курса</strong>: как разнести модули по папкам, как оформить <code>Recommender</code>интерфейс, <code>eval.py</code>, <code>config</code> и т.д., чтобы это уже выглядело как «боевой» курс.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

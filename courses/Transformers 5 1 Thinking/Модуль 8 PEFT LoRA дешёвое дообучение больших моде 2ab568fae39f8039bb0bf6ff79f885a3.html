@@ -1,0 +1,1041 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 8. PEFT/LoRA: дешёвое дообучение больших моделей</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-8039-bb0b-f6ff79f885a3" class="page sans"><header><h1 class="page-title">Модуль 8. PEFT/LoRA: дешёвое дообучение больших моделей</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-809e-8d33-d0111088c9c2" class="">Отлично, вот мы и добрались до “магии для бедных GPU” — PEFT и LoRA 🤘</p><p id="2ab568fa-e39f-8020-8ded-d5b57f6aee81" class="">Модуль 8 — это про то, как <strong>тонко дообучать большие модели дёшево</strong>, без полного fine-tuning на миллиардах параметров.</p><hr id="2ab568fa-e39f-80f0-a6ca-f853dfd144ac"/><p id="2ab568fa-e39f-80f7-8f40-fb5a16d3a0e9" class=""><strong>Глобальный кейс:</strong></p><blockquote id="2ab568fa-e39f-808d-b3ce-e3b4f21b4e7a" class="">У нас уже есть:<ul id="2ab568fa-e39f-805d-9e60-c00c3d02fa12" class="bulleted-list"><li style="list-style-type:disc">саппорт-бот на Causal LM (М6),</li></ul><ul id="2ab568fa-e39f-8060-bf45-d17a726223f9" class="bulleted-list"><li style="list-style-type:disc">суммаризатор диалогов (М5),</li></ul><ul id="2ab568fa-e39f-80bf-bab0-c66a5bdf87df" class="bulleted-list"><li style="list-style-type:disc">прод-инференс (М7).</li></ul><p id="2ab568fa-e39f-80a5-90b0-c62bf441e769" class="">Теперь хотим:</p><ul id="2ab568fa-e39f-80d9-af57-f9c573306a68" class="bulleted-list"><li style="list-style-type:disc">взять модель покрупнее (или ту же),</li></ul><ul id="2ab568fa-e39f-8082-9a7b-d2585cc1c07b" class="bulleted-list"><li style="list-style-type:disc">дообучить её <strong>только под наш стиль саппорта / наши диалоги</strong>,</li></ul><ul id="2ab568fa-e39f-80ba-b895-fe74aee37162" class="bulleted-list"><li style="list-style-type:disc">сделать это так, чтобы:<ul id="2ab568fa-e39f-80c4-8bf0-ed524127f46b" class="bulleted-list"><li style="list-style-type:circle">влезть на одну GPU,</li></ul><ul id="2ab568fa-e39f-80d8-8f72-e4f917392caf" class="bulleted-list"><li style="list-style-type:circle">быстро обучаться,</li></ul><ul id="2ab568fa-e39f-80a0-a741-d7f651a3aecc" class="bulleted-list"><li style="list-style-type:circle">можно было держать несколько “адаптеров” под разные проекты.</li></ul></li></ul></blockquote><p id="2ab568fa-e39f-8094-b177-f1714a0e76b3" class="">Будем использовать <code>peft</code> (Parameter-Efficient Fine-Tuning) и конкретно <strong>LoRA</strong>.</p><p id="2ab568fa-e39f-804c-9049-de96609f5d55" class="">Сделаем 4 урока:</p><ol type="1" id="2ab568fa-e39f-809d-88be-eb20a1b9be8e" class="numbered-list" start="1"><li>8.1 — Теория PEFT/LoRA + обзор, в чём профит.</li></ol><ol type="1" id="2ab568fa-e39f-808f-b050-c45b92eb5d1a" class="numbered-list" start="2"><li>8.2 — LoRA для Causal LM (наш саппорт-бот) + Trainer.<figure id="2ab568fa-e39f-8064-86a3-de0b4640217d" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%208%20PEFT%20LoRA%20%D0%B4%D0%B5%D1%88%D1%91%D0%B2%D0%BE%D0%B5%20%D0%B4%D0%BE%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B8%D1%85%20%D0%BC%D0%BE%D0%B4%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%208%202%20LoRA%20%D0%B4%D0%BB%D1%8F%20Causal%20LM%20(%D1%81%D0%B0%D0%BF%D0%BF%D0%BE%D1%80%D1%82-%D0%B1%D0%BE%D1%82)%202ab568fae39f806486a3de0b4640217d.html">Урок 8.2. LoRA для Causal LM (саппорт-бот)</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-805f-8956-ecf721904f5b" class="numbered-list" start="3"><li>8.3 — LoRA для Seq2Seq (суммаризатор диалогов).<figure id="2ab568fa-e39f-80c0-9a8e-de0247bd1d03" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%208%20PEFT%20LoRA%20%D0%B4%D0%B5%D1%88%D1%91%D0%B2%D0%BE%D0%B5%20%D0%B4%D0%BE%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B8%D1%85%20%D0%BC%D0%BE%D0%B4%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%208%203%20LoRA%20%D0%B4%D0%BB%D1%8F%20Seq2Seq%20(%D1%81%D1%83%D0%BC%D0%BC%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%82%D0%BE%D1%80%20%D0%B4%D0%B8%D0%B0%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2)%202ab568fae39f80c09a8ede0247bd1d03.html">Урок 8.3. LoRA для Seq2Seq (суммаризатор диалогов)</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-80e8-8492-cffdaf204182" class="numbered-list" start="4"><li>8.4 — Управление адаптерами: сохранение, загрузка, merge, несколько задач.</li></ol><figure id="2ab568fa-e39f-80d0-a9b6-d5a172124756" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%208%20PEFT%20LoRA%20%D0%B4%D0%B5%D1%88%D1%91%D0%B2%D0%BE%D0%B5%20%D0%B4%D0%BE%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B8%D1%85%20%D0%BC%D0%BE%D0%B4%D0%B5/%D0%A3%D1%80%D0%BE%D0%BA%208%204%20%D0%A3%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B0%D0%B4%D0%B0%D0%BF%D1%82%D0%B5%D1%80%D0%B0%D0%BC%D0%B8%20LoRA%20%D0%BD%D0%B5%D1%81%D0%BA%D0%BE%D0%BB%D1%8C%D0%BA%D0%BE%20%D0%B7%D0%B0%D0%B4%D0%B0%202ab568fae39f80d0a9b6d5a172124756.html">Урок 8.4. Управление адаптерами LoRA: несколько задач, merge, структура проекта</a></figure><hr id="2ab568fa-e39f-80c9-a514-ece46a22fbb4"/><h2 id="2ab568fa-e39f-80c5-a3f8-f2e460071ed5" class="">Урок 8.1. Что такое PEFT и LoRA, и зачем оно нужно</h2><p id="2ab568fa-e39f-803b-848c-f8b169e95182" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80e6-920b-d00086d9fa48" class="">Дать интуитивное понимание:</p><ul id="2ab568fa-e39f-8079-92c7-e097d414dbf9" class="bulleted-list"><li style="list-style-type:disc">почему “полный fine-tuning” — дорого,</li></ul><ul id="2ab568fa-e39f-805f-a6bb-f7f361cfab67" class="bulleted-list"><li style="list-style-type:disc">как работает LoRA: <em>“мы не трогаем все веса, а добавляем маленькие матрицы”</em>,</li></ul><ul id="2ab568fa-e39f-80c3-a33e-e5acb1be4d89" class="bulleted-list"><li style="list-style-type:disc">какую схему мы будем использовать в следующих уроках.</li></ul><h3 id="2ab568fa-e39f-803e-a78c-e4981a333950" class="">8.1.1. Проблема полного fine-tuning</h3><p id="2ab568fa-e39f-8094-afdc-e978ff2c00f7" class="">Коротко:</p><ul id="2ab568fa-e39f-80ca-a7ff-f2de10c92ed0" class="bulleted-list"><li style="list-style-type:disc">Большой LLM: 7B, 13B, 70B параметров.</li></ul><ul id="2ab568fa-e39f-808b-8b12-c16eab6e7b51" class="bulleted-list"><li style="list-style-type:disc">Полный fine-tuning:<ul id="2ab568fa-e39f-803b-ba22-ed8548192b09" class="bulleted-list"><li style="list-style-type:circle">все веса становятся trainable,</li></ul><ul id="2ab568fa-e39f-8033-a7c5-e28f18deb059" class="bulleted-list"><li style="list-style-type:circle">память: модель + градиенты + оптимизатор → x3–4 по параметрам,</li></ul><ul id="2ab568fa-e39f-80de-8fda-d097d2e5d16a" class="bulleted-list"><li style="list-style-type:circle">нужен <strong>мощный GPU-парк</strong>.</li></ul></li></ul><p id="2ab568fa-e39f-80d1-847e-e178051486f8" class="">Для наших реальных задач (саппорт-бот, суммаризация, тикеты):</p><ul id="2ab568fa-e39f-8080-907a-dd51d45342ac" class="bulleted-list"><li style="list-style-type:disc">мы хотим просто “подогнуть стиль и знания” модели,</li></ul><ul id="2ab568fa-e39f-80ea-a22a-dedb199bf404" class="bulleted-list"><li style="list-style-type:disc">нет смысла менять все 7B параметров.</li></ul><h3 id="2ab568fa-e39f-804b-8beb-dde185f37e6e" class="">8.1.2. Идея PEFT</h3><p id="2ab568fa-e39f-8093-9601-dc7d20765a22" class="">PEFT = Parameter-Efficient Fine-Tuning:</p><ul id="2ab568fa-e39f-807d-9e6e-ddb5bad74c2f" class="bulleted-list"><li style="list-style-type:disc">мы <strong>замораживаем базовую модель</strong>,</li></ul><ul id="2ab568fa-e39f-8077-ba10-d15b76bedcea" class="bulleted-list"><li style="list-style-type:disc">добавляем маленькие &quot;адаптеры&quot; / LoRA-слои,</li></ul><ul id="2ab568fa-e39f-80c7-834c-ef81eb150353" class="bulleted-list"><li style="list-style-type:disc">обучаем только их.</li></ul><p id="2ab568fa-e39f-804a-81b6-f2b2517b4fd3" class="">Типы PEFT-методов:</p><ul id="2ab568fa-e39f-804e-923c-d33b11c4cb85" class="bulleted-list"><li style="list-style-type:disc">LoRA (Low-Rank Adapters),</li></ul><ul id="2ab568fa-e39f-80bd-9273-d014f3680a1a" class="bulleted-list"><li style="list-style-type:disc">Prefix-tuning / P-tuning,</li></ul><ul id="2ab568fa-e39f-80e9-85dc-e9734d8d17fa" class="bulleted-list"><li style="list-style-type:disc">Prompt-tuning,</li></ul><ul id="2ab568fa-e39f-8027-b242-ccf0c9c0db31" class="bulleted-list"><li style="list-style-type:disc">AdaLoRA, IA³ и т.д.</li></ul><p id="2ab568fa-e39f-805f-a54a-e6ce1d75b53d" class="">В этом курсе акцент на <strong>LoRA</strong>, как наиболее практичный и распространённый.</p><h3 id="2ab568fa-e39f-8083-909d-f964e6efed9d" class="">8.1.3. Интуиция LoRA</h3><p id="2ab568fa-e39f-8097-97a1-e2ddb98e116b" class="">Внутри трансформера куча матриц (например, <code>W_q</code>, <code>W_k</code>, <code>W_v</code>, <code>W_o</code> для self-attention).</p><p id="2ab568fa-e39f-8013-85b9-f95bf65013ac" class="">Обычно они, скажем, <code>d x d</code> (типа 4096x4096).</p><p id="2ab568fa-e39f-80ac-9048-e56d76d605d2" class="">LoRA говорит:</p><blockquote id="2ab568fa-e39f-8039-b075-fa627eeea518" class="">Вместо того чтобы дообучать W, мы оставим её fixed,<p id="2ab568fa-e39f-807e-835c-d9512d171403" class="">и добавим маленькое приращение <code>ΔW = A @ B</code>, где:</p><ul id="2ab568fa-e39f-8064-ad0c-e050800eb8ca" class="bulleted-list"><li style="list-style-type:disc"><code>A</code> — <code>d x r</code>,</li></ul><ul id="2ab568fa-e39f-80f0-81b3-f6dc3fdd6fb2" class="bulleted-list"><li style="list-style-type:disc"><code>B</code> — <code>r x d</code>,</li></ul><ul id="2ab568fa-e39f-80f0-9a91-e4ac276dafee" class="bulleted-list"><li style="list-style-type:disc"><code>r</code> — маленький ранг (например, 8, 16).</li></ul></blockquote><p id="2ab568fa-e39f-8049-9106-fbfa88fb8530" class="">Итого:</p><ul id="2ab568fa-e39f-801a-91d2-cba7a47bb2d9" class="bulleted-list"><li style="list-style-type:disc">Вместо <code>d*d</code> обучаемых параметров → <code>2*d*r</code>,</li></ul><ul id="2ab568fa-e39f-80a8-b24b-deb0aa90a9e1" class="bulleted-list"><li style="list-style-type:disc">Для больших <code>d</code> и маленького <code>r</code> это <strong>сильно меньше</strong>.</li></ul><p id="2ab568fa-e39f-806a-ac46-c354155fa4b4" class="">В проде:</p><ul id="2ab568fa-e39f-8023-844f-d7d8e539d324" class="bulleted-list"><li style="list-style-type:disc">Базовая модель + LoRA веса,</li></ul><ul id="2ab568fa-e39f-80a7-ab4d-cce4c23ff881" class="bulleted-list"><li style="list-style-type:disc">Или можно “слить” (<code>merge</code>) LoRA в базовую матрицу.</li></ul><h3 id="2ab568fa-e39f-8006-9756-ddb02d652238" class="">8.1.4. Куда вешается LoRA</h3><p id="2ab568fa-e39f-80ee-b964-e6d178a4d24a" class="">Обычно добавляют LoRA к:</p><ul id="2ab568fa-e39f-806f-87cf-ec19ccac3ee9" class="bulleted-list"><li style="list-style-type:disc">слоям внимания:<ul id="2ab568fa-e39f-80b0-aa81-da4ff0087d8c" class="bulleted-list"><li style="list-style-type:circle"><code>query</code>, <code>key</code>, <code>value</code>, <code>output</code> (<code>q_proj</code>, <code>k_proj</code>, <code>v_proj</code>, <code>o_proj</code>, <code>Wq</code>, <code>Wv</code> и т.д.);</li></ul></li></ul><ul id="2ab568fa-e39f-8040-b530-cb574405ecb0" class="bulleted-list"><li style="list-style-type:disc">иногда к <code>dense</code> в FFN.</li></ul><p id="2ab568fa-e39f-8050-9f64-cdf77b18ae76" class="">В <code>peft</code> мы задаём <code>target_modules</code> — список имён слоёв, к которым надо прикрутить LoRA.</p><p id="2ab568fa-e39f-8090-9502-c1f111a3b91b" class="">Например, для LLaMA-подобных:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803e-b8d3-e51cc99dcb72" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">target_modules = [&quot;q_proj&quot;, &quot;v_proj&quot;]
+</code></pre><hr id="2ab568fa-e39f-8091-b728-c45d3c8fd750"/><h3 id="2ab568fa-e39f-806e-8aea-fa27d4062f24" class="">8.1.5. Домашка 8.1</h3><p id="2ab568fa-e39f-80d7-9e38-c4077000419f" class="">Теоретическая, без кода:</p><ol type="1" id="2ab568fa-e39f-8062-a10b-d69a4690d20b" class="numbered-list" start="1"><li>Написать небольшой конспект своими словами:<ul id="2ab568fa-e39f-80a2-ab57-e99cc6f57834" class="bulleted-list"><li style="list-style-type:disc">чем отличается полный fine-tuning от LoRA,</li></ul><ul id="2ab568fa-e39f-80ff-8aa3-f1340a03f143" class="bulleted-list"><li style="list-style-type:disc">что такое <code>r</code> (ранг), <code>lora_alpha</code>, <code>lora_dropout</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8077-83ba-e43d5ce25d04" class="numbered-list" start="2"><li>Взять любую LLM-архитектуру (например, LLaMA/BERT) и:<ul id="2ab568fa-e39f-80b9-93ca-f96c83dbcd83" class="bulleted-list"><li style="list-style-type:disc">отметить, какие слои/матрицы логично “лорать” (attention, FFN),</li></ul><ul id="2ab568fa-e39f-8032-8751-e8cfd916cf76" class="bulleted-list"><li style="list-style-type:disc">какие слои точно <strong>не нужно</strong> дообучать (embeddings, нормализации — спорно, но для курса можно так).</li></ul></li></ol><hr id="2ab568fa-e39f-80b7-9e45-eaec949c4d10"/><h2 id="2ab568fa-e39f-80fa-9629-df12ba49b9d5" class="">Урок 8.2. LoRA для Causal LM (наш саппорт-бот)</h2><p id="2ab568fa-e39f-80b5-ad35-dcd8143cbc9b" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-808b-9a91-e2f2b3668a7d" class="">Реально дообучить каузальную модель:</p><ul id="2ab568fa-e39f-80a5-8dc6-e50efe34137d" class="bulleted-list"><li style="list-style-type:disc">взять Causal LM (в идеале уже 4bit/8bit, как в М7),</li></ul><ul id="2ab568fa-e39f-8026-a553-f04647fe1736" class="bulleted-list"><li style="list-style-type:disc">навесить на неё LoRA через <code>peft</code>,</li></ul><ul id="2ab568fa-e39f-80cc-a4de-efb7a87b76fd" class="bulleted-list"><li style="list-style-type:disc">обучить её на <code>support_dialogs.jsonl</code> (как в М6),</li></ul><ul id="2ab568fa-e39f-80f8-9f3c-ef401daf9eeb" class="bulleted-list"><li style="list-style-type:disc">получить адаптер, который добавляет “наш стиль саппорта”.</li></ul><h3 id="2ab568fa-e39f-80b1-a450-cb8228daa43e" class="">8.2.1. Setup: зависимости</h3><p id="2ab568fa-e39f-80f0-82bf-fa6d92b9b94c" class="">Нужно иметь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809d-9666-d04cfbc2d3b6" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install peft bitsandbytes accelerate
+</code></pre><p id="2ab568fa-e39f-80ad-b7eb-f7f0d9941d57" class="">(В курсе можно просто указать, ученики сами поставят.)</p><h3 id="2ab568fa-e39f-808c-ae2f-c1c41ebf09dc" class="">8.2.2. Базовая модель + квантование (по желанию)</h3><p id="2ab568fa-e39f-8000-bfbb-c3e310f4bdc8" class="">Пример с маленьким <code>gpt2</code> (для демонстрации; в реале — что-то покрупнее):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-805c-809b-d6aabcc04f82" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+
+model_name = &quot;gpt2&quot;  # или своя более крупная модель
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+
+# 4-bit квантование (для больших моделей)
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.bfloat16,  # или torch.float16
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type=&quot;nf4&quot;,
+)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    quantization_config=bnb_config,
+    device_map=&quot;auto&quot;,
+)
+</code></pre><p id="2ab568fa-e39f-80f6-8e3b-e54ca8891ff0" class="">Для совсем маленькой модели квантование не обязательно, но полезно показать.</p><h3 id="2ab568fa-e39f-8089-ad9b-cb956ea88fd4" class="">8.2.3. LoRA-конфиг и обёртка модели</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-803e-8f95-e51da69007e2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import LoraConfig, get_peft_model, TaskType, prepare_model_for_kbit_training
+
+# Если модель в 4bit/8bit, нужно подготовить её к обучению
+model = prepare_model_for_kbit_training(model)
+
+lora_config = LoraConfig(
+    task_type=TaskType.CAUSAL_LM,
+    r=8,
+    lora_alpha=16,
+    lora_dropout=0.05,
+    target_modules=[&quot;c_attn&quot;],  # для GPT2 (слой attention), для других - свои названия
+)
+
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+</code></pre><p id="2ab568fa-e39f-80ec-b3b6-e56e5441d7eb" class="">Вывод покажет, что trainable — только <em>маленький процент</em> от всех параметров.</p><p id="2ab568fa-e39f-80a6-a6ee-c70e33a4bdd2" class="">Для других архитектур:</p><ul id="2ab568fa-e39f-8058-9b26-cc2fc8e675d0" class="bulleted-list"><li style="list-style-type:disc">LLaMA-подобные: <code>[&quot;q_proj&quot;, &quot;v_proj&quot;]</code>,</li></ul><ul id="2ab568fa-e39f-80c2-a0e4-ce52a091feca" class="bulleted-list"><li style="list-style-type:disc">BLOOM: <code>[&quot;query_key_value&quot;]</code>, etc.</li></ul><h3 id="2ab568fa-e39f-808e-a2eb-e0503fe4a8b2" class="">8.2.4. Датасет диалогов (как в М6)</h3><p id="2ab568fa-e39f-8019-9943-c73ab7077409" class="">Предположим, формат <code>support_dialogs.jsonl</code> такой:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809f-970e-f52f4d7279e4" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{&quot;messages&quot;: [
+  {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful support assistant.&quot;},
+  {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, the app crashes when I open the gallery.&quot;},
+  {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Sorry to hear that! Could you tell me your device and OS version?&quot;},
+  ...
+]}
+</code></pre><p id="2ab568fa-e39f-803b-9223-c02721baab6d" class="">Загружаем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8004-a7b1-efe41df5fa4c" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from datasets import load_dataset
+
+raw = load_dataset(&quot;json&quot;, data_files=&quot;support_dialogs.jsonl&quot;)[&quot;train&quot;]
+print(raw[0])
+</code></pre><p id="2ab568fa-e39f-802c-98fd-c27a408cc6b9" class="">Функция, которая превращает messages → один текст:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808e-93b9-d7f3f6f19852" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def messages_to_text(messages):
+    lines = []
+    for msg in messages:
+        role = msg[&quot;role&quot;]
+        content = msg[&quot;content&quot;].strip()
+        if role == &quot;system&quot;:
+            lines.append(f&quot;System: {content}&quot;)
+        elif role == &quot;user&quot;:
+            lines.append(f&quot;User: {content}&quot;)
+        else:
+            lines.append(f&quot;Support: {content}&quot;)
+    return &quot;\n&quot;.join(lines)
+</code></pre><h3 id="2ab568fa-e39f-809d-aa93-d4ef2ddc1a8a" class="">8.2.5. Токенизация и DataCollator</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8089-84e0-ecfdfbb8ef37" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import DataCollatorForLanguageModeling
+
+max_length = 512
+
+def preprocess_function(batch):
+    texts = [messages_to_text(m) for m in batch[&quot;messages&quot;]]
+    tokenized = tokenizer(
+        texts,
+        truncation=True,
+        max_length=max_length,
+    )
+    return tokenized
+
+tokenized_dataset = raw.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=raw.column_names,
+)
+
+split = tokenized_dataset.train_test_split(test_size=0.1, seed=42)
+train_ds = split[&quot;train&quot;]
+eval_ds = split[&quot;test&quot;]
+
+data_collator = DataCollatorForLanguageModeling(
+    tokenizer=tokenizer,
+    mlm=False,
+)
+</code></pre><h3 id="2ab568fa-e39f-807b-86be-cb2ca126a87b" class="">8.2.6. TrainingArguments + Trainer с LoRA-моделью</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d6-b07e-fd260d5deddd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import TrainingArguments, Trainer
+
+output_dir = &quot;checkpoints/support_gpt2_lora&quot;
+
+training_args = TrainingArguments(
+    output_dir=output_dir,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
+    gradient_accumulation_steps=4,   # эффективный batch = 8
+    num_train_epochs=3,
+    learning_rate=2e-4,              # для LoRA можно ставить lr повыше, чем для full FT
+    fp16=True,                       # если GPU позволяет
+    logging_steps=50,
+    evaluation_strategy=&quot;steps&quot;,
+    eval_steps=200,
+    save_steps=200,
+    save_total_limit=2,
+    report_to=[&quot;none&quot;],
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_ds,
+    eval_dataset=eval_ds,
+    data_collator=data_collator,
+)
+
+trainer.train()
+</code></pre><p id="2ab568fa-e39f-8011-aa34-cee58ea07e69" class="">После обучения сохраняем <strong>адаптер</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ff-bdad-ced3062555ec" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">adapter_dir = &quot;models/support_gpt2_lora_adapter&quot;
+model.save_pretrained(adapter_dir)
+tokenizer.save_pretrained(adapter_dir)
+</code></pre><p id="2ab568fa-e39f-80db-823b-ef7fb96c3463" class="">Важно: это <strong>не полный чекпоинт модели</strong>, а “надстройка” к базовой.</p><h3 id="2ab568fa-e39f-80bd-8974-f25d0f5abfe2" class="">8.2.7. Инференс с LoRA-адаптером</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80eb-9da1-d9c7c4270cda" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import PeftModel
+
+# 1. Грузим базовую модель как при инференсе
+base_model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    torch_dtype=torch.float16,
+)
+
+# 2. Навешиваем LoRA-адаптер
+peft_model = PeftModel.from_pretrained(base_model, adapter_dir)
+
+# 3. (Опционально) сливаем LoRA в базовую модель (мердж)
+merged_model = peft_model.merge_and_unload()
+merged_model.eval()
+</code></pre><p id="2ab568fa-e39f-80d3-8a3e-fd64dc6a6252" class="">Дальше всё как в М6:</p><ul id="2ab568fa-e39f-805a-bd89-e144829c7e74" class="bulleted-list"><li style="list-style-type:disc">строим промпт,</li></ul><ul id="2ab568fa-e39f-803c-bf22-ddd36816a57d" class="bulleted-list"><li style="list-style-type:disc">вызываем <code>.generate</code>.</li></ul><p id="2ab568fa-e39f-80f8-85ee-c2cc08f707a4" class="">Можно использовать и без merge: просто <code>peft_model.generate(...)</code>.</p><h3 id="2ab568fa-e39f-80b8-bed7-dff314fde3b0" class="">8.2.8. Домашка 8.2</h3><ol type="1" id="2ab568fa-e39f-8000-86d3-eef75d6fa5be" class="numbered-list" start="1"><li>Взять свою Causal LM-модель и <code>support_dialogs.jsonl</code>.</li></ol><ol type="1" id="2ab568fa-e39f-803b-8f02-d338c6f15a78" class="numbered-list" start="2"><li>Настроить LoRA:<ul id="2ab568fa-e39f-80b6-87fb-cf038a9b979f" class="bulleted-list"><li style="list-style-type:disc">подобрать <code>target_modules</code> под архитектуру,</li></ul><ul id="2ab568fa-e39f-80fb-9702-e5cda8d04248" class="bulleted-list"><li style="list-style-type:disc">выбрать <code>r</code>, <code>lora_alpha</code>, <code>lora_dropout</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-808c-8e11-ee802efc39ad" class="numbered-list" start="3"><li>Обучить 1–2 эпохи.</li></ol><ol type="1" id="2ab568fa-e39f-803c-8acb-fa15c23d8c17" class="numbered-list" start="4"><li>Сравнить ответы:<ul id="2ab568fa-e39f-80c6-8c44-ce6fbb1b0e13" class="bulleted-list"><li style="list-style-type:disc">базовая модель,</li></ul><ul id="2ab568fa-e39f-804d-bbe9-f372b215fc90" class="bulleted-list"><li style="list-style-type:disc">LoRA-дообученная модель.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8012-ac1e-e9f98bfd1b0a" class="numbered-list" start="5"><li>Написать мини-отчёт:<ul id="2ab568fa-e39f-8005-ba4e-f01424ab6cf7" class="bulleted-list"><li style="list-style-type:disc">где адаптер сильно улучшает стиль/адекватность,</li></ul><ul id="2ab568fa-e39f-805c-87d0-f55f663b336d" class="bulleted-list"><li style="list-style-type:disc">где всё ещё “шумно”.</li></ul></li></ol><hr id="2ab568fa-e39f-8080-90c4-fa622354290e"/><h2 id="2ab568fa-e39f-802e-b45e-d12e95160c65" class="">Урок 8.3. LoRA для Seq2Seq (суммаризатор диалогов)</h2><p id="2ab568fa-e39f-800c-8fdd-f5e03ee3c625" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8052-b219-e41dbc0be2a8" class="">Показать, что LoRA отлично работает и для seq2seq-задач:</p><ul id="2ab568fa-e39f-807b-9c31-ef248cbac7f6" class="bulleted-list"><li style="list-style-type:disc"><code>AutoModelForSeq2SeqLM</code>,</li></ul><ul id="2ab568fa-e39f-8013-8ee0-d51a7ed78d09" class="bulleted-list"><li style="list-style-type:disc"><code>TaskType.SEQ_2_SEQ_LM</code>,</li></ul><ul id="2ab568fa-e39f-8033-942b-c6bab5db3b3a" class="bulleted-list"><li style="list-style-type:disc">обучение суммаризатора на <code>dialogs.csv</code> (как в М5).</li></ul><h3 id="2ab568fa-e39f-8093-bd05-dbd14212d6bd" class="">8.3.1. Кейс</h3><blockquote id="2ab568fa-e39f-8060-8d0d-cabb06f7ed9d" class="">Есть dialogs.csv с колонками:<ul id="2ab568fa-e39f-803c-81d6-e2f1a85bfa4c" class="bulleted-list"><li style="list-style-type:disc"><code>dialog</code> — полный текст переписки,</li></ul><ul id="2ab568fa-e39f-8047-9c51-f5d87629cb5e" class="bulleted-list"><li style="list-style-type:disc"><code>summary</code> — краткое резюме.</li></ul><p id="2ab568fa-e39f-8027-8275-f860da941723" class="">Мы уже делали <strong>full FT</strong> BART/T5 в М5.</p><p id="2ab568fa-e39f-8085-9f09-c92764fa2836" class="">Теперь хотим заменить это на LoRA, чтобы:</p><ul id="2ab568fa-e39f-80fb-b44c-d73dc57d5cd9" class="bulleted-list"><li style="list-style-type:disc">быстрее учить,</li></ul><ul id="2ab568fa-e39f-8062-a114-de4f4e5104f8" class="bulleted-list"><li style="list-style-type:disc">легче хранить,</li></ul><ul id="2ab568fa-e39f-80dc-be7f-e6e067132a9d" class="bulleted-list"><li style="list-style-type:disc">оставить базовую модель “общей”, а summary-адаптер — отдельным.</li></ul></blockquote><h3 id="2ab568fa-e39f-80fb-a2af-e24b6f3a9dfb" class="">8.3.2. Базовая seq2seq модель + LoRA-конфиг</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80f5-9316-d5b9af293ddc" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from datasets import load_dataset, DatasetDict
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSeq2SeqLM,
+    DataCollatorForSeq2Seq,
+    Seq2SeqTrainingArguments,
+    Seq2SeqTrainer,
+)
+from peft import LoraConfig, get_peft_model, TaskType
+
+model_name = &quot;facebook/bart-large-cnn&quot;
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model = AutoModelForSeq2SeqLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+)
+</code></pre><p id="2ab568fa-e39f-80b0-b92d-e4bc94ad1ee4" class="">LoRA-конфиг:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80d7-b0d7-e641230e9014" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">lora_config = LoraConfig(
+    task_type=TaskType.SEQ_2_SEQ_LM,
+    r=8,
+    lora_alpha=16,
+    lora_dropout=0.1,
+    target_modules=[&quot;q_proj&quot;, &quot;v_proj&quot;],  # для BART/T5-подобных
+)
+
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+</code></pre><h3 id="2ab568fa-e39f-8093-814a-dadc383466ab" class="">8.3.3. Датасет и токенизация (повторно из М5)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800d-847a-d9c1d1fcc136" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">raw = load_dataset(&quot;csv&quot;, data_files=&quot;dialogs.csv&quot;)[&quot;train&quot;]
+split = raw.train_test_split(test_size=0.1, seed=42)
+dataset = DatasetDict({&quot;train&quot;: split[&quot;train&quot;], &quot;validation&quot;: split[&quot;test&quot;]})
+
+max_input_length = 512
+max_target_length = 64
+
+def preprocess_function(batch):
+    inputs = batch[&quot;dialog&quot;]
+    targets = batch[&quot;summary&quot;]
+
+    model_inputs = tokenizer(
+        inputs,
+        max_length=max_input_length,
+        truncation=True,
+    )
+
+    with tokenizer.as_target_tokenizer():
+        labels = tokenizer(
+            targets,
+            max_length=max_target_length,
+            truncation=True,
+        )
+
+    model_inputs[&quot;labels&quot;] = labels[&quot;input_ids&quot;]
+    return model_inputs
+
+tokenized_dataset = dataset.map(
+    preprocess_function,
+    batched=True,
+    remove_columns=[&quot;dialog&quot;, &quot;summary&quot;],
+)
+
+data_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    model=model,
+    label_pad_token_id=-100,
+)
+</code></pre><h3 id="2ab568fa-e39f-8007-bf99-e2c2a6c999b1" class="">8.3.4. Seq2SeqTrainingArguments + Seq2SeqTrainer</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a9-9bf9-e393aa567c28" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import evaluate
+import numpy as np
+
+rouge_metric = evaluate.load(&quot;rouge&quot;)
+
+def postprocess_text(preds, labels):
+    preds = [p.strip() for p in preds]
+    labels = [l.strip() for l in labels]
+    return preds, labels
+
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+    if isinstance(predictions, tuple):
+        predictions = predictions[0]
+    decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+    labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+    decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+    result = rouge_metric.compute(
+        predictions=decoded_preds,
+        references=decoded_labels,
+        use_stemmer=True,
+    )
+    result = {k: v.mid.fmeasure for k, v in result.items()}
+    return result
+
+training_args = Seq2SeqTrainingArguments(
+    output_dir=&quot;checkpoints/dialog_summarizer_lora&quot;,
+    evaluation_strategy=&quot;epoch&quot;,
+    save_strategy=&quot;epoch&quot;,
+    learning_rate=1e-4,  # можно повысить относительно full FT
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=8,
+    num_train_epochs=3,
+    weight_decay=0.01,
+    logging_steps=20,
+    warmup_ratio=0.1,
+    predict_with_generate=True,
+    generation_max_length=64,
+    generation_num_beams=4,
+    fp16=torch.cuda.is_available(),
+    load_best_model_at_end=True,
+    metric_for_best_model=&quot;rougeL&quot;,
+    greater_is_better=True,
+    report_to=[&quot;none&quot;],
+)
+
+trainer = Seq2SeqTrainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_dataset[&quot;train&quot;],
+    eval_dataset=tokenized_dataset[&quot;validation&quot;],
+    tokenizer=tokenizer,
+    data_collator=data_collator,
+    compute_metrics=compute_metrics,
+)
+
+trainer.train()
+
+adapter_dir = &quot;models/dialog_summarizer_lora&quot;
+model.save_pretrained(adapter_dir)
+tokenizer.save_pretrained(adapter_dir)
+</code></pre><h3 id="2ab568fa-e39f-8054-a333-f14c08c5b023" class="">8.3.5. Инференс с LoRA-суммаризатором</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b7-baff-c94b8e8d6432" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import PeftModel
+
+base_model = AutoModelForSeq2SeqLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+lora_model = PeftModel.from_pretrained(base_model, adapter_dir)
+lora_model.eval()
+
+def summarize_with_lora(dialog: str) -&gt; str:
+    device = next(lora_model.parameters()).device
+    inputs = tokenizer(dialog, return_tensors=&quot;pt&quot;, truncation=True, max_length=512).to(device)
+    with torch.no_grad():
+        out_ids = lora_model.generate(
+            **inputs,
+            max_new_tokens=64,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+        )
+    return tokenizer.decode(out_ids[0], skip_special_tokens=True)
+</code></pre><h3 id="2ab568fa-e39f-80fb-a4b0-f2c6e215d2e4" class="">8.3.6. Домашка 8.3</h3><ol type="1" id="2ab568fa-e39f-804d-8d96-e3af12a69333" class="numbered-list" start="1"><li>Взять свой <code>dialogs.csv</code> и обученный ранее full FT-суммаризатор.</li></ol><ol type="1" id="2ab568fa-e39f-8084-992e-db8548e19016" class="numbered-list" start="2"><li>Сделать LoRA-дообучение BART/T5:<ul id="2ab568fa-e39f-80c6-9d2d-c04a52f13991" class="bulleted-list"><li style="list-style-type:disc">те же данные,</li></ul><ul id="2ab568fa-e39f-8089-a1e1-e91621805fcc" class="bulleted-list"><li style="list-style-type:disc">сравнимые гиперпараметры.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d3-a2a4-ebd683624de3" class="numbered-list" start="3"><li>Сравнить:<ul id="2ab568fa-e39f-80ba-bb44-dee2a2673c22" class="bulleted-list"><li style="list-style-type:disc">время обучения,</li></ul><ul id="2ab568fa-e39f-80ae-a33d-e2f5feffa9bb" class="bulleted-list"><li style="list-style-type:disc">качество (ROUGE),</li></ul><ul id="2ab568fa-e39f-8026-ade7-cf3ca48bd329" class="bulleted-list"><li style="list-style-type:disc">размер чекпоинта (full model vs adapter).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80d6-9522-d0c5b096e8f2" class="numbered-list" start="4"><li>Написать вывод:<ul id="2ab568fa-e39f-8006-96a7-f654e5b81520" class="bulleted-list"><li style="list-style-type:disc">в каких сценариях LoRA выглядит особенно выгодно.</li></ul></li></ol><hr id="2ab568fa-e39f-8072-88f2-fc39bcd58ef5"/><h2 id="2ab568fa-e39f-8037-8d75-f8a665c64810" class="">Урок 8.4. Управление адаптерами: несколько задач, merge, хранение</h2><p id="2ab568fa-e39f-80e6-936c-e197fa3b2f83" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8087-88fd-e863f5f4ea47" class="">Показать, как:</p><ul id="2ab568fa-e39f-805c-9e2b-e862dbacbfb6" class="bulleted-list"><li style="list-style-type:disc">хранить <strong>несколько адаптеров</strong> для одной и той же базовой модели,</li></ul><ul id="2ab568fa-e39f-80ed-af7a-f360127dcea6" class="bulleted-list"><li style="list-style-type:disc">переключаться между ними “на лету”,</li></ul><ul id="2ab568fa-e39f-801c-ae91-c8162110af1a" class="bulleted-list"><li style="list-style-type:disc">merge’ить LoRA в базовую модель (для деплоя),</li></ul><ul id="2ab568fa-e39f-806f-8c8e-c37f6c657c18" class="bulleted-list"><li style="list-style-type:disc">держать аккуратную структуру проекта.</li></ul><h3 id="2ab568fa-e39f-80ac-ad5c-f5f1d8798cd3" class="">8.4.1. Несколько адаптеров для одной модели</h3><p id="2ab568fa-e39f-800d-8a6b-d273a1180ce7" class="">Представь:</p><ul id="2ab568fa-e39f-80c2-b797-d96d5986accd" class="bulleted-list"><li style="list-style-type:disc">базовая модель <code>LLaMA-7B</code>,</li></ul><ul id="2ab568fa-e39f-80a3-8a87-ed29e1a4909d" class="bulleted-list"><li style="list-style-type:disc">адаптер 1: саппорт-бот для приложения A,</li></ul><ul id="2ab568fa-e39f-80da-a736-f1ef0f262e89" class="bulleted-list"><li style="list-style-type:disc">адаптер 2: саппорт-бот для приложения B,</li></ul><ul id="2ab568fa-e39f-80cd-9fd5-c3b8612e1720" class="bulleted-list"><li style="list-style-type:disc">адаптер 3: обучен на другом стиле/языке.</li></ul><p id="2ab568fa-e39f-80b9-a1d1-f2c6ee931c9e" class="">В <code>peft</code> можно:</p><ul id="2ab568fa-e39f-80ef-b4e2-e3973ee15583" class="bulleted-list"><li style="list-style-type:disc">загружать один базовый модельный checkpoint,</li></ul><ul id="2ab568fa-e39f-807b-802b-f4e02549f22f" class="bulleted-list"><li style="list-style-type:disc">подгружать разные адаптеры по запросу.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ec-ab4c-f23733624def" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+base_model_name = &quot;gpt2&quot;  # или любая другая
+tokenizer = AutoTokenizer.from_pretrained(base_model_name)
+if tokenizer.pad_token is None:
+    tokenizer.pad_token = tokenizer.eos_token
+
+base_model = AutoModelForCausalLM.from_pretrained(
+    base_model_name,
+    device_map=&quot;auto&quot;,
+    torch_dtype=torch.float16,
+)
+
+adapter_appA = &quot;adapters/support_appA_lora&quot;
+adapter_appB = &quot;adapters/support_appB_lora&quot;
+</code></pre><p id="2ab568fa-e39f-8037-a3fe-fceffde459be" class="">Загружаем адаптер A:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8090-9d80-d2b4c2756097" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model_appA = PeftModel.from_pretrained(base_model, adapter_appA)
+model_appA.eval()
+</code></pre><p id="2ab568fa-e39f-8008-ad73-fc0997e52c00" class="">Если хотим переключиться на B — либо:</p><ul id="2ab568fa-e39f-8022-bd38-ebbe91d4a4ae" class="bulleted-list"><li style="list-style-type:disc">грузим второго PeftModel поверх того же base (но с разными объектами), либо:</li></ul><ul id="2ab568fa-e39f-80bd-afa8-e9af8a1faee2" class="bulleted-list"><li style="list-style-type:disc">используем <code>model.load_adapter</code> / <code>model.set_adapter</code> (в зависимости от версии <code>peft</code>).</li></ul><p id="2ab568fa-e39f-80a0-b78a-f077e23d5652" class="">Пример с явным объектом:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8089-849d-fdff0f23001d" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model_appB = PeftModel.from_pretrained(base_model, adapter_appB)
+model_appB.eval()
+</code></pre><p id="2ab568fa-e39f-80fb-b2a8-e75ac526e04d" class="">Тогда:</p><ul id="2ab568fa-e39f-80a7-9299-f33b42367d00" class="bulleted-list"><li style="list-style-type:disc"><code>model_appA.generate(...)</code> — отвечает в стиле A,</li></ul><ul id="2ab568fa-e39f-80cb-916c-fa3f854c5cdd" class="bulleted-list"><li style="list-style-type:disc"><code>model_appB.generate(...)</code> — в стиле B.</li></ul><h3 id="2ab568fa-e39f-8055-a5d6-d68c2ca48869" class="">8.4.2. Merge LoRA в базовую модель</h3><p id="2ab568fa-e39f-8093-84bf-c7116f4022d1" class="">Когда:</p><ul id="2ab568fa-e39f-8037-a4ab-d9740b79f310" class="bulleted-list"><li style="list-style-type:disc">не хочется тянуть <code>peft</code> на прод,</li></ul><ul id="2ab568fa-e39f-8047-964b-f0020d1a47ea" class="bulleted-list"><li style="list-style-type:disc">хотим один финальный checkpoint без адаптерной логики.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808b-a9b7-f6f870157e74" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from peft import PeftModel
+
+base_model = AutoModelForCausalLM.from_pretrained(
+    base_model_name,
+    torch_dtype=torch.float16,
+)
+
+peft_model = PeftModel.from_pretrained(base_model, adapter_appA)
+merged_model = peft_model.merge_and_unload()  # возвращает обычную модель
+merged_model.save_pretrained(&quot;models/support_appA_merged&quot;)
+tokenizer.save_pretrained(&quot;models/support_appA_merged&quot;)
+</code></pre><p id="2ab568fa-e39f-8096-8d37-ff17bbe715e9" class="">Теперь <code>merged_model</code> — обычный <code>AutoModelForCausalLM</code> без PEFT, в котором LoRA-веса уже влиты в основные матрицы.</p><p id="2ab568fa-e39f-8019-a30a-d9d8b0e87882" class="">Плюсы:</p><ul id="2ab568fa-e39f-8009-9056-da37c72d0dff" class="bulleted-list"><li style="list-style-type:disc">проще деплоить,</li></ul><ul id="2ab568fa-e39f-8037-8355-ef286b10e8ea" class="bulleted-list"><li style="list-style-type:disc">не нужен <code>peft</code>,</li></ul><ul id="2ab568fa-e39f-80c7-9530-f69a9d71ffa6" class="bulleted-list"><li style="list-style-type:disc">но:<ul id="2ab568fa-e39f-800f-bdfe-d9e41d244b55" class="bulleted-list"><li style="list-style-type:circle">нельзя “открутить” LoRA назад,</li></ul><ul id="2ab568fa-e39f-80ac-88a0-ebbac2f6d4d2" class="bulleted-list"><li style="list-style-type:circle">размер модели ↑ (по сравнению с базовой).</li></ul></li></ul><h3 id="2ab568fa-e39f-80a9-a1bb-f71b6775fd4d" class="">8.4.3. Структура проекта с адаптерами</h3><p id="2ab568fa-e39f-80fa-9671-c7b1289c9605" class="">Рекомендуемая структура:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8042-a7c0-f9da896ec264" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">models/
+  base/
+    gpt2/                         # базовая модель (или ссылка на HF)
+    bart-large-cnn/
+  adapters/
+    support_appA_lora/
+    support_appB_lora/
+    dialog_summarizer_lora/
+  merged/
+    support_appA_merged/
+    dialog_summarizer_merged/
+</code></pre><p id="2ab568fa-e39f-8078-bf5f-c47957ef296b" class="">И код, который:</p><ul id="2ab568fa-e39f-8096-ab72-d0b44e101e49" class="bulleted-list"><li style="list-style-type:disc">принимает аргумент “какой адаптер использовать”,</li></ul><ul id="2ab568fa-e39f-8023-be20-e25e56ff486f" class="bulleted-list"><li style="list-style-type:disc">грузит нужный PEFT-чекпоинт.</li></ul><p id="2ab568fa-e39f-80b8-be37-ceb39b5402eb" class="">Пример конфиг-файла <code>adapters_config.json</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801a-8dc8-f4930659f74c" class="code code-wrap"><code class="language-JSON" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;support_appA&quot;: {
+    &quot;base_model&quot;: &quot;gpt2&quot;,
+    &quot;adapter_path&quot;: &quot;adapters/support_appA_lora&quot;
+  },
+  &quot;dialog_summarizer&quot;: {
+    &quot;base_model&quot;: &quot;facebook/bart-large-cnn&quot;,
+    &quot;adapter_path&quot;: &quot;adapters/dialog_summarizer_lora&quot;
+  }
+}
+</code></pre><h3 id="2ab568fa-e39f-80ca-be6e-f7a1650ad11d" class="">8.4.4. Домашка 8.4 (итоговая по модулю)</h3><ol type="1" id="2ab568fa-e39f-8003-b624-e81fac41bc1b" class="numbered-list" start="1"><li>Сделать <strong>два</strong> разных LoRA-адаптера:<ul id="2ab568fa-e39f-806f-ac75-f81fbbe8ce8e" class="bulleted-list"><li style="list-style-type:disc">например:<ul id="2ab568fa-e39f-801c-a927-db0965968557" class="bulleted-list"><li style="list-style-type:circle">один для саппорт-бота на одних диалогах,</li></ul><ul id="2ab568fa-e39f-806b-817b-da8748bc2e15" class="bulleted-list"><li style="list-style-type:circle">второй — чуть другой стиль/язык/тон (можно просто другой датасет).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-805e-b612-e30870dabcdf" class="numbered-list" start="2"><li>Написать скрипт, который:<ul id="2ab568fa-e39f-8018-8f15-d07b1a22e129" class="bulleted-list"><li style="list-style-type:disc">по флагу <code>-adapter=appA</code> или <code>-adapter=appB</code>:<ul id="2ab568fa-e39f-80e3-a069-d117d5c1989c" class="bulleted-list"><li style="list-style-type:circle">грузит соответствующий адаптер,</li></ul><ul id="2ab568fa-e39f-804c-99c0-d1ab94d43550" class="bulleted-list"><li style="list-style-type:circle">генерирует ответ.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8007-8880-c7a329b02897" class="numbered-list" start="3"><li>(Опционально) Сделать merge для одного адаптера и сравнить:<ul id="2ab568fa-e39f-8027-ae61-fdf021251fd6" class="bulleted-list"><li style="list-style-type:disc">скорость инференса,</li></ul><ul id="2ab568fa-e39f-80ce-90ff-efdce9e7cff1" class="bulleted-list"><li style="list-style-type:disc">использование памяти,</li></ul><ul id="2ab568fa-e39f-80a3-b6bb-e5e5f85b41fa" class="bulleted-list"><li style="list-style-type:disc">совпадает ли качество/стиль.</li></ul></li></ol><hr id="2ab568fa-e39f-8059-81a1-ed57d424a2fa"/><h2 id="2ab568fa-e39f-8039-9c16-c25e64785a68" class="">Что ученик умеет после модуля 8</h2><p id="2ab568fa-e39f-8004-90bd-fdd26d6abdef" class="">После этого модуля человек:</p><ul id="2ab568fa-e39f-8017-a029-fafea90ff5e5" class="bulleted-list"><li style="list-style-type:disc"><strong>понимает PEFT и LoRA</strong>: зачем, как, в каких слоях;</li></ul><ul id="2ab568fa-e39f-801c-8036-da15f557148b" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-80ef-9f32-f3c1546622d7" class="bulleted-list"><li style="list-style-type:circle">навешивать LoRA на Causal LM (чат-бот саппорта),</li></ul><ul id="2ab568fa-e39f-80c9-8c60-f0a0a346910b" class="bulleted-list"><li style="list-style-type:circle">навешивать LoRA на Seq2Seq-модель (суммаризатор),</li></ul><ul id="2ab568fa-e39f-80a9-9226-d59155a68a7a" class="bulleted-list"><li style="list-style-type:circle">обучать модели в 4bit/8bit режиме с LoRA (k-bit training),</li></ul></li></ul><ul id="2ab568fa-e39f-8040-a32c-cb4ba06780a1" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-802d-af2f-e8390d43e7df" class="bulleted-list"><li style="list-style-type:circle">сохранять и загружать адаптеры отдельно от базовой модели,</li></ul><ul id="2ab568fa-e39f-806d-8bbe-f051a4d879b1" class="bulleted-list"><li style="list-style-type:circle">переключаться между несколькими адаптерами,</li></ul><ul id="2ab568fa-e39f-8020-86bc-eb5f833c9ae8" class="bulleted-list"><li style="list-style-type:circle">при необходимости мёрджить LoRA в базовый чекпоинт для деплоя.</li></ul></li></ul><p id="2ab568fa-e39f-8007-b3d6-e02ab88ff348" class="">То есть к этому моменту курс уже покрывает <strong>большую часть практики по transformers</strong>, которая нужна для:</p><ul id="2ab568fa-e39f-80b1-aeac-ed008c70d9b1" class="bulleted-list"><li style="list-style-type:disc">кастомных LLM под продукты,</li></ul><ul id="2ab568fa-e39f-80ae-8752-e7bd4fe6c1c7" class="bulleted-list"><li style="list-style-type:disc">саппорт-ботов,</li></ul><ul id="2ab568fa-e39f-80a0-adc7-dd21b82e846c" class="bulleted-list"><li style="list-style-type:disc">внутренних инструментов (суммаризация, классификация, QA).</li></ul><p id="2ab568fa-e39f-80aa-b286-f551bf3b3043" class="">Если захочешь, можно отдельно сделать “надмодуль” по <strong>инструкционному тюнингу + evaluation</strong> (MMLU, MT-Bench style) или по <strong>встраиванию этого всего в реальный прод (FastAPI, Docker, мониторинг)</strong>.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

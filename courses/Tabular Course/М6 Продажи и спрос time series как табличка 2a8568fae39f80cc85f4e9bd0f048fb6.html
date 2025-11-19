@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М6. Продажи и спрос: time series как табличка</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80cc-85f4-e9bd0f048fb6" class="page sans"><header><h1 class="page-title">М6. Продажи и спрос: time series как табличка</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8054-aab9-de4697e17d31" class="">ниже — подробный Модуль 6. Фокус: <strong>продажи/спрос и временные ряды как табличка</strong> (lags/rolling/decay, промо/цены/праздники, иерархии M5). Всё завязано на 5-часовой соревновательный формат и честную time-aware валидацию.</p><h2 id="2a8568fa-e39f-80fc-bd12-e3e2e8c81df5" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-8088-9ec6-cb5ea8d44bad" class="bulleted-list"><li style="list-style-type:disc">Узнавать структуру данных (SKU×store×date) и выбирать <strong>корректную time-aware CV</strong> (rolling origin / Purged / blocked).</li></ul><ul id="2a8568fa-e39f-8012-a334-ee5dee354985" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>feature factory</strong> для спроса: лаги, окна, тренды, промо/цены/календарь, decay-агрегаты.</li></ul><ul id="2a8568fa-e39f-80d8-9b13-c302b7c4b584" class="bulleted-list"><li style="list-style-type:disc">Работать с <strong>метриками</strong> (RMSPE/MAPE/RMSE/WRMSSE) и лоссами (Quantile/Huber/Poisson/NB).</li></ul><ul id="2a8568fa-e39f-80c2-9583-ebbe5f9aed5b" class="bulleted-list"><li style="list-style-type:disc">Собирать устойчивые бейзлайны (LightGBM/CatBoost/XGB) и <strong>лёгко согласовывать иерархии</strong> (BU/OWA-стайл).</li></ul><ul id="2a8568fa-e39f-805f-b542-fd86674ef152" class="bulleted-list"><li style="list-style-type:disc">За 5 часов: от нуля до 2–3 осмысленных сабмитов без утечек.</li></ul><p id="2a8568fa-e39f-806d-818c-cf5b5e0bb06c" class=""><strong>Выход:</strong> репо с <code>ts_feature_factory</code>, скриптами сплитов, пресетами моделей и утилитами WRMSSE/квантили.</p><hr id="2a8568fa-e39f-8019-90f2-f73458b49305"/><h2 id="2a8568fa-e39f-8026-9d1d-d37c0c67368e" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-80de-a2f1-ee3d5cb574f1" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-80ea-b4cf-c9d5eeec74a3" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 4–5 часов</strong>.</li></ul><ul id="2a8568fa-e39f-802f-a93d-f1e340130be1" class="bulleted-list"><li style="list-style-type:disc">Итог: паспорт решения (1 стр), 2 сабмита.</li></ul><hr id="2a8568fa-e39f-80d8-9227-fdf6e7cb5946"/><h2 id="2a8568fa-e39f-8077-9919-ecf8ecf3d9ba" class="">3) Карта решений за ≤10 минут</h2><ol type="1" id="2a8568fa-e39f-8015-a395-dc2fb9c226dd" class="numbered-list" start="1"><li><strong>Структура:</strong> есть <code>date</code>, <strong>сущности</strong> (<code>store_id</code>, <code>item_id</code>, <code>dept</code>, <code>state</code>), <strong>иерархия</strong>? частота (день/неделя/месяц)?</li></ol><ol type="1" id="2a8568fa-e39f-8042-b59a-d72b3e956614" class="numbered-list" start="2"><li><strong>Метрика:</strong><ul id="2a8568fa-e39f-80dd-b397-fe264084c1b7" class="bulleted-list"><li style="list-style-type:disc">Retail (Rossmann) → <strong>RMSPE/RMSLE</strong>;</li></ul><ul id="2a8568fa-e39f-8088-bbc6-f830eef38af4" class="bulleted-list"><li style="list-style-type:disc">Monthly sales → RMSE/RMSLE/MAPE;</li></ul><ul id="2a8568fa-e39f-80eb-8c60-d44c264ae762" class="bulleted-list"><li style="list-style-type:disc">M5-стайл → <strong>WRMSSE</strong> (веса + иерархия).</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-8067-8d81-dce2a7289e63" class="numbered-list" start="3"><li><strong>CV:</strong><ul id="2a8568fa-e39f-80cb-8962-e9322326a0c8" class="bulleted-list"><li style="list-style-type:disc"><strong>Blocked/rolling origin</strong> (expanding train → скользящее окно valid, <strong>gap</strong> ≥1 шаг).</li></ul><ul id="2a8568fa-e39f-80ff-ba72-cecaf4cf7ad6" class="bulleted-list"><li style="list-style-type:disc"><strong>PurgedKFold по времени</strong> при перекрывающихся лаг-окнах.</li></ul><ul id="2a8568fa-e39f-80b5-bbe6-e0c75e49b558" class="bulleted-list"><li style="list-style-type:disc">Группы: <strong>GroupKFold по SKU/store</strong> для утечек между сущностями.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-800b-8935-fbbddc44e992" class="numbered-list" start="4"><li><strong>Baseline:</strong><ul id="2a8568fa-e39f-80e1-b848-c3b210f598a6" class="bulleted-list"><li style="list-style-type:disc">LGBM/CatBoost на лаг-фичах + календаре; 1-й сабмит ≤60 мин.</li></ul></li></ol><hr id="2a8568fa-e39f-805d-92db-c6758811ec16"/><h2 id="2a8568fa-e39f-8075-876b-f6e42bc86e26" class="">4) Протокол «нет утечки»</h2><ul id="2a8568fa-e39f-802b-b287-fb2f8e2d9f05" class="bulleted-list"><li style="list-style-type:disc">Любые лаги/окна считаются <strong>только из прошлого</strong> (до границы fold).</li></ul><ul id="2a8568fa-e39f-80d9-b6cb-ff9990ffca3a" class="bulleted-list"><li style="list-style-type:disc">Кодировки (target-mean, expanding mean) — time-aware: <strong>expanding/rolling</strong> и/или <strong>OOF</strong>.</li></ul><ul id="2a8568fa-e39f-80cb-b4c5-e36b076cffc6" class="bulleted-list"><li style="list-style-type:disc">Внешние признаки (праздники, цены конкурентов, погода) — <strong>только известные на момент прогноза</strong>.</li></ul><ul id="2a8568fa-e39f-80e6-87bd-c0c82f8c48ac" class="bulleted-list"><li style="list-style-type:disc">«Горизонт» прогноза (h) → фичи не заглядывают за <code>t+h</code>.</li></ul><ul id="2a8568fa-e39f-8025-89ca-f37bc7e73ee1" class="bulleted-list"><li style="list-style-type:disc">При иерархиях: агрегаты по будущему запрещены; reconciliation — пост-фактум по предсказаниям.</li></ul><hr id="2a8568fa-e39f-80f3-a8a6-c4e233460e58"/><h2 id="2a8568fa-e39f-803b-8d5e-f81cdf7d1159" class="">5) Метрики и лоссы</h2><ul id="2a8568fa-e39f-809a-bd9b-cd0b9177e333" class="bulleted-list"><li style="list-style-type:disc"><strong>RMSE/RMSLE</strong> — база; RMSLE сглаживает крупные значения.</li></ul><ul id="2a8568fa-e39f-80da-b8ef-c065bd420f4c" class="bulleted-list"><li style="list-style-type:disc"><strong>RMSPE/SMAPE/MAPE</strong> — процентные ошибки (минимизируют относительную, а не абсолютную).</li></ul><ul id="2a8568fa-e39f-80b5-a502-cf32e884cb6f" class="bulleted-list"><li style="list-style-type:disc"><strong>WRMSSE</strong> — взвешенная RMSE на разных уровнях иерархии.</li></ul><ul id="2a8568fa-e39f-808d-b347-c1f70ea35ad8" class="bulleted-list"><li style="list-style-type:disc"><strong>Лоссы:</strong><ul id="2a8568fa-e39f-8058-8d72-dd777fee5339" class="bulleted-list"><li style="list-style-type:circle"><strong>Quantile</strong> (pinball) для P50/P90, пригодно для интервалов;</li></ul><ul id="2a8568fa-e39f-80d3-ab89-d5e18a7d2120" class="bulleted-list"><li style="list-style-type:circle"><strong>Huber</strong> для робастности;</li></ul><ul id="2a8568fa-e39f-80a1-aace-c096a69ad6b0" class="bulleted-list"><li style="list-style-type:circle"><strong>Poisson/NB</strong> для счётчиков/редких продаж;</li></ul><ul id="2a8568fa-e39f-80f6-a528-e4c3c9161950" class="bulleted-list"><li style="list-style-type:circle"><strong>Tweedie</strong> для нулей + положительных.</li></ul></li></ul><hr id="2a8568fa-e39f-8009-a7f0-fa3a52369210"/><h2 id="2a8568fa-e39f-80a0-a60f-d9e18a608433" class="">6) Time-aware сплиты (готовые схемы)</h2><ul id="2a8568fa-e39f-80b4-a2eb-cb4a4b1e0649" class="bulleted-list"><li style="list-style-type:disc"><strong>Rolling origin (RO):</strong><ul id="2a8568fa-e39f-80ef-a3f2-f346543e9e2a" class="bulleted-list"><li style="list-style-type:circle">RO-1: train=[start..t], valid=(t+1..t+H)</li></ul><ul id="2a8568fa-e39f-8057-a052-f1185f4ab25a" class="bulleted-list"><li style="list-style-type:circle">RO-K: несколько перекрывающихся окон; <strong>gap</strong> между train/valid = max(используемый лаг).</li></ul></li></ul><ul id="2a8568fa-e39f-80e2-864a-fd2d9bb6d5ef" class="bulleted-list"><li style="list-style-type:disc"><strong>Blocked KFold:</strong> делим по времени на блоки; валидируем на каждом блоке по очереди.</li></ul><ul id="2a8568fa-e39f-803d-a5cf-f778e51ada72" class="bulleted-list"><li style="list-style-type:disc"><strong>Purged:</strong> embargo по времени между train и valid, если расчёт фич использует «хвосты».</li></ul><hr id="2a8568fa-e39f-80fb-8ada-e1665423ee99"/><h2 id="2a8568fa-e39f-8021-ac20-d9d40087c016" class="">7) TS Feature Factory (ядро)</h2><p id="2a8568fa-e39f-800f-a757-d767f31e9a7c" class=""><strong>Лаги и окна (per entity: item/store/item×store):</strong></p><ul id="2a8568fa-e39f-8035-8828-c0b1d7351aba" class="bulleted-list"><li style="list-style-type:disc">Лаги: <code>y_{t-1}, y_{t-7}, y_{t-28}</code> (подбирать под частоту).</li></ul><ul id="2a8568fa-e39f-8008-9792-d9ba17e13a0b" class="bulleted-list"><li style="list-style-type:disc">Окна: rolling <code>mean/std/min/max</code> для <code>w∈{7,14,28,56}</code>, <code>expanding_mean</code> (с min_periods).</li></ul><ul id="2a8568fa-e39f-804b-a3cc-d2aa111bed77" class="bulleted-list"><li style="list-style-type:disc">Сезонные лаги: <code>y_{t-7*k}</code>, сезонные дельты: <code>y_{t-1}-y_{t-7}</code>, <code>roll_mean_7 - roll_mean_28</code>.</li></ul><p id="2a8568fa-e39f-80a7-884a-eb3fc4bb62ee" class=""><strong>Календарь/события:</strong></p><ul id="2a8568fa-e39f-8054-addb-e42274a6cfe6" class="bulleted-list"><li style="list-style-type:disc"><code>dow, week, month, is_weekend, is_holiday, is_school_break, is_promo_period_start/end</code>.</li></ul><ul id="2a8568fa-e39f-80c8-80b3-cc3e734fee5b" class="bulleted-list"><li style="list-style-type:disc">Флаги смены сезона/категории (back-to-school, Xmas, Ramadan и др., если релевантно).</li></ul><p id="2a8568fa-e39f-80a1-a7e5-ff3ce8a15a3e" class=""><strong>Цены и промо:</strong></p><ul id="2a8568fa-e39f-80d6-a6e5-e8214dab34df" class="bulleted-list"><li style="list-style-type:disc"><code>price_t, price_change_1/7/28, price_ratio_vs_cat/store</code>, <code>is_promo</code>, <code>promo_intensity</code>.</li></ul><ul id="2a8568fa-e39f-80a5-a92b-c8b8dcd34c68" class="bulleted-list"><li style="list-style-type:disc">Эластичность (ex-post фича) → в спринте заменяем прокси: скорость продаж при похожих ценах (expanding).</li></ul><p id="2a8568fa-e39f-808c-8ea3-e6f1820bc3a7" class=""><strong>Инвентарь/сток-ауты (если есть):</strong></p><ul id="2a8568fa-e39f-8030-a561-c797f0d1b861" class="bulleted-list"><li style="list-style-type:disc"><code>stockout_flag</code>, <code>days_since_stockout</code>, заполнение нулей аккуратно.</li></ul><p id="2a8568fa-e39f-80e7-b976-d151a2a9fd22" class=""><strong>Decay-агрегаты:</strong></p><ul id="2a8568fa-e39f-8006-ab18-eb81c75db768" class="bulleted-list"><li style="list-style-type:disc">экспоненциальные суммы/средние (α∈[0.5;0.98]) для «свежести» тренда.</li></ul><p id="2a8568fa-e39f-80fc-87f1-e4d368a84632" class=""><strong>Кросс-секционные:</strong></p><ul id="2a8568fa-e39f-80fb-be23-c0f28d7f47cc" class="bulleted-list"><li style="list-style-type:disc">агрегаты по <strong>категории/департаменту/региону</strong>: rolling mean/std; ранги SKU внутри категории.</li></ul><hr id="2a8568fa-e39f-80e6-a2b0-f3591c3cda71"/><h2 id="2a8568fa-e39f-809f-bead-d95743f3a3bd" class="">8) Intermittent demand (редкие продажи)</h2><ul id="2a8568fa-e39f-806b-9486-ed68c714074e" class="bulleted-list"><li style="list-style-type:disc"><strong>Croston/SBA/TSB</strong> — как ориентиры; в табличном подходе:<ul id="2a8568fa-e39f-801f-b4e7-d2733df77818" class="bulleted-list"><li style="list-style-type:circle">моделируем <strong>вероятность ненулевой продажи</strong> (классификация) + <strong>условную величину</strong> (регрессия) → затем комбинируем;</li></ul><ul id="2a8568fa-e39f-8050-a043-f59bf7656d94" class="bulleted-list"><li style="list-style-type:circle">признаки: «время с последней продажи», частоты по длинным окнам, share-of-weeks-with-sales.</li></ul></li></ul><hr id="2a8568fa-e39f-809e-9267-de8deea4734f"/><h2 id="2a8568fa-e39f-8002-a09b-c7c08d4e6119" class="">9) Иерархии и reconciliation (лайт)</h2><ul id="2a8568fa-e39f-8082-8d52-c3b9b672fd47" class="bulleted-list"><li style="list-style-type:disc"><strong>Bottom-up (BU):</strong> моделируем низкий уровень (item×store), агрегируем вверх.</li></ul><ul id="2a8568fa-e39f-80e7-ab03-ca5cc786d0dd" class="bulleted-list"><li style="list-style-type:disc"><strong>Top-down/Proportions:</strong> прогнозируем верх, распределяем по долям.</li></ul><ul id="2a8568fa-e39f-8032-870f-db71fcc366a6" class="bulleted-list"><li style="list-style-type:disc"><strong>Simple OWA-стиль:</strong> среднее BU и пропорционального распределения.</li></ul><ul id="2a8568fa-e39f-80ba-ba3a-ceeb4117eafc" class="bulleted-list"><li style="list-style-type:disc">Для M5-подобных: веса на уровнях (для WRMSSE) + контроль, чтобы суммы сходились (post-scaling).</li></ul><hr id="2a8568fa-e39f-80b4-8f62-cedb8925fe78"/><h2 id="2a8568fa-e39f-80c5-9a42-f38ae52b4939" class="">10) Бейзлайны и ансамбль</h2><ul id="2a8568fa-e39f-8099-9c40-c0dca641ab8a" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost/LGBM/XGB</strong> на табличных фичах:<ul id="2a8568fa-e39f-805a-8286-d8e2c442661a" class="bulleted-list"><li style="list-style-type:circle">регрессия (RMSE/RMSLE) <strong>или</strong> квантили (P50/P90);</li></ul><ul id="2a8568fa-e39f-8074-8ac7-ed0c18a3419c" class="bulleted-list"><li style="list-style-type:circle">Poisson/NB в XGB/LGBM для счётчиков;</li></ul><ul id="2a8568fa-e39f-80b2-b2ce-dac2c2ba1754" class="bulleted-list"><li style="list-style-type:circle">монотонность (опц.) на цене (дороже→ниже спрос) — проверять.</li></ul></li></ul><ul id="2a8568fa-e39f-80c0-81ce-df194335a08a" class="bulleted-list"><li style="list-style-type:disc"><strong>Ансамбль (30–45 мин):</strong><ul id="2a8568fa-e39f-804e-84cb-ff9a1a428d44" class="bulleted-list"><li style="list-style-type:circle">несколько горизонтов/окон/моделей → веса по OOF;</li></ul><ul id="2a8568fa-e39f-8043-bb63-ff48a0a95932" class="bulleted-list"><li style="list-style-type:circle">усреднение лог-пространстве для RMSLE/RMSPE-режима.</li></ul></li></ul><hr id="2a8568fa-e39f-806f-b031-f159a02aa0d3"/><h2 id="2a8568fa-e39f-80c0-935c-fc7198b8e5bf" class="">11) Мини-практикум A (60–90 мин): Rossmann-стайл</h2><p id="2a8568fa-e39f-80b1-abc2-f57f017017fc" class=""><strong>Цель:</strong> RMSPE/RMSLE, лаги/календарь/промо.</p><p id="2a8568fa-e39f-8033-8c6d-f843abc22eba" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8014-ba5e-db299558130c" class="numbered-list" start="1"><li>Rolling/lag ядро (7/14/28), календарь, промо-флаги → LGBM бейзлайн.</li></ol><ol type="1" id="2a8568fa-e39f-80f8-b0a8-f8144a1e93ca" class="numbered-list" start="2"><li>Добавить decay-агрегаты и price-дельты.</li></ol><ol type="1" id="2a8568fa-e39f-8098-97e8-e1902b2bb0e6" class="numbered-list" start="3"><li>RO-валидация (2–3 окна), сабмит_1/2, CV↔LB.</li></ol><hr id="2a8568fa-e39f-8061-a249-e9d03c34cc1a"/><h2 id="2a8568fa-e39f-80e7-94ad-c73061319222" class="">12) Мини-практикум B (60–90 мин): Predict Future Sales (месячная)</h2><p id="2a8568fa-e39f-8066-a1fc-c266bf504908" class=""><strong>Цель:</strong> месячные агрегаты, редкие продажи.</p><p id="2a8568fa-e39f-8056-b090-fd02893ade0f" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8083-b534-e20ecaf0abb8" class="numbered-list" start="1"><li>Агрегировать до месяца; лаги 1/3/6/12 мес, share-of-months-with-sales.</li></ol><ol type="1" id="2a8568fa-e39f-801c-8a00-f108c99f04cc" class="numbered-list" start="2"><li>Двухступенчатая модель: P(sales&gt;0) + E[sales | &gt;0].</li></ol><ol type="1" id="2a8568fa-e39f-8017-80ed-e63c427f9a2d" class="numbered-list" start="3"><li>Blocked KFold по месяцам, сабмит_финал.</li></ol><hr id="2a8568fa-e39f-8061-87fb-c8b3fe5742bf"/><h2 id="2a8568fa-e39f-8063-9fe7-d0613729ceb1" class="">13) Мини-практикум C (60–90 мин): M5-лайт (иерархия)</h2><p id="2a8568fa-e39f-8060-a699-f38a20f5ce7e" class=""><strong>Цель:</strong> WRMSSE-подход и reconciliation.</p><p id="2a8568fa-e39f-809f-bf18-cfdb6130ccd9" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-806a-a07b-e809e2f77bc0" class="numbered-list" start="1"><li>Бейзлайн на item×store с lag/rolling/календарём.</li></ol><ol type="1" id="2a8568fa-e39f-8057-b4b7-e140dd574fbd" class="numbered-list" start="2"><li>Простая BU-агрегация + пропорциональное top-down;</li></ol><ol type="1" id="2a8568fa-e39f-8044-b63e-cdf3e00a1db8" class="numbered-list" start="3"><li>OWA-смешивание, быстрый WRMSSE-скрипт, сравнение.</li></ol><hr id="2a8568fa-e39f-8045-b28b-ff3374715135"/><h2 id="2a8568fa-e39f-80ce-a0c6-ece405db7ee2" class="">14) Самостоятельный 5-часовой спринт</h2><p id="2a8568fa-e39f-80aa-aa3c-db291fcd5ab6" class=""><strong>Варианты (выбирает преподаватель):</strong></p><ul id="2a8568fa-e39f-801e-8aaa-dc816c6c737e" class="bulleted-list"><li style="list-style-type:disc"><strong>Дневные продажи с промо</strong> (Rossmann-подобные).</li></ul><ul id="2a8568fa-e39f-8071-b6bc-ed94c2dac849" class="bulleted-list"><li style="list-style-type:disc"><strong>Месячные продажи</strong> (PFS-подобные).</li></ul><ul id="2a8568fa-e39f-805f-9035-e35e2dc68bde" class="bulleted-list"><li style="list-style-type:disc"><strong>Иерархический</strong> (M5-подобный, усечённый).</li></ul><p id="2a8568fa-e39f-8040-bfee-cc4a24d2a673" class=""><strong>Требования:</strong></p><ul id="2a8568fa-e39f-8032-a013-c3e293874f97" class="bulleted-list"><li style="list-style-type:disc">Корректная CV (RO/Blocked/Purged), <strong>gap ≥ max_lag</strong>.</li></ul><ul id="2a8568fa-e39f-804d-8c99-ed259c8b1f6e" class="bulleted-list"><li style="list-style-type:disc">≥10 безопасных фич (лаги/окна/календарь/промо/decay), 1 «смелая» (например, двухступенчатая модель или простая reconciliation).</li></ul><ul id="2a8568fa-e39f-80d5-9656-d63259095b1f" class="bulleted-list"><li style="list-style-type:disc">2 сабмита: базовый и с улучшениями; паспорт решения (метрика, сплит, фичи, риски).</li></ul><hr id="2a8568fa-e39f-803c-96e8-cab3334b2c13"/><h2 id="2a8568fa-e39f-80a7-8b06-e07e1c4ddc36" class="">15) Оценивание</h2><ul id="2a8568fa-e39f-8004-b138-d4a4c17603ff" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: time-aware фичи и CV, отсутствие утечек, верный gap.</li></ul><ul id="2a8568fa-e39f-80e4-9859-e4b7b85821e4" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: ΔOOF/ΔLB, устойчивость на нескольких окнах.</li></ul><ul id="2a8568fa-e39f-8038-a254-f5688dc99c90" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: скорость (кеши, Parquet/Polars), понятный <code>ts_feature_factory</code>.</li></ul><ul id="2a8568fa-e39f-8007-941d-d500ba31121c" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: ясная аргументация метрики/сплита/фич и плана на дрифт.</li></ul><hr id="2a8568fa-e39f-80bd-bd9b-ee3dd12f7d13"/><h2 id="2a8568fa-e39f-8030-b4de-ed74b5ceec37" class="">16) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-8086-a354-ce41e6a8c471" class="bulleted-list"><li style="list-style-type:disc"><code>ts_splits.py</code>: rolling origin / blocked / purged (+gap).</li></ul><ul id="2a8568fa-e39f-8085-91c4-f75450106161" class="bulleted-list"><li style="list-style-type:disc"><code>ts_feature_factory.py</code>: лаги/окна/decay/календарь/промо/price-дельты/двухступенчатый режим.</li></ul><ul id="2a8568fa-e39f-8024-a7f1-e52f8ccbbe1c" class="bulleted-list"><li style="list-style-type:disc"><code>metrics_ts.py</code>: RMSPE/SMAPE/WRMSSE, утилиты квантилий.</li></ul><ul id="2a8568fa-e39f-8081-83f6-d619b6186e81" class="bulleted-list"><li style="list-style-type:disc"><code>reconcile.py</code>: BU / пропорциональный top-down / OWA-смешивание.</li></ul><ul id="2a8568fa-e39f-80c8-804e-fab3c6ddcae3" class="bulleted-list"><li style="list-style-type:disc">Пресеты: <code>lgbm_ts.yaml</code>, <code>catboost_ts.yaml</code>, <code>xgb_poisson.yaml</code>.</li></ul><ul id="2a8568fa-e39f-80b5-9636-c009e97db690" class="bulleted-list"><li style="list-style-type:disc">Чек-листы: «time-aware без утечки», «5-часовой спринт по спросу», «иерархии — минимум, который работает».</li></ul><hr id="2a8568fa-e39f-80d2-a45a-cdb9fe4cef7b"/><h2 id="2a8568fa-e39f-808c-8664-fb66026d0770" class="">17) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-8004-8fa5-ef15eaa11f51" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин:</strong> выбрать метрику (RMSPE/WRMSSE), задать сплит (RO/Blocked), поднять бейзлайн → сабмит_1.</li></ul><ul id="2a8568fa-e39f-8006-8a54-e8e30b7fe474" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин:</strong> лаги/окна/календарь/промо, gap-контроль → ΔOOF.</li></ul><ul id="2a8568fa-e39f-8097-8313-fe55732d1f14" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> decay/двухступенчатая модель или price-фичи → сабмит_2.</li></ul><ul id="2a8568fa-e39f-80f1-baf5-e62bbb8f66ef" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> (опц.) reconciliation или квантили; стресс-тест альтернативным окном.</li></ul><ul id="2a8568fa-e39f-803b-b54b-f6e32541e005" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> лёгкий ансамбль (2–3 модели), финальный сабмит + паспорт решения.</li></ul><p id="2a8568fa-e39f-8057-84fb-d2e339f453f1" class="">Готов продолжить: могу накинуть каркас <code>ts_feature_factory.py</code> и <code>ts_splits.py</code> под твой существующий темплейт (те же интерфейсы, что у CV/EncoderFactory), чтобы команда сразу включила модуль в спринты.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

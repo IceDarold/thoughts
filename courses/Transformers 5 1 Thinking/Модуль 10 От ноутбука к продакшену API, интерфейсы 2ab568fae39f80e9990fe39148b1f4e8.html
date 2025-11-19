@@ -1,0 +1,1093 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 10. От ноутбука к продакшену: API, интерфейсы, батчинг и мониторинг</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-80e9-990f-e39148b1f4e8" class="page sans"><header><h1 class="page-title">Модуль 10. От ноутбука к продакшену: API, интерфейсы, батчинг и мониторинг</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8093-93cd-ee999fd5a955" class="">Давай сделаем финальный босс-левел: <strong>как всё это добро превратить в работающий сервис</strong>, а не просто ноутбук с print’ами 😄</p><p id="2ab568fa-e39f-8078-b006-fb9906294111" class="">Предлагаю Модуль 10 посвятить <strong>деплою и интеграции</strong>:</p><ul id="2ab568fa-e39f-809e-b1f1-c699141524ce" class="bulleted-list"><li style="list-style-type:disc">поднимаем API поверх моделей transformers,</li></ul><ul id="2ab568fa-e39f-8005-9df8-dccf58f4cd19" class="bulleted-list"><li style="list-style-type:disc">делаем простой веб-интерфейс (Gradio),</li></ul><ul id="2ab568fa-e39f-8035-b27d-d1a13bba4e15" class="bulleted-list"><li style="list-style-type:disc">добавляем батчинг/оптимизацию инференса,</li></ul><ul id="2ab568fa-e39f-8095-aac6-f399ade6e5f2" class="bulleted-list"><li style="list-style-type:disc">прикручиваем базовую оценку качества и логирование.</li></ul><p id="2ab568fa-e39f-80b6-a02a-fb8229bcdd72" class="">Если хочешь потом – поверх этого легко навесить любой фронт/бота/CRM.</p><hr id="2ab568fa-e39f-8007-aee3-fa4806c58664"/><p id="2ab568fa-e39f-807d-a5ff-c833647c17fa" class=""><strong>Глобальный кейс:</strong></p><blockquote id="2ab568fa-e39f-8009-86ce-d9608f4c435e" class="">У нас уже есть:<ul id="2ab568fa-e39f-8031-aece-d5a1995df48d" class="bulleted-list"><li style="list-style-type:disc">классификатор тикетов (М4),</li></ul><ul id="2ab568fa-e39f-80ed-badc-e3b321031076" class="bulleted-list"><li style="list-style-type:disc">суммаризатор диалогов (М5),</li></ul><ul id="2ab568fa-e39f-804e-ae12-ccecf5e4da3b" class="bulleted-list"><li style="list-style-type:disc">саппорт-бот на Causal LM + LoRA (М6–М8),</li></ul><ul id="2ab568fa-e39f-8067-a603-f8c2fe66f2bf" class="bulleted-list"><li style="list-style-type:disc">RAG по базе знаний (М9).</li></ul><p id="2ab568fa-e39f-806a-a3c5-ef57e68b0947" class="">Теперь хотим:</p><ul id="2ab568fa-e39f-8090-adb0-ea1823adc6f3" class="bulleted-list"><li style="list-style-type:disc">завернуть это в <strong>удобный сервис</strong>,</li></ul><ul id="2ab568fa-e39f-8041-adaa-c676eed847fd" class="bulleted-list"><li style="list-style-type:disc">чтобы его можно было дёргать из фронта, Telegram-бота, CRM и т.д.</li></ul></blockquote><p id="2ab568fa-e39f-806f-9e97-f95c62c10de7" class="">Сделаем 4 урока:</p><ol type="1" id="2ab568fa-e39f-80ac-b561-f5f8f23f00fb" class="numbered-list" start="1"><li>10.1 — FastAPI: REST API для классификатора/суммаризатора/бота.<figure id="2ab568fa-e39f-809f-8b81-c152b00548ff" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%2010%20%D0%9E%D1%82%20%D0%BD%D0%BE%D1%83%D1%82%D0%B1%D1%83%D0%BA%D0%B0%20%D0%BA%20%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%BA%D1%88%D0%B5%D0%BD%D1%83%20API,%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/10%201%202ab568fae39f809f8b81c152b00548ff.html">10.1</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-805d-88ea-f4666d604558" class="numbered-list" start="2"><li>10.2 — Gradio UI: интерактивный интерфейс для саппорт-ассистента.<figure id="2ab568fa-e39f-80d8-ae9f-edb4571b4cdb" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%2010%20%D0%9E%D1%82%20%D0%BD%D0%BE%D1%83%D1%82%D0%B1%D1%83%D0%BA%D0%B0%20%D0%BA%20%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%BA%D1%88%D0%B5%D0%BD%D1%83%20API,%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/10%202%202ab568fae39f80d8ae9fedb4571b4cdb.html">10.2</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-805f-8353-eec1d8a11948" class="numbered-list" start="3"><li>10.3 — Батчинг, очередь запросов, оптимизация инференса.<figure id="2ab568fa-e39f-8097-bc8d-e9611129dc62" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%2010%20%D0%9E%D1%82%20%D0%BD%D0%BE%D1%83%D1%82%D0%B1%D1%83%D0%BA%D0%B0%20%D0%BA%20%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%BA%D1%88%D0%B5%D0%BD%D1%83%20API,%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/10%203%202ab568fae39f8097bc8de9611129dc62.html">10.3</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-80b6-993e-c83a19e0a98f" class="numbered-list" start="4"><li>10.4 — Логи, простая offline-оценка и “health-check” для моделей.</li></ol><figure id="2ab568fa-e39f-804c-b2cb-c6416d175731" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%2010%20%D0%9E%D1%82%20%D0%BD%D0%BE%D1%83%D1%82%D0%B1%D1%83%D0%BA%D0%B0%20%D0%BA%20%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%BA%D1%88%D0%B5%D0%BD%D1%83%20API,%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B/10%204%202ab568fae39f804cb2cbc6416d175731.html">10.4</a></figure><hr id="2ab568fa-e39f-8082-884e-d375b35c3af2"/><h2 id="2ab568fa-e39f-800f-9a17-c6c8889bbaad" class="">Урок 10.1. FastAPI: поднимаем REST API над моделями</h2><p id="2ab568fa-e39f-80fa-be66-eb32334b9810" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80c1-a750-e38967d23f77" class="">Сделать <strong>микросервис</strong>, который:</p><ul id="2ab568fa-e39f-806d-807a-ce4100c17cb3" class="bulleted-list"><li style="list-style-type:disc">при старте <strong>грузит модели</strong>,</li></ul><ul id="2ab568fa-e39f-8040-a76d-e57de6e2ccb7" class="bulleted-list"><li style="list-style-type:disc">даёт REST-эндпоинты:<ul id="2ab568fa-e39f-8050-b020-f678fabc1478" class="bulleted-list"><li style="list-style-type:circle"><code>/classify_ticket</code> — классификация тикета,</li></ul><ul id="2ab568fa-e39f-8061-9778-ebf175eb6366" class="bulleted-list"><li style="list-style-type:circle"><code>/summarize_dialog</code> — суммаризация,</li></ul><ul id="2ab568fa-e39f-808a-887e-f2732127fb34" class="bulleted-list"><li style="list-style-type:circle"><code>/support_reply</code> — RAG + ответ бота.</li></ul></li></ul><h3 id="2ab568fa-e39f-803c-9a57-c22664c73c63" class="">10.1.1. Минимальный FastAPI-проект</h3><p id="2ab568fa-e39f-8005-8abd-dfe584ce0aa3" class="">Устанавливаем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e9-8302-d52454912d85" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install fastapi uvicorn[standard]
+</code></pre><p id="2ab568fa-e39f-800a-9d13-e51556bb1bff" class="">Создаём файл <code>app.py</code>.</p><p id="2ab568fa-e39f-80fc-8683-d3ad674b9fcb" class="">Структура:</p><ul id="2ab568fa-e39f-80d8-b134-fc81f45d915a" class="bulleted-list"><li style="list-style-type:disc">глобально загружаем модели (чтобы не перезагружать на каждый запрос),</li></ul><ul id="2ab568fa-e39f-804c-8e3c-e41c63cb35b5" class="bulleted-list"><li style="list-style-type:disc">описываем Pydantic-схемы для запросов/ответов,</li></ul><ul id="2ab568fa-e39f-80e8-8fb5-d8cd3512b587" class="bulleted-list"><li style="list-style-type:disc">описываем эндпоинты.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809e-a9b5-c1bf84748cff" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># app.py
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List, Optional
+
+import torch
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
+    AutoModelForCausalLM,
+)
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
+app = FastAPI(title=&quot;Support Assistant API&quot;)
+
+# === 1. Модели ===
+
+# Классификатор
+CLS_MODEL_DIR = &quot;models/tickets_classifier_final&quot;
+cls_tokenizer = AutoTokenizer.from_pretrained(CLS_MODEL_DIR)
+cls_model = AutoModelForSequenceClassification.from_pretrained(
+    CLS_MODEL_DIR,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+# Суммаризатор (можно использовать LoRA-версию из М8, тут упрощённый пример)
+SUMM_MODEL_DIR = &quot;models/dialog_summarizer&quot;
+summ_tokenizer = AutoTokenizer.from_pretrained(SUMM_MODEL_DIR)
+summ_model = AutoModelForSeq2SeqLM.from_pretrained(
+    SUMM_MODEL_DIR,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+# Бот (Causal LM +, возможно, LoRA)
+BOT_MODEL_DIR = &quot;models/support_causal_sft&quot;
+bot_tokenizer = AutoTokenizer.from_pretrained(BOT_MODEL_DIR)
+if bot_tokenizer.pad_token is None:
+    bot_tokenizer.pad_token = bot_tokenizer.eos_token
+
+bot_model = AutoModelForCausalLM.from_pretrained(
+    BOT_MODEL_DIR,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+# Эмбеддер + индекс KB
+embed_model = SentenceTransformer(&quot;sentence-transformers/all-MiniLM-L6-v2&quot;)
+
+kb_index = {
+    &quot;chunks&quot;: [],      # сюда подставишь из М9
+    &quot;embeddings&quot;: None # numpy array [N, d]
+}
+</code></pre><h3 id="2ab568fa-e39f-808e-b786-e8b78231f2e6" class="">10.1.2. Вспомогательные функции (переиспользуем код М4–М9)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802a-8e71-c189ef5bc40b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def classify_ticket(text: str):
+    enc = cls_tokenizer(
+        text,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=256,
+    ).to(cls_model.device)
+
+    with torch.no_grad():
+        outputs = cls_model(**enc)
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)[0]
+    pred_id = torch.argmax(probs).item()
+    id2label = cls_model.config.id2label
+
+    return id2label[pred_id], float(probs[pred_id])
+
+
+def summarize_dialog(dialog: str, max_new_tokens: int = 64) -&gt; str:
+    inputs = summ_tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    ).to(summ_model.device)
+
+    with torch.no_grad():
+        out_ids = summ_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+        )
+
+    return summ_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+
+
+def search_kb(query: str, top_k: int = 3):
+    if kb_index[&quot;embeddings&quot;] is None or len(kb_index[&quot;chunks&quot;]) == 0:
+        return []
+
+    q_emb = embed_model.encode([query], normalize_embeddings=True)[0]
+    kb_emb = kb_index[&quot;embeddings&quot;]
+    scores = np.dot(kb_emb, q_emb)
+    top_idx = np.argsort(scores)[::-1][:top_k]
+
+    results = []
+    for idx in top_idx:
+        chunk = kb_index[&quot;chunks&quot;][idx]
+        score = scores[idx]
+        results.append({
+            &quot;score&quot;: float(score),
+            &quot;doc_id&quot;: chunk[&quot;doc_id&quot;],
+            &quot;chunk_id&quot;: chunk[&quot;chunk_id&quot;],
+            &quot;text&quot;: chunk[&quot;text&quot;],
+        })
+    return results
+
+
+def build_context(question: str, summary: str, top_k: int = 3):
+    query = summary if summary else question
+    retrieved = search_kb(query, top_k=top_k)
+    blocks = []
+    for r in retrieved:
+        header = f&quot;[{r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]} | score={r[&#x27;score&#x27;]:.3f}]&quot;
+        blocks.append(header + &quot;\n&quot; + r[&quot;text&quot;])
+    context = &quot;\n\n---\n\n&quot;.join(blocks)
+    return context, retrieved
+
+
+def build_rag_prompt(question: str, summary: str, context: str) -&gt; str:
+    prompt = (
+        &quot;System: You are a support assistant. &quot;
+        &quot;Use only the information from the context to answer. &quot;
+        &quot;If the answer is not in the context, say you do not know.\n\n&quot;
+        f&quot;Summary: {summary}\n\n&quot;
+        f&quot;Context:\n{context}\n\n&quot;
+        f&quot;Question: {question}\n&quot;
+        &quot;Answer:&quot;
+    )
+    return prompt
+
+
+def generate_reply(prompt: str, max_new_tokens: int = 128) -&gt; str:
+    inputs = bot_tokenizer(
+        prompt,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=1024,
+    ).to(bot_model.device)
+
+    with torch.no_grad():
+        out_ids = bot_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+        )
+
+    full_text = bot_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+    if &quot;Answer:&quot; in full_text:
+        answer = full_text.split(&quot;Answer:&quot;)[-1].strip()
+    else:
+        answer = full_text.strip()
+    return answer
+</code></pre><h3 id="2ab568fa-e39f-80f2-98b9-d51ac5d0ba0e" class="">10.1.3. Pydantic-схемы и эндпоинты</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80aa-89df-f95a1b2f63ec" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class ClassifyRequest(BaseModel):
+    text: str
+
+
+class ClassifyResponse(BaseModel):
+    label: str
+    confidence: float
+
+
+class SummarizeRequest(BaseModel):
+    dialog: str
+    max_new_tokens: int = 64
+
+
+class SummarizeResponse(BaseModel):
+    summary: str
+
+
+class SupportRequest(BaseModel):
+    dialog: str
+    use_rag: bool = True
+    top_k: int = 3
+
+
+class SupportResponse(BaseModel):
+    summary: str
+    answer: str
+    label: Optional[str] = None
+    confidence: Optional[float] = None
+    context: Optional[str] = None
+
+
+@app.post(&quot;/classify_ticket&quot;, response_model=ClassifyResponse)
+def classify_ticket_endpoint(req: ClassifyRequest):
+    label, conf = classify_ticket(req.text)
+    return ClassifyResponse(label=label, confidence=conf)
+
+
+@app.post(&quot;/summarize_dialog&quot;, response_model=SummarizeResponse)
+def summarize_dialog_endpoint(req: SummarizeRequest):
+    summary = summarize_dialog(req.dialog, max_new_tokens=req.max_new_tokens)
+    return SummarizeResponse(summary=summary)
+
+
+@app.post(&quot;/support_reply&quot;, response_model=SupportResponse)
+def support_reply_endpoint(req: SupportRequest):
+    # 1. Класс тикета
+    label, conf = classify_ticket(req.dialog)
+
+    # 2. Summary
+    summary = summarize_dialog(req.dialog)
+
+    context = None
+    if req.use_rag:
+        context, retrieved = build_context(req.dialog, summary, top_k=req.top_k)
+        prompt = build_rag_prompt(req.dialog, summary, context)
+    else:
+        prompt = f&quot;User: {req.dialog}\nSupport:&quot;
+
+    answer = generate_reply(prompt)
+
+    return SupportResponse(
+        summary=summary,
+        answer=answer,
+        label=label,
+        confidence=conf,
+        context=context,
+    )
+</code></pre><p id="2ab568fa-e39f-80af-af39-e98bc58839b0" class="">Запускаем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801e-9ad5-fff99284f7ce" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">uvicorn app:app --reload --port 8000
+</code></pre><p id="2ab568fa-e39f-8010-9fb1-fed5a152a66b" class="">И можно стучаться:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8001-bf8b-f972cba73bef" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">curl -X POST &quot;http://localhost:8000/classify_ticket&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;text&quot;: &quot;App crashes when opening gallery&quot;}&#x27;
+</code></pre><h3 id="2ab568fa-e39f-80a9-8404-f937435a8a9a" class="">10.1.4. Домашка 10.1</h3><ol type="1" id="2ab568fa-e39f-8041-b94c-fe9cac5cda1b" class="numbered-list" start="1"><li>Поднять свой FastAPI-сервис с:<ul id="2ab568fa-e39f-80bb-ac3f-f3bbf8aa86b7" class="bulleted-list"><li style="list-style-type:disc">хотя бы одним эндпоинтом (<code>/support_reply</code>),</li></ul><ul id="2ab568fa-e39f-8073-9e5b-d0dcf30302b2" class="bulleted-list"><li style="list-style-type:disc">более простыми моделями (классификатор + бот).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8059-a1e4-c74c4d22d496" class="numbered-list" start="2"><li>Убедиться, что:<ul id="2ab568fa-e39f-8075-bd75-dd916fad8e3a" class="bulleted-list"><li style="list-style-type:disc">модели грузятся <strong>один раз</strong> при старте,</li></ul><ul id="2ab568fa-e39f-8024-8508-f3b10ba98665" class="bulleted-list"><li style="list-style-type:disc">запросы обрабатываются без падений,</li></ul><ul id="2ab568fa-e39f-80b8-a954-d32353cff88f" class="bulleted-list"><li style="list-style-type:disc">можно отправить запрос через curl/Postman.</li></ul></li></ol><hr id="2ab568fa-e39f-8099-87d3-ce461f034985"/><h2 id="2ab568fa-e39f-80d8-87a2-da11ef6268ad" class="">Урок 10.2. Gradio UI: делаем интерфейс для саппорт-ассистента</h2><p id="2ab568fa-e39f-80db-adc8-f940ea516879" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8085-8598-c54a029dc048" class="">Сделать <strong>живой интерфейс</strong>, где:</p><ul id="2ab568fa-e39f-80cf-86b7-cfa52b8921bf" class="bulleted-list"><li style="list-style-type:disc">слева вводим диалог/тикет,</li></ul><ul id="2ab568fa-e39f-8000-b63d-e670f2af428b" class="bulleted-list"><li style="list-style-type:disc">справа:<ul id="2ab568fa-e39f-80e4-a372-fab7eaec4e33" class="bulleted-list"><li style="list-style-type:circle">показывается summary,</li></ul><ul id="2ab568fa-e39f-804f-a343-d497dbf1b25d" class="bulleted-list"><li style="list-style-type:circle">класс тикета,</li></ul><ul id="2ab568fa-e39f-807e-9f35-dcd944257c55" class="bulleted-list"><li style="list-style-type:circle">ответ бота,</li></ul><ul id="2ab568fa-e39f-8084-80b9-d77fac5b5f92" class="bulleted-list"><li style="list-style-type:circle">(опционально) куски контекста RAG.</li></ul></li></ul><p id="2ab568fa-e39f-805b-87e6-ef21fbf9aeee" class="">Gradio очень прост, для курса идеально.</p><h3 id="2ab568fa-e39f-8081-a9cc-f9adbe4eeb47" class="">10.2.1. Установка</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ab-a5b1-f294e8ede8fb" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install gradio
+</code></pre><h3 id="2ab568fa-e39f-804c-880b-fe2b635f8c83" class="">10.2.2. Минималка для одного поля</h3><p id="2ab568fa-e39f-803d-b80d-c3d4d0e93c32" class="">Пример:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809c-adba-c3addb1efe09" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all"># ui.py
+import gradio as gr
+from app import classify_ticket, summarize_dialog, build_context, build_rag_prompt, generate_reply
+
+def support_assistant_interface(dialog: str, use_rag: bool = True):
+    label, conf = classify_ticket(dialog)
+    summary = summarize_dialog(dialog)
+
+    context = &quot;&quot;
+    if use_rag:
+        context, _ = build_context(dialog, summary, top_k=3)
+        prompt = build_rag_prompt(dialog, summary, context)
+    else:
+        prompt = f&quot;User: {dialog}\nSupport:&quot;
+    answer = generate_reply(prompt)
+
+    return label, conf, summary, context, answer
+
+
+with gr.Blocks() as demo:
+    gr.Markdown(&quot;# Support Assistant (Transformers + RAG)&quot;)
+
+    with gr.Row():
+        with gr.Column():
+            dialog_input = gr.Textbox(
+                label=&quot;Диалог / описание тикета&quot;,
+                lines=10,
+                placeholder=&quot;User: ...&quot;,
+            )
+            use_rag_input = gr.Checkbox(
+                label=&quot;Использовать базу знаний (RAG)&quot;,
+                value=True,
+            )
+            run_btn = gr.Button(&quot;Получить ответ&quot;)
+
+        with gr.Column():
+            label_out = gr.Textbox(label=&quot;Класс тикета&quot;)
+            conf_out = gr.Number(label=&quot;Уверенность классификатора&quot;)
+            summary_out = gr.Textbox(label=&quot;Суммаризация диалога&quot;, lines=5)
+            context_out = gr.Textbox(label=&quot;Использованный контекст из KB&quot;, lines=10)
+            answer_out = gr.Textbox(label=&quot;Ответ ассистента&quot;, lines=5)
+
+    run_btn.click(
+        fn=support_assistant_interface,
+        inputs=[dialog_input, use_rag_input],
+        outputs=[label_out, conf_out, summary_out, context_out, answer_out],
+    )
+
+if __name__ == &quot;__main__&quot;:
+    demo.launch(server_port=7860)
+</code></pre><p id="2ab568fa-e39f-80d3-adc8-db2d0d240ebf" class="">Запускаем:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801e-b7a8-db4f46af8d72" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">python ui.py
+</code></pre><p id="2ab568fa-e39f-8011-a16c-feaa2eb9090f" class="">Откроется локальный веб-интерфейс.</p><h3 id="2ab568fa-e39f-80a4-8ace-ee74fd89d23d" class="">10.2.3. Домашка 10.2</h3><ol type="1" id="2ab568fa-e39f-80d8-b854-e0ce8977a04f" class="numbered-list" start="1"><li>Собрать свой Gradio-интерфейс:<ul id="2ab568fa-e39f-809c-ab03-c14494c558ff" class="bulleted-list"><li style="list-style-type:disc">минимум: поле ввода + ответ бота.</li></ul><ul id="2ab568fa-e39f-8080-9ccf-d4f4e204a342" class="bulleted-list"><li style="list-style-type:disc">лучше: как в примере — класс, summary, контекст, ответ.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80b9-b159-c7545311eb11" class="numbered-list" start="2"><li>Потестить:<ul id="2ab568fa-e39f-80a9-9cf2-f859b2f439fb" class="bulleted-list"><li style="list-style-type:disc">на разных диалогах,</li></ul><ul id="2ab568fa-e39f-80ec-ab07-e3fe8b790a80" class="bulleted-list"><li style="list-style-type:disc">с включённым/выключенным RAG.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8072-9699-db9564e7228c" class="numbered-list" start="3"><li>(Опционально) Добавить:<ul id="2ab568fa-e39f-804b-b80e-fad0fff5fec8" class="bulleted-list"><li style="list-style-type:disc">историю диалога (List of messages),</li></ul><ul id="2ab568fa-e39f-8065-8628-f9f13651aa09" class="bulleted-list"><li style="list-style-type:disc">чекбокс “Показать промпт, который реально ушёл в модель”.</li></ul></li></ol><hr id="2ab568fa-e39f-8055-9e4b-c6d790a1a034"/><h2 id="2ab568fa-e39f-80f9-bbba-c4775a7d1663" class="">Урок 10.3. Батчинг и очередь запросов</h2><p id="2ab568fa-e39f-80db-8940-e445ac028d36" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8022-a89c-c2b132caf337" class="">Научить:</p><ul id="2ab568fa-e39f-805b-88b4-cfcce455a1be" class="bulleted-list"><li style="list-style-type:disc">эффективно использовать GPU/CPU,</li></ul><ul id="2ab568fa-e39f-80c2-9d64-fb1b9b5fae40" class="bulleted-list"><li style="list-style-type:disc">делать <strong>батчевый инференс</strong> вместо одного запроса за раз,</li></ul><ul id="2ab568fa-e39f-809f-8eb9-ee14866c10c5" class="bulleted-list"><li style="list-style-type:disc">прикидывать, как реализовать очередь запросов.</li></ul><p id="2ab568fa-e39f-80b8-a0fd-ec7ed2421ad3" class="">Это уже более инженерная часть, но очень полезная.</p><h3 id="2ab568fa-e39f-800e-9bb6-f8614419f4bb" class="">10.3.1. Проблема “один запрос — один forward”</h3><p id="2ab568fa-e39f-80eb-91b3-f4669b63b13b" class="">Если на проде:</p><ul id="2ab568fa-e39f-80b0-9e9e-dd727628dde3" class="bulleted-list"><li style="list-style-type:disc">приходят десятки/сотни запросов в секунду,</li></ul><ul id="2ab568fa-e39f-8054-ad85-d39ff67d114c" class="bulleted-list"><li style="list-style-type:disc">на каждый делать <code>model(**single_input)</code> → дорого и неэффективно.</li></ul><p id="2ab568fa-e39f-80ae-b2d5-c9b4a798477b" class="">Решение:</p><ul id="2ab568fa-e39f-80a8-9462-c54f3ada4d52" class="bulleted-list"><li style="list-style-type:disc">копим несколько запросов в батч и прогоняем <strong>один forward</strong>.</li></ul><p id="2ab568fa-e39f-80ad-a130-fdf4ba891de7" class="">В FastAPI это делают либо:</p><ul id="2ab568fa-e39f-80af-869f-f0496001dc49" class="bulleted-list"><li style="list-style-type:disc">внутри сервиса через глобальную очередь + фоновые воркеры,</li></ul><ul id="2ab568fa-e39f-8046-b4c3-e539ad7639c4" class="bulleted-list"><li style="list-style-type:disc">либо на уровне inference-сервера (Ray Serve, vLLM и т.п. – это уже за рамками курса, можно просто упомянуть).</li></ul><h3 id="2ab568fa-e39f-80ed-b6b6-f59f75f3035d" class="">10.3.2. Пример батч-обработки классификации</h3><p id="2ab568fa-e39f-8055-8ba3-cf715dc1db7e" class="">Сделаем отдельную функцию, которая принимает <strong>список текстов</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8061-895d-f9cc3040a6f6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def classify_batch(texts: list[str]):
+    enc = cls_tokenizer(
+        texts,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        padding=True,
+        max_length=256,
+    ).to(cls_model.device)
+
+    with torch.no_grad():
+        outputs = cls_model(**enc)
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)
+
+    id2label = cls_model.config.id2label
+
+    results = []
+    for i in range(len(texts)):
+        p = probs[i]
+        pred_id = torch.argmax(p).item()
+        results.append({
+            &quot;text&quot;: texts[i],
+            &quot;label&quot;: id2label[pred_id],
+            &quot;confidence&quot;: float(p[pred_id]),
+        })
+    return results
+</code></pre><p id="2ab568fa-e39f-809a-a08f-d812dc75679d" class="">Эндпоинт для батча:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804c-a591-f5e56652164e" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class BatchClassifyRequest(BaseModel):
+    texts: List[str]
+
+
+class BatchClassifyResponse(BaseModel):
+    results: List[ClassifyResponse]
+
+
+@app.post(&quot;/classify_batch&quot;, response_model=BatchClassifyResponse)
+def classify_batch_endpoint(req: BatchClassifyRequest):
+    batch_res = classify_batch(req.texts)
+    return BatchClassifyResponse(
+        results=[ClassifyResponse(label=r[&quot;label&quot;], confidence=r[&quot;confidence&quot;]) for r in batch_res]
+    )
+</code></pre><h3 id="2ab568fa-e39f-8052-93fb-e85a1c3676b1" class="">10.3.3. Очередь запросов (концептуально)</h3><p id="2ab568fa-e39f-80d7-848b-c96facb2a7ea" class="">Идея:</p><ul id="2ab568fa-e39f-80eb-bbf1-d536121be30c" class="bulleted-list"><li style="list-style-type:disc">у тебя есть глобальная очередь запросов,</li></ul><ul id="2ab568fa-e39f-80b6-b79d-d8bf0d19b190" class="bulleted-list"><li style="list-style-type:disc">воркер-процесс периодически:<ul id="2ab568fa-e39f-8018-bbf8-e65a90bdeb39" class="bulleted-list"><li style="list-style-type:circle">забирает до N запросов,</li></ul><ul id="2ab568fa-e39f-809c-b982-cacae72dd625" class="bulleted-list"><li style="list-style-type:circle">формирует батч,</li></ul><ul id="2ab568fa-e39f-8029-b655-ca28c3c8ef1a" class="bulleted-list"><li style="list-style-type:circle">считает результат,</li></ul><ul id="2ab568fa-e39f-808d-b185-f7bf6ac01772" class="bulleted-list"><li style="list-style-type:circle">возвращает каждому ответ.</li></ul></li></ul><p id="2ab568fa-e39f-80a9-96c9-d9c67dc5fa96" class="">В FastAPI можно:</p><ul id="2ab568fa-e39f-80d8-b9d9-dcdfb53e752f" class="bulleted-list"><li style="list-style-type:disc">использовать <code>BackgroundTasks</code>, <code>asyncio.Queue</code>, Celery, Redis и т.п.<p id="2ab568fa-e39f-8090-adb8-c333c1efa627" class="">(это уже больше DevOps/backend; для курса достаточно объяснить идею + ссылки).</p></li></ul><h3 id="2ab568fa-e39f-8061-b87b-d02223894a63" class="">10.3.4. Домашка 10.3</h3><ol type="1" id="2ab568fa-e39f-80fc-847e-f715211345d3" class="numbered-list" start="1"><li>Реализовать батч-эндпоинт для классификатора:<ul id="2ab568fa-e39f-802f-beac-fab558910220" class="bulleted-list"><li style="list-style-type:disc"><code>/classify_batch</code> с <code>List[str]</code> → <code>List[label, conf]</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8094-b475-cc0f64def716" class="numbered-list" start="2"><li>Измерить:<ul id="2ab568fa-e39f-80e2-83e1-f748cd76a795" class="bulleted-list"><li style="list-style-type:disc">время обработки 16 запросов по одному,</li></ul><ul id="2ab568fa-e39f-80f1-b572-e967430669f3" class="bulleted-list"><li style="list-style-type:disc">время обработки этих же 16 запросов через батч (размер батча = 16).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8094-ae6b-e5ea0dd53473" class="numbered-list" start="3"><li>Написать вывод:<ul id="2ab568fa-e39f-8076-976c-f5a0d9d97177" class="bulleted-list"><li style="list-style-type:disc">насколько батч быстрее,</li></ul><ul id="2ab568fa-e39f-80d4-911c-c4c0aecc5152" class="bulleted-list"><li style="list-style-type:disc">где это можно применить в реальном сервисе.</li></ul></li></ol><hr id="2ab568fa-e39f-800d-800c-dbb5a2c17055"/><h2 id="2ab568fa-e39f-807c-9a84-f7e5fb374b73" class="">Урок 10.4. Логи, offline-оценка и health-check</h2><p id="2ab568fa-e39f-8082-a935-f9fbbd1d0a11" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80f3-bca1-d92b1259d44b" class="">Показать:</p><ul id="2ab568fa-e39f-80f1-b36f-e077a95f3b16" class="bulleted-list"><li style="list-style-type:disc">как <strong>логировать</strong> запросы/ответы моделей,</li></ul><ul id="2ab568fa-e39f-805e-aee6-dd76f72be66d" class="bulleted-list"><li style="list-style-type:disc">как проводить простую offline-оценку качества,</li></ul><ul id="2ab568fa-e39f-80d1-9bdc-c0b6695014e4" class="bulleted-list"><li style="list-style-type:disc">как сделать health-check эндпоинт и базовую “самодиагностику”.</li></ul><h3 id="2ab568fa-e39f-8015-8884-fd355a5184a3" class="">10.4.1. Логирование запросов/ответов</h3><p id="2ab568fa-e39f-80a0-85f2-eb9d1c95ec54" class="">Уровень курса: простые JSON-логи.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801e-8699-f992dac7ce11" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import json
+from datetime import datetime
+from pathlib import Path
+
+LOG_PATH = Path(&quot;logs&quot;)
+LOG_PATH.mkdir(exist_ok=True)
+
+def log_interaction(endpoint: str, request_data: dict, response_data: dict):
+    record = {
+        &quot;timestamp&quot;: datetime.utcnow().isoformat(),
+        &quot;endpoint&quot;: endpoint,
+        &quot;request&quot;: request_data,
+        &quot;response&quot;: response_data,
+    }
+    with open(LOG_PATH / f&quot;{endpoint}.log&quot;, &quot;a&quot;, encoding=&quot;utf-8&quot;) as f:
+        f.write(json.dumps(record, ensure_ascii=False) + &quot;\n&quot;)
+</code></pre><p id="2ab568fa-e39f-80c1-8e4b-f3378d69e1b8" class="">Используем в эндпоинтах FastAPI:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b0-902d-dd9fc6f144c7" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.post(&quot;/support_reply&quot;, response_model=SupportResponse)
+def support_reply_endpoint(req: SupportRequest):
+    # ... считаем ответ как раньше
+    resp = SupportResponse(
+        summary=summary,
+        answer=answer,
+        label=label,
+        confidence=conf,
+        context=context,
+    )
+    log_interaction(
+        &quot;support_reply&quot;,
+        request_data=req.dict(),
+        response_data=resp.dict(),
+    )
+    return resp
+</code></pre><p id="2ab568fa-e39f-804d-9c10-dc4b86018798" class="">Потом эти логи можно:</p><ul id="2ab568fa-e39f-809b-bc91-f873c80f02c2" class="bulleted-list"><li style="list-style-type:disc">использовать для offline-оценки,</li></ul><ul id="2ab568fa-e39f-80fe-b479-f539e11f32f0" class="bulleted-list"><li style="list-style-type:disc">смотреть реальные кейсы пользователей,</li></ul><ul id="2ab568fa-e39f-80c0-bd6b-ec8f9c258555" class="bulleted-list"><li style="list-style-type:disc">отбирать сложные примеры для дообучения (active learning style).</li></ul><h3 id="2ab568fa-e39f-805d-82ef-fbca35e1e72c" class="">10.4.2. Offline-оценка</h3><p id="2ab568fa-e39f-8077-acef-d2a8c01ed1e8" class="">Простой вариант:</p><ul id="2ab568fa-e39f-80ad-ab5e-ee3670f0f877" class="bulleted-list"><li style="list-style-type:disc">собрать файл <code>eval_tickets.jsonl</code>, где для каждого примера есть:<ul id="2ab568fa-e39f-8065-948a-c8ede6f1482d" class="bulleted-list"><li style="list-style-type:circle"><code>dialog</code> / <code>question</code>,</li></ul><ul id="2ab568fa-e39f-80af-961f-ee16a9ff401a" class="bulleted-list"><li style="list-style-type:circle"><code>expected_label</code> / <code>expected_summary</code> / <code>expected_answer</code> (частично),</li></ul></li></ul><ul id="2ab568fa-e39f-80b7-84bc-dc5fd8bcfe7a" class="bulleted-list"><li style="list-style-type:disc">написать скрипт, который проходится по файлу, дёргает <strong>локальную</strong> модель (не через HTTP) и считает:<ul id="2ab568fa-e39f-8037-b0df-cbc72cb909d5" class="bulleted-list"><li style="list-style-type:circle">accuracy/F1 для классификатора,</li></ul><ul id="2ab568fa-e39f-8061-91c6-f1406f36f34d" class="bulleted-list"><li style="list-style-type:circle">ROUGE для суммаризации,</li></ul><ul id="2ab568fa-e39f-802a-a82f-dc3985ee4e56" class="bulleted-list"><li style="list-style-type:circle">простые метрики для ответов (например, BLEU/ROUGE, хотя для реальных ответов лучше human eval).</li></ul></li></ul><p id="2ab568fa-e39f-80f3-9e02-ce115d31c992" class="">Пример skeleton для классификатора:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a0-9339-ffa67454eee3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import json
+from pathlib import Path
+from sklearn.metrics import accuracy_score, f1_score
+
+def evaluate_classifier(eval_path=&quot;eval_tickets.jsonl&quot;):
+    y_true = []
+    y_pred = []
+
+    with open(eval_path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+        for line in f:
+            item = json.loads(line)
+            text = item[&quot;dialog&quot;]
+            true_label = item[&quot;expected_label&quot;]
+            pred_label, _ = classify_ticket(text)
+            y_true.append(true_label)
+            y_pred.append(pred_label)
+
+    acc = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred, average=&quot;weighted&quot;)
+    print(f&quot;Accuracy: {acc:.4f}, F1: {f1:.4f}&quot;)
+</code></pre><h3 id="2ab568fa-e39f-8058-b113-e2faa52353a8" class="">10.4.3. Health-check эндпоинт</h3><p id="2ab568fa-e39f-8019-9703-e0bcf567c46e" class="">Минимальный <code>/health</code>:</p><ul id="2ab568fa-e39f-8065-a236-d042a2f3a4b5" class="bulleted-list"><li style="list-style-type:disc">проверить:<ul id="2ab568fa-e39f-80df-addc-d774e3a52fba" class="bulleted-list"><li style="list-style-type:circle">модели загружены,</li></ul><ul id="2ab568fa-e39f-80cd-b0f6-f9d55fec5d29" class="bulleted-list"><li style="list-style-type:circle">устройство доступно,</li></ul><ul id="2ab568fa-e39f-807f-8a6a-c8da653f20d2" class="bulleted-list"><li style="list-style-type:circle">сделать простой “dry-run” на синтетических данных.</li></ul></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802a-92d5-f4ecbe6a5525" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">@app.get(&quot;/health&quot;)
+def health_check():
+    try:
+        # простой тест классификатора
+        _ = classify_ticket(&quot;Test ticket&quot;)
+        # простой тест бота
+        _ = generate_reply(&quot;User: test\nSupport:&quot;)
+        return {&quot;status&quot;: &quot;ok&quot;}
+    except Exception as e:
+        return {&quot;status&quot;: &quot;error&quot;, &quot;detail&quot;: str(e)}
+</code></pre><h3 id="2ab568fa-e39f-80d9-bde7-dbd5b6b2e670" class="">10.4.4. Домашка 10.4 (итоговая по модулю)</h3><ol type="1" id="2ab568fa-e39f-8057-9808-f1f3b8ccc9ad" class="numbered-list" start="1"><li>Добавить логирование в свои основные эндпоинты.</li></ol><ol type="1" id="2ab568fa-e39f-802f-ba54-cae957c57fe0" class="numbered-list" start="2"><li>Создать небольшой eval-набор для:<ul id="2ab568fa-e39f-805c-89a6-f34f2c0775ed" class="bulleted-list"><li style="list-style-type:disc">классификатора (10–20 примеров с правильными лейблами),</li></ul><ul id="2ab568fa-e39f-800a-a10e-d658aa0ebab1" class="bulleted-list"><li style="list-style-type:disc">и/или суммаризатора (5–10 диалогов с etalon-summary).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8001-8308-f39ffcd38247" class="numbered-list" start="3"><li>Написать скрипт offline-оценки и посчитать метрики.</li></ol><ol type="1" id="2ab568fa-e39f-805f-84ea-d10bc92aecda" class="numbered-list" start="4"><li>Добавить <code>/health</code> эндпоинт, который:<ul id="2ab568fa-e39f-8056-87b0-e6ba5fa59203" class="bulleted-list"><li style="list-style-type:disc">дергает простые внутренние функции моделей,</li></ul><ul id="2ab568fa-e39f-800a-bc60-c47cba985109" class="bulleted-list"><li style="list-style-type:disc">возвращает JSON-статус.</li></ul></li></ol><hr id="2ab568fa-e39f-8090-9923-ce90b0042019"/><h2 id="2ab568fa-e39f-803a-8500-e4bc35e596ec" class="">Что ученик умеет после модуля 10</h2><p id="2ab568fa-e39f-800b-a3c2-d9f5f958459c" class="">После этого модуля человек:</p><ul id="2ab568fa-e39f-80c6-a22c-eeaa4e9b0362" class="bulleted-list"><li style="list-style-type:disc">умеет поднимать <strong>REST API</strong> поверх моделей transformers (FastAPI);</li></ul><ul id="2ab568fa-e39f-8001-a241-d74b4ab61f29" class="bulleted-list"><li style="list-style-type:disc">умеет делать <strong>интерактивный интерфейс</strong> (Gradio) для:<ul id="2ab568fa-e39f-8096-bb8a-ddcd549bcc22" class="bulleted-list"><li style="list-style-type:circle">классификатора,</li></ul><ul id="2ab568fa-e39f-807f-972c-cb7ff231dd79" class="bulleted-list"><li style="list-style-type:circle">суммаризатора,</li></ul><ul id="2ab568fa-e39f-80a9-830c-e109ab8b6cf5" class="bulleted-list"><li style="list-style-type:circle">RAG-саппорт-ассистента;</li></ul></li></ul><ul id="2ab568fa-e39f-803a-82de-d7c100262db6" class="bulleted-list"><li style="list-style-type:disc">понимает базовую <strong>оптимизацию инференса</strong>:<ul id="2ab568fa-e39f-80f7-99bb-ccc66f105196" class="bulleted-list"><li style="list-style-type:circle">батчинг запросов,</li></ul><ul id="2ab568fa-e39f-802c-bd4b-ce72d7234184" class="bulleted-list"><li style="list-style-type:circle">pre-loading моделей, no_grad;</li></ul></li></ul><ul id="2ab568fa-e39f-80ee-9397-cd4edb6e27a7" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-8053-9b97-e32ddbcc07be" class="bulleted-list"><li style="list-style-type:circle">логировать запросы/ответы,</li></ul><ul id="2ab568fa-e39f-80d8-bfd3-c1176b96e6d0" class="bulleted-list"><li style="list-style-type:circle">строить простой offline-eval,</li></ul><ul id="2ab568fa-e39f-8018-bcf3-fb9de3c99d4d" class="bulleted-list"><li style="list-style-type:circle">добавлять health-check эндпоинты.</li></ul></li></ul><p id="2ab568fa-e39f-80ec-b433-fef005848592" class="">То есть курс уже полностью покрывает путь <strong>от “я умею запускать pipeline в ноутбуке” до “я могу собрать и задеплоить сложного ассистента с RAG и LoRA”</strong>.</p><p id="2ab568fa-e39f-80eb-9d07-d094e72fb42b" class="">Если хочешь, дальше можно:</p><ul id="2ab568fa-e39f-80d6-9cfb-fbe6b5f8cbda" class="bulleted-list"><li style="list-style-type:disc">собрать <strong>общий syllabus 0–10</strong> в одной компактной таблице/документе (идеально для лендинга курса),</li></ul><ul id="2ab568fa-e39f-803b-b232-fbad93449aaf" class="bulleted-list"><li style="list-style-type:disc">или придумать <strong>капстоун-проект</strong>: один большой проект на весь курс (типа “Support AI Platform”), где каждый модуль — часть roadmap’а.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

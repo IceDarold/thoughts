@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Теория</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80d4-a897-e40d23c9cc69" class="page sans"><header><h1 class="page-title">Теория</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-801c-81ec-cfbc1c2a117e" class="">ниже — «полная теория» для М5. Фокус: <strong>регрессия на структурированных данных с ярко выраженной пространственно-временной и иерархической природой</strong> (недвижимость, реестры, каталоги). Как строить устойчивые модели цен/стоимостей, не уехать в утечки, грамотно валидироваться, инженерить признаки (включая геопризнаки и соседей), выбирать лоссы и проверять переносимость.</p><h2 id="2a8568fa-e39f-808e-bb3f-d01d3838fded" class="">1) Постановка и цели</h2><p id="2a8568fa-e39f-8032-9ae0-f79016037e22" class=""><strong>Типовая задача:</strong> предсказать <strong>цену/стоимость</strong> (house price, appraisal), <strong>время/стоимость сделки</strong>, <strong>оценку объекта</strong>. Данные — структурированные: числовые и категориальные атрибуты объекта + <strong>гео</strong> (lat/lon, район), <strong>время</strong> (дата сделки), <strong>иерархии</strong> (квартира→дом→квартал→район→город), иногда — <strong>несколько таблиц</strong> (реестровые срезы, история продаж).</p><p id="2a8568fa-e39f-8049-8c4b-c6c4788b496b" class=""><strong>Типовые метрики:</strong> RMSE, MAE, RMSLE, MAPE/SMAPE; иногда кастомные стоимости ошибок.</p><p id="2a8568fa-e39f-80c1-9325-f97766be467d" class=""><strong>Ключевые риски:</strong> утечки (время/агрегаты через валидацию), <strong>пространственный/временной сдвиг</strong>, зависимость наблюдений (соседние объекты), heavy-tail распределения, неоднородность по регионам, повторные продажи одного объекта.</p><hr id="2a8568fa-e39f-806b-af96-f5ab486272bb"/><h2 id="2a8568fa-e39f-8018-8d7a-d7fcf1edb757" class="">2) Таргет и преобразования</h2><ul id="2a8568fa-e39f-80e1-b6e5-de4e11d802e8" class="bulleted-list"><li style="list-style-type:disc"><strong>Лог-таргет</strong>: (y&#x27;=\log(1+y)) — сглаживает хвосты, делает ошибки относительными → лучше при RMSLE/MAE-подобных целях и гетероскедастичности.</li></ul><ul id="2a8568fa-e39f-809c-95a6-d8c3c7020f3a" class="bulleted-list"><li style="list-style-type:disc"><strong>Цена за метр:</strong> (p_{m^2}= \frac{\text{price}}{\text{area_living}}) — нормирует по площади; далее предсказываем (p_{m^2}) и умножаем на площадь (контролируйте выбросы площадей).</li></ul><ul id="2a8568fa-e39f-8012-a0e2-e13f00aa3ab6" class="bulleted-list"><li style="list-style-type:disc"><strong>Биннинг времени</strong>: месяц/квартал сделки для индексации тренда.</li></ul><ul id="2a8568fa-e39f-8054-b476-d79a9e2e71d1" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность метрики:</strong> если оф. метрика RMSE по «сырому» price, а вы обучаетесь на (\log price) — валидируйте <strong>в обеих шкалах</strong> (обратная трансформация с корректной биас-правкой).</li></ul><p id="2a8568fa-e39f-806e-86c9-dd46b6be8137" class=""><strong>Обратная трансформация лог-таргета:</strong></p><p id="2a8568fa-e39f-80ac-b33c-ffe6c625242b" class="">Если модель даёт (\hat{z}=\log(1+y)), корректируйте смещение:</p><p id="2a8568fa-e39f-807d-a667-ff480c180310" class="">[</p><p id="2a8568fa-e39f-8036-aeb9-e3c0dbc9c2ee" class="">\widehat{y} \approx \exp(\hat{z} + \tfrac{1}{2},\widehat{\sigma}^2)-1</p><p id="2a8568fa-e39f-8088-a8a9-f766d32f7d28" class="">]</p><p id="2a8568fa-e39f-8046-8d77-f9679cd8f062" class="">где (\widehat{\sigma}^2) — дисперсия ошибок в лог-пространстве (оцените по OOF).</p><hr id="2a8568fa-e39f-8070-829e-fbabc7298814"/><h2 id="2a8568fa-e39f-800f-aff2-c6c1071a631e" class="">3) Валидация: spatial/time/group — без этого всё мимо</h2><ul id="2a8568fa-e39f-8022-a16c-d07e0df6da97" class="bulleted-list"><li style="list-style-type:disc"><strong>GroupKFold по объекту/дому/кварталу</strong>: повторные продажи одного объекта <strong>не должны</strong> делиться между train/val.</li></ul><ul id="2a8568fa-e39f-8098-b911-cf55ec39440f" class="bulleted-list"><li style="list-style-type:disc"><strong>Spatial CV</strong>: группируйте по <strong>геосетке</strong> (например, H3/геохеш на уровне района) — целые плитки уходят в валид; меняйте зерно сетки.</li></ul><ul id="2a8568fa-e39f-80b3-95f3-ec280a7eaf55" class="bulleted-list"><li style="list-style-type:disc"><strong>Time/Purged CV</strong>: если есть дата сделки, делайте роллинг с <strong>gap ≥ макс-лаг</strong>; обязательно оставьте <strong>OOT-период</strong> (последние месяцы).</li></ul><ul id="2a8568fa-e39f-8076-a571-c872e0283fac" class="bulleted-list"><li style="list-style-type:disc"><strong>Hybrid CV</strong>: Time × Spatial — валид по последним месяцам <strong>и</strong> на отдельных геоплитках (строже, но ближе к реальности).</li></ul><ul id="2a8568fa-e39f-80f2-a767-c71cc842cb19" class="bulleted-list"><li style="list-style-type:disc"><strong>Fold map фиксируем</strong> (fold_map.parquet) и переиспользуем в OOF-преобразованиях (см. ниже).</li></ul><p id="2a8568fa-e39f-80c2-88ec-e47e7d366443" class=""><strong>Симптомы плохой CV:</strong> большой shake-up CV↔LB, рост метрики при «странных» фичах (индексы, маски NaN), сильная зависимость от сидов.</p><hr id="2a8568fa-e39f-8020-85e1-ef3eb3ce0dd7"/><h2 id="2a8568fa-e39f-8081-88c3-c300ca1e6449" class="">4) Источники утечек в реестрах/недвижимости</h2><ul id="2a8568fa-e39f-80db-a739-ca88d0aa48d4" class="bulleted-list"><li style="list-style-type:disc"><strong>Время:</strong> агрегаты «средняя цена в районе» считались <strong>с учётом будущих продаж</strong>; rolling без gap; признаки «время до следующей продажи».</li></ul><ul id="2a8568fa-e39f-8026-b2b7-fe7c47691630" class="bulleted-list"><li style="list-style-type:disc"><strong>Пространство:</strong> фичи соседей/района посчитаны на всём датасете (train+val) → валид «подсмотрен».</li></ul><ul id="2a8568fa-e39f-80e5-a335-cc2cfe9ccff1" class="bulleted-list"><li style="list-style-type:disc"><strong>Дубликаты/near-dupes:</strong> одна и та же квартира (или почти идентичная) попала и в train, и в val.</li></ul><ul id="2a8568fa-e39f-8049-8315-d6ff8a8f5c81" class="bulleted-list"><li style="list-style-type:disc"><strong>Снапшоты реестра:</strong> признаки из состояний реестра <strong>после</strong> даты сделки (фактически look-ahead).</li></ul><ul id="2a8568fa-e39f-807a-9c4d-db33bb8035fd" class="bulleted-list"><li style="list-style-type:disc"><strong>Текст/статусы:</strong> статус сделки/оценки, проставленный <strong>после</strong> события (частая скрытая утечка).</li></ul><p id="2a8568fa-e39f-809c-81d4-d85ec7681ff5" class=""><strong>Простые анти-тесты:</strong> перестановка y внутри фолда (smoke test), AV (train vs test по X), PSI по ключевым фичам, поиск дубликатов (хэши, KNN по структурным полям).</p><hr id="2a8568fa-e39f-80db-8298-dfcfcc3162fb"/><h2 id="2a8568fa-e39f-806f-a8f4-d99c00169017" class="">5) Признаки: системная карта</h2><h3 id="2a8568fa-e39f-80d0-8c28-f6e384359f3e" class="">5.1 Базовые числовые и производные</h3><ul id="2a8568fa-e39f-80ee-93a8-c3795426ea46" class="bulleted-list"><li style="list-style-type:disc">Площадь(и): общая/жилая/кухни, <strong>отношения</strong> (жилая/общая), плотность: площадь/комнату.</li></ul><ul id="2a8568fa-e39f-806f-b9f8-eddb4cd81e83" class="bulleted-list"><li style="list-style-type:disc">Комнаты/санузлы, <strong>удельные</strong>: санузлы/комнаты, окна/комнаты (если есть), этаж/этажность.</li></ul><ul id="2a8568fa-e39f-8088-80a3-f0fe30ff64c8" class="bulleted-list"><li style="list-style-type:disc">Возраст: ( \text{year_sale} - \text{year_built} ), факт <strong>капремонта</strong> (индикатор + возраст после ремонта).</li></ul><ul id="2a8568fa-e39f-80f7-b50b-c7ceb5c5875a" class="bulleted-list"><li style="list-style-type:disc">Состояние/качество (если шкала): биннинг + монотонный ранг.</li></ul><ul id="2a8568fa-e39f-80da-81cf-d25c68727221" class="bulleted-list"><li style="list-style-type:disc">Лоты/дом: доля застройки (lot_area / building_area), <strong>этажность эффекты</strong> (верх/низ).</li></ul><ul id="2a8568fa-e39f-80cc-a286-d4805db6e377" class="bulleted-list"><li style="list-style-type:disc">Выбросы: winsorize/clip по персентилам (например, [0.5; 99.5]) отдельно по районам.</li></ul><h3 id="2a8568fa-e39f-8040-8869-f4a85905a50c" class="">5.2 Категориальные и иерархические</h3><ul id="2a8568fa-e39f-80fd-b238-c9a702540f3b" class="bulleted-list"><li style="list-style-type:disc"><strong>Зонирование, тип дома/материала, район, почтовый индекс</strong>.</li></ul><ul id="2a8568fa-e39f-8073-825e-ec50b9c803ba" class="bulleted-list"><li style="list-style-type:disc">Кодировки: <strong>freq/count</strong> (безрисково), <strong>OOF-TE</strong> (M-estimate, шум), <strong>иерархический back-off</strong> (квартира→дом→квартал→район→город).</li></ul><ul id="2a8568fa-e39f-8005-8efc-dda120488954" class="bulleted-list"><li style="list-style-type:disc"><strong>Кроссы</strong>: район×тип дома (hash-cross/top-K), год×район (эффекты коинтеграции времени и локации).</li></ul><h3 id="2a8568fa-e39f-8057-8939-c9cb897c61dc" class="">5.3 Время</h3><ul id="2a8568fa-e39f-8005-8bfa-e2f5a3f4aabd" class="bulleted-list"><li style="list-style-type:disc">Месяц/квартал/год, <strong>сезонные</strong> индикаторы, праздники (если разрешено).</li></ul><ul id="2a8568fa-e39f-80ea-b3fe-f413e1c5483d" class="bulleted-list"><li style="list-style-type:disc"><strong>Трендовые индексы</strong>: (локальные) средние/медианы цен <strong>из прошлого</strong> (rolling/expanding <strong>с gap</strong>), <strong>только OOF</strong>.</li></ul><h3 id="2a8568fa-e39f-80c3-b768-c653a89fc26e" class="">5.4 Геопризнаки (безопасные)</h3><ul id="2a8568fa-e39f-801b-b8cc-d54f9b579dce" class="bulleted-list"><li style="list-style-type:disc"><strong>Расстояния</strong> (Haversine) до CBD/центра/моря/реки/парков/школ (если доступны координаты POI).<p id="2a8568fa-e39f-8007-b3d0-e2ee2bcbf95e" class="">[</p><p id="2a8568fa-e39f-80ee-bd29-d470877eda44" class="">d = 2R\arcsin\sqrt{\sin^2\frac{\Delta\varphi}{2} + \cos\varphi_1\cos\varphi_2\sin^2\frac{\Delta\lambda}{2} }</p><p id="2a8568fa-e39f-80ef-8318-cd153e613b6b" class="">]</p></li></ul><ul id="2a8568fa-e39f-80da-a17b-ee53f3094e89" class="bulleted-list"><li style="list-style-type:disc"><strong>Плотности</strong>: количество объектов в радиусе r (фиксируйте r: 0.5/1/2 км).</li></ul><ul id="2a8568fa-e39f-802c-8685-f318c7c7448e" class="bulleted-list"><li style="list-style-type:disc"><strong>Высота/уклон</strong> (если доступно) — часто коррелируют с престижностью/рисками.</li></ul><ul id="2a8568fa-e39f-8008-bb96-e8f428a34844" class="bulleted-list"><li style="list-style-type:disc"><strong>Spatial binning</strong>: геосетка (геохеш/H3) как категория → freq/TE(OOF).</li></ul><ul id="2a8568fa-e39f-80f0-804a-fa229ead1096" class="bulleted-list"><li style="list-style-type:disc"><strong>KNN-соседи (ООF)</strong>: средняя/медианная цена соседей, <strong>считанная только по train-корпусу фолда</strong> (см. §6.2).</li></ul><h3 id="2a8568fa-e39f-8050-a0cf-df1d957c27a0" class="">5.5 Фичи «истории продаж/реестров»</h3><ul id="2a8568fa-e39f-80dc-989d-e0b20bf40d10" class="bulleted-list"><li style="list-style-type:disc"><strong>Время от последней продажи</strong> дома/квартиры, количество сделок за 6/12/24 мес (rolling <strong>из прошлого</strong>).</li></ul><ul id="2a8568fa-e39f-8063-95ae-dbe1e9e2d806" class="bulleted-list"><li style="list-style-type:disc"><strong>Стабильность продавца/застройщика</strong>: count/ratio по истории в регионе (group-agg <strong>по прошлому</strong>).</li></ul><ul id="2a8568fa-e39f-80f0-8826-d7e42ded151e" class="bulleted-list"><li style="list-style-type:disc"><strong>Версионность записи/состава</strong>: любые статусы — только на момент сделки.</li></ul><h3 id="2a8568fa-e39f-804a-8e88-cb26be3ad5f7" class="">5.6 Текст/мультимодальные (если можно)</h3><ul id="2a8568fa-e39f-807f-ba58-d33fc453efc6" class="bulleted-list"><li style="list-style-type:disc">Длина описания, количество «сильных» слов (ремонт, дизайнерский…), счётчики капслока/восклицаний — лёгкие прокси.</li></ul><ul id="2a8568fa-e39f-80e5-9612-d913e3ba8f71" class="bulleted-list"><li style="list-style-type:disc">TF-IDF/эмбеддинги описаний — только <strong>OOF</strong> / fit на train-части фолда.</li></ul><hr id="2a8568fa-e39f-806e-ac49-e54edd0e6281"/><h2 id="2a8568fa-e39f-8049-a18c-d9f9b2e9ac81" class="">6) «Соседи», сглаживание и spatial leakage</h2><h3 id="2a8568fa-e39f-80c5-a844-ea38b9cc6db5" class="">6.1 Базовые соседские фичи</h3><ul id="2a8568fa-e39f-80d3-b8b0-e0a804a28d44" class="bulleted-list"><li style="list-style-type:disc"><strong>Local mean/median</strong> цены по ближайшим K объектам (или в радиусе r); <strong>K</strong> подбирайте кратко (5–20).</li></ul><ul id="2a8568fa-e39f-80d7-99a4-db2de9fc6de1" class="bulleted-list"><li style="list-style-type:disc"><strong>Kernel-сглаживание</strong>: веса (w_i \propto \exp(-d_i^2/2h^2)), ( \text{loc_price} = \frac{\sum w_i y_i}{\sum w_i}).</li></ul><h3 id="2a8568fa-e39f-8091-a5c6-c31525eb3738" class="">6.2 Только OOF!</h3><p id="2a8568fa-e39f-8035-87b8-d6e226ee5a6a" class="">Для каждого фолда k:</p><ol type="1" id="2a8568fa-e39f-80b2-997e-dc2d7b9b41dd" class="numbered-list" start="1"><li>Строим индекс соседей на <strong>train_k</strong>.</li></ol><ol type="1" id="2a8568fa-e39f-8058-80c0-e83cd7f30440" class="numbered-list" start="2"><li>Для <strong>val_k</strong> считаем локальные фичи по соседям из <strong>train_k</strong> (не заглядывая в val/test).</li></ol><ol type="1" id="2a8568fa-e39f-801c-afbb-d5ca5057d738" class="numbered-list" start="3"><li>Для <strong>test</strong> — по <strong>всему train</strong> (после обучения).</li></ol><p id="2a8568fa-e39f-8028-9b17-e399c29a41a4" class=""><strong>Запрет:</strong> считать локальные средние на train+val → утечка, CV завышен.</p><hr id="2a8568fa-e39f-8076-a356-f4239b7cef86"/><h2 id="2a8568fa-e39f-801e-a05b-fc1127422cb7" class="">7) Лоссы и цели под регрессию цен</h2><ul id="2a8568fa-e39f-8056-8a87-f4696df09555" class="bulleted-list"><li style="list-style-type:disc"><strong>MAE / Huber</strong> — устойчивее к выбросам, ближе к «медианной» оценке стоимости.</li></ul><ul id="2a8568fa-e39f-802d-9a68-c998e5a5d5d1" class="bulleted-list"><li style="list-style-type:disc"><strong>RMSE / RMSLE</strong> — для симметричных ошибок в лог-шкале (цены часто лог-нормальны).</li></ul><ul id="2a8568fa-e39f-80ac-84a5-f676de0adad4" class="bulleted-list"><li style="list-style-type:disc"><strong>Quantile (pinball)</strong> — предсказание интервалов (P10/P50/P90) для оценщика.</li></ul><ul id="2a8568fa-e39f-8091-80c4-dbc5f2227fb6" class="bulleted-list"><li style="list-style-type:disc"><strong>Tweedie/Gamma</strong> — для положительных скью-распределений (если метрика допускает).</li></ul><p id="2a8568fa-e39f-8079-b797-ebb73d0e08da" class=""><strong>Практика:</strong> обучите базовую модель на (\log price) с Huber, доп. обучите quantile-LightGBM для интервалов → получите и точку, и доверие.</p><hr id="2a8568fa-e39f-804c-b013-caa336ef98ae"/><h2 id="2a8568fa-e39f-8073-b52d-e432c83dba7d" class="">8) Модели и ограничения</h2><ul id="2a8568fa-e39f-8066-b4d1-d6cf2999e309" class="bulleted-list"><li style="list-style-type:disc"><strong>GBDT (LGBM/XGB/Cat)</strong> — стандарт. Сдерживаем переобучение: глубина ≤6–8, <code>min_data_in_leaf↑</code>, <code>lambda_l2↑</code>, <code>feature_fraction/bagging_fraction↓</code>.</li></ul><ul id="2a8568fa-e39f-8095-8b20-cf10592c6f15" class="bulleted-list"><li style="list-style-type:disc"><strong>Монотонности</strong> (LGBM/XGB): для признаков с очевидной физикой (например, цена не убывает с ростом <strong>качественной</strong> площади)<p id="2a8568fa-e39f-801e-85b4-d611c95aff95" class="">Используйте осторожно: для площади возможна <strong>конкавность</strong> (убывает удельная цена), поэтому лучше вводить <strong>площадь</strong> и <strong>1/площадь</strong>/биннинг.</p></li></ul><ul id="2a8568fa-e39f-80dc-9268-fa83de4a6459" class="bulleted-list"><li style="list-style-type:disc"><strong>Стекинг L2</strong>: OOF-предикты LGBM/Cat/линейки → метамодель (линейная/ElasticNet).</li></ul><ul id="2a8568fa-e39f-80d5-83b9-cf6d8a6e8a3e" class="bulleted-list"><li style="list-style-type:disc"><strong>Регуляризованные линейки</strong> (ElasticNet) — как интерпретируемый слой/компонент бленда.</li></ul><hr id="2a8568fa-e39f-802a-b668-cf6436bc0c83"/><h2 id="2a8568fa-e39f-800b-9897-e8348f20ceb1" class="">9) Отбор и устойчивость признаков</h2><ul id="2a8568fa-e39f-80c0-b4b7-cf45b471a297" class="bulleted-list"><li style="list-style-type:disc"><strong>Пермутационная важность по фолдам</strong>: избегаем «звёзд» на одном фолде и нуля на другом.</li></ul><ul id="2a8568fa-e39f-8097-8baa-ceb2d5a2a83c" class="bulleted-list"><li style="list-style-type:disc"><strong>Stability selection</strong>: отбор на бутстрап-подвыборках, берём пересечение.</li></ul><ul id="2a8568fa-e39f-8074-b8a7-ce5ceea07d58" class="bulleted-list"><li style="list-style-type:disc"><strong>Leak-гварды</strong>: null-importance (важность на перемешанном y) — фичи с высокой null-важностью подозрительны (структурные).</li></ul><hr id="2a8568fa-e39f-8083-b323-d45ce2e26c5e"/><h2 id="2a8568fa-e39f-80df-96fe-c94ac54c74da" class="">10) Надёжность и переносимость</h2><ul id="2a8568fa-e39f-80f3-9a1d-c745937d6f87" class="bulleted-list"><li style="list-style-type:disc"><strong>AV (train vs test)</strong>: высокий AUC → spatial/temporal shift; проверьте геофичи/временные индексы.</li></ul><ul id="2a8568fa-e39f-8032-8bcd-f70b5937388a" class="bulleted-list"><li style="list-style-type:disc"><strong>PSI</strong> по ключевым фичам/скорингу: &gt;0.25 — сильный сдвиг.</li></ul><ul id="2a8568fa-e39f-80d4-baaf-c636b40f9cc8" class="bulleted-list"><li style="list-style-type:disc"><strong>Alt-split</strong>: другой seed сетки/другая time-граница — прирост должен сохраняться.</li></ul><ul id="2a8568fa-e39f-8075-add7-c26e45ddd20c" class="bulleted-list"><li style="list-style-type:disc"><strong>Slice-оценки</strong>: районы/типы строений/квартали — где проваливаемся и почему.</li></ul><ul id="2a8568fa-e39f-800d-940d-caad186b6805" class="bulleted-list"><li style="list-style-type:disc"><strong>Интервалы</strong>: quantile/конформал — сравнить покрытие 90/95% по срезам.</li></ul><hr id="2a8568fa-e39f-807f-9314-d5984bcb28a1"/><h2 id="2a8568fa-e39f-80c4-9f35-c83c9e3cde57" class="">11) Реестры: мульти-табличность, связи, дедупликация</h2><ul id="2a8568fa-e39f-802c-8135-c5f00a81b1fd" class="bulleted-list"><li style="list-style-type:disc"><strong>Ключи и связи:</strong> 1-к-N (дом→квартиры), M-к-N (объект↔сделка); держите <strong>snapshot на дату сделки</strong>.</li></ul><ul id="2a8568fa-e39f-8047-85a1-f88085a8b366" class="bulleted-list"><li style="list-style-type:disc"><strong>Агрегации по иерархии:</strong> дом/квартал/район → mean/median/std цены <strong>в прошлом окне</strong>; count/ratio сделок; доли типов.</li></ul><ul id="2a8568fa-e39f-807b-9f1c-f39fb21ee32f" class="bulleted-list"><li style="list-style-type:disc"><strong>Entity resolution:</strong> дедупликаты по (адрес, площадь ±δ, этаж, год); блокировки по геосетке.<p id="2a8568fa-e39f-8067-868f-da457402eb12" class="">Для KNN-поиска дублей используйте <strong>только train</strong> относительно val/test.</p></li></ul><ul id="2a8568fa-e39f-8008-9c60-d6c21f633b2e" class="bulleted-list"><li style="list-style-type:disc"><strong>Версионность реестра:</strong> никакие пост-фактум статусы в признаки, только поля, доступные на (t_0).</li></ul><hr id="2a8568fa-e39f-80dd-a175-f48c56799c3c"/><h2 id="2a8568fa-e39f-802a-8547-d981eac467fa" class="">12) Частые ошибки</h2><ul id="2a8568fa-e39f-80af-97e1-ff178c0602fb" class="bulleted-list"><li style="list-style-type:disc">Средние «цены по району» считали на всём датасете (или без time-gap) → лика.</li></ul><ul id="2a8568fa-e39f-80f8-b5b1-cf60e2fab6a9" class="bulleted-list"><li style="list-style-type:disc">Повторные продажи одного объекта разделили между train/val.</li></ul><ul id="2a8568fa-e39f-8092-b017-d6d5df950646" class="bulleted-list"><li style="list-style-type:disc">Геопризнаки соседей считали с участием валида/теста.</li></ul><ul id="2a8568fa-e39f-8041-b24e-c43aac2161b3" class="bulleted-list"><li style="list-style-type:disc">Таргет-энкодинги без OOF, эмбеддинги fit на train+val.</li></ul><ul id="2a8568fa-e39f-8050-ac3b-f26c6d81d90c" class="bulleted-list"><li style="list-style-type:disc">Оценка только на IID KFold → красивый CV, плохой LB на OOT/другом городе.</li></ul><hr id="2a8568fa-e39f-80fe-a608-dfdf76e188a1"/><h2 id="2a8568fa-e39f-8076-bd7f-d901f1d87a3b" class="">13) Мини-формулы и конструкции</h2><p id="2a8568fa-e39f-806e-b69b-c4dfe69eb698" class=""><strong>Haversine</strong> (см. §5.4).</p><p id="2a8568fa-e39f-80fd-a6dc-e387b0e4e1d1" class=""><strong>KNN-соседи (OOF):</strong></p><p id="2a8568fa-e39f-8073-80a1-d4ab2802d2cd" class="">[</p><p id="2a8568fa-e39f-804c-91e0-f84758e26dcc" class="">\text{loc_y}(x) = \frac{\sum_{i \in \mathcal{N}_{\text{train}}(x)} w_i, y_i}{\sum w_i}, \quad w_i=\exp!\left(-\frac{d(x,i)^2}{2h^2}\right)</p><p id="2a8568fa-e39f-8072-95a5-cab491382813" class="">]</p><p id="2a8568fa-e39f-80a8-8a40-d36bc469d828" class=""><strong>Quantile loss:</strong></p><p id="2a8568fa-e39f-80b4-b9c0-e78f478e7a79" class="">[</p><p id="2a8568fa-e39f-805d-a073-e7a98f517f33" class="">L_\tau(y,\hat{y}) = \max{\tau(y-\hat{y}), (\tau-1)(y-\hat{y})}</p><p id="2a8568fa-e39f-8024-a5e5-fc18148ee948" class="">]</p><p id="2a8568fa-e39f-802a-ab9f-f06cf096e129" class=""><strong>Huber:</strong></p><p id="2a8568fa-e39f-80e2-8cc3-de399c108d5e" class="">[</p><p id="2a8568fa-e39f-80d5-8d65-dd0ecc065bc5" class="">L_\delta(r)=</p><p id="2a8568fa-e39f-8004-86e0-de14e76d0b6c" class="">\begin{cases}</p><p id="2a8568fa-e39f-8027-832d-c00c874fe539" class="">\frac{1}{2}r^2,&amp; |r|\le \delta\</p><p id="2a8568fa-e39f-8082-9df1-f3a4bb5e2c45" class="">\delta(|r|-\frac{1}{2}\delta),&amp; |r|&gt;\delta</p><p id="2a8568fa-e39f-8045-9f01-c0ad4d991869" class="">\end{cases}</p><p id="2a8568fa-e39f-808d-8656-d0cb0c91602e" class="">]</p><p id="2a8568fa-e39f-80f4-9e14-cdd584326b66" class=""><strong>Иерархический back-off:</strong></p><p id="2a8568fa-e39f-8074-9d66-dc406d7a30e3" class="">если (n_{\text{район}}&lt;r) → (\lambda\cdot TE(\text{город})+(1-\lambda)\mu).</p><hr id="2a8568fa-e39f-80a8-89b5-d2f60ee8e194"/><h2 id="2a8568fa-e39f-805c-a3fb-e61e1da45622" class="">14) 5-часовой спринт (ритм)</h2><p id="2a8568fa-e39f-803c-99a0-fc81d413cc2a" class=""><strong>0–30 мин — Диагностика</strong></p><ul id="2a8568fa-e39f-8075-9d7e-d5dc1b86dbd6" class="bulleted-list"><li style="list-style-type:disc">Зафиксировать <strong>CV</strong>: Spatial (геосетка) × Time (последние месяцы) × Group(объект).</li></ul><ul id="2a8568fa-e39f-8081-a235-e536d6e77cbb" class="bulleted-list"><li style="list-style-type:disc">Smoke-тест (shuffle-y), поиск дублей, AV/PSI грубо.</li></ul><p id="2a8568fa-e39f-8080-b86d-ce784536c8e3" class=""><strong>30–90 мин — Бейзлайн</strong></p><ul id="2a8568fa-e39f-8089-8f25-fbf624bb49fc" class="bulleted-list"><li style="list-style-type:disc">Лёгкое ядро фич: лог-таргет, базовые числовые + freq/count по категориям, время (месяц/год), геосетка как категория.</li></ul><ul id="2a8568fa-e39f-8035-976d-cace1fe6deb1" class="bulleted-list"><li style="list-style-type:disc">LGBM/ Cat с консервативной регуляризацией. Проверка на OOT.</li></ul><p id="2a8568fa-e39f-80bd-bf33-fa18a0681a45" class=""><strong>90–150 мин — Гео и история (без утечек)</strong></p><ul id="2a8568fa-e39f-80b9-8e6b-e89f98d886b0" class="bulleted-list"><li style="list-style-type:disc">OOF-KNN локальная цена, rolling индексы по прошлому (район-месяц).</li></ul><ul id="2a8568fa-e39f-8090-bac3-f5534f1ab8b3" class="bulleted-list"><li style="list-style-type:disc">Иерархический back-off для редких категорий. Alt-split/seed-bagging.</li></ul><p id="2a8568fa-e39f-800d-ac7d-f1bc594b96cb" class=""><strong>150–210 мин — Устойчивость</strong></p><ul id="2a8568fa-e39f-8000-a424-f287c733f38f" class="bulleted-list"><li style="list-style-type:disc">Пермутационная важность по фолдам, slice-оценки (районы/типы).</li></ul><ul id="2a8568fa-e39f-8042-83d2-cc74e1c84d2e" class="bulleted-list"><li style="list-style-type:disc">Quantile-модель (P10/P50/P90) для интервалов.</li></ul><p id="2a8568fa-e39f-80c7-ae82-f1f8c1e2bab3" class=""><strong>210–240 мин — Финал</strong></p><ul id="2a8568fa-e39f-806f-9957-f639289b818d" class="bulleted-list"><li style="list-style-type:disc">Safe-бленд (2–3 модели/сида).</li></ul><ul id="2a8568fa-e39f-80ad-83c8-d7dd99c6a8ec" class="bulleted-list"><li style="list-style-type:disc">Короткий отчёт: CV-схема, анти-лики, гео-OOF детали, переносимость на OOT.</li></ul><hr id="2a8568fa-e39f-8080-b29a-daa6dbd245d9"/><h2 id="2a8568fa-e39f-8097-8661-ec0278567b09" class="">15) Чек-лист перед сабмитом</h2><ul id="2a8568fa-e39f-8012-896d-c1e1cb5406b7" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">CV: Spatial×Time×Group зафиксирован; fold_map сохранён.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-8098-bdd4-ebac55544692" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Все трансформы/агрегаты/соседи — <strong>OOF</strong>, без взгляда в валид.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-80e5-a9a3-ff07e4de6963" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Нет дублей train↔val; проверены near-dupes.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-80fb-982b-f5b0935629af" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Геопризнаки и временные индексы рассчитаны <strong>из прошлого</strong> с gap.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-80d7-b65d-e97a10c56c39" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Прирост подтверждён на alt-split; сид-стабильность ок.</span><div class="indented"></div></li></ul><ul id="2a8568fa-e39f-80d5-b215-da7742c87768" class="to-do-list"><li><div class="checkbox checkbox-off"></div> <span class="to-do-children-unchecked">Интервалы покрывают заявленный уровень; отчёт с AV/PSI и slice-таблицей.</span><div class="indented"></div></li></ul><hr id="2a8568fa-e39f-80a2-9b4b-ff10ca830012"/><h2 id="2a8568fa-e39f-805b-8ee2-e0347daef9d5" class="">16) Быстрые «рецепты», которые почти всегда работают</h2><ul id="2a8568fa-e39f-80ba-add3-e160091181c9" class="bulleted-list"><li style="list-style-type:disc"><strong>Лог-таргет + Huber</strong>, базовый LGBM, фичи: площадь/комнаты/возраст/этажность/качество, <strong>freq/count</strong> по районам/типам, месяц-сделки, <strong>геосетка-категория</strong>, <strong>OOF-локальная цена KNN</strong>.</li></ul><ul id="2a8568fa-e39f-80c2-847e-f8c38df6a1bb" class="bulleted-list"><li style="list-style-type:disc"><strong>Rolling-медиана цены</strong> по район×месяц <strong>из прошлого</strong> как сильный трендовый индикатор.</li></ul><ul id="2a8568fa-e39f-8067-8cb0-fba89eb72ad5" class="bulleted-list"><li style="list-style-type:disc"><strong>Иерархический back-off</strong> по гео: квартира→дом→квартал→район→город.</li></ul><ul id="2a8568fa-e39f-80b0-acfa-fc92f7508951" class="bulleted-list"><li style="list-style-type:disc"><strong>Quantile-добавка</strong> для доверия + бленд 2-3 сидов.</li></ul><hr id="2a8568fa-e39f-8043-a485-ef82a753fec2"/><p id="2a8568fa-e39f-8064-93f6-d51877a3707c" class="">Если нужно, могу отдельно накинуть каркас OOF-KNN локальных цен (с безопасным индексом соседей и gap по времени) и шаблон Spatial×Time CV (на геосетке H3/геохеше) под твой пайплайн.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

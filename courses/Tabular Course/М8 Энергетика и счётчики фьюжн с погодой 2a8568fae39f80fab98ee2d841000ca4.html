@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М8. Энергетика и счётчики: фьюжн с погодой</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80fa-b98e-e2d841000ca4" class="page sans"><header><h1 class="page-title">М8. Энергетика и счётчики: фьюжн с погодой</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-801b-9531-f4ce29b62fd9" class="">ниже — подробный Модуль 8. Фокус: <strong>энергетика/счётчики и погода</strong> — как честно объединять внешние источники (метео), держать time-aware валидацию по сайтам/зданиям, не ловить утечки и быстро собирать устойчивый бейзлайн (ASHRAE-стайл).</p><h2 id="2a8568fa-e39f-806d-ae89-e6d6a034f8e5" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-80b5-b2db-df4d00949d4f" class="bulleted-list"><li style="list-style-type:disc">Понять структуру данных «<strong>building×meter×timestamp</strong>», корректно настроить <strong>time/group-aware CV</strong> (по site_id/building_id, с gap/embargo).</li></ul><ul id="2a8568fa-e39f-80d4-a2c9-f97d3d0ca9df" class="bulleted-list"><li style="list-style-type:disc">Научиться <strong>сливать погоду</strong> без утечек (timezone/DST, nearest station, backfill), строить <strong>weather-фичи</strong> (CDD/HDD, энтальпия, влажность, ливни/облачность).</li></ul><ul id="2a8568fa-e39f-80c3-b152-c63f6594c652" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>фабрику признаков нагрузки</strong>: базовая/венткоробка/охлаждение/отопление, расписания (occupancy), профили суток/недели, кластерные «сигнатуры».</li></ul><ul id="2a8568fa-e39f-803b-adf3-f32617ad804f" class="bulleted-list"><li style="list-style-type:disc">Уметь <strong>чистить аномалии/сенсорные артефакты</strong> и заполнять пропуски.</li></ul><ul id="2a8568fa-e39f-8093-95f3-c2d9c8d18a16" class="bulleted-list"><li style="list-style-type:disc">Собрать устойчивые бейзлайны (RMSE/RMSLE/MAE), попробовать <strong>piecewise/монолит</strong>: GBDT + change-point.</li></ul><p id="2a8568fa-e39f-80f1-983b-fe91b76dcb3e" class=""><strong>Выход:</strong> рабочий пайп «энергия+погода» с <code>weather_join.py</code>, <code>energy_features.py</code>, <code>site_cv.py</code>, <code>tz_utils.py</code>, <code>anomaly_cleaning.py</code>, пресеты моделей и чек-листы.</p><hr id="2a8568fa-e39f-80e4-a367-f82585b2639e"/><h2 id="2a8568fa-e39f-8092-975a-ce8ae45a1158" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-8029-a8bf-db59f9b60a22" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-8011-aca1-cb5159696fbb" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 3–4 часа</strong>.</li></ul><ul id="2a8568fa-e39f-8078-89ab-d0e756b8566d" class="bulleted-list"><li style="list-style-type:disc">Короткая защита: паспорт решения (1 стр), 2 сабмита.</li></ul><hr id="2a8568fa-e39f-80bc-b9cc-dab06ce002dd"/><h2 id="2a8568fa-e39f-8056-8fc0-d6cda5f053f3" class="">3) Карта решений за ≤10 минут</h2><ol type="1" id="2a8568fa-e39f-802f-813a-dab0c3bff878" class="numbered-list" start="1"><li><strong>Структура</strong>: есть <code>site_id</code>, <code>building_id</code>, <code>meter</code> (эл/пар/хол/пар_гор), <code>timestamp</code>, потребление (kWh/…); есть отдельная <strong>погода</strong> по <code>site_id</code>?</li></ol><ol type="1" id="2a8568fa-e39f-804c-b98f-de81a630eaeb" class="numbered-list" start="2"><li><strong>Метрика/трансформ</strong>:<ul id="2a8568fa-e39f-80ad-80e9-dd117431c34b" class="bulleted-list"><li style="list-style-type:disc">Для перекошенных хвостов → <strong>лог-таргет</strong> (<code>log1p(y)</code>) + RMSE/RMSLE.</li></ul><ul id="2a8568fa-e39f-8018-a802-ee6694465a4d" class="bulleted-list"><li style="list-style-type:disc">Нули/отключки → MAE/Huber или маскирование.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-802b-82a3-ddab85710199" class="numbered-list" start="3"><li><strong>CV</strong>:<ul id="2a8568fa-e39f-80d8-9a7d-fe457f11e454" class="bulleted-list"><li style="list-style-type:disc"><strong>GroupKFold по site_id</strong> или <code>site_id×building_id</code> + <strong>TimeSeriesSplit</strong> внутри;</li></ul><ul id="2a8568fa-e39f-8003-948e-e8199f53fd15" class="bulleted-list"><li style="list-style-type:disc"><strong>gap/embargo ≥ max_lag</strong>; не мешать сайты между train/valid.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-804a-81d2-d7935737a7cc" class="numbered-list" start="4"><li><strong>Join погоды</strong>:<ul id="2a8568fa-e39f-80f0-82d4-e339730b0520" class="bulleted-list"><li style="list-style-type:disc">ключ <code>site_id×timestamp</code> (приведённый к <strong>локальному времени</strong> сайта), аккуратный backfill ≤N часов.</li></ul></li></ol><hr id="2a8568fa-e39f-80e2-8412-e0e8e06ea1ca"/><h2 id="2a8568fa-e39f-8042-a430-c7a8120fad3b" class="">4) Большие утечки (чего не делать)</h2><ul id="2a8568fa-e39f-80c9-a9f8-d41055cec809" class="bulleted-list"><li style="list-style-type:disc">Джойнить <strong>будущую погоду</strong> за пределами окна валидирования.</li></ul><ul id="2a8568fa-e39f-8054-8f34-cb245e64da11" class="bulleted-list"><li style="list-style-type:disc">Миксовать <strong>разные таймзоны</strong> без нормализации; игнорировать <strong>DST</strong> (часы ±1, дубли/дыры).</li></ul><ul id="2a8568fa-e39f-80fb-a497-c533e043e143" class="bulleted-list"><li style="list-style-type:disc">Считать <strong>лаг/роллинг</strong> на всём датасете (в т.ч. вал/test).</li></ul><ul id="2a8568fa-e39f-802b-bbff-c05584418d14" class="bulleted-list"><li style="list-style-type:disc">Лить <strong>агрегаты по сайту</strong> с включением валидной зоны (future leakage).</li></ul><ul id="2a8568fa-e39f-8008-aeb7-e1a4eaa0e9c3" class="bulleted-list"><li style="list-style-type:disc">Случайно «подравнивать» потребление к погоде с <strong>сдвигом назад/вперёд</strong> (напрашивающееся улучшение, но утечка).</li></ul><hr id="2a8568fa-e39f-8076-851c-f712b0e2f173"/><h2 id="2a8568fa-e39f-8043-a5a6-d08a4af3082f" class="">5) Weather-фьюжн (честный протокол)</h2><ul id="2a8568fa-e39f-8026-90ff-cf6a861e8c2d" class="bulleted-list"><li style="list-style-type:disc"><strong>Часы/таймзона</strong>: привести всё к локальному времени <code>site_id</code> (или к UTC + отдельный фич «локальное смещение»).</li></ul><ul id="2a8568fa-e39f-80f5-95c3-d7e00a301922" class="bulleted-list"><li style="list-style-type:disc"><strong>Станции</strong>: если несколько — брать ближайшую/надежную (или <strong>веса по расстоянию</strong>).</li></ul><ul id="2a8568fa-e39f-8080-838a-cd527618911f" class="bulleted-list"><li style="list-style-type:disc"><strong>Backfill</strong>: часовые пропуски заполнять линейно/ewm ≤6–12 часов; большие — флаг <code>weather_is_imputed</code>.</li></ul><ul id="2a8568fa-e39f-80e7-84b1-eb7004c0f49b" class="bulleted-list"><li style="list-style-type:disc"><strong>Фичи</strong> (из <code>drybulb</code>, <code>dewpoint</code>, <code>rh</code>, <code>wind</code>, <code>cloud</code>, <code>precip</code>):<ul id="2a8568fa-e39f-80a5-9875-cafdc11d121e" class="bulleted-list"><li style="list-style-type:circle"><strong>Относительная влажность</strong> (если нет): RH из <code>drybulb</code>/<code>dewpoint</code>;</li></ul><ul id="2a8568fa-e39f-8066-923b-ca4803440be2" class="bulleted-list"><li style="list-style-type:circle"><strong>Влажная температура</strong>/энтальпия: психрометрия;</li></ul><ul id="2a8568fa-e39f-80d0-a119-c0a71867a426" class="bulleted-list"><li style="list-style-type:circle"><strong>CDD/HDD</strong>: degree days vs base (18°C/65°F — подобрать по OOF);</li></ul><ul id="2a8568fa-e39f-80c6-9c7b-e4e0308c128a" class="bulleted-list"><li style="list-style-type:circle"><strong>Лаги/роллинги</strong>: <code>temp_lag_1/3/6</code>, <code>roll_mean_temp_6/24</code>, <code>roll_max_wind_24</code>, <code>roll_sum_precip_24</code>;</li></ul><ul id="2a8568fa-e39f-80d9-ae6b-c3560e032a63" class="bulleted-list"><li style="list-style-type:circle"><strong>Интеракции</strong>: <code>temp×RH</code>, <code>CDD×occupancy</code>, <code>HDD×insulation_proxy</code>.</li></ul></li></ul><hr id="2a8568fa-e39f-8099-b612-cf1eac946313"/><h2 id="2a8568fa-e39f-8035-8dae-f544367c8671" class="">6) Energy-фичи: ядро нагрузки</h2><ul id="2a8568fa-e39f-809e-a383-d6f500677298" class="bulleted-list"><li style="list-style-type:disc"><strong>Календарь/расписания</strong>: <code>hour, dow, weekend, holiday, is_working_hour, is_school_hour</code>; rolling-сезонность: <code>sin/cos</code> по дню/неделе.</li></ul><ul id="2a8568fa-e39f-806e-be82-d8d46d82a0c8" class="bulleted-list"><li style="list-style-type:disc"><strong>Occupancy proxy</strong> (если нет прямой метки): кластеризация <strong>суточных профилей</strong> (k-means) → ID/дистанции до центров; <code>daytype</code> (рабочий/выходной/праздник).</li></ul><ul id="2a8568fa-e39f-8099-b063-dab912188967" class="bulleted-list"><li style="list-style-type:disc"><strong>Смены режимов</strong>: детект <strong>change-point</strong> (PELT/ruptures-стайл) по ряду → фичи «эпохи».</li></ul><ul id="2a8568fa-e39f-807a-a94c-cccfd74f9fc5" class="bulleted-list"><li style="list-style-type:disc"><strong>Load decomposition</strong>:<ul id="2a8568fa-e39f-80f5-8b27-e7a7b076f560" class="bulleted-list"><li style="list-style-type:circle">база (ночной минимум),</li></ul><ul id="2a8568fa-e39f-8045-8183-d72e717b58ea" class="bulleted-list"><li style="list-style-type:circle">погодная чувствительность (наклон к CDD/HDD),</li></ul><ul id="2a8568fa-e39f-8079-bcac-f3dbf60d2311" class="bulleted-list"><li style="list-style-type:circle">вент/оборудование (часовые пики).</li></ul></li></ul><ul id="2a8568fa-e39f-8047-8c92-d7357faee7a9" class="bulleted-list"><li style="list-style-type:disc"><strong>Meter-специфика</strong>: отдельные фичи/модели по <code>meter</code> (электричество vs отопление — разные реакции на погоду).</li></ul><ul id="2a8568fa-e39f-806a-a49f-f668ad9b6a74" class="bulleted-list"><li style="list-style-type:disc"><strong>Лаги по таргету</strong>: <code>y_lag_1/24/168</code>, <code>roll_mean_y_24/168</code> <strong>строго time-aware</strong>, без заглядываний.</li></ul><hr id="2a8568fa-e39f-806e-8cb0-d83e40d8fe99"/><h2 id="2a8568fa-e39f-802a-b37e-dabc66a33667" class="">7) Очистка и пропуски</h2><ul id="2a8568fa-e39f-80d0-8c7b-da3f22629963" class="bulleted-list"><li style="list-style-type:disc"><strong>Сенсорные скачки</strong>: всплески ±nσ, ступеньки → либо маска, либо robust-клип по перцентилям в <code>building×meter</code>.</li></ul><ul id="2a8568fa-e39f-8055-a147-e2ec4b0329eb" class="bulleted-list"><li style="list-style-type:disc"><strong>Неполные дни</strong>: маска <code>incomplete_day_flag</code>; опционально — downweight.</li></ul><ul id="2a8568fa-e39f-8054-bed5-e3e97d944bfa" class="bulleted-list"><li style="list-style-type:disc"><strong>Missing</strong>: для <code>y</code> — <strong>не имитировать</strong>; для погоды — как в §5.</li></ul><hr id="2a8568fa-e39f-804a-883e-eea032a0e4dd"/><h2 id="2a8568fa-e39f-8050-8b2a-fee4e46b84f7" class="">8) Модели и лоссы</h2><ul id="2a8568fa-e39f-80d5-88c0-e488408ad328" class="bulleted-list"><li style="list-style-type:disc"><strong>GBDT (LGBM/Cat/XGB)</strong>: быстрый старт; для лог-таргета — <code>objective=rmse</code> в лог-пространстве.</li></ul><ul id="2a8568fa-e39f-80f7-a3ea-cdc6e700b39e" class="bulleted-list"><li style="list-style-type:disc"><strong>Huber/Quantile</strong>: робастнее на всплесках (особенно steam/hotwater).</li></ul><ul id="2a8568fa-e39f-8097-8f82-e74217992048" class="bulleted-list"><li style="list-style-type:disc"><strong>Piecewise temperature response</strong> (опц.): фичи <code>max(0, temp−Tbase)</code> и <code>max(0, Tbase−temp)</code> (отопление/охлаждение), можно добавить <strong>монотонные ограничения</strong>:<ul id="2a8568fa-e39f-80bc-83be-d6172fe7e929" class="bulleted-list"><li style="list-style-type:circle">холоднее → выше отопление; жарче → выше охлаждение.</li></ul></li></ul><ul id="2a8568fa-e39f-801b-8be3-ced20310f3ed" class="bulleted-list"><li style="list-style-type:disc"><strong>Пер-здание</strong> vs глобальная модель: глобальная с флагами <code>site/building/meter</code> часто сильнее при малых данных;<p id="2a8568fa-e39f-80c2-8077-e3dd876a6d11" class="">для «тяжёлых» сайтов — <strong>fine-tune</strong>/stack поверх глобальной.</p></li></ul><p id="2a8568fa-e39f-807a-a248-e407969d084d" class=""><strong>Ансамбль (30–45 мин):</strong> 2–3 модели (лог-LGBM / Huber-CatBoost / piecewise-LGBM), веса по OOF.</p><hr id="2a8568fa-e39f-8096-8d98-f3c3d4cc1ebf"/><h2 id="2a8568fa-e39f-8032-95d2-f0d074cc40ff" class="">9) Валидация (site/time aware)</h2><ul id="2a8568fa-e39f-8052-89f7-e12f8a5e9cba" class="bulleted-list"><li style="list-style-type:disc"><strong>Primary</strong>: <code>GroupKFold(site_id)</code> → внутри фолда <strong>blocked/rolling</strong> по времени с gap.</li></ul><ul id="2a8568fa-e39f-8021-89cb-df1a2a07168c" class="bulleted-list"><li style="list-style-type:disc"><strong>Alternative</strong>: <code>GroupKFold(site_id×building_id)</code> (если сайтов мало, зданий много).</li></ul><ul id="2a8568fa-e39f-8079-8d0a-de4b965a630c" class="bulleted-list"><li style="list-style-type:disc"><strong>Embargo/gap</strong>: ≥макс(используемых лагов/окон).</li></ul><ul id="2a8568fa-e39f-80bf-8bc0-e15a2069d3fc" class="bulleted-list"><li style="list-style-type:disc"><strong>Контроль</strong>: таблица «OOF per site/meter», std по фолдам, CV↔LB.</li></ul><hr id="2a8568fa-e39f-8055-b95f-feec9f1ce638"/><h2 id="2a8568fa-e39f-801b-98c8-da0407c73e36" class="">10) Диагностика и интерпретация</h2><ul id="2a8568fa-e39f-809d-b7a3-def9a7802641" class="bulleted-list"><li style="list-style-type:disc"><strong>ICE/PDP</strong>: зависимость от <code>temp</code> и <code>CDD/HDD</code> (проверка физики).</li></ul><ul id="2a8568fa-e39f-8077-8ec8-d767298512a8" class="bulleted-list"><li style="list-style-type:disc"><strong>SHAP-стэки</strong> per meter/site: важность погоды vs календаря;</li></ul><ul id="2a8568fa-e39f-80b7-99f6-dda9c68986f7" class="bulleted-list"><li style="list-style-type:disc"><strong>Drift</strong>: PSI по <code>temp/RH</code> и по <code>y</code>; AV: «train-site vs valid-site».</li></ul><ul id="2a8568fa-e39f-80d8-9b03-c5fd550a389d" class="bulleted-list"><li style="list-style-type:disc"><strong>Пики/вне нормы</strong>: сравнить предикт и «базовую линию» (ночной минимум) — ловит out-of-schedule.</li></ul><hr id="2a8568fa-e39f-808e-a711-c207129dbf5c"/><h2 id="2a8568fa-e39f-801f-b296-cc2f16d3d96e" class="">11) Мини-практикум A (60–90 мин): фьюжн с погодой</h2><p id="2a8568fa-e39f-806e-abcc-dc8bc0508096" class=""><strong>Цель:</strong> честный join + базовые weather-фичи.</p><p id="2a8568fa-e39f-802f-a415-d27c124f0fca" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8038-a0b8-ebed4ff845d1" class="numbered-list" start="1"><li>Привести время (TZ/DST), слить погоду по <code>site_id×timestamp</code>.</li></ol><ol type="1" id="2a8568fa-e39f-8011-af6f-e338468a25f5" class="numbered-list" start="2"><li>Построить CDD/HDD, энтальпию, лаги/роллинги погоды.</li></ol><ol type="1" id="2a8568fa-e39f-8074-a1a6-ebce48206c6e" class="numbered-list" start="3"><li>Лёгкий LGBM на <code>log1p(y)</code> → OOF; отчёт «по сайтам».</li></ol><p id="2a8568fa-e39f-8076-a3f8-cf7c2beea8dc" class=""><strong>Артефакты:</strong> <code>weather_join.py</code>, <code>tz_utils.py</code>, <code>weather_features.yaml</code>.</p><hr id="2a8568fa-e39f-8093-90da-ec89122222e7"/><h2 id="2a8568fa-e39f-800b-b881-dd2f869512b3" class="">12) Мини-практикум B (60–90 мин): профили нагрузки</h2><p id="2a8568fa-e39f-8090-8383-e351e4cd957d" class=""><strong>Цель:</strong> occupancy proxy и профили суток.</p><p id="2a8568fa-e39f-80ba-92f4-cba9102f2ff9" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-800f-8113-e897384791ed" class="numbered-list" start="1"><li>Нормализовать суточные кривые <code>y</code> → k-means (k=6–12).</li></ol><ol type="1" id="2a8568fa-e39f-8003-a06e-cbc51d42ec99" class="numbered-list" start="2"><li>Фичи: id/дистанции до центров, daytype.</li></ol><ol type="1" id="2a8568fa-e39f-806b-9e85-f37855a84f2b" class="numbered-list" start="3"><li>Добавить piecewise-temp фичи; сравнить ΔOOF.</li></ol><p id="2a8568fa-e39f-80c0-b8f1-e1d56d60e220" class=""><strong>Артефакты:</strong> <code>energy_profiles.py</code>, <code>energy_features.py</code>.</p><hr id="2a8568fa-e39f-8034-9170-fcaa7eb61dab"/><h2 id="2a8568fa-e39f-8091-95f2-d05fb8e0a546" class="">13) Мини-практикум C (45–60 мин): очистка/робастность</h2><p id="2a8568fa-e39f-804c-b1db-c5b0014c7566" class=""><strong>Цель:</strong> аномалии и устойчивые лоссы.</p><p id="2a8568fa-e39f-807f-8138-e8f220b62721" class=""><strong>План:</strong></p><ol type="1" id="2a8568fa-e39f-8039-9477-eacb3be6d841" class="numbered-list" start="1"><li>Детект всплесков/ступеней, маска/клип.</li></ol><ol type="1" id="2a8568fa-e39f-80de-b910-cdca540b95d9" class="numbered-list" start="2"><li>Huber/Quantile vs RMSE на одном фичсете.</li></ol><ol type="1" id="2a8568fa-e39f-800e-8b4f-d52b171b0dda" class="numbered-list" start="3"><li>Сравнить хвосты ошибок (P95/P99) и per-meter.</li></ol><hr id="2a8568fa-e39f-8003-9005-cdac16f95313"/><h2 id="2a8568fa-e39f-8002-937a-f4a5347646e4" class="">14) Самостоятельный мини-спринт (3–4 часа)</h2><p id="2a8568fa-e39f-80ef-880e-fe7c30d158e5" class=""><strong>Варианты:</strong></p><ul id="2a8568fa-e39f-805b-a6d5-e97dd485f48f" class="bulleted-list"><li style="list-style-type:disc">Подмножество сайтов с разными климатами и метрами.<p id="2a8568fa-e39f-80e6-a4d0-c301dd53af6f" class=""><strong>Требования:</strong></p></li></ul><ul id="2a8568fa-e39f-809f-b757-c08aaf4984ac" class="bulleted-list"><li style="list-style-type:disc">Корректная CV (site/time-aware) с gap, честный weather-join.</li></ul><ul id="2a8568fa-e39f-80a5-bac4-e9537864756c" class="bulleted-list"><li style="list-style-type:disc">≥10 безопасных фич (погода/календарь/профили/лаг-y), 1 «смелая» (piecewise/монотонность или профили-кластер).</li></ul><ul id="2a8568fa-e39f-8073-8a4b-f8dbcd360609" class="bulleted-list"><li style="list-style-type:disc">2 сабмита: базовый лог-GBDT и улучшенный ансамбль; паспорт решения.</li></ul><hr id="2a8568fa-e39f-8084-9474-f54a552687f5"/><h2 id="2a8568fa-e39f-807a-82a5-e915e330f00c" class="">15) Чек-лист утечек (версия М8)</h2><ul id="2a8568fa-e39f-80dc-b9b2-d90e2e245972" class="bulleted-list"><li style="list-style-type:disc">Любые лаги/роллинги — <strong>только до</strong> <code>t</code>.</li></ul><ul id="2a8568fa-e39f-8043-87b0-c0dafbab16c4" class="bulleted-list"><li style="list-style-type:disc">Погоду джойним <strong>по времени фолда</strong>, backfill/интерполяции помечаем флагами.</li></ul><ul id="2a8568fa-e39f-8045-9086-f4e5747a7589" class="bulleted-list"><li style="list-style-type:disc">Никаких агрегатов по сайту/зданию, включающих валидную зону.</li></ul><ul id="2a8568fa-e39f-8064-b155-ce659a163a2b" class="bulleted-list"><li style="list-style-type:disc">TZ/DST: проверка длины суток (23/25ч), отсутствие дубликатов/дыр.</li></ul><hr id="2a8568fa-e39f-801d-8eb9-ebf777767ea2"/><h2 id="2a8568fa-e39f-80ca-aaf2-dbc0c99bf479" class="">16) Оценивание</h2><ul id="2a8568fa-e39f-800e-a35e-c1a61fdb6df3" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: CV(site/time), отсутствие утечек, TZ/DST-дисциплина.</li></ul><ul id="2a8568fa-e39f-80aa-ae38-ee9369e465a1" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: ΔOOF/ΔLB, стабильность <strong>per site/meter</strong>.</li></ul><ul id="2a8568fa-e39f-802d-b44e-f2118bb3146c" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: быстрый join, кэш Parquet/Polars, логи таймингов.</li></ul><ul id="2a8568fa-e39f-807c-9d7a-c804eb8347cd" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: что дало прирост и почему физически правдоподобно.</li></ul><hr id="2a8568fa-e39f-8034-94c9-e3fc9474a13a"/><h2 id="2a8568fa-e39f-801b-a5b1-c25fd0c5379a" class="">17) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-8079-83dc-d171494146a4" class="bulleted-list"><li style="list-style-type:disc"><code>weather_join.py</code> (TZ/DST, nearest-station, backfill, флаги импутаций).</li></ul><ul id="2a8568fa-e39f-808c-9125-da6843490b22" class="bulleted-list"><li style="list-style-type:disc"><code>energy_features.py</code> (CDD/HDD, энтальпия, лаги/роллинги, piecewise-temp, профили суток/недели).</li></ul><ul id="2a8568fa-e39f-801f-8929-f18a59a1ebf9" class="bulleted-list"><li style="list-style-type:disc"><code>site_cv.py</code> (GroupKFold site/building + blocked/rolling + gap/embargo).</li></ul><ul id="2a8568fa-e39f-80ce-be76-dcb5d07551fe" class="bulleted-list"><li style="list-style-type:disc"><code>anomaly_cleaning.py</code> (всплески/ступени/маски).</li></ul><ul id="2a8568fa-e39f-80af-8ffd-c7b954901eeb" class="bulleted-list"><li style="list-style-type:disc">Пресеты: <code>lgbm_energy_log.yaml</code>, <code>catboost_huber.yaml</code>, <code>ensemble_energy.yaml</code>.</li></ul><ul id="2a8568fa-e39f-8002-8553-df422614538e" class="bulleted-list"><li style="list-style-type:disc">Чек-листы: «погода без утечки», «TZ/DST проверка», «пер-site отчёт».</li></ul><hr id="2a8568fa-e39f-80ef-aa11-e8cef59205ef"/><h2 id="2a8568fa-e39f-8094-82a8-e21122c4b332" class="">18) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-80b8-900e-e59e7ba4c4d4" class="bulleted-list"><li style="list-style-type:disc"><strong>0–30 мин:</strong> TZ/DST нормализация, честный weather-join, бейзлайн (лог-LGBM) → сабмит_1.</li></ul><ul id="2a8568fa-e39f-8004-890e-fb8d2e40d9a7" class="bulleted-list"><li style="list-style-type:disc"><strong>30–90 мин:</strong> CDD/HDD + энтальпия + лаги/роллинги погоды → ΔOOF.</li></ul><ul id="2a8568fa-e39f-80b0-ac6a-f471d94c733c" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> профили суток/недели, piecewise-temp/монотонность, очистка всплесков → сабмит_2.</li></ul><ul id="2a8568fa-e39f-8047-b0db-f32c24b2f6b7" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> лёгкий ансамбль, отчёт per-site/meter, стресс-сплит.</li></ul><ul id="2a8568fa-e39f-8018-a3c6-d1026ccaf9b5" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> финальная полировка и паспорт решения.</li></ul><p id="2a8568fa-e39f-8088-b915-f03ddd8f2672" class="">Если хочешь — могу сразу накинуть каркасы <code>weather_join.py</code>/<code>energy_features.py</code> под твой темплейт (те же интерфейсы, что у CV/Encoder/TS-factory), чтобы ребята просто подключили и поехали.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

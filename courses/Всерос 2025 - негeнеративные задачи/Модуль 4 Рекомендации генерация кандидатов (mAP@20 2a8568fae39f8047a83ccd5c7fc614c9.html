@@ -1,0 +1,707 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 4. Рекомендации: генерация кандидатов (mAP@20) — «Т-Шопинг»</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8047-a83c-cd5c7fc614c9" class="page sans"><header><h1 class="page-title">Модуль 4. Рекомендации: генерация кандидатов (mAP@20) — «Т-Шопинг»</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8002-acbe-e635dff66eb8" class="">Модуль 4 делаем под <strong>RecSys I — Candidate Generation (mAP@20)</strong> на кейсе <strong>«Т-Шопинг: реконструкция интереса»</strong>.</p><hr id="2a8568fa-e39f-8083-8b87-ee3e6c035605"/><h2 id="2a8568fa-e39f-80f0-bb9b-f65d88f1c480" class="">1) Результаты модуля (что ученик должен уметь)</h2><ul id="2a8568fa-e39f-80e2-aff8-cd7b6ec033d1" class="bulleted-list"><li style="list-style-type:disc">Корректно <strong>воспроизвести постановку</strong>: предсказать для каждого пользователя <strong>топ-20 item_id</strong>; тестовый период — <strong>последние 7 дней</strong>, train — предшествующие дни (в раздаче — 47 дней до разделения), все тестовые пользователи есть в train; в тесте пара (user_id, item_id) встречается не чаще 1 раза; <strong>распределения в тесте могут отличаться</strong> от train.</li></ul><ul id="2a8568fa-e39f-8091-a712-e0b51925e9e0" class="bulleted-list"><li style="list-style-type:disc">Понимать и считать <strong>mAP@20</strong> (AP@20 по юзеру → среднее по всем) и разницу между <strong>candidate recall@20</strong> и итоговым mAP@20.</li></ul><ul id="2a8568fa-e39f-80d9-86f9-c82520411d6a" class="bulleted-list"><li style="list-style-type:disc">Построить <strong>несколько источников кандидатов</strong> (pop/trending, co-visitation, item2vec/word2vec, LightGCN, простая последовательная модель переходов), собрать <strong>union→dedup</strong>, добиться <strong>recall@20 ≥ 0.95</strong> при бюджете ≤150–300 кандидатов/польз.</li></ul><ul id="2a8568fa-e39f-802b-9745-c3d8935c7d83" class="bulleted-list"><li style="list-style-type:disc">Сформировать валидный <strong>sample_submission </strong>стайл саб (ровно 20 item_id на user_id).</li></ul><hr id="2a8568fa-e39f-80d4-a8fe-c02682de0126"/><h2 id="2a8568fa-e39f-8008-bee4-e00d44303dbd" class="">2) Теория (90–120 минут)</h2><h3 id="2a8568fa-e39f-8078-8f7c-dfbccce08ccd" class="">A. Постановка, файлы, метрика</h3><ul id="2a8568fa-e39f-8075-bdf5-dd70dfe1f066" class="bulleted-list"><li style="list-style-type:disc"><strong>Задание:</strong> предсказать топ-20 на клики пользователя. Файлы: <code>train_data.pq</code> (user_id, item_id, date) и <code>sample_submission.csv</code> (список user_id для ответа). <strong>Метрика</strong> — mAP@20: учитывает и <strong>наличие релевантов</strong>, и <strong>порядок</strong> в топ-20.</li></ul><ul id="2a8568fa-e39f-8098-bbae-ccdafc90cc80" class="bulleted-list"><li style="list-style-type:disc"><strong>Нюансы данных:</strong> тест — последние 7 дней; товары из train могут появляться в тесте; дистрибуции популярности/доступности в тесте <strong>могут сдвигаться</strong>. Следствие: нужен <strong>смешанный</strong> кандидат-ген (история + тренды).</li></ul><h3 id="2a8568fa-e39f-80ac-a61a-c9147b0df83d" class="">B. Офлайн-сплит и анти-утечки</h3><ul id="2a8568fa-e39f-8035-9bd2-e74f88a235a3" class="bulleted-list"><li style="list-style-type:disc">Правильная симуляция: <strong>hold-out = последние 7 дней</strong>; train-окно — всё до них. Никаких подсчётов на hold-out при построении кандидатов.</li></ul><ul id="2a8568fa-e39f-80de-9678-fbcac5f21e41" class="bulleted-list"><li style="list-style-type:disc">Валидация по пользователю (Group): считаем <strong>AP@20/ mAP@20</strong> на hold-out; для candidate-этапа дополнительно считаем <strong>recall@20</strong> — долю пользователей, у кого хоть один истинный item попал в кандидаты.</li></ul><h3 id="2a8568fa-e39f-802d-b6f7-e2801ba057b1" class="">C. Источники кандидатов (core)</h3><ol type="1" id="2a8568fa-e39f-80e1-9cc7-c98ccecbc4cd" class="numbered-list" start="1"><li><strong>Popularity / Trending</strong><ul id="2a8568fa-e39f-8002-88e8-f4ba17192f63" class="bulleted-list"><li style="list-style-type:disc">Глобальный поп (по последним N дням), <strong>recency-веса</strong> (напр., exp-decay), фильтры по пользователю (не рекомендовать уже кликнутое слишком часто).</li></ul><ul id="2a8568fa-e39f-80f4-a54b-c0b1c9c134ac" class="bulleted-list"><li style="list-style-type:disc">Нужен как «страховка» от сдвигов и для холодного старта. (Тест может сместиться.)</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-80e5-be44-dd54cd6f9541" class="numbered-list" start="2"><li><strong>Co-visitation (совстречаемость)</strong><ul id="2a8568fa-e39f-8062-8d27-fe84b2229577" class="bulleted-list"><li style="list-style-type:disc">Формируем сессии по пользователю (на день/окно), считаем парные co-click’и:<figure id="2a8568fa-e39f-8098-90a5-fc291978f627" class="equation"><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>score</mtext><mo stretchy="false">(</mo><mi>i</mi><mo>→</mo><mi>j</mi><mo stretchy="false">)</mo><mo>=</mo><mo>∑</mo><mtext>w</mtext><mrow><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow><mo>⋅</mo><msub><mtext>w</mtext><mtext>recency</mtext></msub><mo>⋅</mo><msub><mtext>w</mtext><mtext>position</mtext></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex"> \text{score}(i\to j)=\sum \text{w}{\Delta t}\cdot\text{w}_{\text{recency}}\cdot\text{w}_{\text{position}} .</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">score</span></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.6em;vertical-align:-0.55em;"></span><span class="mop op-symbol large-op" style="position:relative;top:0em;">∑</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">w</span></span><span class="mord"><span class="mord">Δ</span><span class="mord mathnormal">t</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7306em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord text"><span class="mord">w</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">recency</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord text"><span class="mord">w</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3175em;"><span style="top:-2.55em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">position</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord">.</span></span></span></span></span></div></figure></li></ul><ul id="2a8568fa-e39f-80c4-9edf-e325625933c3" class="bulleted-list"><li style="list-style-type:disc">Для каждого item берём топ-M соседей; для пользователя объединяем соседей его последних L товаров.</li></ul><ul id="2a8568fa-e39f-8052-a69a-ddbd856550a4" class="bulleted-list"><li style="list-style-type:disc">Быстро, интерпретируемо; часто даёт <strong>львиную долю recall@20</strong>.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-8041-bff2-ea3dd67dee57" class="numbered-list" start="3"><li><strong>Item2vec / Word2Vec по последовательностям кликов</strong><ul id="2a8568fa-e39f-801e-bcce-d9fea9cb1f66" class="bulleted-list"><li style="list-style-type:disc">Обучаем эмбеддинги на последовательностях кликов (user-sequences): окно контекста 5–10, neg-sampling; top-N ближайших по косинусу/дот-продукту.</li></ul><ul id="2a8568fa-e39f-805c-a4cf-feb6f505fd61" class="bulleted-list"><li style="list-style-type:disc">Плюсы: покрывает «семантику» соседства, ловит неявные связи.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-8009-bb64-cc3aa86e17de" class="numbered-list" start="4"><li><strong>LightGCN (user–item граф)</strong><ul id="2a8568fa-e39f-8094-9ecc-e1596041bed7" class="bulleted-list"><li style="list-style-type:disc">Обучаем лёгкий GCN на bipartite-графе (user↔item), берём top-N по сходству пользовательского/товарного эмбеддингов.</li></ul><ul id="2a8568fa-e39f-80b3-8a1b-e9fcd65ee9e9" class="bulleted-list"><li style="list-style-type:disc">Даёт прирост на «тонких» пересечениях пользователей.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-804e-8d36-c8f8e337dbf0" class="numbered-list" start="5"><li><strong>Последовательные переходы (1-шаговая марковка / last-item)</strong><ul id="2a8568fa-e39f-808a-928b-d7bf955f5987" class="bulleted-list"><li style="list-style-type:disc">Переходные вероятности (P(j|i_{\text{last}})) по последнему/последним товарам пользователя; добавляет свежесть и локальные паттерны.</li></ul></li></ol><ol type="1" id="2a8568fa-e39f-803f-aeb5-fe99bf70fd70" class="numbered-list" start="6"><li><strong>Холодный старт и разреженность</strong><ul id="2a8568fa-e39f-801f-842a-f08a98f6f213" class="bulleted-list"><li style="list-style-type:disc">Для пользователей с ≤K кликов: смесь <code>trending@recent</code> + co-vis по 1–2 последним кликам.</li></ul><ul id="2a8568fa-e39f-8090-ab90-e75e940a9b0a" class="bulleted-list"><li style="list-style-type:disc">Для редких товаров: соседи через item2vec/LightGCN.</li></ul></li></ol><h3 id="2a8568fa-e39f-8021-a9f1-c373cbfdcac5" class="">D. Union→Dedup→Budget</h3><ul id="2a8568fa-e39f-8051-baee-e45cdd5d8b26" class="bulleted-list"><li style="list-style-type:disc">Сливаем источники с <strong>приоритетами</strong> (например: co-vis → item2vec → LightGCN → trending), убираем дубли, ограничиваем <strong>budget</strong> (≤150–300 кандидатов/польз.).</li></ul><ul id="2a8568fa-e39f-80c4-82ee-c9686846cb14" class="bulleted-list"><li style="list-style-type:disc">Сохраняем per-source «долю» (например, 60/25/10/5) — это поможет потом на ранжировании.</li></ul><h3 id="2a8568fa-e39f-801d-a20b-fa1914a32136" class="">E. Эффективность и хранение</h3><ul id="2a8568fa-e39f-8054-910e-c1a3db7051b9" class="bulleted-list"><li style="list-style-type:disc">Счёт co-vis в sparce-матрицах, обрезка до топ-K на item; кэш recent-items per user; ANN/FAISS для эмбеддингов.</li></ul><ul id="2a8568fa-e39f-80b8-a7a2-d4c20f8134a8" class="bulleted-list"><li style="list-style-type:disc">Формат кандидатов: <code>user_id, [cand_items...]</code> и отдельно <code>source_scores</code> для последующего ранжирования.</li></ul><h3 id="2a8568fa-e39f-806f-a362-fb0ac7575596" class="">F. Пост-правила перед сабмитом</h3><ul id="2a8568fa-e39f-806c-8514-ff2a076d93ab" class="bulleted-list"><li style="list-style-type:disc">Удалить уже встречавшиеся в пользовательской истории <strong>дубликаты</strong> в финальном топ-20.</li></ul><ul id="2a8568fa-e39f-8033-b085-ef04c59e9f7c" class="bulleted-list"><li style="list-style-type:disc">Если кандидатов &lt; 20 — дополняем <strong>trending</strong>. Формат финального файла — <strong>ровно 20 item_id на строку</strong>.</li></ul><hr id="2a8568fa-e39f-8069-b526-d570669d9cbe"/><h2 id="2a8568fa-e39f-8041-b895-c446ae9be551" class="">3) Практика (лабы, 3–4 часа)</h2><h3 id="2a8568fa-e39f-8075-a25b-f0c4cce373f0" class="">Лаба 1. Данные и офлайн-сплит</h3><ul id="2a8568fa-e39f-80d3-88ea-c90d9cfc4a55" class="bulleted-list"><li style="list-style-type:disc">Загрузка <code>train_data.pq</code>, базовый EDA: число пользователей/товаров/кликов, длины последовательностей.</li></ul><ul id="2a8568fa-e39f-8017-aa37-ee6b838e3ba4" class="bulleted-list"><li style="list-style-type:disc">Реализуем <code>make_holdout(train, last_days=7)</code>; готовим функции <code>ap_at_20</code>, <code>map_at_20</code>, <code>recall_at_20</code>. (mAP@20 = средний AP@20 по пользователям.)</li></ul><p id="2a8568fa-e39f-808d-b82f-c33b5237c3f4" class=""><strong>Артефакты:</strong> <code>cv_recsys.py</code>, <code>metrics_recsys.py</code>.</p><hr id="2a8568fa-e39f-804d-9c20-ed86273179b5"/><h3 id="2a8568fa-e39f-8004-93fc-d08d02e37903" class="">Лаба 2. Бейзлайн: Popularity / Trending</h3><ul id="2a8568fa-e39f-80aa-ab0b-eb67b48d5399" class="bulleted-list"><li style="list-style-type:disc">Поп-листы глобальные и по неделе; recency-веса.</li></ul><ul id="2a8568fa-e39f-809d-a8f3-fd0cc7b395fd" class="bulleted-list"><li style="list-style-type:disc">Сабмит-мок: для каждого user топ-20 из trending (первый валидный «минимум»).</li></ul><ul id="2a8568fa-e39f-8015-9f28-d59cb64e66be" class="bulleted-list"><li style="list-style-type:disc">Оценка <strong>mAP@20</strong> и <strong>recall@20</strong> на hold-out — зафиксировать «точку ноль».</li></ul><p id="2a8568fa-e39f-8047-ace7-cc0accef3f37" class=""><strong>Артефакты:</strong> <code>baseline_pop.py</code>, <code>submit_pop.csv</code>.</p><hr id="2a8568fa-e39f-80e7-87c8-cfa3bb372771"/><h3 id="2a8568fa-e39f-80a3-bc5d-e443d020f54a" class="">Лаба 3. Co-visitation v1</h3><ul id="2a8568fa-e39f-8034-9ccc-f3e96f7ecd8d" class="bulleted-list"><li style="list-style-type:disc">Сбор co-vis пар по окнам пользователя; веса: (w_{\Delta t}=1/(1+\Delta t)), (w_{\text{recency}}=\gamma^{\text{age}}).</li></ul><ul id="2a8568fa-e39f-80c0-b019-e7168ce7cb9e" class="bulleted-list"><li style="list-style-type:disc">Для каждого item — топ-M соседей; для пользователя — объединение соседей последних L кликов.</li></ul><ul id="2a8568fa-e39f-8084-bee0-cc1c8a1b52d3" class="bulleted-list"><li style="list-style-type:disc">Меряем <strong>recall@20</strong> относительно hold-out; подбираем M,L так, чтобы recall@20 ≥ 0.9.</li></ul><p id="2a8568fa-e39f-80e6-9a66-e2326668e9fa" class=""><strong>Артефакты:</strong> <code>build_coviz.py</code> (с сохранением топ-K соседей per item), <code>cand_coviz.parquet</code>.</p><hr id="2a8568fa-e39f-8095-8634-c51928bcfa9e"/><h3 id="2a8568fa-e39f-805a-a64c-c3c1e74ddcfb" class="">Лаба 4. Item2vec</h3><ul id="2a8568fa-e39f-80fe-be2a-f4ed4c1fc136" class="bulleted-list"><li style="list-style-type:disc">Подготовка последовательностей; обучение word2vec (win=5–10, dim=64–128, ns=10).</li></ul><ul id="2a8568fa-e39f-8023-9e74-e24c35abd0ce" class="bulleted-list"><li style="list-style-type:disc">Извлечение соседей по косинусу; объединение с co-vis.</li></ul><ul id="2a8568fa-e39f-80ca-bd0d-ceef97dd4c09" class="bulleted-list"><li style="list-style-type:disc">Снимаем кривую «recall@20 vs #candidates»; фиксируем бюджет (например, ≤200).</li></ul><p id="2a8568fa-e39f-802e-8b79-eed86287a354" class=""><strong>Артефакты:</strong> <code>train_item2vec.py</code>, <code>cand_item2vec.parquet</code>.</p><hr id="2a8568fa-e39f-80e4-91d7-db54cfc555d6"/><h3 id="2a8568fa-e39f-805e-a21e-c9041d31c4a8" class="">Лаба 5. LightGCN (мини)</h3><ul id="2a8568fa-e39f-805e-b8d7-cfb79f2f725e" class="bulleted-list"><li style="list-style-type:disc">Строим user–item граф; обучаем LightGCN 5–10 эпох; получаем эмбеддинги; nearest-items.</li></ul><ul id="2a8568fa-e39f-806f-b081-e7b3ac44785e" class="bulleted-list"><li style="list-style-type:disc">Добавляем в union с долей 10–20%. Контроль времени/VRAM.</li></ul><p id="2a8568fa-e39f-804e-ab66-c43474dfa6e9" class=""><strong>Артефакты:</strong> <code>train_lightgcn.py</code>, <code>cand_lgcn.parquet</code>.</p><hr id="2a8568fa-e39f-80b1-8bc5-e73819acc938"/><h3 id="2a8568fa-e39f-80c9-b33f-e4e5cc19f62a" class="">Лаба 6. Union→Dedup→Budget + пост-правила</h3><ul id="2a8568fa-e39f-804c-b154-cb4f0c7fa71c" class="bulleted-list"><li style="list-style-type:disc">Сливаем источники по приоритетам, удаляем дубли, ограничиваем кандидатов.</li></ul><ul id="2a8568fa-e39f-808a-b893-f8d10a4a5b98" class="bulleted-list"><li style="list-style-type:disc">Добавляем last-item transitions для свежести топа, дополняем <code>trending</code> до 20.</li></ul><ul id="2a8568fa-e39f-80db-8b95-d0004c57205f" class="bulleted-list"><li style="list-style-type:disc">Формируем финальный <strong>кандидатный саб</strong>: ранжируем простым суммарным скором (co-vis score + α⋅sim_item2vec + β⋅pop). Проверяем <strong>mAP@20</strong> на hold-out (да, это «псевдо-ранжирование» — ранжер будет в Модуле 5).</li></ul><p id="2a8568fa-e39f-80bd-bfaf-c51cb32655f5" class=""><strong>Артефакты:</strong> <code>build_candidates.py</code>, <code>candidates.parquet</code>, <code>submit_candidates.csv</code>.</p><hr id="2a8568fa-e39f-804d-a01d-c4db1271c126"/><h2 id="2a8568fa-e39f-8092-90bc-ccbd0203397b" class="">4) Критерии сдачи модуля</h2><ul id="2a8568fa-e39f-80ad-adf1-f533a8c36d42" class="bulleted-list"><li style="list-style-type:disc"><strong>Recall@20 ≥ 0.95</strong> на hold-out при бюджете ≤150–300 кандидатов/польз.; лог «recall vs budget».</li></ul><ul id="2a8568fa-e39f-8034-ad39-f2b53ef362a3" class="bulleted-list"><li style="list-style-type:disc">mAP@20 на «кандидатном сабе» <strong>выше</strong> поп-бейзлайна.</li></ul><ul id="2a8568fa-e39f-808b-bbe3-de17f9d00f27" class="bulleted-list"><li style="list-style-type:disc">Репо с воспроизводимыми скриптами: <code>cv_recsys.py</code>, <code>metrics_recsys.py</code>, <code>build_coviz.py</code>, <code>train_item2vec.py</code>, <code>train_lightgcn.py</code>, <code>build_candidates.py</code>, <code>README.md</code> (команды).</li></ul><ul id="2a8568fa-e39f-806c-8e01-c91a80e5544c" class="bulleted-list"><li style="list-style-type:disc">Сабмит <strong>по формату</strong>: для каждого user ровно 20 item_id (как в <code>sample_submission.csv</code>).</li></ul><hr id="2a8568fa-e39f-80ad-a305-eb31013d35e2"/><h2 id="2a8568fa-e39f-8079-800d-cb93f1987298" class="">5) Домашка</h2><ol type="1" id="2a8568fa-e39f-809e-8e27-e3de68d8a810" class="numbered-list" start="1"><li>Абляция источников: co-vis / item2vec / LightGCN / trending — вклад каждого в <strong>recall@20</strong> и в «псевдо-mAP@20».</li></ol><ol type="1" id="2a8568fa-e39f-80ed-bda5-d0bc78b3e020" class="numbered-list" start="2"><li>Найти <strong>оптимальный бюджет</strong> кандидатов: снять кривую качества/времени; оформить таблицу.</li></ol><ol type="1" id="2a8568fa-e39f-8044-879f-e886dc84f023" class="numbered-list" start="3"><li>Реализовать <strong>холодный старт</strong> (≤2 кликов): дизайн смеси trending + соседство last-item; сравнить с общим кейсом.</li></ol><ol type="1" id="2a8568fa-e39f-80c7-88d5-e5a25519e436" class="numbered-list" start="4"><li>Сформировать отчёт <code>cand_report.md</code> (сплиты, утечки, параметры, время, итоговые метрики) и финальный <code>submit_candidates.csv</code>.</li></ol><hr id="2a8568fa-e39f-805c-ae79-d7d5a2e60d50"/><p id="2a8568fa-e39f-8086-9d47-c2de564765e5" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,725 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 1. Бейзлайны и простейшие модели</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-80f9-b442-db9f82d73631" class="page sans"><header><h1 class="page-title">Модуль 1. Бейзлайны и простейшие модели</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-8010-a78e-d2d701083628" class=""><strong>Главная цель модуля:</strong></p><p id="2aa568fa-e39f-8053-8b3a-fc64ae268977" class="">После него студент должен уметь:</p><ul id="2aa568fa-e39f-805a-b693-c7bf2273816e" class="bulleted-list"><li style="list-style-type:disc">взять описание RecSys-соревнования;</li></ul><ul id="2aa568fa-e39f-803e-970b-e316b1638073" class="bulleted-list"><li style="list-style-type:disc"><strong>за 2–3 часа</strong> собрать:<ul id="2aa568fa-e39f-808b-a829-d4f268f9fae0" class="bulleted-list"><li style="list-style-type:circle">global popularity;</li></ul><ul id="2aa568fa-e39f-8018-99ed-eadc19b8536d" class="bulleted-list"><li style="list-style-type:circle">сегментную популярность;</li></ul><ul id="2aa568fa-e39f-80b6-b53c-c46b126f9ed8" class="bulleted-list"><li style="list-style-type:circle">item-to-item co-occurrence baseline;</li></ul><ul id="2aa568fa-e39f-8068-8d68-fa4123c58d2a" class="bulleted-list"><li style="list-style-type:circle">простую смесь этих вещей;</li></ul></li></ul><ul id="2aa568fa-e39f-80a9-9d79-d6890f2befa5" class="bulleted-list"><li style="list-style-type:disc">аккуратно оформить offline-валидацию;</li></ul><ul id="2aa568fa-e39f-80e8-8224-fe3f15b289c3" class="bulleted-list"><li style="list-style-type:disc">сделать <strong>валидный сабмит на Kaggle/All Cups</strong>.</li></ul><hr id="2aa568fa-e39f-8083-83ba-fde21fac87b1"/><h2 id="2aa568fa-e39f-80c0-b9a8-d9a236cac134" class="">Структура модуля</h2><p id="2aa568fa-e39f-8069-9b3e-dc731c072c8a" class="">Предлагаю 4 урока + мини-проект:</p><ol type="1" id="2aa568fa-e39f-80b1-98db-d4d1ed3579b3" class="numbered-list" start="1"><li><strong>Урок 1.1. Архитектура «нулевого решения» и разбор датасета</strong><figure id="2aa568fa-e39f-8048-becd-da6737ceee74" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%201%20%D0%91%D0%B5%D0%B9%D0%B7%D0%BB%D0%B0%D0%B9%D0%BD%D1%8B%20%D0%B8%20%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%B5%D0%B9%D1%88%D0%B8%D0%B5%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%201%201%20%D0%90%D1%80%D1%85%D0%B8%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%B0%20%C2%AB%D0%BD%D1%83%D0%BB%D0%B5%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%80%D0%B5%D1%88%D0%B5%D0%BD%D0%B8%D1%8F%C2%BB%20%D0%B8%20%D1%80%D0%B0%D0%B7%D0%B1%D0%BE%D1%80%20%D0%B4%202aa568fae39f8048becdda6737ceee74.html">Урок 1.1. Архитектура «нулевого решения» и разбор датасета</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8077-afca-f860f4fb42fb" class="numbered-list" start="2"><li><strong>Урок 1.2. Популярностные рекомендации: от global popularity до сегментной</strong><figure id="2aa568fa-e39f-8028-b0fd-d5a0fbe0bd76" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%201%20%D0%91%D0%B5%D0%B9%D0%B7%D0%BB%D0%B0%D0%B9%D0%BD%D1%8B%20%D0%B8%20%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%B5%D0%B9%D1%88%D0%B8%D0%B5%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%201%202%20%D0%9F%D0%BE%D0%BF%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D0%BE%D1%81%D1%82%D0%BD%D1%8B%D0%B5%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%86%D0%B8%D0%B8%202aa568fae39f8028b0fdd5a0fbe0bd76.html">Урок 1.2. Популярностные рекомендации</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8007-8e6e-d7fdd70e80c0" class="numbered-list" start="3"><li><strong>Урок 1.3. Item-to-item co-occurrence и простые эвристики</strong><figure id="2aa568fa-e39f-8093-9e96-dd227632f0e3" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%201%20%D0%91%D0%B5%D0%B9%D0%B7%D0%BB%D0%B0%D0%B9%D0%BD%D1%8B%20%D0%B8%20%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%B5%D0%B9%D1%88%D0%B8%D0%B5%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%201%203%20Item-to-item%20co-occurrence%20%D0%B8%20%D0%BF%D1%80%D0%BE%D1%81%D1%82%D1%8B%D0%B5%20%D1%8D%D0%B2%D1%80%D0%B8%202aa568fae39f80939e96dd227632f0e3.html">Урок 1.3. Item-to-item co-occurrence и простые эвристики</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8047-83a1-cb89b41b5780" class="numbered-list" start="4"><li><strong>Урок 1.4. Сбор всего в единый бейзлайн + сабмит</strong></li></ol><figure id="2aa568fa-e39f-8089-86a7-fcd38975cb82" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%201%20%D0%91%D0%B5%D0%B9%D0%B7%D0%BB%D0%B0%D0%B9%D0%BD%D1%8B%20%D0%B8%20%D0%BF%D1%80%D0%BE%D1%81%D1%82%D0%B5%D0%B9%D1%88%D0%B8%D0%B5%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%201%204%20%D0%95%D0%B4%D0%B8%D0%BD%D1%8B%D0%B9%20%D0%B1%D0%B5%D0%B9%D0%B7%D0%BB%D0%B0%D0%B9%D0%BD%20+%20offline-%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%20+%20%D1%81%D0%B0%D0%B1%202aa568fae39f808986a7fcd38975cb82.html">Урок 1.4. Единый бейзлайн + offline-валидация + сабмит</a></figure><ol type="1" id="2aa568fa-e39f-805f-97e0-c58a7c976eee" class="numbered-list" start="1"><li><strong>Мини-проект по модулю:</strong> «Мой первый осмысленный бейзлайн для соревнования»</li></ol><p id="2aa568fa-e39f-80c2-b4ef-ed01e96b62b1" class="">Для практики можно выбрать, например:</p><ul id="2aa568fa-e39f-80aa-bcbe-eb249224e38d" class="bulleted-list"><li style="list-style-type:disc">какой-нибудь <strong>MovieLens-based / Movie Recommender</strong> competition / playground,</li></ul><ul id="2aa568fa-e39f-8086-a105-f48c99291aac" class="bulleted-list"><li style="list-style-type:disc">или любой небольшой RecSys playground c user–item интеракциями.</li></ul><p id="2aa568fa-e39f-80ea-a2d3-e515ad2f0316" class="">(В реальном курсе ты сам подберёшь конкретный конкурс.)</p><hr id="2aa568fa-e39f-809c-b4a2-d807e7acf2a6"/><h2 id="2aa568fa-e39f-8028-a10c-e206a4e6074b" class="">Урок 1.1. Архитектура «нулевого решения» и разбор датасета</h2><h3 id="2aa568fa-e39f-808a-85dc-c89a8bfa3669" class="">Цели урока</h3><ul id="2aa568fa-e39f-80be-beb1-e5671847257c" class="bulleted-list"><li style="list-style-type:disc">Показать, что <strong>любой RecSys-пайплайн = pipeline из шагов</strong>, а не «какая-то магия».</li></ul><ul id="2aa568fa-e39f-80c8-80a3-d8def310ffc7" class="bulleted-list"><li style="list-style-type:disc">Научить понимать структуру данных конкретного соревнования.</li></ul><ul id="2aa568fa-e39f-80bc-9b2b-c59fc75aa04a" class="bulleted-list"><li style="list-style-type:disc">Сразу задать привычку: <strong>EDA → формализация задачи → минимальный бейзлайн</strong>.</li></ul><h3 id="2aa568fa-e39f-8022-9ba9-c4c83b5d6326" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80a4-b7cd-f41a31392090" class="numbered-list" start="1"><li><strong>Шаги типового RecSys-решения</strong><ul id="2aa568fa-e39f-8072-98b3-dd64bedfcd2f" class="bulleted-list"><li style="list-style-type:disc">Загрузка данных:<ul id="2aa568fa-e39f-8098-b3bb-ceb5640fa19a" class="bulleted-list"><li style="list-style-type:circle">лог событий (<code>user_id, item_id, timestamp, event_type, ...</code>);</li></ul><ul id="2aa568fa-e39f-800b-b848-f28c1931625e" class="bulleted-list"><li style="list-style-type:circle">справочники (<code>items.csv</code>, <code>users.csv</code>).</li></ul></li></ul><ul id="2aa568fa-e39f-8072-b4df-c79d52c5ccb1" class="bulleted-list"><li style="list-style-type:disc">Постановка задачи:<ul id="2aa568fa-e39f-8097-9d67-f4750e0651c4" class="bulleted-list"><li style="list-style-type:circle">что мы должны предсказать? (следующий товар, топ-N, рейтинг…)</li></ul><ul id="2aa568fa-e39f-8049-9b8e-e95b8d2a7660" class="bulleted-list"><li style="list-style-type:circle">в каком формате сабмит?</li></ul></li></ul><ul id="2aa568fa-e39f-80a6-965b-d51eb7274cff" class="bulleted-list"><li style="list-style-type:disc">Candidate generation:<ul id="2aa568fa-e39f-80f4-a1cc-dbea54c42b15" class="bulleted-list"><li style="list-style-type:circle">откуда берутся кандидаты для рекомендаций;</li></ul><ul id="2aa568fa-e39f-8055-921f-d7ce3486cec2" class="bulleted-list"><li style="list-style-type:circle">почему нельзя просто «перебрать всё».</li></ul></li></ul><ul id="2aa568fa-e39f-8055-8838-d3d76679ddb2" class="bulleted-list"><li style="list-style-type:disc">Scoring &amp; ranking:<ul id="2aa568fa-e39f-806d-86a6-cacd26c83464" class="bulleted-list"><li style="list-style-type:circle">как мы считаем score для кандидатов;</li></ul><ul id="2aa568fa-e39f-80c1-b5a9-c08be3aa8554" class="bulleted-list"><li style="list-style-type:circle">как выбираем топ-K.</li></ul></li></ul><ul id="2aa568fa-e39f-8063-a4be-db7a63a2e6fa" class="bulleted-list"><li style="list-style-type:disc">Evaluation:<ul id="2aa568fa-e39f-80ab-9030-cdef3e8fc414" class="bulleted-list"><li style="list-style-type:circle">offline-метрика vs kaggle leaderboard;</li></ul><ul id="2aa568fa-e39f-801c-a6a8-e7ae6d95ae8d" class="bulleted-list"><li style="list-style-type:circle">почему скрипт валидации = must-have.</li></ul></li></ul><ul id="2aa568fa-e39f-8022-9b58-d87580df14f3" class="bulleted-list"><li style="list-style-type:disc">Инфраструктура:<ul id="2aa568fa-e39f-8080-ace4-df3acaedb33f" class="bulleted-list"><li style="list-style-type:circle">как организовать ноутбуки/скрипты;</li></ul><ul id="2aa568fa-e39f-8057-ae9b-cb24ec654f98" class="bulleted-list"><li style="list-style-type:circle">базовая структура проекта (src/, notebooks/, data/ и т.д.).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-808f-b0d6-f474077460fd" class="numbered-list" start="2"><li><strong>Разбор структуры конкретного датасета (соревнования)</strong><p id="2aa568fa-e39f-8091-b4f5-e17998c78d79" class="">Прямо на занятии:</p><ul id="2aa568fa-e39f-802f-ab5a-d6ac6d77c4f1" class="bulleted-list"><li style="list-style-type:disc">Открываем описание соревнования:<ul id="2aa568fa-e39f-80eb-9cfa-df76114a2667" class="bulleted-list"><li style="list-style-type:circle">кто такие пользователи;</li></ul><ul id="2aa568fa-e39f-80f4-9314-d59600e01327" class="bulleted-list"><li style="list-style-type:circle">кто такие предметы;</li></ul><ul id="2aa568fa-e39f-8095-bd70-c4af31c7d0de" class="bulleted-list"><li style="list-style-type:circle">какие есть типы событий;</li></ul><ul id="2aa568fa-e39f-8063-8b15-d04c7927e848" class="bulleted-list"><li style="list-style-type:circle">что является train, что test.</li></ul></li></ul><ul id="2aa568fa-e39f-800f-9864-c78fb04a15a2" class="bulleted-list"><li style="list-style-type:disc">Рисуем картинку:<ul id="2aa568fa-e39f-8098-a9dc-d7a187143d6a" class="bulleted-list"><li style="list-style-type:circle">какие таблицы есть, как они связаны;</li></ul><ul id="2aa568fa-e39f-8084-a8fa-f4eab63e68da" class="bulleted-list"><li style="list-style-type:circle">где основной лог событий, где атрибуты.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8034-a18a-cd24d826b72f" class="numbered-list" start="3"><li><strong>Мини-обзор: что можно сделать вообще без ML</strong><ul id="2aa568fa-e39f-8075-bd83-d296cad24f91" class="bulleted-list"><li style="list-style-type:disc">Global popularity;</li></ul><ul id="2aa568fa-e39f-807c-9547-d024a5433bdc" class="bulleted-list"><li style="list-style-type:disc">Segmented popularity (по country, category, time-window);</li></ul><ul id="2aa568fa-e39f-8029-8ab9-d6549adf333f" class="bulleted-list"><li style="list-style-type:disc">Item-to-item co-occurrence;</li></ul><ul id="2aa568fa-e39f-8063-a5cb-c78143b63cc0" class="bulleted-list"><li style="list-style-type:disc">Тупой recency («самые свежие популярные»).</li></ul></li></ol><h3 id="2aa568fa-e39f-80d2-b217-cf6c88ab6b1e" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-800b-821e-c3c44bccf98d" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ul id="2aa568fa-e39f-804c-8cff-f18e36b98e4b" class="bulleted-list"><li style="list-style-type:circle">загрузить train-лог;</li></ul><ul id="2aa568fa-e39f-80f2-aa20-d6767146f181" class="bulleted-list"><li style="list-style-type:circle">посчитать:<ul id="2aa568fa-e39f-801a-89ce-c60244c7774e" class="bulleted-list"><li style="list-style-type:square">число users, items;</li></ul><ul id="2aa568fa-e39f-8009-9f24-de07194d2701" class="bulleted-list"><li style="list-style-type:square">число событий;</li></ul><ul id="2aa568fa-e39f-8088-a4bb-fbc60f214dc3" class="bulleted-list"><li style="list-style-type:square">sparsity (<code>#nonzero / (n_users * n_items)</code> примерно);</li></ul></li></ul><ul id="2aa568fa-e39f-80d6-8d43-f7ab45ec8887" class="bulleted-list"><li style="list-style-type:circle">посмотреть:<ul id="2aa568fa-e39f-8067-915e-fbb11fa86618" class="bulleted-list"><li style="list-style-type:square">топ-10 самых популярных items по количеству взаимодействий;</li></ul><ul id="2aa568fa-e39f-80fe-beab-e2a86e2a287b" class="bulleted-list"><li style="list-style-type:square">топ-10 самых активных пользователей.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-8041-b916-d24f432d1042" class="bulleted-list"><li style="list-style-type:disc">Написать функцию-заготовку для бейзлайна:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80fa-977c-e28f3d8ff308" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_for_user(user_id, k=10):
+    # временно возвращаем просто global popularity
+    return popular_items[:k]
+</code></pre></li></ul><h3 id="2aa568fa-e39f-80c2-8c34-ea5b3e3aa295" class="">Домашка 1.1</h3><ol type="1" id="2aa568fa-e39f-802f-9ce6-f6f31de0c3f2" class="numbered-list" start="1"><li>По выбранному соревнованию/датасету:<ul id="2aa568fa-e39f-805c-9a30-f1548bfb44cb" class="bulleted-list"><li style="list-style-type:disc">описать:<ul id="2aa568fa-e39f-803c-964e-d5f7a4c43354" class="bulleted-list"><li style="list-style-type:circle">сущности (user, item, session, context);</li></ul><ul id="2aa568fa-e39f-804c-8a38-ff5229b031bb" class="bulleted-list"><li style="list-style-type:circle">таргет (что именно предсказываем);</li></ul><ul id="2aa568fa-e39f-80dd-a8f3-d9b3654bb641" class="bulleted-list"><li style="list-style-type:circle">какие типы событий есть и какие будем считать «позитивами»;</li></ul></li></ul><ul id="2aa568fa-e39f-802f-9616-dd5a9f2439fc" class="bulleted-list"><li style="list-style-type:disc">сделать небольшую текстовую заметку:<ul id="2aa568fa-e39f-8053-aafe-dc54f6ed0f12" class="bulleted-list"><li style="list-style-type:circle">какая, по твоему мнению, <strong>самая тупая разумная модель</strong>, которую можно сделать? (1–3 предложения).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8048-8d6f-fe036a46ab71" class="numbered-list" start="2"><li>В ноутбуке:<ul id="2aa568fa-e39f-8074-8e34-c7301fa10495" class="bulleted-list"><li style="list-style-type:disc">собрать первый <strong>global popularity baseline</strong> и ручками «порекомендовать» 10 товаров для 3–5 случайных пользователей.</li></ul></li></ol><hr id="2aa568fa-e39f-802d-918f-e021e4613cef"/><h2 id="2aa568fa-e39f-801f-9b3f-de6711ce0ed4" class="">Урок 1.2. Популярностные рекомендации</h2><h3 id="2aa568fa-e39f-8001-91d0-fb0844e2e8b8" class="">Цели урока</h3><ul id="2aa568fa-e39f-80b5-a737-c89db66eb0bd" class="bulleted-list"><li style="list-style-type:disc">Понять, что популярность — это не только «посчитать количество кликов».</li></ul><ul id="2aa568fa-e39f-80f1-9139-e4680a92ca01" class="bulleted-list"><li style="list-style-type:disc">Научиться делать более умные версии популярности:<ul id="2aa568fa-e39f-8011-89e8-c5ef09a24f28" class="bulleted-list"><li style="list-style-type:circle">segment-based,</li></ul><ul id="2aa568fa-e39f-80e8-9283-cd29ab194d44" class="bulleted-list"><li style="list-style-type:circle">time-decayed,</li></ul><ul id="2aa568fa-e39f-80e3-a4a5-f175d07dc6ef" class="bulleted-list"><li style="list-style-type:circle">с фильтрацией по доступности и т.д.</li></ul></li></ul><h3 id="2aa568fa-e39f-8037-ba44-ec63beecce3e" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8085-a7de-f5cb7e789bdd" class="numbered-list" start="1"><li><strong>Global popularity</strong><ul id="2aa568fa-e39f-80ef-a3a9-cfd11b0d17ac" class="bulleted-list"><li style="list-style-type:disc">Определение:<ul id="2aa568fa-e39f-80a7-a18f-cf3fe1b8ad5b" class="bulleted-list"><li style="list-style-type:circle"><code>pop(item) = количество взаимодействий</code> (или пользователей, взаимодействовавших с item).</li></ul></li></ul><ul id="2aa568fa-e39f-809b-a2f8-cba52632bd76" class="bulleted-list"><li style="list-style-type:disc">Варианты:<ul id="2aa568fa-e39f-80c3-9517-f3981339ed4d" class="bulleted-list"><li style="list-style-type:circle">считать по всем событиям;</li></ul><ul id="2aa568fa-e39f-8064-96a4-c650c63ac4c4" class="bulleted-list"><li style="list-style-type:circle">считать только по целевому событию (например, покупкам);</li></ul><ul id="2aa568fa-e39f-80a8-af1c-f667b3934278" class="bulleted-list"><li style="list-style-type:circle">считать в ограниченном окне по времени.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80a3-9149-dfa3ccb987be" class="numbered-list" start="2"><li><strong>Сегментная популярность</strong><ul id="2aa568fa-e39f-805a-96de-e23295ce0538" class="bulleted-list"><li style="list-style-type:disc">Идея: пользователи в разных сегментах любят разные вещи.</li></ul><ul id="2aa568fa-e39f-8000-a637-f86af3e82ea0" class="bulleted-list"><li style="list-style-type:disc">Сегменты:<ul id="2aa568fa-e39f-8004-b529-d1323f4ebecd" class="bulleted-list"><li style="list-style-type:circle">по стране/региону;</li></ul><ul id="2aa568fa-e39f-8010-9653-fddda7088006" class="bulleted-list"><li style="list-style-type:circle">по языку;</li></ul><ul id="2aa568fa-e39f-80fe-985c-c16e63fe90da" class="bulleted-list"><li style="list-style-type:circle">по возрастной группе;</li></ul><ul id="2aa568fa-e39f-80f5-8dcb-e5dc986105e9" class="bulleted-list"><li style="list-style-type:circle">по устройству (mobile vs desktop).</li></ul></li></ul><ul id="2aa568fa-e39f-80d2-90e3-e421c53d42f6" class="bulleted-list"><li style="list-style-type:disc">Формула:<ul id="2aa568fa-e39f-80d4-932a-ea65574e4ad3" class="bulleted-list"><li style="list-style-type:circle"><code>pop(item | segment)</code> — считаем внутри сегмента.</li></ul></li></ul><ul id="2aa568fa-e39f-8067-9543-fab770fcf38f" class="bulleted-list"><li style="list-style-type:disc">Что делать, если в сегменте мало данных → fallback к global popularity.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8068-aee7-c9e948fee765" class="numbered-list" start="3"><li><strong>Time-decayed popularity</strong><ul id="2aa568fa-e39f-8061-bffc-f28b8e48e853" class="bulleted-list"><li style="list-style-type:disc">Почему «популярность за всё время» часто плоха:<ul id="2aa568fa-e39f-80b2-9c2b-eeac5428c08e" class="bulleted-list"><li style="list-style-type:circle">тренды меняются;</li></ul><ul id="2aa568fa-e39f-8045-9752-f518fc0b1aeb" class="bulleted-list"><li style="list-style-type:circle">старые хиты висят в топе, даже если их больше не смотрят.</li></ul></li></ul><ul id="2aa568fa-e39f-8080-a410-ee45598c4669" class="bulleted-list"><li style="list-style-type:disc">Decay-функции:<ul id="2aa568fa-e39f-80f2-8fea-f5135c674f6c" class="bulleted-list"><li style="list-style-type:circle">экспоненциальный decay: вес события <code>exp(-λ * Δt)</code>;</li></ul><ul id="2aa568fa-e39f-80cb-9994-f1276350d562" class="bulleted-list"><li style="list-style-type:circle">piecewise окна: последняя неделя &gt; прошлый месяц &gt; остальное.</li></ul></li></ul><ul id="2aa568fa-e39f-8050-a698-c73358318b0f" class="bulleted-list"><li style="list-style-type:disc">Практический trade-off:<ul id="2aa568fa-e39f-8089-a6bf-f07d41158fea" class="bulleted-list"><li style="list-style-type:circle">слишком короткое окно → шум;</li></ul><ul id="2aa568fa-e39f-8078-af4c-d01343b071db" class="bulleted-list"><li style="list-style-type:circle">слишком длинное → нет реакции на тренды.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80de-867e-cb22ad1d0644" class="numbered-list" start="4"><li><strong>Фильтры и бизнес-правила в популярности</strong><ul id="2aa568fa-e39f-80c2-a713-ca41f9a2d19b" class="bulleted-list"><li style="list-style-type:disc">Не рекомендовать:<ul id="2aa568fa-e39f-8063-a402-c835b3bf947e" class="bulleted-list"><li style="list-style-type:circle">товары, которых нет в наличии;</li></ul><ul id="2aa568fa-e39f-8098-9621-f7e6f6d42682" class="bulleted-list"><li style="list-style-type:circle">товары с очень низким рейтингом;</li></ul><ul id="2aa568fa-e39f-80c7-b4ec-ccfc4be34a54" class="bulleted-list"><li style="list-style-type:circle">запрещённые категории и т.д.</li></ul></li></ul><ul id="2aa568fa-e39f-80f6-a190-c9f9c89af09c" class="bulleted-list"><li style="list-style-type:disc">Ограничения:<ul id="2aa568fa-e39f-80a6-a4e1-ec5d7c3833ec" class="bulleted-list"><li style="list-style-type:circle">diversity (не только одна категория);</li></ul><ul id="2aa568fa-e39f-8088-8da8-e70bf60cff19" class="bulleted-list"><li style="list-style-type:circle">ограничение брендов.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ab-b489-f47e6d1d55e6" class="numbered-list" start="5"><li><strong>Концепция «слоёной популярности»</strong><ul id="2aa568fa-e39f-80b9-ab85-e440401bd5d2" class="bulleted-list"><li style="list-style-type:disc">Логика:<ul id="2aa568fa-e39f-80a7-8f03-c1a9cfcfc246" class="bulleted-list"><li style="list-style-type:circle">пробуем <code>pop(item | segment)</code> (например, страна);</li></ul><ul id="2aa568fa-e39f-8061-9040-edc90f0bdc83" class="bulleted-list"><li style="list-style-type:circle">если мало кандидатов → <code>pop(item | broader_segment)</code> (например, регион);</li></ul><ul id="2aa568fa-e39f-801a-b4be-cae32355f7a8" class="bulleted-list"><li style="list-style-type:circle">если всё ещё мало → global popularity.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8008-80ef-de3d851a58b3" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-8021-a0b4-f0ce78fd5ffb" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-8014-98a9-ef935ec600ed" class="numbered-list" start="1"><li>Посчитать:<ul id="2aa568fa-e39f-8071-9ea6-d41bad9319f6" class="bulleted-list"><li style="list-style-type:disc">global popularity по целевому event_type (например, <code>purchase</code>);</li></ul><ul id="2aa568fa-e39f-80cb-9c9c-ccc6d29c8dbe" class="bulleted-list"><li style="list-style-type:disc">popularity за последние N дней.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80fe-9beb-e9cf348887f9" class="numbered-list" start="2"><li>Выделить сегмент (например, страна или категория пользователя) и посчитать:<ul id="2aa568fa-e39f-80ff-b719-d98a69220abb" class="bulleted-list"><li style="list-style-type:disc"><code>pop(item | country)</code>;</li></ul><ul id="2aa568fa-e39f-809f-87f1-c4a85ead7aff" class="bulleted-list"><li style="list-style-type:disc"><code>pop(item | gender)</code> (если есть).</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8000-ac8a-df23899143f6" class="numbered-list" start="3"><li>Написать функцию:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80b1-84d4-c2853fb4fc86" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_popularity(user_id, k=10):
+    # 1) пытаемся использовать сегмент пользователя (например, country)
+    # 2) если мало кандидатов -&gt; fallback на глобальную популярность
+    ...
+</code></pre></li></ol></li></ul><h3 id="2aa568fa-e39f-80e6-9117-cc0734fd6c68" class="">Домашка 1.2</h3><ol type="1" id="2aa568fa-e39f-800e-97f3-ccab4c66489e" class="numbered-list" start="1"><li>Реализовать <strong>time-decayed популярность</strong>:<ul id="2aa568fa-e39f-80c5-a962-c80d95eff150" class="bulleted-list"><li style="list-style-type:disc">выбрать окно (например, 30 дней);</li></ul><ul id="2aa568fa-e39f-8062-b782-ece5c56642f2" class="bulleted-list"><li style="list-style-type:disc">придумать decay-функцию (линейная или экспоненциальная);</li></ul><ul id="2aa568fa-e39f-808c-a9a6-db80f18312a2" class="bulleted-list"><li style="list-style-type:disc">сравнить списки top-20 товаров:<ul id="2aa568fa-e39f-806a-8c82-e2956ae8ebb3" class="bulleted-list"><li style="list-style-type:circle">по простой популярности;</li></ul><ul id="2aa568fa-e39f-80a0-84dd-e7de37646a52" class="bulleted-list"><li style="list-style-type:circle">по time-decayed.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80db-9165-ca40d19fec63" class="numbered-list" start="2"><li>Написать короткий вывод:<ul id="2aa568fa-e39f-8079-bf2b-d898386149f4" class="bulleted-list"><li style="list-style-type:disc">что поменялось в топе;</li></ul><ul id="2aa568fa-e39f-800c-9c74-e7ee227a3cf1" class="bulleted-list"><li style="list-style-type:disc">какие категории стали «выше/ниже»;</li></ul><ul id="2aa568fa-e39f-80c2-b30f-ea32613dc32d" class="bulleted-list"><li style="list-style-type:disc">насколько это похоже на реальные тренды.</li></ul></li></ol><hr id="2aa568fa-e39f-8009-b009-d961967e25d0"/><h2 id="2aa568fa-e39f-8048-98b3-ef44a136c271" class="">Урок 1.3. Item-to-item co-occurrence и простые эвристики</h2><h3 id="2aa568fa-e39f-804e-a743-c1cfb200c04a" class="">Цели урока</h3><ul id="2aa568fa-e39f-80cb-922e-fabc5c7c031a" class="bulleted-list"><li style="list-style-type:disc">Дать студенту <strong>item-to-item baseline</strong>: «люди, купившие X, часто покупали Y».</li></ul><ul id="2aa568fa-e39f-8039-9b7e-fd96557935f8" class="bulleted-list"><li style="list-style-type:disc">Показать, как из лога считать co-occurrence и превращать это в рекомендации.</li></ul><ul id="2aa568fa-e39f-808e-a5b6-c45ed46f688e" class="bulleted-list"><li style="list-style-type:disc">Добавить пару простых эвристик сверху.</li></ul><h3 id="2aa568fa-e39f-803e-a09f-feba57882568" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-803d-b5dc-fb8ade89ef53" class="numbered-list" start="1"><li><strong>Co-occurrence: базовая идея</strong><ul id="2aa568fa-e39f-80f6-8ac5-fa0953ef6775" class="bulleted-list"><li style="list-style-type:disc">Если два товара часто встречаются:<ul id="2aa568fa-e39f-80f1-822c-fcf9684a9b44" class="bulleted-list"><li style="list-style-type:circle">в одной корзине,</li></ul><ul id="2aa568fa-e39f-80d5-87e9-c553d4fcde04" class="bulleted-list"><li style="list-style-type:circle">в одной сессии,</li></ul><ul id="2aa568fa-e39f-80cd-affa-ccf2013d4eb8" class="bulleted-list"><li style="list-style-type:circle">в цепочке действий,<p id="2aa568fa-e39f-8087-9c76-dd230a78eb6e" class="">→ они «похожи» или «связаны».</p></li></ul></li></ul><ul id="2aa568fa-e39f-8059-ad69-ea20db9bfd9a" class="bulleted-list"><li style="list-style-type:disc">Счётчик:<ul id="2aa568fa-e39f-80b8-ba3f-e711e64ae960" class="bulleted-list"><li style="list-style-type:circle"><code>cooc(i, j) = количество раз, когда i и j встречаются в одном контексте</code>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8048-9e51-d8441fe5539a" class="numbered-list" start="2"><li><strong>Типы контекстов для co-occurrence</strong><ul id="2aa568fa-e39f-80fb-80ea-cb9b80abc688" class="bulleted-list"><li style="list-style-type:disc">Session-based:<ul id="2aa568fa-e39f-805f-bf08-c3d9b5407671" class="bulleted-list"><li style="list-style-type:circle">товары в одной сессии просмотров.</li></ul></li></ul><ul id="2aa568fa-e39f-8085-a0fe-e4bd5fa474fd" class="bulleted-list"><li style="list-style-type:disc">Basket-based:<ul id="2aa568fa-e39f-8038-8419-ec73618a0e9b" class="bulleted-list"><li style="list-style-type:circle">товары в одной покупке.</li></ul></li></ul><ul id="2aa568fa-e39f-8050-824b-c6ef5ae10774" class="bulleted-list"><li style="list-style-type:disc">User-based:<ul id="2aa568fa-e39f-80c9-bdb7-ef54c7d5394d" class="bulleted-list"><li style="list-style-type:circle">товары, с которыми взаимодействовал один и тот же пользователь.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80db-98cb-dbc6aaf76de2" class="numbered-list" start="3"><li><strong>Нормировки и меры «силы связи»</strong><ul id="2aa568fa-e39f-80b3-b200-d237356e8fc5" class="bulleted-list"><li style="list-style-type:disc">Простой счётчик <code>cooc(i, j)</code>;</li></ul><ul id="2aa568fa-e39f-80e4-a4c9-d97769c62d6a" class="bulleted-list"><li style="list-style-type:disc">Jaccard:<ul id="2aa568fa-e39f-8012-97da-c3222348e33b" class="bulleted-list"><li style="list-style-type:circle"><code>J(i, j) = cooc(i, j) / (freq(i) + freq(j) - cooc(i, j))</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-80d0-ab66-dea5de27b451" class="bulleted-list"><li style="list-style-type:disc">Lift/PMI — можно упомянуть как «продвинутый этап», не вдаваться в формулы.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8004-9770-e205e1e704a4" class="numbered-list" start="4"><li><strong>Формирование рекомендаций по co-occurrence</strong><ul id="2aa568fa-e39f-802d-a3c0-f98642d1f46c" class="bulleted-list"><li style="list-style-type:disc">Для конкретного пользователя:<ul id="2aa568fa-e39f-807b-a6b1-f24b21cbf12b" class="bulleted-list"><li style="list-style-type:circle">берем список его последних N товаров;</li></ul><ul id="2aa568fa-e39f-807f-aca9-dd24dcd2001f" class="bulleted-list"><li style="list-style-type:circle">для каждого товара собираем список «соседей» по cooc;</li></ul><ul id="2aa568fa-e39f-8042-8dd2-c919a676589e" class="bulleted-list"><li style="list-style-type:circle">объединяем, агрегируя счётчики;</li></ul><ul id="2aa568fa-e39f-805f-a298-db0ad4d54eab" class="bulleted-list"><li style="list-style-type:circle">сортируем и берём топ-K.</li></ul></li></ul><ul id="2aa568fa-e39f-80f3-94ca-fea8a7480b42" class="bulleted-list"><li style="list-style-type:disc">Варианты:<ul id="2aa568fa-e39f-8067-872c-f69f34ec3ef6" class="bulleted-list"><li style="list-style-type:circle">брать только последний товар;</li></ul><ul id="2aa568fa-e39f-80cc-8002-f9d6ed1db898" class="bulleted-list"><li style="list-style-type:circle">брать несколько последних с decay по давности.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8045-b33f-f2111ed708ab" class="numbered-list" start="5"><li><strong>Простые эвристики сверху</strong><ul id="2aa568fa-e39f-8030-9115-e29d1a22f2f7" class="bulleted-list"><li style="list-style-type:disc">Recency:<ul id="2aa568fa-e39f-804d-923a-fdf60d838f2a" class="bulleted-list"><li style="list-style-type:circle">больше веса товарам, которые пользователь недавно смотрел;</li></ul></li></ul><ul id="2aa568fa-e39f-80e4-bf47-f92d60cd49e8" class="bulleted-list"><li style="list-style-type:disc">Category-aware:<ul id="2aa568fa-e39f-803a-bd4b-f456f8a323da" class="bulleted-list"><li style="list-style-type:circle">учитываем категории товара: рекомендуем из той же или соседней категории;</li></ul></li></ul><ul id="2aa568fa-e39f-804e-9e8b-f9a95de361a0" class="bulleted-list"><li style="list-style-type:disc">Фильтры:<ul id="2aa568fa-e39f-80bf-81fd-f41bd55571b4" class="bulleted-list"><li style="list-style-type:circle">не рекомендуем то, что пользователь уже купил (или наоборот — рекомендуем допродажу).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80ce-a85d-e9a74f618931" class="numbered-list" start="6"><li><strong>Сравнение popular vs item-to-item</strong><ul id="2aa568fa-e39f-800e-92f3-db7fa465a80d" class="bulleted-list"><li style="list-style-type:disc">Popular прекрасно работает, когда:<ul id="2aa568fa-e39f-80ee-94f1-c06450d788e8" class="bulleted-list"><li style="list-style-type:circle">у нас нет истории по пользователю;</li></ul><ul id="2aa568fa-e39f-80e8-a651-f4b5ab42150f" class="bulleted-list"><li style="list-style-type:circle">cold start.</li></ul></li></ul><ul id="2aa568fa-e39f-80c8-afd7-c599777f9487" class="bulleted-list"><li style="list-style-type:disc">Item-to-item:<ul id="2aa568fa-e39f-8012-84a9-c6c2bdcd3cc2" class="bulleted-list"><li style="list-style-type:circle">лучше персонализирует, когда мы знаем хоть что-то о взаимодействиях.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80cc-9f68-def2e803cfbd" class="">Практика на занятии</h3><ul id="2aa568fa-e39f-801e-9b2f-fa7c90798b38" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-8012-beb2-eba0efaa38b7" class="numbered-list" start="1"><li>Сформировать для выбранного датасета:<ul id="2aa568fa-e39f-80f8-b098-da23c64d040d" class="bulleted-list"><li style="list-style-type:disc">таблицу «co-occurrence по сессиям/корзинам».</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807a-b23f-fd748c1db574" class="numbered-list" start="2"><li>Для каждого item:<ul id="2aa568fa-e39f-80f4-b031-e53e6fef4d4c" class="bulleted-list"><li style="list-style-type:disc">найти топ-20 «похожих» items по cooc;</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d0-9a12-f2e907bc6141" class="numbered-list" start="3"><li>Реализовать функцию:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80c3-9dc2-c5d481e22180" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend_item_item(user_id, k=10):
+    # 1) берём N последних товаров пользователя
+    # 2) собираем кандидатов через co-occurrence
+    # 3) агрегируем счётчики, сортируем, возвращаем топ-K
+    ...
+</code></pre></li></ol></li></ul><ul id="2aa568fa-e39f-8004-9588-de2ed5e9e005" class="bulleted-list"><li style="list-style-type:disc">Визуализация:<ul id="2aa568fa-e39f-80e8-a970-c28f628dc989" class="bulleted-list"><li style="list-style-type:circle">для конкретного товара нарисовать (хотя бы текстом в ноутбуке) список его «соседей» и интерпретировать:<ul id="2aa568fa-e39f-8028-aa98-fa0ac294feac" class="bulleted-list"><li style="list-style-type:square">почему они там;</li></ul><ul id="2aa568fa-e39f-80b2-9541-c49c10f4ebea" class="bulleted-list"><li style="list-style-type:square">разумно ли это с точки зрения здравого смысла.</li></ul></li></ul></li></ul><h3 id="2aa568fa-e39f-80be-981c-e61e01a7eda8" class="">Домашка 1.3</h3><ol type="1" id="2aa568fa-e39f-8074-b031-e18bf183ed45" class="numbered-list" start="1"><li>Для 3–5 случайных пользователей:<ul id="2aa568fa-e39f-8007-8ae1-d46323bec013" class="bulleted-list"><li style="list-style-type:disc">собрать рекомендации:<ul id="2aa568fa-e39f-80ae-9b83-d09be4106c3b" class="bulleted-list"><li style="list-style-type:circle">по популярности;</li></ul><ul id="2aa568fa-e39f-8087-9630-fee07f6b9428" class="bulleted-list"><li style="list-style-type:circle">по item-to-item;</li></ul></li></ul><ul id="2aa568fa-e39f-804b-b4a8-da6ab98242bc" class="bulleted-list"><li style="list-style-type:disc">сравнить:<ul id="2aa568fa-e39f-8092-b534-f0b925599edf" class="bulleted-list"><li style="list-style-type:circle">какие товары совпали;</li></ul><ul id="2aa568fa-e39f-809c-8175-d997ccc2e1b0" class="bulleted-list"><li style="list-style-type:circle">какие появились уникально где-то в одном из методов;</li></ul></li></ul><ul id="2aa568fa-e39f-80f5-b798-c589544bff23" class="bulleted-list"><li style="list-style-type:disc">написать вывод:<ul id="2aa568fa-e39f-8048-9957-f55214e1d6d6" class="bulleted-list"><li style="list-style-type:circle">для какого типа пользователей популярность ок;</li></ul><ul id="2aa568fa-e39f-8082-8a1b-d5b8f210406f" class="bulleted-list"><li style="list-style-type:circle">для какого item-to-item явно выигрывает.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8000-9cb1-f1796a0c39f0" class="numbered-list" start="2"><li>Добавить простую <strong>recency-эвристику</strong>:<ul id="2aa568fa-e39f-8022-bbb7-ce0f42e882a8" class="bulleted-list"><li style="list-style-type:disc">более новый просмотр/покупка пользователя → больше вес его co-occurrence-кандидатов.</li></ul></li></ol><hr id="2aa568fa-e39f-806e-b18f-ec96da8c3c29"/><h2 id="2aa568fa-e39f-8098-9172-cf4712b5a867" class="">Урок 1.4. Сбор всего в единый бейзлайн + сабмит</h2><h3 id="2aa568fa-e39f-80c9-9574-f9248deea8d1" class="">Цели урока</h3><ul id="2aa568fa-e39f-80e3-8e46-c3b5b746a112" class="bulleted-list"><li style="list-style-type:disc">Собрать <strong>единый бейзлайн-пайплайн</strong>:<ul id="2aa568fa-e39f-805a-8cdb-d896b579f83e" class="bulleted-list"><li style="list-style-type:circle">popularity + item-to-item + простые фильтры.</li></ul></li></ul><ul id="2aa568fa-e39f-80fd-a369-ff06ffeef877" class="bulleted-list"><li style="list-style-type:disc">Пройти полный цикл:<ul id="2aa568fa-e39f-8029-b1b8-c5bc3e1753ec" class="bulleted-list"><li style="list-style-type:circle">offline evaluation → формирование submission → загрузка на Kaggle/All Cups.</li></ul></li></ul><ul id="2aa568fa-e39f-800b-8dac-fd6240334cee" class="bulleted-list"><li style="list-style-type:disc">Подготовить основу, которую потом будем улучшать в следующих модулях (CF, MF, sequence, graph…).</li></ul><h3 id="2aa568fa-e39f-80d2-864a-ec792c30e054" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-803a-a063-fdc7da05bc8d" class="numbered-list" start="1"><li><strong>Комбинация кандидат-генераторов</strong><ul id="2aa568fa-e39f-80a2-aae9-e7da321bacc4" class="bulleted-list"><li style="list-style-type:disc">Источники кандидатов:<ul id="2aa568fa-e39f-8096-ab5e-fea683fac2db" class="bulleted-list"><li style="list-style-type:circle">global popularity;</li></ul><ul id="2aa568fa-e39f-8034-b735-d2b8f8d06bc4" class="bulleted-list"><li style="list-style-type:circle">сегментная популярность;</li></ul><ul id="2aa568fa-e39f-8031-af04-c16486612241" class="bulleted-list"><li style="list-style-type:circle">item-to-item.</li></ul></li></ul><ul id="2aa568fa-e39f-8076-8faa-f784718d8c2f" class="bulleted-list"><li style="list-style-type:disc">Объединение:<ul id="2aa568fa-e39f-807f-9343-e09c984a0e79" class="bulleted-list"><li style="list-style-type:circle">union множеств;</li></ul><ul id="2aa568fa-e39f-8060-a81a-e547c9d11ab9" class="bulleted-list"><li style="list-style-type:circle">ограничение общего числа кандидатов (например, 200).</li></ul></li></ul><ul id="2aa568fa-e39f-80ab-8f97-df2d54c5663e" class="bulleted-list"><li style="list-style-type:disc">Первичная сортировка:<ul id="2aa568fa-e39f-808a-9cfb-f5b396750411" class="bulleted-list"><li style="list-style-type:circle">суммарный score:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80fd-9a65-f9ca71d38f50" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">score = w_pop * pop_score + w_cooc * cooc_score + w_recency * recency_weight
+</code></pre></li></ul><ul id="2aa568fa-e39f-801c-95fc-ce181e8525b2" class="bulleted-list"><li style="list-style-type:circle">веса можно задать руками (эвристика).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c0-a849-f5005ed32c52" class="numbered-list" start="2"><li><strong>Offline-вторая часть (упрощённая)</strong><ul id="2aa568fa-e39f-80cf-a1d6-cc1c2b9043a5" class="bulleted-list"><li style="list-style-type:disc">Разбиваем train по времени:<ul id="2aa568fa-e39f-80b2-99a9-c16cd828b689" class="bulleted-list"><li style="list-style-type:circle">train_part — более ранний период;</li></ul><ul id="2aa568fa-e39f-80ad-8a98-f9694b623f97" class="bulleted-list"><li style="list-style-type:circle">val_part — более поздний период;</li></ul></li></ul><ul id="2aa568fa-e39f-80ed-b66f-cdd046cd21b1" class="bulleted-list"><li style="list-style-type:disc">Для каждого пользователя в val:<ul id="2aa568fa-e39f-8094-ac4a-f821a791e7d3" class="bulleted-list"><li style="list-style-type:circle">генерируем рекомендации;</li></ul><ul id="2aa568fa-e39f-8065-94bb-cbaf09679aae" class="bulleted-list"><li style="list-style-type:circle">считаем простую метрику (HitRate@K / Recall@K).</li></ul></li></ul><ul id="2aa568fa-e39f-8099-b51d-c4991f026804" class="bulleted-list"><li style="list-style-type:disc">Задача модуля — <strong>не</strong> сделать идеальную валидацию (она будет в Модуле 2), а дать интуицию:<ul id="2aa568fa-e39f-80bb-b22c-c7944ad67982" class="bulleted-list"><li style="list-style-type:circle">как хоть что-то померить,</li></ul><ul id="2aa568fa-e39f-80f3-9825-f7273861ece1" class="bulleted-list"><li style="list-style-type:circle">как сравнить две эвристики.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8027-a1fe-fddd67ec8277" class="numbered-list" start="3"><li><strong>Формирование submission</strong><ul id="2aa568fa-e39f-8066-bc72-d94a54ca28a6" class="bulleted-list"><li style="list-style-type:disc">Как выглядит файл сабмита:<ul id="2aa568fa-e39f-80fc-899a-cf2b012c6eeb" class="bulleted-list"><li style="list-style-type:circle"><code>user_id, recommendation_list</code> или <code>session_id, item_id_1 item_id_2 ... item_id_K</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-80c8-94ba-e9f467d5778a" class="bulleted-list"><li style="list-style-type:disc">Типичные ошибки:<ul id="2aa568fa-e39f-80bd-a74d-f41cda1617d0" class="bulleted-list"><li style="list-style-type:circle">неправильный формат;</li></ul><ul id="2aa568fa-e39f-804a-a950-deb990999ef1" class="bulleted-list"><li style="list-style-type:circle">не все пользователи;</li></ul><ul id="2aa568fa-e39f-807b-b8ac-d5ae23ea19e2" class="bulleted-list"><li style="list-style-type:circle">повторяющиеся item’ы;</li></ul><ul id="2aa568fa-e39f-8090-a952-e2a87960943a" class="bulleted-list"><li style="list-style-type:circle">меньше, чем K рекомендаций.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80be-b6d6-d96ffb18700b" class="numbered-list" start="4"><li><strong>Логика «от бейзлайна до топа»</strong><ul id="2aa568fa-e39f-803b-9eff-fc325358ce84" class="bulleted-list"><li style="list-style-type:disc">Этот модуль полностью про:<ul id="2aa568fa-e39f-80d6-8c3f-f4c15c962514" class="bulleted-list"><li style="list-style-type:circle">правильный baseline,</li></ul><ul id="2aa568fa-e39f-80ab-9fd7-e391fddd6ff4" class="bulleted-list"><li style="list-style-type:circle">понимание, что происходит,</li></ul><ul id="2aa568fa-e39f-803d-b87d-fe1a7535feec" class="bulleted-list"><li style="list-style-type:circle">clean code / reproducibility.</li></ul></li></ul><ul id="2aa568fa-e39f-8030-a140-cd80f6cfed87" class="bulleted-list"><li style="list-style-type:disc">Дальше:<ul id="2aa568fa-e39f-80f1-ad30-e7de825aa742" class="bulleted-list"><li style="list-style-type:circle">вместо попугаев → CF/MF;</li></ul><ul id="2aa568fa-e39f-80c6-a4d6-e3915b897f19" class="bulleted-list"><li style="list-style-type:circle">вместо простого co-occurrence → sequence / graph;</li></ul><ul id="2aa568fa-e39f-8058-a428-cb70ae4fa597" class="bulleted-list"><li style="list-style-type:circle">вместо ручных весов → модели ранжирования.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8052-9581-d1b5b59eeb48" class="">Практика на занятии</h3><ol type="1" id="2aa568fa-e39f-806a-9a81-e8d517a6c349" class="numbered-list" start="1"><li>В ноутбуке:<ul id="2aa568fa-e39f-8080-a8d5-e65b282c7cd5" class="bulleted-list"><li style="list-style-type:disc">Собрать единую функцию:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-80cf-a154-cc71d91ae6c6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def recommend(user_id, k=20):
+    # 1) кандидаты из item-to-item по последним N действиям
+    # 2) добавить популярные (сегментные) кандидаты
+    # 3) убрать дубликаты
+    # 4) посчитать score из pop, cooc, recency
+    # 5) вернуть топ-K
+</code></pre></li></ul><ul id="2aa568fa-e39f-8071-a547-caf76e21ae08" class="bulleted-list"><li style="list-style-type:disc">Реализовать простой offline-eval:<ul id="2aa568fa-e39f-8059-a7a8-f9003dee18d2" class="bulleted-list"><li style="list-style-type:circle">взять отложенный период;</li></ul><ul id="2aa568fa-e39f-80be-b187-ec552f841045" class="bulleted-list"><li style="list-style-type:circle">для каждого user валидации:<ul id="2aa568fa-e39f-8022-b18f-f7acc899338d" class="bulleted-list"><li style="list-style-type:square">взять его историю из train;</li></ul><ul id="2aa568fa-e39f-80e1-a7c5-df81f7cdf7c5" class="bulleted-list"><li style="list-style-type:square">предсказать top-K;</li></ul><ul id="2aa568fa-e39f-80b0-8b76-edff524df785" class="bulleted-list"><li style="list-style-type:square">проверить, попал ли настоящий target в список → посчитать HitRate@K.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80d5-8b59-ce8106920999" class="numbered-list" start="2"><li>Сформировать submission.csv:<ul id="2aa568fa-e39f-80a3-8500-ff6ec94a4560" class="bulleted-list"><li style="list-style-type:disc">проверить формат;</li></ul><ul id="2aa568fa-e39f-80f1-afb2-c6befa8f1daf" class="bulleted-list"><li style="list-style-type:disc">локально проверить размер файла, отсутствие NaN, количество строк.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8017-8313-e08dc76e55ed" class="numbered-list" start="3"><li>(Если делаешь реально с Kaggle) — загрузка:<ul id="2aa568fa-e39f-80dc-8af1-e9780061d80d" class="bulleted-list"><li style="list-style-type:disc">показать, как отправлять сабмит;</li></ul><ul id="2aa568fa-e39f-80ff-89ce-ed6bef36b3a7" class="bulleted-list"><li style="list-style-type:disc">посмотреть лидерборд (где-то в середине таблицы — «норм» старт).</li></ul></li></ol><h3 id="2aa568fa-e39f-805a-a0e5-d968d7ba06fc" class="">Домашка 1.4</h3><ol type="1" id="2aa568fa-e39f-80b9-beee-d37d118ce367" class="numbered-list" start="1"><li>Оттюнинговать свой бейзлайн:<ul id="2aa568fa-e39f-80a7-b67c-dab795d1c050" class="bulleted-list"><li style="list-style-type:disc">поиграться с весами:<ul id="2aa568fa-e39f-80b8-93be-eca0b9d68420" class="bulleted-list"><li style="list-style-type:circle"><code>w_pop</code>, <code>w_cooc</code>, <code>w_recency</code>;</li></ul></li></ul><ul id="2aa568fa-e39f-8099-adb4-cacc56a651dc" class="bulleted-list"><li style="list-style-type:disc">возможно, ввести:<ul id="2aa568fa-e39f-80c1-ac64-f4fbcbc664ca" class="bulleted-list"><li style="list-style-type:circle">hyperparameter: сколько последних действий пользователя учитываем для co-occurrence;</li></ul></li></ul><ul id="2aa568fa-e39f-807e-a1f8-d47d5c6aeb45" class="bulleted-list"><li style="list-style-type:disc">посчитать offline-метрику для разных конфигураций и выбрать лучшую.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807a-8810-c091e7bb83eb" class="numbered-list" start="2"><li>Написать 0.5–1 страницу отчёта:<ul id="2aa568fa-e39f-80b7-a799-d4777c3ccd5c" class="bulleted-list"><li style="list-style-type:disc">какая конфигурация показала лучший результат;</li></ul><ul id="2aa568fa-e39f-80a6-a4c1-d9590faa0f7d" class="bulleted-list"><li style="list-style-type:disc">какие гипотезы не сработали;</li></ul><ul id="2aa568fa-e39f-8011-9172-f6a0c1e0e2f5" class="bulleted-list"><li style="list-style-type:disc">чего тебе не хватило в текущем инструментарию (спойлер: норм, это база для следующих модулей).</li></ul></li></ol><hr id="2aa568fa-e39f-80c1-b3bc-e2b51764769a"/><h2 id="2aa568fa-e39f-8053-ac37-d38aa48e0c01" class="">Мини-проект по модулю 1</h2><p id="2aa568fa-e39f-80a6-9719-c8d5a45cdda6" class=""><strong>Название:</strong> «Мой первый осмысленный бейзлайн для RecSys-соревнования»</p><p id="2aa568fa-e39f-804f-ba96-ea659673aede" class="">Студент выбирает <strong>одно соревнование</strong> (желательно простое по объёму) и:</p><ol type="1" id="2aa568fa-e39f-8031-ab89-f131d2441c66" class="numbered-list" start="1"><li>Делает <strong>EDA и постановку задачи</strong> (коротко, 1–2 страницы + ноутбук).</li></ol><ol type="1" id="2aa568fa-e39f-8022-a8fa-f81e3f909eab" class="numbered-list" start="2"><li>Реализует:<ul id="2aa568fa-e39f-80ef-b743-f7f97e9d70e4" class="bulleted-list"><li style="list-style-type:disc">global popularity;</li></ul><ul id="2aa568fa-e39f-8009-97ad-daf00dbe79ac" class="bulleted-list"><li style="list-style-type:disc">сегментную популярность;</li></ul><ul id="2aa568fa-e39f-8054-ac32-dc1329dd3ac9" class="bulleted-list"><li style="list-style-type:disc">item-to-item co-occurrence;</li></ul><ul id="2aa568fa-e39f-8084-8774-d89cf4e675cd" class="bulleted-list"><li style="list-style-type:disc">комбинированный бейзлайн.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-802a-824d-d804694a9710" class="numbered-list" start="3"><li>Строит <strong>простую offline-валидацию</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-80a9-87aa-f417a631920c" class="numbered-list" start="4"><li>Формирует сабмит и (опционально) загружает на Kaggle/All Cups.</li></ol><ol type="1" id="2aa568fa-e39f-80ae-b63e-e76ed8ddc3f4" class="numbered-list" start="5"><li>Пишет короткий отчёт:<ul id="2aa568fa-e39f-80c7-b96d-dae9e9feb67e" class="bulleted-list"><li style="list-style-type:disc">что именно сделал;</li></ul><ul id="2aa568fa-e39f-8017-be8e-e9ca470ab562" class="bulleted-list"><li style="list-style-type:disc">on/offline метрики;</li></ul><ul id="2aa568fa-e39f-80dd-92d1-d5c5f003f36f" class="bulleted-list"><li style="list-style-type:disc">какие ограничения у такого бейзлайна;</li></ul><ul id="2aa568fa-e39f-80f1-b2ad-f21aa8475c65" class="bulleted-list"><li style="list-style-type:disc">какие следующие шаги он бы сделал (CF/MF/sequence/graph).</li></ul></li></ol><hr id="2aa568fa-e39f-80b5-9a26-cb73e0abd9dc"/><p id="2aa568fa-e39f-8082-9d0c-c871488156e7" class="">Если хочешь, дальше могу:</p><ul id="2aa568fa-e39f-803d-9aaa-e8fe35ce8a0f" class="bulleted-list"><li style="list-style-type:disc">либо расписать <strong>Модуль 2 (метрики и валидация)</strong> так же подробно,</li></ul><ul id="2aa568fa-e39f-8058-b003-eef9f4ff54a0" class="bulleted-list"><li style="list-style-type:disc">либо сделать прям <strong>чек-лист/шаблон ноутбука</strong> для бейзлайна по этому модулю (структура файлов, функции, где считать co-occurrence, как оформлять config).</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

@@ -1,0 +1,706 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 8. Фичеринг и ансамбли</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-8044-b084-f586d032fa85" class="page sans"><header><h1 class="page-title">Модуль 8. Фичеринг и ансамбли</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8072-9d9c-ef73367fae55" class=""><strong>Модуль 8 — «Сквозной фичеринг и ансамбли (стэкинг/блендинг)»</strong>. Формат: полная теория → практика на реальных кейсах (All Cups + совместимые Kaggle форматы). Цель — быстро и безопасно добавлять очки в любой из «негенеративных» треков: табличка+гео (MAE), мульти-лейбл текст (H@3), RecSys (mAP@20), аудио KWS (harmonic), CV-регрессия (medianAPE).</p><hr id="2a8568fa-e39f-80f5-8cb6-eebde4e27256"/><h2 id="2a8568fa-e39f-80c9-9fb7-ef1426a38228" class="">1) Результаты модуля (что должен уметь студент)</h2><ul id="2a8568fa-e39f-8093-852b-cab5b2f48595" class="bulleted-list"><li style="list-style-type:disc">Проектировать и проверять <strong>фичи без утечек</strong> под разные домены (табличка/текст/рекомендации/аудио/изображения).</li></ul><ul id="2a8568fa-e39f-80ff-b248-d7a1753fd081" class="bulleted-list"><li style="list-style-type:disc">Реализовать <strong>набор кодировок категорий</strong> (target/freq/WOE/β-сглаживание/M-estimate, CatBoost-CTR-подходы) в <strong>OOF-протоколе</strong>.</li></ul><ul id="2a8568fa-e39f-80c8-bd76-c688911ea8e9" class="bulleted-list"><li style="list-style-type:disc">Делать <strong>перекрёстия</strong> (pairs/triples) с CTR, <strong>иерархический backoff</strong>, <strong>новизну/recency</strong> сочетаний, и <strong>hashing</strong> для компактности.</li></ul><ul id="2a8568fa-e39f-8045-84f5-f947f09fe194" class="bulleted-list"><li style="list-style-type:disc">Извлекать фичи для <strong>мульти-значных полей</strong> (len, entropy/gini, avg rarity, top1 share, freq-профили).</li></ul><ul id="2a8568fa-e39f-801b-ba8b-d28f4470558a" class="bulleted-list"><li style="list-style-type:disc">Собрать <strong>стэкинг (Level-2)</strong> и <strong>бленды</strong> (seed-bagging, rank/logit/median/geo-mean) с корректными правилами под <strong>конкретную метрику</strong>.</li></ul><ul id="2a8568fa-e39f-8090-bdfc-e5353327c792" class="bulleted-list"><li style="list-style-type:disc">Подбирать <strong>пороги/квантили/клиппинг</strong> для финальной калибровки сабмита, не ломая приват.</li></ul><hr id="2a8568fa-e39f-80f0-a1f8-c1aca78328f6"/><h2 id="2a8568fa-e39f-80a2-8e1b-d08a4d60dd97" class="">2) Теория (90–120 мин)</h2><h3 id="2a8568fa-e39f-80ff-b105-eee046f1ebce" class="">A. База надёжности: OOF и анти-утечки</h3><ul id="2a8568fa-e39f-807f-a174-fe857aa13a2b" class="bulleted-list"><li style="list-style-type:disc"><strong>OOF-протокол</strong>: любой трансформатор, использующий таргет/статистики (target/freq/WOE/TE/эмбеддинги-по-классу, level-2) — только на train-fold, применение на val-fold; финальная fit на всём train после подбора.</li></ul><ul id="2a8568fa-e39f-80bd-ad8b-f42eb22113f3" class="bulleted-list"><li style="list-style-type:disc"><strong>Split-совместимость</strong>: Time/Group в табличке, hold-out 7 дней в RecSys, по id в аудио. Любая агрегация «заглядывающая в будущее» = утечка.</li></ul><h3 id="2a8568fa-e39f-800c-b97c-f25fcbc78a2c" class="">B. Категориальные кодировки (tabular/text→tabular)</h3><ul id="2a8568fa-e39f-80b1-a7f8-f9fbc80e5e99" class="bulleted-list"><li style="list-style-type:disc"><strong>Frequency / Count Encoding</strong> — быстро, безопасно, базовый прирост.</li></ul><ul id="2a8568fa-e39f-80e6-aa7c-c0a2f67b8e69" class="bulleted-list"><li style="list-style-type:disc"><strong>Target/Mean Encoding</strong> с <strong>M-estimate</strong> / <strong>β-сглаживанием</strong> (формально: усреднение класса с глобальным приором; β или m — сила притяжения к prior) + <strong>шум</strong> (Gaussian/Uniform) для анти-оверфита.</li></ul><ul id="2a8568fa-e39f-80d8-aecb-c4dfb00749b3" class="bulleted-list"><li style="list-style-type:disc"><strong>WOE/Logit-encoding</strong> — для бинаральных задач/калибровки вероятностей.</li></ul><ul id="2a8568fa-e39f-80a4-9c72-cb3f1b26d742" class="bulleted-list"><li style="list-style-type:disc"><strong>CatBoost-подход (CTR)</strong> — пермутационная схема, prior + счётчики «до текущего» образца; аналоги можно приближать в OOF.</li></ul><ul id="2a8568fa-e39f-8056-b18a-ef21e0e3d4f4" class="bulleted-list"><li style="list-style-type:disc"><strong>Редкие категории</strong>: группировка в <code>__RARE__</code>, frequency-бинирование.</li></ul><h3 id="2a8568fa-e39f-8016-a200-fe16d60ee8df" class="">C. Перекрёстия и граф категорий</h3><ul id="2a8568fa-e39f-8089-871f-c8f14ca7ba0e" class="bulleted-list"><li style="list-style-type:disc"><strong>Crosses</strong>: пары/тройки (A×B, A×B×C) → CTR/freq/WOE.</li></ul><ul id="2a8568fa-e39f-80a1-a02d-d9d1b3564321" class="bulleted-list"><li style="list-style-type:disc"><strong>Hashing</strong> для крестов — фиксированный размер словаря без диких таблиц.</li></ul><ul id="2a8568fa-e39f-80cb-b191-c277a7bfe658" class="bulleted-list"><li style="list-style-type:disc"><strong>Иерархический backoff</strong>: если (A,B) редкая → опора на (A,<em>) и (</em>,B); blend по весам/частотам.</li></ul><ul id="2a8568fa-e39f-80b3-8e53-fce462dd45e1" class="bulleted-list"><li style="list-style-type:disc"><strong>«Новизна» пары</strong>: <code>time_since_last(A,B)</code>, <code>recency_decay(A,B)</code> — особенно полезно в RecSys и транзакционных табличках.</li></ul><h3 id="2a8568fa-e39f-80d3-9326-d9c1514b0945" class="">D. Мульти-значные/множества</h3><ul id="2a8568fa-e39f-80bf-b35e-ecda7401e358" class="bulleted-list"><li style="list-style-type:disc">Базовые фичи: <strong>len(set)</strong>, <strong>cardinality ratio</strong>, <strong>entropy / gini</strong> распределения опций, <strong>avg rarity</strong> (средняя обратная частота), <strong>top1 share</strong>.</li></ul><ul id="2a8568fa-e39f-8092-8f8e-ff76ccf2a015" class="bulleted-list"><li style="list-style-type:disc"><strong>Freq-профили</strong>: словарь частот опций (OOF-подсчёт) → агрегаты по объекту (mean/max/sum/top-k).</li></ul><ul id="2a8568fa-e39f-802c-8526-cecd7fb70880" class="bulleted-list"><li style="list-style-type:disc">Нормализация: делить на глобальную/локальную частоту, z-score в кластере.</li></ul><h3 id="2a8568fa-e39f-8017-9a88-e50a1560210a" class="">E. Числовые трансформы и робастность</h3><ul id="2a8568fa-e39f-8016-ba38-c12e21249695" class="bulleted-list"><li style="list-style-type:disc">Лог/Box-Cox/Yeo-Johnson, квантильное бинирование, winsorize/клиппинг хвостов.</li></ul><ul id="2a8568fa-e39f-80dd-8e52-d053a5a4fe37" class="bulleted-list"><li style="list-style-type:disc">Стандартизация в пределах группы/района (локальный z-score).</li></ul><h3 id="2a8568fa-e39f-803e-abd0-cb65091764ea" class="">F. Время и порядок</h3><ul id="2a8568fa-e39f-805e-adbf-cb2115d1485f" class="bulleted-list"><li style="list-style-type:disc"><strong>Expanding / Ordered</strong> агрегации: аккуратно «нарастающие» статистики внутри фолда без будущего.</li></ul><ul id="2a8568fa-e39f-809a-9341-f6654e44bb60" class="bulleted-list"><li style="list-style-type:disc"><strong>Rolling/lag</strong>: окны по времени, экспоненциальные затухания, темпы/тренды.</li></ul><h3 id="2a8568fa-e39f-80c0-99b7-f4c1f8ab03b1" class="">G. Текст/эмбеддинги как табличные фичи</h3><ul id="2a8568fa-e39f-8083-a1ee-fd714252a618" class="bulleted-list"><li style="list-style-type:disc">TF-IDF / char-n-grams → агрегаты по объекту; sentence-эмбеддинги → mean/max/top-k/attention-pool.</li></ul><ul id="2a8568fa-e39f-8033-a324-c83a4bb3687d" class="bulleted-list"><li style="list-style-type:disc">Нормировать, OOF-fit, хранить размерности разумно.</li></ul><h3 id="2a8568fa-e39f-803b-b1bf-d06edc756706" class="">H. Фичи для RecSys ранжера</h3><ul id="2a8568fa-e39f-80e7-a147-d90965921797" class="bulleted-list"><li style="list-style-type:disc">user/item базовые счётчики, <code>u_i_cnt</code>, <code>time_since_last_ui</code>, <strong>co-vis/item2vec/LightGCN</strong>сходства, тренды item.</li></ul><h3 id="2a8568fa-e39f-807c-a226-d5abdf07b279" class="">I. Энсемблирование</h3><ul id="2a8568fa-e39f-8013-82b4-d7e367178738" class="bulleted-list"><li style="list-style-type:disc"><strong>Bagging по seed/фолдам</strong> (усреднение/медиана/геом. средняя).</li></ul><ul id="2a8568fa-e39f-8037-b7ce-f598c74c2c3e" class="bulleted-list"><li style="list-style-type:disc"><strong>Бленды под метрики</strong>:<ul id="2a8568fa-e39f-80c3-9697-cf4e5eabcc92" class="bulleted-list"><li style="list-style-type:circle">LogLoss/AUC — <strong>усреднение вероятностей</strong> или <strong>усреднение логитов</strong>;</li></ul><ul id="2a8568fa-e39f-8020-b3c7-f4dfae26db35" class="bulleted-list"><li style="list-style-type:circle">MAE/medianAPE — <strong>медиана</strong> (устойчива к выбросам), квантильный бленд;</li></ul><ul id="2a8568fa-e39f-8009-a437-eaebc6d3ccc0" class="bulleted-list"><li style="list-style-type:circle">H@3 — <strong>ранговый бленд</strong> + пост-проц «ровно 3»;</li></ul><ul id="2a8568fa-e39f-8011-b738-c6a391f7a53d" class="bulleted-list"><li style="list-style-type:circle">mAP@20 — <strong>rank-averaging</strong> или взвешивание скорингов с нормализацией по пользователю.</li></ul></li></ul><h3 id="2a8568fa-e39f-8046-a758-dc339b6770ca" class="">J. Стэкинг (Level-2)</h3><ul id="2a8568fa-e39f-8099-96a1-dd42a210c7ba" class="bulleted-list"><li style="list-style-type:disc">Генерация <strong>OOF-предиктов</strong> базовых моделей → мета-признаки; мета-лирнер (ridge/Cat/LGBM).</li></ul><ul id="2a8568fa-e39f-80e9-8308-cdcb2a8ee661" class="bulleted-list"><li style="list-style-type:disc">Защита от утечек: ни одной строчки вал-таргета в fit мета-слоя.</li></ul><ul id="2a8568fa-e39f-8087-ae88-ef84f39700c6" class="bulleted-list"><li style="list-style-type:disc">Регуляризация: dropout моделей (seed variety), ограничение числа фичей Level-2.</li></ul><h3 id="2a8568fa-e39f-8097-b365-ee1521b58c2e" class="">K. Калибровки и пост-обработка</h3><ul id="2a8568fa-e39f-8072-9410-e1d23c594340" class="bulleted-list"><li style="list-style-type:disc"><strong>Пороги</strong> (KWS), <strong>топ-k принуждение</strong> (H@3), <strong>дедуп и fill-up</strong> (RecSys), <strong>квантиль/Huber и клиппинг</strong> (цены).</li></ul><ul id="2a8568fa-e39f-8072-a50c-ee37b3f30d8d" class="bulleted-list"><li style="list-style-type:disc">Избегать «двойной подгонки» порога на паблике — всё на локале.</li></ul><h3 id="2a8568fa-e39f-8055-9f79-e75d921d8333" class="">L. Отбор фичей и диагностика</h3><ul id="2a8568fa-e39f-808b-9555-f0941144a4ea" class="bulleted-list"><li style="list-style-type:disc">Filter (MI/χ²), Embedded (L1, GBDT importance, SHAP), Permutation importance на вал-сплите.</li></ul><ul id="2a8568fa-e39f-8059-8195-f1907b0393de" class="bulleted-list"><li style="list-style-type:disc"><strong>Safe-drop тест</strong>: удаляем блок фичей → смотрим на падение метрики (с доверительными интервалами по фолдам).</li></ul><hr id="2a8568fa-e39f-8052-8373-c616fc49e0fc"/><h2 id="2a8568fa-e39f-809d-8ecf-d831b5210c09" class="">3) Практика (3–4 часа, лабы)</h2><h3 id="2a8568fa-e39f-80a7-bc25-f6857c3b37dc" class="">Лаба 1. TE/WOE/β/M-estimate в OOF (табличка + текст)</h3><ul id="2a8568fa-e39f-80a7-a423-ee298e0a78e9" class="bulleted-list"><li style="list-style-type:disc">Датасет: «Георейтинг» или аналоги с категориалками и текст-агрегатами.</li></ul><ul id="2a8568fa-e39f-8047-a184-f0800c4da6fc" class="bulleted-list"><li style="list-style-type:disc">Реализовать модуль <code>encoders.py</code>: freq, mean/target (β, M), WOE, Cat-like CTR (пермутационный OOF).</li></ul><ul id="2a8568fa-e39f-80a1-bd50-dfb92d4adfa7" class="bulleted-list"><li style="list-style-type:disc">Абляция: +freq → +TE(β) → +WOE → смесь TE+freq; сравнить MAE/Score.<p id="2a8568fa-e39f-806d-8982-dd4f9b3ca6d8" class=""><strong>Артефакты:</strong> <code>encoders.py</code>, <code>ablation_encoders.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-80a2-af36-ee55097e7ab9" class="">Лаба 2. Перекрёстия/CTR + backoff + новизна (RecSys/табличка)</h3><ul id="2a8568fa-e39f-8058-8932-d0327fa10a9f" class="bulleted-list"><li style="list-style-type:disc">Датасет: «Т-Шопинг»/покупки.</li></ul><ul id="2a8568fa-e39f-807d-81a6-f7e76b83dd7c" class="bulleted-list"><li style="list-style-type:disc">Сформировать crosses (A×B, A×B×C), CTR OOF; реализовать <strong>backoff</strong> к (A,<em>) и (</em>,B); добавить <code>time_since_last(A,B)</code> и эксп-decay.</li></ul><ul id="2a8568fa-e39f-80b1-bde2-d47ed0870cda" class="bulleted-list"><li style="list-style-type:disc">Внедрить в ранжер из М5, померить <strong>mAP@20</strong> прирост.<p id="2a8568fa-e39f-8076-9a10-db761a592b9f" class=""><strong>Артефакты:</strong> <code>crosses.py</code>, <code>ctr_backoff.py</code>, <code>novelty_pairs.py</code>.</p></li></ul><h3 id="2a8568fa-e39f-805f-be20-edd8c0eddd12" class="">Лаба 3. Мульти-значные поля (CV-регрессия)</h3><ul id="2a8568fa-e39f-8042-be7e-d19d58498555" class="bulleted-list"><li style="list-style-type:disc">Датасет: «АвтоПрайс» — <code>_mult</code>.</li></ul><ul id="2a8568fa-e39f-806c-9a94-e984b8a09a73" class="bulleted-list"><li style="list-style-type:disc">Сделать <code>len(set)</code>, <code>entropy/gini</code>, <code>avg_rarity</code>, <code>top1_share</code>, профили частот; сравнить medianAPE таблички с/без блока.<p id="2a8568fa-e39f-805f-a0d3-e312f386a7ef" class=""><strong>Артефакты:</strong> <code>multi_valued.py</code>, <code>ablation_multival.md</code>.</p></li></ul><h3 id="2a8568fa-e39f-80b0-bca6-cdb142e00a61" class="">Лаба 4. Стэкинг и бленды под метрики</h3><ul id="2a8568fa-e39f-80fa-9908-f0371992ce79" class="bulleted-list"><li style="list-style-type:disc">Сценарии:<ul id="2a8568fa-e39f-8086-b2fb-d42737923394" class="bulleted-list"><li style="list-style-type:circle">Табличка (MAE/medianAPE): Cat/LGBM/XGB → OOF → <strong>Level-2</strong> (ridge/Cat) + <strong>медианный</strong> бленд.</li></ul><ul id="2a8568fa-e39f-8080-a66f-f8fb42792c3f" class="bulleted-list"><li style="list-style-type:circle">Текст H@3: LR/Emb/BERT → ранговый бленд → пост-проц «ровно 3».</li></ul><ul id="2a8568fa-e39f-809d-b20b-e45cec0b5a1c" class="bulleted-list"><li style="list-style-type:circle">RecSys mAP@20: rank-averaging скоров ранжера (нормировать per-user).</li></ul><ul id="2a8568fa-e39f-801b-b95c-de670f9eef40" class="bulleted-list"><li style="list-style-type:circle">KWS: среднее вероятностей + <strong>калибровка порога</strong> на вал.<p id="2a8568fa-e39f-80b4-a866-cae4762ee333" class=""><strong>Артефакты:</strong> <code>stacking.py</code>, <code>blend.py</code>, <code>postprocess_rules.py</code>.</p></li></ul></li></ul><h3 id="2a8568fa-e39f-80f8-b53f-c0c5e2b8c0fd" class="">Лаба 5. Скорость и репрод</h3><ul id="2a8568fa-e39f-809c-b313-cda509f338a3" class="bulleted-list"><li style="list-style-type:disc">Кэшировать интермедиаты (паркет/полярс), хранить OOF в <code>oof/</code>, единый <code>repro.sh</code>.</li></ul><ul id="2a8568fa-e39f-80f1-8e6f-d23a7af14024" class="bulleted-list"><li style="list-style-type:disc">Стресс-тесты: альтернативный сплит/смещение дистрибуций → стабильность выигрыша.<p id="2a8568fa-e39f-8019-bdcd-e1b299f418c1" class=""><strong>Артефакты:</strong> <code>io_speed.md</code>, <code>repro.sh</code>.</p></li></ul><hr id="2a8568fa-e39f-80ba-8e79-f2454af818d1"/><h2 id="2a8568fa-e39f-806d-8278-e46e1e4de5b9" class="">4) Критерии сдачи</h2><ul id="2a8568fa-e39f-80c2-8b24-cc00bd95aadb" class="bulleted-list"><li style="list-style-type:disc">Есть общий модуль <code>encoders.py</code> с OOF-реализациями TE/β/M/WOE и тестами на утечки.</li></ul><ul id="2a8568fa-e39f-8046-b3b2-fcec09d4f7a4" class="bulleted-list"><li style="list-style-type:disc">Для <strong>двух разных задач</strong> (на выбор из табличка/H@3/RecSys/KWS/CV) показан <strong>устойчивый прирост</strong> финальной метрики за счёт фичей/ансамбля.</li></ul><ul id="2a8568fa-e39f-80f7-8548-c06aa6c4f8f3" class="bulleted-list"><li style="list-style-type:disc">Репозиторий содержит: <code>encoders.py</code>, <code>crosses.py</code>, <code>multi_valued.py</code>, <code>stacking.py</code>, <code>blend.py</code>, <code>postprocess_rules.py</code>, <code>ablation_*.md</code>, <code>repro.sh</code>.</li></ul><ul id="2a8568fa-e39f-8092-8808-c1c3fa27dfb0" class="bulleted-list"><li style="list-style-type:disc">Выполнен <strong>release-чек-лист</strong> (формат саба, дедуп/топ-k/порог, отсутствие NaN/inf, фикс seed, лог времени).</li></ul><hr id="2a8568fa-e39f-8049-9093-fb4527da55db"/><h2 id="2a8568fa-e39f-80a6-b8e2-fe1fe194731a" class="">5) Домашнее задание</h2><ol type="1" id="2a8568fa-e39f-8017-b52e-f5ce0289cf35" class="numbered-list" start="1"><li><strong>Абляция блоков</strong>: (а) только базовые фичи; (б) +TE(β); (в) +crosses+backoff; (г) +стэкинг → таблица метрик и времени.</li></ol><ol type="1" id="2a8568fa-e39f-8053-a764-d492ba2fc543" class="numbered-list" start="2"><li>Подобрать <strong>правило бленда под метрику</strong> (median/logit/rank) и обосновать выбор графиками.</li></ol><ol type="1" id="2a8568fa-e39f-804e-bd5c-cfd2d0478cbc" class="numbered-list" start="3"><li>Написать <strong>юнит-тесты на утечки</strong>: любой трансформ с таргетом должен работать строго в OOF.</li></ol><ol type="1" id="2a8568fa-e39f-803f-9822-d6b18cc39eb7" class="numbered-list" start="4"><li>Сформировать «<strong>go-to набор фичей</strong>» для каждой задачи (5–10 позиций), который вы возьмёте в 6-часовой боевой спринт.</li></ol><hr id="2a8568fa-e39f-80dd-b927-d916b053959f"/><p id="2a8568fa-e39f-80a0-9ebe-c0f77eed3a6e" class="">Готов продолжить с <strong>Модулем 9 — HPO и бюджет времени</strong>, где упакуем Optuna/Random Search, раннюю остановку и «жёсткие» лимиты под каждую метрику.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

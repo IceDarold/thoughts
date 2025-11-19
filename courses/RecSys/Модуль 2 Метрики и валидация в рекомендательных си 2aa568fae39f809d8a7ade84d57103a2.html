@@ -1,0 +1,714 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 2. Метрики и валидация в рекомендательных системах</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2aa568fa-e39f-809d-8a7a-de84d57103a2" class="page sans"><header><h1 class="page-title">Модуль 2. Метрики и валидация в рекомендательных системах</h1><p class="page-description"></p></header><div class="page-body"><p id="2aa568fa-e39f-802b-9fca-d0238f241dff" class=""><strong>Цель модуля:</strong></p><p id="2aa568fa-e39f-8074-92f6-c995e7d1787e" class="">после него студент должен уметь:</p><ul id="2aa568fa-e39f-80f9-b617-e7ac7a57e71d" class="bulleted-list"><li style="list-style-type:disc"><strong>читать постановку соревнования</strong> и точно понимать, что за метрика там считается;</li></ul><ul id="2aa568fa-e39f-801a-9f5f-d342c7ec77b9" class="bulleted-list"><li style="list-style-type:disc"><strong>выбирать адекватную offline-валидацию</strong> под тип задачи (implicit, ranking, next-item, session-based, multi-objective);</li></ul><ul id="2aa568fa-e39f-80ba-94ac-c6b7274a6f20" class="bulleted-list"><li style="list-style-type:disc"><strong>реализовать свой evaluation-скрипт</strong> (HitRate@K / Recall@K / MAP@K / NDCG@K и т.п.);</li></ul><ul id="2aa568fa-e39f-805f-b9c2-dc8b64ea8a48" class="bulleted-list"><li style="list-style-type:disc">замечать и избегать <strong>утечек (leaks)</strong> из train в validation;</li></ul><ul id="2aa568fa-e39f-8078-87cc-eb29c2277160" class="bulleted-list"><li style="list-style-type:disc">быстро сравнивать бейзлайны и улучшения, не полагаясь на leaderboard вслепую.</li></ul><hr id="2aa568fa-e39f-80db-a74e-d8b3cc0a9466"/><h2 id="2aa568fa-e39f-8080-827a-dd003b5feae0" class="">Структура модуля</h2><p id="2aa568fa-e39f-8098-89ef-c7921b5001e3" class="">Предлагаю так:</p><ol type="1" id="2aa568fa-e39f-8018-84b0-e955d55aa87e" class="numbered-list" start="1"><li><strong>Урок 2.1. Зачем вообще нужны метрики и валидация: </strong><figure id="2aa568fa-e39f-8075-a368-d9dad9a89046" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B8%20%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D1%81%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%202%201%20%D0%97%D0%B0%D1%87%D0%B5%D0%BC%20%D0%B2%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%20%D0%BD%D1%83%D0%B6%D0%BD%D1%8B%20%D0%BC%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B8%20%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%202aa568fae39f8075a368d9dad9a89046.html">Урок 2.1. Зачем вообще нужны метрики и валидация</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-800e-ac8e-c6aa03fb926b" class="numbered-list" start="2"><li><strong>Урок 2.2. Метрики для рекомендаций: top-K, ранжирование, AUC</strong><figure id="2aa568fa-e39f-8025-b177-e5d7a3dc4b55" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B8%20%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D1%81%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%202%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B4%D0%BB%D1%8F%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%86%D0%B8%D0%B9%20%D0%B8%20%D1%80%D0%B0%D0%BD%D0%B6%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%202aa568fae39f8025b177e5d7a3dc4b55.html">Урок 2.2. Метрики для рекомендаций и ранжирования</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8035-90dd-fdb37e015dd7" class="numbered-list" start="3"><li><strong>Урок 2.3. Схемы разбиения данных: random, user-based, time-based, session-based</strong><figure id="2aa568fa-e39f-8037-98ba-dcba5691349f" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B8%20%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D1%81%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%202%203%20%D0%A1%D1%85%D0%B5%D0%BC%D1%8B%20%D1%80%D0%B0%D0%B7%D0%B1%D0%B8%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20random,%20user-based%202aa568fae39f803798badcba5691349f.html">Урок 2.3. Схемы разбиения данных: random, user-based, time-based, session-based</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-80f1-9088-d3b942cedab6" class="numbered-list" start="4"><li><strong>Урок 2.4. Negative sampling, имитация соревовой метрики и offline-фреймворк</strong><figure id="2aa568fa-e39f-80b0-8c51-c4245d15112c" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B8%20%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D1%81%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%202%204%20Negative%20sampling,%20%D0%B8%D0%BC%D0%B8%D1%82%D0%B0%D1%86%D0%B8%D1%8F%20%D1%81%D0%BE%D1%80%D0%B5%D0%B2%D0%BE%D0%B2%D0%BE%D0%B9%20%D0%BC%D0%B5%D1%82%202aa568fae39f80b08c51c4245d15112c.html">Урок 2.4. Negative sampling, имитация соревовой метрики и offline-фреймворк</a></figure></li></ol><ol type="1" id="2aa568fa-e39f-8003-a83d-dedb8778d159" class="numbered-list" start="5"><li><strong>Мини-проект:</strong> свой evaluation-движок для конкретного соревнования</li></ol><figure id="2aa568fa-e39f-8017-8c46-d36ab3456ab1" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%202%20%D0%9C%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8%20%D0%B8%20%D0%B2%D0%B0%D0%BB%D0%B8%D0%B4%D0%B0%D1%86%D0%B8%D1%8F%20%D0%B2%20%D1%80%D0%B5%D0%BA%D0%BE%D0%BC%D0%B5%D0%BD%D0%B4%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D1%85%20%D1%81%D0%B8/%D0%A3%D1%80%D0%BE%D0%BA%202%205%20%D0%98%D1%82%D0%BE%D0%B3%D0%BE%D0%B2%D1%8B%D0%B9%20%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%20%D0%BF%D0%BE%20%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E%202%20%D1%81%D0%BE%D0%B1%D0%B8%D1%80%D0%B0%D0%B5%D0%BC%20%D0%BF%D0%BE%D0%BB%D0%BD%202aa568fae39f80178c46d36ab3456ab1.html">Урок 2.5. Итоговый проект по модулю 2: собираем полноценный offline-eval</a></figure><p id="2aa568fa-e39f-8075-92e9-dd38681ca281" class="">Для практики можно использовать <strong>тот же сорев/датасет, что в модуле 1</strong>, чтобы сразу видеть, как меняется метрика от бейзлайна к бейзлайну.</p><hr id="2aa568fa-e39f-80dd-af8e-f4c65d89f7dc"/><h2 id="2aa568fa-e39f-80be-bdb7-f0c90cc48271" class="">Урок 2.1. Зачем вообще нужны метрики и валидация</h2><h3 id="2aa568fa-e39f-8066-80c3-e5dd7824b6ce" class="">Цели урока</h3><ul id="2aa568fa-e39f-8051-99a5-d961cf0208ce" class="bulleted-list"><li style="list-style-type:disc">Поставить голову на место: <strong>модель без честной валидации — просто «магия и вера»</strong>.</li></ul><ul id="2aa568fa-e39f-80b3-93a3-e45b8d8a3343" class="bulleted-list"><li style="list-style-type:disc">Показать связь:<ul id="2aa568fa-e39f-80cf-907c-fc1c9b194eca" class="bulleted-list"><li style="list-style-type:circle">бизнес-цели → offline-метрика → online-эксперимент → продукт.</li></ul></li></ul><h3 id="2aa568fa-e39f-8014-915c-d07273500392" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8045-987f-d450b57fdc8c" class="numbered-list" start="1"><li><strong>Что измеряем и почему это важно</strong><ul id="2aa568fa-e39f-801b-aa68-d0c84451cebc" class="bulleted-list"><li style="list-style-type:disc">В реальном мире:<ul id="2aa568fa-e39f-804d-a705-d24f206a3943" class="bulleted-list"><li style="list-style-type:circle">бизнесу важны: выручка, GMV, CTR, retention, вовлечённость;</li></ul><ul id="2aa568fa-e39f-803f-a01c-d453a132b15b" class="bulleted-list"><li style="list-style-type:circle">продукту важен user experience: удовлетворённость, полезность, разнообразие.</li></ul></li></ul><ul id="2aa568fa-e39f-80cd-9774-f4220af82cd2" class="bulleted-list"><li style="list-style-type:disc">Мы не можем каждый эксперимент сразу выкатывать в прод → нужен <strong>offline-прокси</strong>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-800e-8eaf-ccbb34be2a02" class="numbered-list" start="2"><li><strong>Offline vs Online</strong><ul id="2aa568fa-e39f-8077-825a-e3494ef3f49d" class="bulleted-list"><li style="list-style-type:disc"><strong>Offline-метрики</strong>:<ul id="2aa568fa-e39f-8078-9725-dce75502402f" class="bulleted-list"><li style="list-style-type:circle">считаются на исторических данных;</li></ul><ul id="2aa568fa-e39f-80ab-9f8a-e28e17958aa0" class="bulleted-list"><li style="list-style-type:circle">дешёвые, быстрые;</li></ul><ul id="2aa568fa-e39f-80ec-a798-ff34844e40eb" class="bulleted-list"><li style="list-style-type:circle">могут не совпадать с бизнес-эффектом.</li></ul></li></ul><ul id="2aa568fa-e39f-804e-a66b-f9118c22a4ec" class="bulleted-list"><li style="list-style-type:disc"><strong>Online-метрики (A/B тесты)</strong>:<ul id="2aa568fa-e39f-80b4-817a-e08069c3c8c3" class="bulleted-list"><li style="list-style-type:circle">проверяют гипотезу «модель A лучше B»;</li></ul><ul id="2aa568fa-e39f-80de-91bf-e2cb79412353" class="bulleted-list"><li style="list-style-type:circle">дороже, рискованнее;</li></ul><ul id="2aa568fa-e39f-80a1-8854-d2647ddd9e1a" class="bulleted-list"><li style="list-style-type:circle">требуют продовой инфраструктуры.</li></ul></li></ul><ul id="2aa568fa-e39f-802f-a86c-c2f0247ed56c" class="bulleted-list"><li style="list-style-type:disc">В курсе: учим <strong>максимально сближать offline-валидацию с тем, как устроена реальная метрика</strong>.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801c-8631-db9e81d7445e" class="numbered-list" start="3"><li><strong>Метрика соревнования vs твоя метрика</strong><ul id="2aa568fa-e39f-80cb-ad8a-fa170265c039" class="bulleted-list"><li style="list-style-type:disc">В соревнованиях:<ul id="2aa568fa-e39f-80f0-a626-fef1b36d4179" class="bulleted-list"><li style="list-style-type:circle">есть официальная метрика (MAP@K, Recall@K, RMSE…);</li></ul><ul id="2aa568fa-e39f-8047-a0aa-c2089a782cca" class="bulleted-list"><li style="list-style-type:circle">есть публичный и приватный лидерборды.</li></ul></li></ul><ul id="2aa568fa-e39f-80e0-abe5-ec141f1fb1e7" class="bulleted-list"><li style="list-style-type:disc">Твоя задача:<ul id="2aa568fa-e39f-80be-b889-d540ef72d69f" class="bulleted-list"><li style="list-style-type:circle"><strong>реализовать эту метрику offline</strong> на train/validation;</li></ul><ul id="2aa568fa-e39f-80ed-b8f4-ccef2bf63e4c" class="bulleted-list"><li style="list-style-type:circle">сделать так, чтобы поведение на offline-валидации коррелировало с паблик LB.</li></ul></li></ul><ul id="2aa568fa-e39f-80a5-a3ab-c1302346fc23" class="bulleted-list"><li style="list-style-type:disc">Классический фейл:<ul id="2aa568fa-e39f-801c-b807-f2375ad042f4" class="bulleted-list"><li style="list-style-type:circle">«на моей offline-валидации всё супер, на leaderboard — жесть» → значит, валидация не имитирует реальность.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80af-b536-c8e305411dfd" class="numbered-list" start="4"><li><strong>Типы ошибок и как метрики на них смотрят</strong><ul id="2aa568fa-e39f-80b2-a670-fe8db1aeaf62" class="bulleted-list"><li style="list-style-type:disc">False positives: мы рекомендовали, но пользователь не кликнул/не купил;</li></ul><ul id="2aa568fa-e39f-8000-83f1-c4ee177e45af" class="bulleted-list"><li style="list-style-type:disc">False negatives: мы не рекомендовали, а пользователь купил/кликнул;</li></ul><ul id="2aa568fa-e39f-8032-bbea-ef975b3955f5" class="bulleted-list"><li style="list-style-type:disc">Разные бизнес-сценарии по-разному относятся к FP/FN:<ul id="2aa568fa-e39f-8070-bba3-f2a4c80b66a1" class="bulleted-list"><li style="list-style-type:circle">в рекламе важно не спамить (FP дороже);</li></ul><ul id="2aa568fa-e39f-80fb-b6f7-fe06a47b1c90" class="bulleted-list"><li style="list-style-type:circle">в контенте иногда терпим чуть больше FP ради вовлечённости.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8009-af24-c6144da01275" class="">Практика на уроке</h3><ul id="2aa568fa-e39f-80f9-86f9-cbea2ac03483" class="bulleted-list"><li style="list-style-type:disc">Взять 2–3 примера:<ul id="2aa568fa-e39f-805f-a7f2-cd99f5022e32" class="bulleted-list"><li style="list-style-type:circle">один про <strong>e-commerce</strong> (цель — покупки);</li></ul><ul id="2aa568fa-e39f-8011-b4c0-de168ffa033a" class="bulleted-list"><li style="list-style-type:circle">один про <strong>контент</strong> (цель — watch time);</li></ul><ul id="2aa568fa-e39f-8016-90e7-f8b7e9f7146a" class="bulleted-list"><li style="list-style-type:circle">один про <strong>музыку/подборки</strong>.</li></ul></li></ul><ul id="2aa568fa-e39f-80d0-8dc2-f7cc6b5f258a" class="bulleted-list"><li style="list-style-type:disc">В группах студенты придумывают:<ul id="2aa568fa-e39f-8016-ac7b-feb5990a12ec" class="bulleted-list"><li style="list-style-type:circle">какую <strong>offline-метрику</strong> они бы использовали;</li></ul><ul id="2aa568fa-e39f-80e4-b00f-d8225b451a47" class="bulleted-list"><li style="list-style-type:circle">что могло бы быть <strong>online-метрикой</strong>;</li></ul><ul id="2aa568fa-e39f-8008-a845-f0bb57e0ad7e" class="bulleted-list"><li style="list-style-type:circle">где эти вещи могут расходиться.</li></ul></li></ul><h3 id="2aa568fa-e39f-801a-9ad4-c5f15fb9506c" class="">Домашка 2.1</h3><ul id="2aa568fa-e39f-803d-bdb5-df5d9d71b25e" class="bulleted-list"><li style="list-style-type:disc">Взять <strong>свой датасет/соревнование из модуля 1</strong> и:<ul id="2aa568fa-e39f-80dd-af18-e37de79d92e1" class="bulleted-list"><li style="list-style-type:circle">описать:<ul id="2aa568fa-e39f-802f-83a4-d613e6623d36" class="bulleted-list"><li style="list-style-type:square">официальную соревовую метрику (если есть);</li></ul><ul id="2aa568fa-e39f-809e-aa8f-fc2ef194833e" class="bulleted-list"><li style="list-style-type:square">какую business-метрику она, по сути, аппроксимирует;</li></ul><ul id="2aa568fa-e39f-807c-a774-c34a8bf2ecfd" class="bulleted-list"><li style="list-style-type:square">насколько хорошо (на твой взгляд) она отражает «полезность» рекомендаций.</li></ul></li></ul><ul id="2aa568fa-e39f-8079-bd57-f3d341b66170" class="bulleted-list"><li style="list-style-type:circle">придумать альтернативную offline-метрику и объяснить, чем она лучше/хуже.</li></ul></li></ul><hr id="2aa568fa-e39f-80b3-a917-e8fae3898f9e"/><h2 id="2aa568fa-e39f-8088-96a4-c1716499af2b" class="">Урок 2.2. Метрики для рекомендаций и ранжирования</h2><h3 id="2aa568fa-e39f-801c-9bfe-f80d0240d2da" class="">Цели урока</h3><ul id="2aa568fa-e39f-80e1-bdcd-d9ba3c7b1757" class="bulleted-list"><li style="list-style-type:disc">Разобраться в <strong>основном зоопарке метрик</strong>:<ul id="2aa568fa-e39f-8031-95d4-e6e0132379ec" class="bulleted-list"><li style="list-style-type:circle">RMSE/MAE/Logloss/AUC;</li></ul><ul id="2aa568fa-e39f-80ad-ae9d-c673173e44d4" class="bulleted-list"><li style="list-style-type:circle">top-K метрики: Precision@K, Recall@K, HitRate@K, MAP@K, NDCG@K, MRR.</li></ul></li></ul><ul id="2aa568fa-e39f-808d-9a2e-e059bcf6262d" class="bulleted-list"><li style="list-style-type:disc">Понять, <strong>какая метрика для каких задач подходит</strong>.</li></ul><h3 id="2aa568fa-e39f-8001-a1b8-f59d5c97bac6" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8072-8a90-f248cb5dae15" class="numbered-list" start="1"><li><strong>Классика (rating / binary): RMSE, MAE, Logloss, AUC</strong><ul id="2aa568fa-e39f-8033-ad56-ea8007d799a1" class="bulleted-list"><li style="list-style-type:disc">RMSE/MAE:<ul id="2aa568fa-e39f-80de-8528-cf89b6e62cf9" class="bulleted-list"><li style="list-style-type:circle">используются в задачах предсказания рейтинга (Netflix, MovieLens);</li></ul><ul id="2aa568fa-e39f-807a-a6e6-ed34b5dc14b3" class="bulleted-list"><li style="list-style-type:circle"><strong>плохо подходят</strong> для топ-K рекомендаций (нам важен не точный рейтинг, а порядок).</li></ul></li></ul><ul id="2aa568fa-e39f-80e5-9cab-d01e1cd841e7" class="bulleted-list"><li style="list-style-type:disc">Logloss:<ul id="2aa568fa-e39f-8097-a772-cbaedc0d77b1" class="bulleted-list"><li style="list-style-type:circle">бинарная классификация (клик/не клик);</li></ul><ul id="2aa568fa-e39f-8052-ade5-edc8c2d6f3dc" class="bulleted-list"><li style="list-style-type:circle">имеет смысл, если у нас <strong>pointwise</strong> задача.</li></ul></li></ul><ul id="2aa568fa-e39f-801d-96dc-e2b3ed4f2f73" class="bulleted-list"><li style="list-style-type:disc">ROC-AUC:<ul id="2aa568fa-e39f-80d3-9be4-cdd75451eaac" class="bulleted-list"><li style="list-style-type:circle">мера качества бинарного классификатора по всем порогам;</li></ul><ul id="2aa568fa-e39f-806b-9b51-ead05eaaf5c9" class="bulleted-list"><li style="list-style-type:circle">может быть misleading при дисбалансе классов и когда важна именно <strong>верхушка списка</strong>.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80b1-a695-c70126092539" class="numbered-list" start="2"><li><strong>Top-K и ранжирующие метрики</strong><ul id="2aa568fa-e39f-8019-8b9b-c0cdd05dc346" class="bulleted-list"><li style="list-style-type:disc"><strong>HitRate@K</strong>:<ul id="2aa568fa-e39f-8051-9aef-ce11d549b290" class="bulleted-list"><li style="list-style-type:circle">«поймали ли мы хоть один релевантный item в топ-K»;</li></ul><ul id="2aa568fa-e39f-8075-a13b-e0de78eec248" class="bulleted-list"><li style="list-style-type:circle">простая, популярная, интуитивная.</li></ul></li></ul><ul id="2aa568fa-e39f-8042-8826-d5a5f37a0afd" class="bulleted-list"><li style="list-style-type:disc"><strong>Recall@K</strong>:<ul id="2aa568fa-e39f-8023-a4a2-da63e93dcb03" class="bulleted-list"><li style="list-style-type:circle">сколько релевантных items из всех возможных мы попали в топ-K;</li></ul><ul id="2aa568fa-e39f-80ab-90ff-da0b84fa9392" class="bulleted-list"><li style="list-style-type:circle">важна, если релевантных товаров много.</li></ul></li></ul><ul id="2aa568fa-e39f-8058-b247-df511d94278a" class="bulleted-list"><li style="list-style-type:disc"><strong>Precision@K</strong>:<ul id="2aa568fa-e39f-80c2-bdda-e944e9eef01c" class="bulleted-list"><li style="list-style-type:circle">доля релевантных в топ-K;</li></ul><ul id="2aa568fa-e39f-805d-8df1-cac300b1a7f3" class="bulleted-list"><li style="list-style-type:circle">важно, если user не готов листать долгие списки.</li></ul></li></ul><ul id="2aa568fa-e39f-8072-af34-ee84442c1f96" class="bulleted-list"><li style="list-style-type:disc"><strong>MRR (Mean Reciprocal Rank)</strong>:<ul id="2aa568fa-e39f-80c9-b28d-c9f9850237d1" class="bulleted-list"><li style="list-style-type:circle">насколько рано мы показываем первый релевантный объект.</li></ul></li></ul><ul id="2aa568fa-e39f-805d-9e49-e0a94ca27fae" class="bulleted-list"><li style="list-style-type:disc"><strong>MAP@K (Mean Average Precision)</strong>:<ul id="2aa568fa-e39f-8055-817b-c21c085a1346" class="bulleted-list"><li style="list-style-type:circle">учитывает позиции <strong>всех</strong> релевантных; важна, когда их несколько.</li></ul></li></ul><ul id="2aa568fa-e39f-80b4-9761-ed38722cc204" class="bulleted-list"><li style="list-style-type:disc"><strong>NDCG@K (Normalized Discounted Cumulative Gain)</strong>:<ul id="2aa568fa-e39f-8063-94cf-f6a4f6b726b4" class="bulleted-list"><li style="list-style-type:circle">обобщает идею «чем выше полезное, тем лучше», учитывая градации релевантности.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c0-af61-f522aa408dd2" class="numbered-list" start="3"><li><strong>Интуитивные примеры</strong><ul id="2aa568fa-e39f-806d-9001-d6d88def9495" class="bulleted-list"><li style="list-style-type:disc">Игрушечный пример:<ul id="2aa568fa-e39f-80e7-86cc-d2eb50467427" class="bulleted-list"><li style="list-style-type:circle">у пользователя 3 релевантных товара: {A, B, C}</li></ul><ul id="2aa568fa-e39f-8047-9ab3-dbde5f250f91" class="bulleted-list"><li style="list-style-type:circle">модель рекомендовала список <code>[B, X, C, Y, Z]</code></li></ul><ul id="2aa568fa-e39f-809b-8274-e93cbb08eeac" class="bulleted-list"><li style="list-style-type:circle">посчитать руками:<ul id="2aa568fa-e39f-8088-8743-e3b3556bda82" class="bulleted-list"><li style="list-style-type:square">HitRate@5;</li></ul><ul id="2aa568fa-e39f-805c-af73-da35cc76bd9a" class="bulleted-list"><li style="list-style-type:square">Precision@5;</li></ul><ul id="2aa568fa-e39f-8044-b8aa-f646080c1c6f" class="bulleted-list"><li style="list-style-type:square">Recall@5;</li></ul><ul id="2aa568fa-e39f-80aa-90c5-d75e3088ecd6" class="bulleted-list"><li style="list-style-type:square">MAP@5;</li></ul><ul id="2aa568fa-e39f-80d2-b1e2-f580d6b7c6e0" class="bulleted-list"><li style="list-style-type:square">NDCG@5 при разных уровнях релевантности.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-801f-a2f2-cf5864476bf5" class="numbered-list" start="4"><li><strong>Как выбирать метрику</strong><ul id="2aa568fa-e39f-8061-b0ec-c4d99bc8f8d7" class="bulleted-list"><li style="list-style-type:disc">Если задача — <strong>next-item</strong> / session-based:<ul id="2aa568fa-e39f-80f1-be30-c22b77c18dc2" class="bulleted-list"><li style="list-style-type:circle">обычно смотрим Recall@K / HitRate@K / MRR@K.</li></ul></li></ul><ul id="2aa568fa-e39f-809e-82d3-fea3b63ddc2e" class="bulleted-list"><li style="list-style-type:disc">Если много релевантных и важно их «накрыть»:<ul id="2aa568fa-e39f-8055-bc17-dd0b17a3ff67" class="bulleted-list"><li style="list-style-type:circle">Recall@K / MAP@K.</li></ul></li></ul><ul id="2aa568fa-e39f-80af-b48e-f578bda7cfd8" class="bulleted-list"><li style="list-style-type:disc">Если важна позиция:<ul id="2aa568fa-e39f-80bc-a818-eab450b83734" class="bulleted-list"><li style="list-style-type:circle">MRR / NDCG.</li></ul></li></ul><ul id="2aa568fa-e39f-80aa-93cf-fc921cadf593" class="bulleted-list"><li style="list-style-type:disc">Если у нас рейтинги:<ul id="2aa568fa-e39f-80ed-ab04-d5b9f361b0b6" class="bulleted-list"><li style="list-style-type:circle">можно смотреть RMSE, но для рекомендаций лучше явно считать top-K.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-80be-b290-c0375cf20dcd" class="">Практика на уроке</h3><ul id="2aa568fa-e39f-80d9-8ad9-e7e7ec4541d3" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ul id="2aa568fa-e39f-801c-a862-ed6e27406c1b" class="bulleted-list"><li style="list-style-type:circle">Реализовать функции для:<ul id="2aa568fa-e39f-8016-8aa5-c1a7558ffb69" class="bulleted-list"><li style="list-style-type:square">HitRate@K;</li></ul><ul id="2aa568fa-e39f-80a7-894b-e8f01d763400" class="bulleted-list"><li style="list-style-type:square">Recall@K;</li></ul><ul id="2aa568fa-e39f-80a0-b426-c261ab18564a" class="bulleted-list"><li style="list-style-type:square">Precision@K;</li></ul><ul id="2aa568fa-e39f-80aa-aaf1-e938f8477ca1" class="bulleted-list"><li style="list-style-type:square">MAP@K;</li></ul><ul id="2aa568fa-e39f-80a5-ab1f-d1e2df04d976" class="bulleted-list"><li style="list-style-type:square">NDCG@K (для бинарной релевантности).</li></ul></li></ul><ul id="2aa568fa-e39f-80a9-a0f8-c1f866925ade" class="bulleted-list"><li style="list-style-type:circle">Посчитать метрики на:<ul id="2aa568fa-e39f-80a1-a99b-c3f3c757af3a" class="bulleted-list"><li style="list-style-type:square">нескольких искусственных примерах;</li></ul><ul id="2aa568fa-e39f-8004-bb06-f97971882ffd" class="bulleted-list"><li style="list-style-type:square">небольшом подмножестве реальных данных (например, 1000 пользователей из датасета модуля 1).</li></ul></li></ul></li></ul><h3 id="2aa568fa-e39f-80a2-b1ab-c9a2f15d3215" class="">Домашка 2.2</h3><ol type="1" id="2aa568fa-e39f-80b1-9068-f0caf7c290b6" class="numbered-list" start="1"><li>Написать таблицу:<table id="2aa568fa-e39f-800d-bfa8-d791ebfa8f2d" class="simple-table"><thead class="simple-table-header"><tr id="2aa568fa-e39f-80e0-aaf6-e993fe1b7f18"><th id="G\&lt;t" class="simple-table-header-color simple-table-header">Метрика</th><th id="Q[Fn" class="simple-table-header-color simple-table-header">Где применима</th><th id="gbyA" class="simple-table-header-color simple-table-header">В чём плюс</th><th id="|{\P" class="simple-table-header-color simple-table-header">В чём минус</th></tr></thead><tbody><tr id="2aa568fa-e39f-80fa-9d27-f020a689c72c"><td id="G\&lt;t" class="">HitRate@K</td><td id="Q[Fn" class="">...</td><td id="gbyA" class="">...</td><td id="|{\P" class="">...</td></tr><tr id="2aa568fa-e39f-8084-b05b-e05c3e8bae93"><td id="G\&lt;t" class="">Recall@K</td><td id="Q[Fn" class="">...</td><td id="gbyA" class="">...</td><td id="|{\P" class="">...</td></tr><tr id="2aa568fa-e39f-8064-9dc5-ea9c3ee24742"><td id="G\&lt;t" class="">Precision@K</td><td id="Q[Fn" class="">...</td><td id="gbyA" class="">...</td><td id="|{\P" class="">...</td></tr><tr id="2aa568fa-e39f-80ba-b332-f542a977da2a"><td id="G\&lt;t" class="">MAP@K</td><td id="Q[Fn" class="">...</td><td id="gbyA" class="">...</td><td id="|{\P" class="">...</td></tr><tr id="2aa568fa-e39f-8031-89a2-ed8539a0c1ff"><td id="G\&lt;t" class="">NDCG@K</td><td id="Q[Fn" class="">...</td><td id="gbyA" class="">...</td><td id="|{\P" class="">...</td></tr></tbody></table></li></ol><ol type="1" id="2aa568fa-e39f-80eb-94d8-f4d49c3557ea" class="numbered-list" start="2"><li>Для <strong>своего датасета</strong>:<ul id="2aa568fa-e39f-800d-aa6e-ffdf2f0f3abd" class="bulleted-list"><li style="list-style-type:disc">выбрать 2–3 метрики, которые кажутся релевантными;</li></ul><ul id="2aa568fa-e39f-8085-aae4-cd867a91d737" class="bulleted-list"><li style="list-style-type:disc">объяснить, почему именно они, а не другие.</li></ul></li></ol><hr id="2aa568fa-e39f-80c0-8c09-fa5e2c951fd1"/><h2 id="2aa568fa-e39f-805b-b4de-d181778becf6" class="">Урок 2.3. Схемы разбиения данных: random, user-based, time-based, session-based</h2><h3 id="2aa568fa-e39f-8005-bd23-c5c1937ba42a" class="">Цели урока</h3><ul id="2aa568fa-e39f-8029-8860-cbce0b369f79" class="bulleted-list"><li style="list-style-type:disc">Понять, что <strong>валидировать можно по-разному</strong>, и это критично.</li></ul><ul id="2aa568fa-e39f-80e2-8fc6-f68f213065ac" class="bulleted-list"><li style="list-style-type:disc">Научиться выбирать схему валидации, которая <strong>максимально похожа на реальный сценарий</strong> и на evaluation соревы.</li></ul><h3 id="2aa568fa-e39f-80af-b7b8-ebe6ccda02ab" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-8078-9c27-cbf517c5a3a1" class="numbered-list" start="1"><li><strong>Random split (и почему он часто плох)</strong><ul id="2aa568fa-e39f-8046-9393-ee19d0131c01" class="bulleted-list"><li style="list-style-type:disc">Просто делим взаимодействия случайно на train и valid.</li></ul><ul id="2aa568fa-e39f-802e-8abd-d2a9cc406ea2" class="bulleted-list"><li style="list-style-type:disc">Плюсы:<ul id="2aa568fa-e39f-8033-bea3-c502ccff546f" class="bulleted-list"><li style="list-style-type:circle">просто;</li></ul><ul id="2aa568fa-e39f-806c-a5fb-ca3399ceffe0" class="bulleted-list"><li style="list-style-type:circle">быстро.</li></ul></li></ul><ul id="2aa568fa-e39f-8037-b4c4-c3a77086352e" class="bulleted-list"><li style="list-style-type:disc">Минусы:<ul id="2aa568fa-e39f-8095-b120-d3e5b739d50f" class="bulleted-list"><li style="list-style-type:circle"><strong>утечки по времени</strong> (будущее валидации может «видеть» прошлое);</li></ul><ul id="2aa568fa-e39f-8006-b131-d9a005d82713" class="bulleted-list"><li style="list-style-type:circle">один и тот же user/item может быть одновременно и в train, и в valid в странной пропорции;</li></ul><ul id="2aa568fa-e39f-80e9-a52c-efe4f629a465" class="bulleted-list"><li style="list-style-type:circle">не имитирует «предсказание будущего по прошлому».</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80cc-9b8d-cb75718bfc94" class="numbered-list" start="2"><li><strong>User-based split</strong><ul id="2aa568fa-e39f-80b1-8a4c-c75d78d752d5" class="bulleted-list"><li style="list-style-type:disc">Делим пользователей:<ul id="2aa568fa-e39f-80e1-b8d5-e0364810078a" class="bulleted-list"><li style="list-style-type:circle">часть пользователей — только в train;</li></ul><ul id="2aa568fa-e39f-80e3-8b3e-c3962b600d66" class="bulleted-list"><li style="list-style-type:circle">часть — только в valid.</li></ul></li></ul><ul id="2aa568fa-e39f-8059-b1de-d751d045f687" class="bulleted-list"><li style="list-style-type:disc">Когда это полезно:<ul id="2aa568fa-e39f-80d9-9d19-f45db533c237" class="bulleted-list"><li style="list-style-type:circle">когда проверяем <strong>generalization на новых пользователей</strong>;</li></ul></li></ul><ul id="2aa568fa-e39f-80cf-89f8-f1c6b4061e97" class="bulleted-list"><li style="list-style-type:disc">Но:<ul id="2aa568fa-e39f-8018-8016-ec3c2d13d66c" class="bulleted-list"><li style="list-style-type:circle">в RecSys чаще важно предсказывать <strong>будущее поведение тех же пользователей</strong>, а не новых.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8028-896f-d9ce8942baac" class="numbered-list" start="3"><li><strong>Time-based split</strong><ul id="2aa568fa-e39f-800a-aad6-e5becf1a7a18" class="bulleted-list"><li style="list-style-type:disc">Самый естественный для RecSys:<ul id="2aa568fa-e39f-80b1-ab08-e9ded93a8769" class="bulleted-list"><li style="list-style-type:circle">train = первые T0–T1;</li></ul><ul id="2aa568fa-e39f-8061-bf9e-e0c660dade45" class="bulleted-list"><li style="list-style-type:circle">valid = период T1–T2.</li></ul></li></ul><ul id="2aa568fa-e39f-806d-9231-f7652d738337" class="bulleted-list"><li style="list-style-type:disc">Пользователи и товары могут быть и там, и там, но:<ul id="2aa568fa-e39f-806f-ac6f-d66ac46f8a0a" class="bulleted-list"><li style="list-style-type:circle">модель учится на <strong>прошлом</strong>;</li></ul><ul id="2aa568fa-e39f-807d-b368-fa95b118e2bf" class="bulleted-list"><li style="list-style-type:circle">проверяется на <strong>будущем</strong>.</li></ul></li></ul><ul id="2aa568fa-e39f-80c7-9ed8-f41698b46d83" class="bulleted-list"><li style="list-style-type:disc">Важно:<ul id="2aa568fa-e39f-8075-99bb-d64390bd6f39" class="bulleted-list"><li style="list-style-type:circle">не допустить, чтобы события из будущего попадали в фичи.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8075-b1b2-d8bfe2fd46e4" class="numbered-list" start="4"><li><strong>Session-based split</strong><ul id="2aa568fa-e39f-809a-8801-c6f25a3b08fb" class="bulleted-list"><li style="list-style-type:disc">Если есть сессии:<ul id="2aa568fa-e39f-8083-80a3-e800e2e4fcdf" class="bulleted-list"><li style="list-style-type:circle">можно делить по сессиям;</li></ul><ul id="2aa568fa-e39f-802d-b585-e40bb875472f" class="bulleted-list"><li style="list-style-type:circle">или внутри сессий предсказывать последнее действие по предыдущим.</li></ul></li></ul><ul id="2aa568fa-e39f-801a-9aff-cd7061c76c5a" class="bulleted-list"><li style="list-style-type:disc">Пример:<ul id="2aa568fa-e39f-808d-b5a4-f9a4f4b4530e" class="bulleted-list"><li style="list-style-type:circle">для каждой сессии берём последние N шагов как «target», а предыдущие как «историю».</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80c6-bc82-c75c0cfd6fed" class="numbered-list" start="5"><li><strong>Leave-one-out и прочие схемы</strong><ul id="2aa568fa-e39f-8070-937b-f083fe275a69" class="bulleted-list"><li style="list-style-type:disc">Leave-one-out по пользователю:<ul id="2aa568fa-e39f-80a3-a257-dbf0a5615603" class="bulleted-list"><li style="list-style-type:circle">для каждого user:<ul id="2aa568fa-e39f-80ba-bd94-fa9293c6e882" class="bulleted-list"><li style="list-style-type:square">последние k взаимодействий — в валидацию;</li></ul><ul id="2aa568fa-e39f-80df-aa99-dd06ed0ce4db" class="bulleted-list"><li style="list-style-type:square">остальные — в train.</li></ul></li></ul></li></ul><ul id="2aa568fa-e39f-80f8-bf69-dfbde9abd927" class="bulleted-list"><li style="list-style-type:disc">Это популярно для implicit- задач:<ul id="2aa568fa-e39f-801b-910b-ec77da52b92c" class="bulleted-list"><li style="list-style-type:circle">хорошо подходит для top-K.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8061-a862-d5cdd7bc4031" class="numbered-list" start="6"><li><strong>Что может пойти не так: типичные ошибки</strong><ul id="2aa568fa-e39f-8069-8784-dc6b3bb4c3f4" class="bulleted-list"><li style="list-style-type:disc">Лики:<ul id="2aa568fa-e39f-80db-a9e4-d6bb83994dcb" class="bulleted-list"><li style="list-style-type:circle">использовать весь user history (incl. события после validation точки).</li></ul><ul id="2aa568fa-e39f-80a1-8b77-ca0197bd2f90" class="bulleted-list"><li style="list-style-type:circle">использовать агрегации, считанные по всему датасету (в т.ч. будущему);</li></ul></li></ul><ul id="2aa568fa-e39f-80ce-ac73-db67d185dc6c" class="bulleted-list"><li style="list-style-type:disc">Ломаем сессии:<ul id="2aa568fa-e39f-8022-af38-c552da655787" class="bulleted-list"><li style="list-style-type:circle">перемешиваем сессии по времени или между пользователями;</li></ul></li></ul><ul id="2aa568fa-e39f-80c5-8943-edeea150ad73" class="bulleted-list"><li style="list-style-type:disc">Неправильный target:<ul id="2aa568fa-e39f-80a8-8969-c134423768b4" class="bulleted-list"><li style="list-style-type:circle">пытаемся предсказать item, который уже был в истории, вместо <strong>следующего</strong>.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-8036-b033-c4c7596f236e" class="">Практика на уроке</h3><ul id="2aa568fa-e39f-8056-a95d-f49e957e64f2" class="bulleted-list"><li style="list-style-type:disc">На выбранном датасете:<ol type="1" id="2aa568fa-e39f-80e5-98c9-d3fef2e92b1a" class="numbered-list" start="1"><li>Реализовать <strong>random split</strong> и <strong>time-based split</strong>.</li></ol><ol type="1" id="2aa568fa-e39f-804d-bc74-cd20a7ea450e" class="numbered-list" start="2"><li>Для простого бейзлайна (например, global popularity или item-to-item):<ul id="2aa568fa-e39f-808a-9fd7-d6eaa4f85f34" class="bulleted-list"><li style="list-style-type:disc">посчитать Recall@K / HitRate@K для random split;</li></ul><ul id="2aa568fa-e39f-80be-bede-cfe000f89581" class="bulleted-list"><li style="list-style-type:disc">посчитать для time-based split;</li></ul><ul id="2aa568fa-e39f-8003-8846-d767feaf7a6e" class="bulleted-list"><li style="list-style-type:disc">сравнить: где метрика выше/ниже, в чём подвох.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-80fb-8e84-f2d08994a28a" class="">Домашка 2.3</h3><ul id="2aa568fa-e39f-80a3-b4e3-e06a183bbf6b" class="bulleted-list"><li style="list-style-type:disc">Взять свой датасет и:<ol type="1" id="2aa568fa-e39f-80e3-97b4-fc0da9d68cf9" class="numbered-list" start="1"><li>Реализовать схему <strong>leave-one-out</strong> по пользователю:<ul id="2aa568fa-e39f-8085-a47f-c69b77074e59" class="bulleted-list"><li style="list-style-type:disc">последние N взаимодействий — валидация;</li></ul><ul id="2aa568fa-e39f-80fa-bfe0-cc60ead199d9" class="bulleted-list"><li style="list-style-type:disc">остальные — train.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8037-9c6a-daf381a41331" class="numbered-list" start="2"><li>Описать текстом:<ul id="2aa568fa-e39f-8058-815a-c44d7118bda6" class="bulleted-list"><li style="list-style-type:disc">чем эта схема лучше/хуже time-based split для данной задачи;</li></ul><ul id="2aa568fa-e39f-8067-a85a-c5ec113e6181" class="bulleted-list"><li style="list-style-type:disc">возможно ли, что на leave-one-out метрика завышена/занижена.</li></ul></li></ol></li></ul><hr id="2aa568fa-e39f-80ce-bbfe-d35f617d3688"/><h2 id="2aa568fa-e39f-808e-897f-fd0d8b0997c9" class="">Урок 2.4. Negative sampling, имитация соревовой метрики и offline-фреймворк</h2><h3 id="2aa568fa-e39f-8079-9b61-c81a3dd85f12" class="">Цели урока</h3><ul id="2aa568fa-e39f-80c8-83d6-dd1f52a9483d" class="bulleted-list"><li style="list-style-type:disc">Понять, откуда берутся <strong>«негативные» кандидаты</strong> в offline-валидации.</li></ul><ul id="2aa568fa-e39f-8069-9c47-d0d20d95f6d6" class="bulleted-list"><li style="list-style-type:disc">Научиться писать <strong>общий evaluation-фреймворк</strong>:<ul id="2aa568fa-e39f-80d7-9080-c63f4335d0f6" class="bulleted-list"><li style="list-style-type:circle">передаём в него модель, список юзеров — он считает метрики.</li></ul></li></ul><ul id="2aa568fa-e39f-8028-ad47-c4c12b48718f" class="bulleted-list"><li style="list-style-type:disc">Научиться <strong>приближать соревовую метрику</strong> максимально близко offline.</li></ul><h3 id="2aa568fa-e39f-8065-a2b8-de1cce44e56c" class="">Теория</h3><ol type="1" id="2aa568fa-e39f-80b0-b0fe-d0575d40aabb" class="numbered-list" start="1"><li><strong>Проблема: offline у нас нет полного каталога взаимодействий</strong><ul id="2aa568fa-e39f-800b-b1eb-d28240eb8d3a" class="bulleted-list"><li style="list-style-type:disc">В проде:<ul id="2aa568fa-e39f-80fb-ba28-cf0320dc5ab4" class="bulleted-list"><li style="list-style-type:circle">мы рекомендуем из <strong>всего каталога</strong>;</li></ul><ul id="2aa568fa-e39f-80e5-bfb6-c4f3a77335b5" class="bulleted-list"><li style="list-style-type:circle">пользователь видит top-K из ~миллионов товаров.</li></ul></li></ul><ul id="2aa568fa-e39f-80f1-911f-d7ed16d30a96" class="bulleted-list"><li style="list-style-type:disc">Offline:<ul id="2aa568fa-e39f-8054-bdc1-e285dba14a6c" class="bulleted-list"><li style="list-style-type:circle">считаем метрику на ограниченном списке кандидатов;</li></ul><ul id="2aa568fa-e39f-80b7-b787-cdcf8600718d" class="bulleted-list"><li style="list-style-type:circle">target item + несколько «негативных» кандидатов.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8067-aba7-cbd1b81ad649" class="numbered-list" start="2"><li><strong>Negative sampling для оценки</strong><ul id="2aa568fa-e39f-80da-894d-e35e4b7e1731" class="bulleted-list"><li style="list-style-type:disc">Суть:<ul id="2aa568fa-e39f-802d-94f9-d049fb0897be" class="bulleted-list"><li style="list-style-type:circle">берём реальный target item;</li></ul><ul id="2aa568fa-e39f-8004-afbd-da599ffb9d8d" class="bulleted-list"><li style="list-style-type:circle">добавляем M случайных (или осмысленных) «негативных» items;</li></ul><ul id="2aa568fa-e39f-80e9-aee9-f341f260eea6" class="bulleted-list"><li style="list-style-type:circle">считаем, на каком месте среди них оказался target.</li></ul></li></ul><ul id="2aa568fa-e39f-80a6-9e95-c30111bd4313" class="bulleted-list"><li style="list-style-type:disc">Риски:<ul id="2aa568fa-e39f-807a-9488-f2623d8696d3" class="bulleted-list"><li style="list-style-type:circle">если негативы слишком лёгкие (рандомные из огромного каталога) — метрика завышена;</li></ul><ul id="2aa568fa-e39f-80a4-aba7-e28c8ab4c01c" class="bulleted-list"><li style="list-style-type:circle">если негативы сложные (только из «похожих» товаров) — метрика занижена, но более реалистична.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8004-95ad-f0ec75ba672a" class="numbered-list" start="3"><li><strong>Имитируем соревовую метрику</strong><ul id="2aa568fa-e39f-80ec-ae1f-df848ab7613a" class="bulleted-list"><li style="list-style-type:disc">Читаем описание соревнования:<ul id="2aa568fa-e39f-80b2-a86f-f255a3534cab" class="bulleted-list"><li style="list-style-type:circle">как они считают метрику? (по всем item’ам? по топ-K? по сессиям?)</li></ul></li></ul><ul id="2aa568fa-e39f-8070-a92e-ea6ef24b4d1a" class="bulleted-list"><li style="list-style-type:disc">Строим максимально близкую схему:<ul id="2aa568fa-e39f-807c-a4e1-cd2604da0a35" class="bulleted-list"><li style="list-style-type:circle">если в сореве оценка идёт по session-level Recall@K → так и делаем;</li></ul><ul id="2aa568fa-e39f-80e2-8eb8-d0df73abc971" class="bulleted-list"><li style="list-style-type:circle">если по user-level MAP@K → тоже.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-809e-8913-d959257e3d13" class="numbered-list" start="4"><li><strong>Фреймворк evaluation</strong><ul id="2aa568fa-e39f-8035-8266-e4d9704e155a" class="bulleted-list"><li style="list-style-type:disc">Абстракция:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-807a-830b-cd9796966fc0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">class Recommender:
+    def recommend(self, user_id, k: int) -&gt; list[int]:
+        ...
+</code></pre></li></ul><ul id="2aa568fa-e39f-80f9-b6b1-f3759505bb0b" class="bulleted-list"><li style="list-style-type:disc">Функция evaluate:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2aa568fa-e39f-8090-92b3-faf3f82ae2d2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def evaluate(recommender, data_valid, k=10, metrics=(&quot;recall&quot;, &quot;map&quot;)):
+    # 1) для каждого user / session в валидации
+    # 2) получить рекомендации
+    # 3) сравнить с таргетом(ами)
+    # 4) посчитать метрики и вернуть словарь
+</code></pre></li></ul><ul id="2aa568fa-e39f-805e-9ba9-c288a8a6f8ce" class="bulleted-list"><li style="list-style-type:disc">Важно:<ul id="2aa568fa-e39f-80bf-8a21-ed172dda03ac" class="bulleted-list"><li style="list-style-type:circle">разделять:<ul id="2aa568fa-e39f-8083-a24f-e4421ed6f445" class="bulleted-list"><li style="list-style-type:square"><strong>подготовку данных для eval</strong>;</li></ul><ul id="2aa568fa-e39f-8007-b4c7-d2c810add8ea" class="bulleted-list"><li style="list-style-type:square"><strong>саму функцию eval</strong>.</li></ul></li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80e3-8ed0-dd6c5978500e" class="numbered-list" start="5"><li><strong>Скорость vs точность</strong><ul id="2aa568fa-e39f-806b-972a-cbc8eef15f9a" class="bulleted-list"><li style="list-style-type:disc">Когда data огромная:<ul id="2aa568fa-e39f-8091-ac43-dd612833d4b5" class="bulleted-list"><li style="list-style-type:circle">нельзя каждый раз гонять тяжёлую модель по всему каталогу;</li></ul></li></ul><ul id="2aa568fa-e39f-80d3-9686-e7d208021157" class="bulleted-list"><li style="list-style-type:disc">Приёмы:<ul id="2aa568fa-e39f-80c8-b520-c54e08b9399a" class="bulleted-list"><li style="list-style-type:circle">использовать подмножество пользователей для быстрых экспериментов;</li></ul><ul id="2aa568fa-e39f-80dd-911b-f2f7e42ef697" class="bulleted-list"><li style="list-style-type:circle">кешировать кандидатов;</li></ul><ul id="2aa568fa-e39f-804c-8b6e-e188c7137a02" class="bulleted-list"><li style="list-style-type:circle">менять только маленькие части модели и переиспользовать старые результаты.</li></ul></li></ul></li></ol><h3 id="2aa568fa-e39f-806a-a440-f777b0a64575" class="">Практика на уроке</h3><ul id="2aa568fa-e39f-80b5-ab40-da2b5750fbe2" class="bulleted-list"><li style="list-style-type:disc">В ноутбуке:<ol type="1" id="2aa568fa-e39f-804c-9935-ef323bd394da" class="numbered-list" start="1"><li>Определить интерфейс <code>Recommender</code> для текущего бейзлайна (из модуля 1).</li></ol><ol type="1" id="2aa568fa-e39f-8013-9182-de22861cf45b" class="numbered-list" start="2"><li>Реализовать функцию <code>evaluate</code>:<ul id="2aa568fa-e39f-80cd-af5f-ec52499b4882" class="bulleted-list"><li style="list-style-type:disc">принимающую:<ul id="2aa568fa-e39f-8086-a35d-fab412438df7" class="bulleted-list"><li style="list-style-type:circle">объект Recommender,</li></ul><ul id="2aa568fa-e39f-803a-a2f4-db1eb2b9a0ed" class="bulleted-list"><li style="list-style-type:circle">validation data,</li></ul><ul id="2aa568fa-e39f-8015-a836-fdeed0a02247" class="bulleted-list"><li style="list-style-type:circle">список метрик (HitRate@K, Recall@K, MAP@K…).</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8011-831e-c0957d7e6117" class="numbered-list" start="3"><li>Добавить опциональный <strong>negative sampling</strong>:<ul id="2aa568fa-e39f-806d-86f9-ee913f241953" class="bulleted-list"><li style="list-style-type:disc">пример: для каждого user берём target item и 100 случайных item’ов;</li></ul><ul id="2aa568fa-e39f-808c-bf0d-d6050ddcdf1f" class="bulleted-list"><li style="list-style-type:disc">считаем MRR/Recall@K в таком сетапе.</li></ul></li></ol></li></ul><h3 id="2aa568fa-e39f-8087-823c-dea2e3596587" class="">Домашка 2.4</h3><ol type="1" id="2aa568fa-e39f-80af-be27-d4c8954fcf6c" class="numbered-list" start="1"><li>Собрать в одном ноутбуке <strong>полный offline-eval пайплайн</strong>:<ul id="2aa568fa-e39f-80e5-a564-eebc52e1e77b" class="bulleted-list"><li style="list-style-type:disc">подготовка validation split (time-based или leave-one-out);</li></ul><ul id="2aa568fa-e39f-8097-8398-cbe95e05e110" class="bulleted-list"><li style="list-style-type:disc">формирование списка кандидатов (включая negative sampling, если нужно);</li></ul><ul id="2aa568fa-e39f-80ed-bee1-e59373c39240" class="bulleted-list"><li style="list-style-type:disc">функция evaluate с несколькими метриками.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8086-893e-d59cb0060d85" class="numbered-list" start="2"><li>Сравнить 2–3 своих моделей/бейзлайнов:<ul id="2aa568fa-e39f-80c9-9503-c8a077126f2f" class="bulleted-list"><li style="list-style-type:disc">например:<ul id="2aa568fa-e39f-809a-9f9a-e27108a85d4e" class="bulleted-list"><li style="list-style-type:circle">pure popularity;</li></ul><ul id="2aa568fa-e39f-80ba-a08f-d61bb3d02acf" class="bulleted-list"><li style="list-style-type:circle">popularity + segment;</li></ul><ul id="2aa568fa-e39f-8013-bf9d-e28d631706af" class="bulleted-list"><li style="list-style-type:circle">item-to-item.</li></ul></li></ul><ul id="2aa568fa-e39f-804b-a947-ee7edb00cb67" class="bulleted-list"><li style="list-style-type:disc">Сравнить их по нескольким метрикам:<ul id="2aa568fa-e39f-8073-97e3-c96b111cbe1a" class="bulleted-list"><li style="list-style-type:circle">Recall@K;</li></ul><ul id="2aa568fa-e39f-8027-a236-da04224183e7" class="bulleted-list"><li style="list-style-type:circle">MAP@K;</li></ul><ul id="2aa568fa-e39f-80fb-a5cf-e8ee4ecff2cd" class="bulleted-list"><li style="list-style-type:circle">NDCG@K.</li></ul></li></ul><ul id="2aa568fa-e39f-807d-9290-fae008437847" class="bulleted-list"><li style="list-style-type:disc">Написать вывод:<ul id="2aa568fa-e39f-8016-a68f-c8aab3321cfe" class="bulleted-list"><li style="list-style-type:circle">какая модель действительно лучше и по какой метрике.</li></ul></li></ul></li></ol><hr id="2aa568fa-e39f-80ce-81f0-c871acf49a8b"/><h2 id="2aa568fa-e39f-8094-bea8-ce201c12f3f5" class="">Мини-проект по модулю 2</h2><p id="2aa568fa-e39f-80d6-96b6-d2b03ee2677c" class=""><strong>Название:</strong> «Честная offline-валидация для моего RecSys-соревнования»</p><p id="2aa568fa-e39f-809e-b15e-c80a34b2d9fe" class="">Студент берёт <strong>тот же сорев</strong>, с которым он работал в модуле 1, и делает:</p><ol type="1" id="2aa568fa-e39f-806d-a717-ffdcdb293ae0" class="numbered-list" start="1"><li><strong>Формализацию:</strong><ul id="2aa568fa-e39f-8050-87bc-e1ab9f7a4868" class="bulleted-list"><li style="list-style-type:disc">описать:<ul id="2aa568fa-e39f-80dc-8f85-e5e691098cca" class="bulleted-list"><li style="list-style-type:circle">тип задачи (implicit/next-item/…);</li></ul><ul id="2aa568fa-e39f-8034-85fa-f1c36e205d3d" class="bulleted-list"><li style="list-style-type:circle">что считается таргетом;</li></ul><ul id="2aa568fa-e39f-80a4-a1ce-df1c19c02c9c" class="bulleted-list"><li style="list-style-type:circle">как примерно считается соревовая метрика.</li></ul></li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8099-9ac6-f200da79913b" class="numbered-list" start="2"><li><strong>Схема валидации:</strong><ul id="2aa568fa-e39f-80ee-9431-d93ddb1c122f" class="bulleted-list"><li style="list-style-type:disc">выбрать:<ul id="2aa568fa-e39f-8072-86a2-e8a37d797a3b" class="bulleted-list"><li style="list-style-type:circle">time-based / leave-one-out / session-based;</li></ul></li></ul><ul id="2aa568fa-e39f-80e1-a13a-c49a97c1e0c4" class="bulleted-list"><li style="list-style-type:disc">аргументировать выбор;</li></ul><ul id="2aa568fa-e39f-8010-b5cf-ddd56603e667" class="bulleted-list"><li style="list-style-type:disc">избежать явных leak’ов.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-8022-ab2d-c6a734a28b3b" class="numbered-list" start="3"><li><strong>Реализация:</strong><ul id="2aa568fa-e39f-80b5-bc82-f01423a706e8" class="bulleted-list"><li style="list-style-type:disc">код сплита;</li></ul><ul id="2aa568fa-e39f-8031-8905-e0095c29dc69" class="bulleted-list"><li style="list-style-type:disc">код функций метрик;</li></ul><ul id="2aa568fa-e39f-8098-872c-fb7889482b29" class="bulleted-list"><li style="list-style-type:disc">код eval-фреймворка;</li></ul><ul id="2aa568fa-e39f-8097-ba7f-dbe2cdd6c6f2" class="bulleted-list"><li style="list-style-type:disc">(опционально) negative sampling для ускорения.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-80f9-95de-e2e4cf582eab" class="numbered-list" start="4"><li><strong>Сравнение моделей:</strong><ul id="2aa568fa-e39f-8083-8a9e-dfc94914042f" class="bulleted-list"><li style="list-style-type:disc">минимум 2–3 варианта из модуля 1:<ul id="2aa568fa-e39f-8093-bd1a-f4d31ece6cad" class="bulleted-list"><li style="list-style-type:circle">global popularity;</li></ul><ul id="2aa568fa-e39f-80a1-acbf-c703bef3b93e" class="bulleted-list"><li style="list-style-type:circle">segment popularity;</li></ul><ul id="2aa568fa-e39f-802b-a27a-f377f8fd88e7" class="bulleted-list"><li style="list-style-type:circle">item-to-item.</li></ul></li></ul><ul id="2aa568fa-e39f-8066-9af7-d3c97e8a3c05" class="bulleted-list"><li style="list-style-type:disc">киллер-фича: одна модель может быть лучше по одной метрике и хуже по другой → студент должен это отрефлексировать.</li></ul></li></ol><ol type="1" id="2aa568fa-e39f-807c-a874-f5952baa0118" class="numbered-list" start="5"><li><strong>Краткий отчёт:</strong><ul id="2aa568fa-e39f-806e-a2de-ccfa0f499009" class="bulleted-list"><li style="list-style-type:disc">описание валидации;</li></ul><ul id="2aa568fa-e39f-8029-a9ff-f9c5d0a0e2f4" class="bulleted-list"><li style="list-style-type:disc">результаты по метрикам;</li></ul><ul id="2aa568fa-e39f-8079-a087-c53067bd1c43" class="bulleted-list"><li style="list-style-type:disc">какие из моделей он считает «best offline» и почему;</li></ul><ul id="2aa568fa-e39f-8058-b87c-f51089191a26" class="bulleted-list"><li style="list-style-type:disc">какие риски, что offline и соревнование разойдутся.</li></ul></li></ol><hr id="2aa568fa-e39f-8015-9bd9-e6f54a1938ff"/><p id="2aa568fa-e39f-8033-88f7-ef0526aae4ca" class="">Дальше логично идти к <strong>Модулю 3 (классическая коллаборативная фильтрация)</strong>: там уже можно опираться на этот eval-фреймворк и просто менять модель, не переписывая постоянно валидацию.</p><p id="2aa568fa-e39f-80d6-84dc-c984ed06ff39" class="">Если хочешь, могу:</p><ul id="2aa568fa-e39f-80a6-bf61-e807d2189697" class="bulleted-list"><li style="list-style-type:disc">либо расписать <strong>Модуль 3</strong> (user-based / item-based CF) таким же уровнем детализации,</li></ul><ul id="2aa568fa-e39f-8026-b077-e5e2bfc0ad09" class="bulleted-list"><li style="list-style-type:disc">либо отдельно набросать <strong>шаблон eval-ноутбука</strong> (структура кода, функции, сигнатуры), чтобы ты мог сразу превращать модуль 2 в живой репозиторий.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

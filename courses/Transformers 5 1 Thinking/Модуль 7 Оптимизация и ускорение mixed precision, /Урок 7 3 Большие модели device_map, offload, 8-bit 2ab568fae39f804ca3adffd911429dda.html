@@ -1,0 +1,855 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Урок 7.3 Большие модели: device_map, offload, 8-bit/4-bit квантование</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-804c-a3ad-ffd911429dda" class="page sans"><header><h1 class="page-title">Урок 7.3 <strong>Большие модели: device_map, offload, 8-bit/4-bit квантование</strong></h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8007-b2e1-f8c251a47997" class="">Окей, теперь занимаемся тем, ради чего люди покупают видеокарты подороже, а потом всё равно ловят OOM 😅</p><hr id="2ab568fa-e39f-807a-931f-c853fe99f391"/><h2 id="2ab568fa-e39f-8092-bb4a-e78738a8ec9b" class="">0. Что ты будешь уметь после урока</h2><p id="2ab568fa-e39f-80e1-a4de-fdb2e928501e" class="">После этого урока ты:</p><ol type="1" id="2ab568fa-e39f-803f-b752-ea829b90b081" class="numbered-list" start="1"><li>Поймёшь, <strong>почему большие LLM не влезают в память</strong> и что с этим делают.</li></ol><ol type="1" id="2ab568fa-e39f-80b1-b066-c630ab26aa26" class="numbered-list" start="2"><li>Разберёшься, что такое:<ul id="2ab568fa-e39f-80bc-b039-d4c64a3d30ed" class="bulleted-list"><li style="list-style-type:disc"><code>device_map=&quot;auto&quot;</code>,</li></ul><ul id="2ab568fa-e39f-803e-845b-d73ba166c190" class="bulleted-list"><li style="list-style-type:disc">offload на CPU/диск,</li></ul><ul id="2ab568fa-e39f-8082-9b35-dd3a4a31f127" class="bulleted-list"><li style="list-style-type:disc"><code>load_in_8bit</code> / <code>load_in_4bit</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8020-9012-e2e103fa5e19" class="numbered-list" start="3"><li>Сможешь:<ul id="2ab568fa-e39f-8016-b9af-fa285dfbb1ab" class="bulleted-list"><li style="list-style-type:disc">загрузить относительно крупную модель так, чтобы она вообще работала на твоём железе,</li></ul><ul id="2ab568fa-e39f-80ff-87db-e2dad1ec06ed" class="bulleted-list"><li style="list-style-type:disc">сделать <strong>квантованную</strong> версию для инференса (8-бит/4-бит),</li></ul><ul id="2ab568fa-e39f-80ec-a075-e76fd6bd9e08" class="bulleted-list"><li style="list-style-type:disc">использовать её для генерации текста (тот же саппорт-бот / суммаризатор).</li></ul></li></ol><p id="2ab568fa-e39f-80ea-9f51-eec36d6903e5" class="">Фокус тут на <strong>инференсе</strong>, не на обучении. Дообучать 7B–13B на одной карточке — отдельный цирк, это мы отложим на модуль про LoRA/PEFT.</p><hr id="2ab568fa-e39f-80ea-9ea3-d3501bae0dd1"/><h2 id="2ab568fa-e39f-80ad-97cd-f0a305878f3d" class="">1. Почему большие модели не влезают и где боль</h2><p id="2ab568fa-e39f-80a5-ab29-eed9092a6257" class="">Чуть цифр в уме:</p><ul id="2ab568fa-e39f-800c-a667-da444aa6d247" class="bulleted-list"><li style="list-style-type:disc">Модель на <code>X</code> параметров, храним в float16:<ul id="2ab568fa-e39f-802b-8e6e-dad032cf7bb6" class="bulleted-list"><li style="list-style-type:circle">1 параметр ≈ 2 байта,</li></ul><ul id="2ab568fa-e39f-80dd-aaf9-dee61ddeaad3" class="bulleted-list"><li style="list-style-type:circle">веса ≈ <code>2 * X</code> байт,</li></ul><ul id="2ab568fa-e39f-8013-b77d-dc06dcd96012" class="bulleted-list"><li style="list-style-type:circle">плюс активации, буферы, оптимизатор (если обучаем).</li></ul></li></ul><p id="2ab568fa-e39f-80b1-8b7d-cb64a36224d3" class="">Примеры:</p><ul id="2ab568fa-e39f-8034-9651-cbfbc2fa351d" class="bulleted-list"><li style="list-style-type:disc">1B параметров:<ul id="2ab568fa-e39f-80e1-9f72-ecd770758644" class="bulleted-list"><li style="list-style-type:circle">только веса ≈ 2 ГБ (fp16).</li></ul></li></ul><ul id="2ab568fa-e39f-80ce-8dff-e4f81f4f8fd5" class="bulleted-list"><li style="list-style-type:disc">7B:<ul id="2ab568fa-e39f-80f6-854c-f2b97c11eb23" class="bulleted-list"><li style="list-style-type:circle">веса ≈ 14 ГБ (fp16).</li></ul></li></ul><ul id="2ab568fa-e39f-8043-be8f-c500d44f3d4d" class="bulleted-list"><li style="list-style-type:disc">13B:<ul id="2ab568fa-e39f-8021-836a-d1de35ad8f0c" class="bulleted-list"><li style="list-style-type:circle">веса ≈ 26 ГБ (fp16).</li></ul></li></ul><p id="2ab568fa-e39f-80f3-be2c-d836c2ae4511" class="">А теперь представь, что у тебя:</p><ul id="2ab568fa-e39f-8003-8d7e-c34df9a5f64f" class="bulleted-list"><li style="list-style-type:disc">GPU 8–12 ГБ:<ul id="2ab568fa-e39f-80a7-8d23-d72d724d82ac" class="bulleted-list"><li style="list-style-type:circle">7B в чистом fp16 уже <strong>не влезет</strong> полностью,</li></ul><ul id="2ab568fa-e39f-801b-ae60-f6eab6967764" class="bulleted-list"><li style="list-style-type:circle">даже если веса влезут — активации/кэш для генерации тоже нужны.</li></ul></li></ul><p id="2ab568fa-e39f-80ba-82eb-c011d2dba624" class="">Что можно сделать:</p><ol type="1" id="2ab568fa-e39f-80df-b146-e6b2edb99031" class="numbered-list" start="1"><li>Не держать всё на одной GPU:<ul id="2ab568fa-e39f-8025-aba2-cf38f12ff90f" class="bulleted-list"><li style="list-style-type:disc"><strong>размазать модель по девайсам</strong> (<code>device_map</code>),</li></ul><ul id="2ab568fa-e39f-8058-8a77-e13739e829f1" class="bulleted-list"><li style="list-style-type:disc">часть на GPU, часть на CPU/диск (offload).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80c6-8af8-e912ad824432" class="numbered-list" start="2"><li>Уменьшить размер весов:<ul id="2ab568fa-e39f-8087-9afd-cb5fef506213" class="bulleted-list"><li style="list-style-type:disc"><strong>квантование</strong>: 16-бит → 8-бит → 4-бит.</li></ul></li></ol><hr id="2ab568fa-e39f-8080-942e-e2a077cde94a"/><h2 id="2ab568fa-e39f-8003-ac07-e9df35375f7c" class="">2. Теория: device_map и offload</h2><h3 id="2ab568fa-e39f-80a9-917c-f4f701b90980" class="">2.1. Как вообще HF грузит модель</h3><p id="2ab568fa-e39f-8018-a0fd-f70952b15abd" class="">Когда делаешь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c4-8187-fb5127a47c00" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoModelForCausalLM
+
+model = AutoModelForCausalLM.from_pretrained(&quot;model-id&quot;)
+</code></pre><p id="2ab568fa-e39f-80a0-bdd9-e8a488bc4eb7" class="">по умолчанию:</p><ul id="2ab568fa-e39f-80d8-a6fc-ef221fe287f9" class="bulleted-list"><li style="list-style-type:disc">модель грузится <strong>в CPU-память</strong> (если ты не делаешь <code>.to(&quot;cuda&quot;)</code>),</li></ul><ul id="2ab568fa-e39f-800b-b48c-cf3edad530c9" class="bulleted-list"><li style="list-style-type:disc">все веса лежат на одном устройстве.</li></ul><p id="2ab568fa-e39f-8036-a344-ccf7c2804c38" class="">Если ты сразу делаешь:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b3-a955-d7faf3645b38" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model = AutoModelForCausalLM.from_pretrained(&quot;model-id&quot;).to(&quot;cuda&quot;)
+</code></pre><p id="2ab568fa-e39f-800f-8506-db4eba5ad041" class="">— всё отправляется на одну GPU. Если туда не влезает → OOM.</p><h3 id="2ab568fa-e39f-8021-aa31-d4b047c86803" class="">2.2. device_map</h3><p id="2ab568fa-e39f-800c-9daf-f4f9b5704644" class=""><code>device_map</code> говорит, <strong>куда какие слои положить</strong>:</p><ul id="2ab568fa-e39f-8016-ac44-d486ce415390" class="bulleted-list"><li style="list-style-type:disc"><code>&quot;cpu&quot;</code> — всё на CPU,</li></ul><ul id="2ab568fa-e39f-8042-8985-daec30ad58b7" class="bulleted-list"><li style="list-style-type:disc"><code>&quot;cuda&quot;</code> — всё на одну GPU,</li></ul><ul id="2ab568fa-e39f-80f4-a1bf-f04983ff618e" class="bulleted-list"><li style="list-style-type:disc"><code>&quot;auto&quot;</code> — пусть HF сам решает,</li></ul><ul id="2ab568fa-e39f-80f1-995b-d395ad866387" class="bulleted-list"><li style="list-style-type:disc">можно словарь: определённые части модели на разные девайсы.</li></ul><p id="2ab568fa-e39f-80d1-b6e4-ed97ba828cdf" class="">Простейший полезный случай:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806f-a00b-d492c75fb775" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model = AutoModelForCausalLM.from_pretrained(
+    &quot;model-id&quot;,
+    device_map=&quot;auto&quot;,
+    torch_dtype=&quot;auto&quot;,
+)
+</code></pre><p id="2ab568fa-e39f-80a0-9604-c67d10d22014" class="">Что делает <code>&quot;auto&quot;</code>:</p><ul id="2ab568fa-e39f-8079-b677-d38268888ff5" class="bulleted-list"><li style="list-style-type:disc">смотрит на модель и железо,</li></ul><ul id="2ab568fa-e39f-80a6-a909-f9faff0e58ec" class="bulleted-list"><li style="list-style-type:disc">пытается <strong>максимально втиснуть слои на GPU</strong>, остальное — на CPU/диск,</li></ul><ul id="2ab568fa-e39f-806a-be4f-e7fe82e427a2" class="bulleted-list"><li style="list-style-type:disc">сам строит карту вида:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-801d-83f8-d6beb58de1bd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;model.embed_tokens&quot;: 0,
+  &quot;model.layers.0&quot;: 0,
+  ...
+  &quot;model.layers.22&quot;: &quot;cpu&quot;,
+  &quot;lm_head&quot;: &quot;cpu&quot;,
+}
+</code></pre></li></ul><ul id="2ab568fa-e39f-8003-a39e-fd2a5bddde11" class="bulleted-list"><li style="list-style-type:disc">ты можешь посмотреть это через <code>model.hf_device_map</code>.</li></ul><h3 id="2ab568fa-e39f-80b8-a9a8-df1a810f34ff" class="">2.3. Offload на CPU/диск</h3><p id="2ab568fa-e39f-803b-9227-fb8e83b8b073" class="">Если даже <code>device_map=&quot;auto&quot;</code> не спасает (слишком мало GPU-памяти):</p><ul id="2ab568fa-e39f-80c3-899b-fbe4c7781e7d" class="bulleted-list"><li style="list-style-type:disc">можно явно указать offload:</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-b598-c24ad000f702" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model = AutoModelForCausalLM.from_pretrained(
+    &quot;model-id&quot;,
+    device_map=&quot;auto&quot;,
+    offload_folder=&quot;offload&quot;,   # сюда будут выгружаться части модели
+    torch_dtype=&quot;auto&quot;,
+)
+</code></pre><p id="2ab568fa-e39f-807d-82c5-de392766546f" class="">Тогда:</p><ul id="2ab568fa-e39f-8014-bb73-fb344e5ed3fc" class="bulleted-list"><li style="list-style-type:disc">часть слоёв может жить на CPU или в файлах на SSD,</li></ul><ul id="2ab568fa-e39f-80e3-8f2f-c552b7173169" class="bulleted-list"><li style="list-style-type:disc">при генерации нужные слои подтягиваются.</li></ul><p id="2ab568fa-e39f-80ee-94b0-df5f7b6ee98a" class="">Цена:</p><ul id="2ab568fa-e39f-80f4-af1a-c66483845836" class="bulleted-list"><li style="list-style-type:disc">память GPU спасена,</li></ul><ul id="2ab568fa-e39f-8033-b9c7-c9d319b56bfa" class="bulleted-list"><li style="list-style-type:disc"><strong>скорость падает</strong> → но лучше медленно, чем никак.</li></ul><hr id="2ab568fa-e39f-8090-b8b3-d03f75b17880"/><h2 id="2ab568fa-e39f-80de-a043-d28e7c8efa7a" class="">3. Теория: квантование (8-бит, 4-бит)</h2><h3 id="2ab568fa-e39f-8061-8c21-cee95f8c74a1" class="">3.1. Идея квантования</h3><p id="2ab568fa-e39f-8006-91a2-d5a2e06b5f6f" class="">Обычные веса:</p><ul id="2ab568fa-e39f-80ec-997d-d3179df3c85a" class="bulleted-list"><li style="list-style-type:disc">float16 — 16 бит (2 байта),</li></ul><ul id="2ab568fa-e39f-808f-a1f8-ec03ce97225b" class="bulleted-list"><li style="list-style-type:disc">float32 — 32 бита (4 байта).</li></ul><p id="2ab568fa-e39f-8017-8f04-cdb1bd66a8af" class="">Квантование:</p><ul id="2ab568fa-e39f-80a7-b707-c534e9b7085f" class="bulleted-list"><li style="list-style-type:disc"><strong>8-bit</strong>:<ul id="2ab568fa-e39f-80e8-ada9-c3f4eb7d8aa5" class="bulleted-list"><li style="list-style-type:circle">1 байт на значение,</li></ul><ul id="2ab568fa-e39f-804c-8dfa-c7f71b04f510" class="bulleted-list"><li style="list-style-type:circle">~2× экономия памяти относительно fp16.</li></ul></li></ul><ul id="2ab568fa-e39f-8060-9e52-e51f84d34b54" class="bulleted-list"><li style="list-style-type:disc"><strong>4-bit</strong>:<ul id="2ab568fa-e39f-8028-87fe-ddffa3a314dd" class="bulleted-list"><li style="list-style-type:circle">условно 0.5 байта (с упаковкой),</li></ul><ul id="2ab568fa-e39f-80a1-a3e5-f4b2fce7c0f0" class="bulleted-list"><li style="list-style-type:circle">~4× экономия относительно fp16.</li></ul></li></ul><p id="2ab568fa-e39f-80bd-9fbb-f64d7db3dafb" class="">Весы сохраняют структуру, просто хранятся менее точно.</p><p id="2ab568fa-e39f-80b2-a062-f9dbfdfc18e0" class="">Очень грубо:</p><ul id="2ab568fa-e39f-80fe-9224-dd1a3ae89a31" class="bulleted-list"><li style="list-style-type:disc">Супермодель, но “сжатая” в память за счёт потери части точности.</li></ul><ul id="2ab568fa-e39f-80e8-b934-fa8962d47981" class="bulleted-list"><li style="list-style-type:disc">Для <strong>инференса</strong> часто ок:<ul id="2ab568fa-e39f-80d3-a829-e65b65da992f" class="bulleted-list"><li style="list-style-type:circle">да, качество чуть падает,</li></ul><ul id="2ab568fa-e39f-8035-b5e6-f1d0806250df" class="bulleted-list"><li style="list-style-type:circle">но мы вообще можем запустить модель.</li></ul></li></ul><h3 id="2ab568fa-e39f-80d5-97ae-ec591dd225d1" class="">3.2. bitsandbytes и load_in_8bit / load_in_4bit</h3><p id="2ab568fa-e39f-8058-906a-f67d688aa585" class="">Hugging Face интегрируется с <code>bitsandbytes</code>:</p><ul id="2ab568fa-e39f-8098-b5f2-c1e47b0113a1" class="bulleted-list"><li style="list-style-type:disc">библиотека для эффективной работы с низкобитовыми матрицами на GPU.</li></ul><p id="2ab568fa-e39f-8077-be3a-c45976c977db" class="">Чтобы использовать:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8029-9b71-d95723d61fbf" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">pip install bitsandbytes
+</code></pre><p id="2ab568fa-e39f-80d2-a4b0-f3608c5c6b6f" class="">Потом:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ce-b4fe-d0bc41f19a66" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoModelForCausalLM
+
+model_8bit = AutoModelForCausalLM.from_pretrained(
+    &quot;model-id&quot;,
+    device_map=&quot;auto&quot;,
+    load_in_8bit=True,
+)
+
+model_4bit = AutoModelForCausalLM.from_pretrained(
+    &quot;model-id&quot;,
+    device_map=&quot;auto&quot;,
+    load_in_4bit=True,
+)
+</code></pre><p id="2ab568fa-e39f-8034-82f3-ecae2f5a8367" class="">При этом:</p><ul id="2ab568fa-e39f-805a-ad0a-cbdbadd6465b" class="bulleted-list"><li style="list-style-type:disc">веса сразу грузятся в 8/4-битном виде, занимая меньше VRAM,</li></ul><ul id="2ab568fa-e39f-8048-a220-fb0707ade058" class="bulleted-list"><li style="list-style-type:disc">слои всё равно исполняются на GPU, но часть арифметики идёт через специальные kernels из <code>bitsandbytes</code>.</li></ul><p id="2ab568fa-e39f-806d-9f65-ee5ea5340263" class="">Важно:</p><ul id="2ab568fa-e39f-8076-a8fc-f6fa663e724f" class="bulleted-list"><li style="list-style-type:disc"><strong>8-bit</strong> обычно даёт очень хороший компромисс:<ul id="2ab568fa-e39f-802d-82d4-def36bc51aa4" class="bulleted-list"><li style="list-style-type:circle">заметная экономия памяти,</li></ul><ul id="2ab568fa-e39f-8099-989e-e868824e9407" class="bulleted-list"><li style="list-style-type:circle">качество падает минимально.</li></ul></li></ul><ul id="2ab568fa-e39f-8059-a954-fae2e4ba88c2" class="bulleted-list"><li style="list-style-type:disc"><strong>4-bit</strong> более агрессивен:<ul id="2ab568fa-e39f-809d-91c4-c0737cb831ab" class="bulleted-list"><li style="list-style-type:circle">сильная экономия памяти,</li></ul><ul id="2ab568fa-e39f-8054-af47-de6f82fd4d01" class="bulleted-list"><li style="list-style-type:circle">больше шанс потери качества,</li></ul><ul id="2ab568fa-e39f-80ce-b440-ebab25e348ec" class="bulleted-list"><li style="list-style-type:circle">часто используется вместе с LoRA для дообучения (QLoRA).</li></ul></li></ul><hr id="2ab568fa-e39f-8001-ac9b-e1e3e0883f85"/><h2 id="2ab568fa-e39f-80aa-a251-de2ab71aef27" class="">4. Практика: играем с device_map и квантованием</h2><p id="2ab568fa-e39f-80ff-9fd7-e5fdf3ac3323" class="">Дальше будет несколько конкретных кусков кода. Модель и размер бери под своё железо — я покажу схему.</p><h3 id="2ab568fa-e39f-80f4-b6ca-f9e125f7b58f" class="">4.1. Базовая загрузка без оптимизаций (как делать НЕ всегда)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-802e-ad8e-ffc6b5040545" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;gpt2&quot;  # просто пример, ты можешь выбрать другую
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+model.to(device)
+
+prompt = &quot;User: The app keeps crashing when I open the gallery.\nSupport:&quot;
+
+inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;).to(device)
+
+with torch.no_grad():
+    output_ids = model.generate(
+        **inputs,
+        max_new_tokens=80,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+    )
+
+print(tokenizer.decode(output_ids[0], skip_special_tokens=True))
+</code></pre><p id="2ab568fa-e39f-802b-a5dc-f042413553f2" class="">Если модель маленькая — норм, если большая — <strong>крашится по памяти</strong>.</p><hr id="2ab568fa-e39f-80df-b4d7-f364a19be64f"/><h3 id="2ab568fa-e39f-808b-a8c5-fe426aa6caff" class="">4.2. device_map=&quot;auto&quot; + auto dtype</h3><p id="2ab568fa-e39f-808e-8c99-c431228e725e" class="">Теперь загрузим модель с <code>device_map=&quot;auto&quot;</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e4-ab38-c275ce5c29ad" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;gpt2&quot;  # здесь можешь подставить более тяжёлую модель
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,   # HF сам распределит слои
+    torch_dtype=&quot;auto&quot;,  # подбирает подходящий dtype
+)
+
+print(model.hf_device_map)  # можно посмотреть, что куда положилось
+
+prompt = &quot;User: The app keeps crashing when I open the gallery.\nSupport:&quot;
+
+inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;).to(model.device)
+
+with torch.no_grad():
+    output_ids = model.generate(
+        **inputs,
+        max_new_tokens=80,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+    )
+
+print(tokenizer.decode(output_ids[0], skip_special_tokens=True))
+</code></pre><p id="2ab568fa-e39f-80fb-8dae-dd5188d9a189" class="">Комментарии:</p><ul id="2ab568fa-e39f-8035-b403-d3806a40a9a4" class="bulleted-list"><li style="list-style-type:disc"><code>device_map=&quot;auto&quot;</code>:<ul id="2ab568fa-e39f-8006-9148-e4310fee505b" class="bulleted-list"><li style="list-style-type:circle">если есть одна GPU — скорее всего всё уедет туда,</li></ul><ul id="2ab568fa-e39f-8029-82f3-cbfdb9c4cd97" class="bulleted-list"><li style="list-style-type:circle">если VRAM мало — часть слоёв может остаться на CPU.</li></ul></li></ul><ul id="2ab568fa-e39f-806d-b016-c52be29d51c0" class="bulleted-list"><li style="list-style-type:disc"><code>torch_dtype=&quot;auto&quot;</code>:<ul id="2ab568fa-e39f-8012-ae22-c88285879faf" class="bulleted-list"><li style="list-style-type:circle">если weights на Hugging Face помечены как fp16 → грузит в fp16,</li></ul><ul id="2ab568fa-e39f-801e-b476-c7292843ba64" class="bulleted-list"><li style="list-style-type:circle">если нет → fp32.</li></ul></li></ul><hr id="2ab568fa-e39f-80a1-a941-f5d95649f0c0"/><h3 id="2ab568fa-e39f-80d3-ae9b-eec23b1126c7" class="">4.3. Добавляем offload_folder</h3><p id="2ab568fa-e39f-80f3-8eb0-e91a35ff1e14" class="">Если даже <code>auto</code> не спасает:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8067-bcd8-fe6471e32260" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    offload_folder=&quot;offload&quot;,   # папка для слоёв, которые не помещаются на GPU
+    torch_dtype=&quot;auto&quot;,
+)
+</code></pre><p id="2ab568fa-e39f-8029-b3f5-d1d5390c8f5f" class="">Тут:</p><ul id="2ab568fa-e39f-80cd-b369-d862ff09363f" class="bulleted-list"><li style="list-style-type:disc">HF может выкидывать слои на SSD,</li></ul><ul id="2ab568fa-e39f-8035-a1f4-c38d2928980d" class="bulleted-list"><li style="list-style-type:disc">при генерации подгружать их по мере необходимости,</li></ul><ul id="2ab568fa-e39f-80c1-8092-d86e76fa7239" class="bulleted-list"><li style="list-style-type:disc">это медленнее, но <strong>работает там, где просто грузануть модель нельзя</strong>.</li></ul><hr id="2ab568fa-e39f-8007-b804-ed771c7ee474"/><h3 id="2ab568fa-e39f-8088-b712-f26004d647f9" class="">4.4. 8-bit-загрузка модели для инференса</h3><p id="2ab568fa-e39f-808f-b253-d0102e56ed40" class="">Теперь — <strong>квантованный инференс</strong>. Предполагаем, что <code>bitsandbytes</code> установлен.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8076-88da-f155c6c12285" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;gpt2&quot;  # для демонстрации; в реале — какая-нибудь саппорт-модель
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model_8bit = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    load_in_8bit=True,     # 8-битное хранение весов
+)
+
+prompt = &quot;User: The app keeps crashing when I open the gallery.\nSupport:&quot;
+
+inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+with torch.no_grad():
+    output_ids = model_8bit.generate(
+        **inputs,
+        max_new_tokens=80,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+    )
+
+print(tokenizer.decode(output_ids[0], skip_special_tokens=True))
+</code></pre><p id="2ab568fa-e39f-809d-a7be-f13510969581" class="">Что тут важно:</p><ul id="2ab568fa-e39f-8097-99c9-dda47dadeb2c" class="bulleted-list"><li style="list-style-type:disc"><code>load_in_8bit=True</code>:<ul id="2ab568fa-e39f-80e5-9857-cbb2e2d55c14" class="bulleted-list"><li style="list-style-type:circle">веса в 8-битном формате,</li></ul><ul id="2ab568fa-e39f-80c6-b139-f5c4453aa0e7" class="bulleted-list"><li style="list-style-type:circle"><code>device_map=&quot;auto&quot;</code> всё так же распределяет слои.</li></ul></li></ul><ul id="2ab568fa-e39f-8019-b907-f11aec4d604c" class="bulleted-list"><li style="list-style-type:disc">Для маленького GPT-2 это не имеет большого смысла,<p id="2ab568fa-e39f-8036-91b7-caf12a71bee2" class="">но для модели на несколько миллиардов параметров — разница по памяти <strong>огромная</strong>.</p></li></ul><hr id="2ab568fa-e39f-8071-accc-dcb79c49b472"/><h3 id="2ab568fa-e39f-80cf-80a2-e178d73cb1ca" class="">4.5. 4-bit-загрузка (ещё агрессивнее)</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b0-a3b9-c302b4fbb1dd" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = &quot;gpt2&quot;  # опять же, в реальности — что-то крупное
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model_4bit = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map=&quot;auto&quot;,
+    load_in_4bit=True,  # 4-бит — ещё более компактно
+)
+
+prompt = &quot;User: The app keeps crashing when I open the gallery.\nSupport:&quot;
+
+inputs = tokenizer(prompt, return_tensors=&quot;pt&quot;).to(model_4bit.device)
+
+with torch.no_grad():
+    output_ids = model_4bit.generate(
+        **inputs,
+        max_new_tokens=80,
+        do_sample=True,
+        top_p=0.9,
+        temperature=0.7,
+    )
+
+print(tokenizer.decode(output_ids[0], skip_special_tokens=True))
+</code></pre><p id="2ab568fa-e39f-8013-ab18-efd5eb4f1472" class="">Здесь:</p><ul id="2ab568fa-e39f-802e-8fd7-dd414cf403cb" class="bulleted-list"><li style="list-style-type:disc">потребление VRAM ещё меньше, чем в 8-бит,</li></ul><ul id="2ab568fa-e39f-80b3-9abd-f867aa193bbb" class="bulleted-list"><li style="list-style-type:disc">модель может вести себя чуть менее стабильно/качественно,</li></ul><ul id="2ab568fa-e39f-8018-b3b9-dc3da87824ef" class="bulleted-list"><li style="list-style-type:disc">часто используется вместе с LoRA (QLoRA) для дообучения — но это уже тема следующего модуля.</li></ul><hr id="2ab568fa-e39f-806b-966d-ddf3e010e080"/><h3 id="2ab568fa-e39f-8012-b839-e6b56e739040" class="">4.6. Простое сравнение памяти и скорости (для себя)</h3><p id="2ab568fa-e39f-805e-bce4-fef4e8858ab3" class="">Ты можешь для себя сделать небольшой эксперимент:</p><ol type="1" id="2ab568fa-e39f-80fa-a786-ec057e3fe581" class="numbered-list" start="1"><li>Загрузить модель “как есть” (fp16/fp32).</li></ol><ol type="1" id="2ab568fa-e39f-8073-895a-e722bd1fe73f" class="numbered-list" start="2"><li>Загрузить её в 8-бит.</li></ol><ol type="1" id="2ab568fa-e39f-80ee-9df5-efaebdb491fa" class="numbered-list" start="3"><li>(Если влезет) — в 4-бит.</li></ol><p id="2ab568fa-e39f-80e0-92cd-ea2dcc601693" class="">И каждый раз:</p><ul id="2ab568fa-e39f-80e6-abbb-dda54739422e" class="bulleted-list"><li style="list-style-type:disc">открыть <code>nvidia-smi</code>,</li></ul><ul id="2ab568fa-e39f-800a-823b-cf313125069e" class="bulleted-list"><li style="list-style-type:disc">посмотреть:<ul id="2ab568fa-e39f-8076-9c54-d1627bbb342b" class="bulleted-list"><li style="list-style-type:circle">сколько VRAM занята до/после загрузки,</li></ul><ul id="2ab568fa-e39f-80e2-951e-e1b1954455a5" class="bulleted-list"><li style="list-style-type:circle">как долго модель отвечает (примерно).</li></ul></li></ul><p id="2ab568fa-e39f-8027-bd05-eff58fc2a290" class="">На малых моделях разница по времени будет слабая, но по памяти заметно.</p><hr id="2ab568fa-e39f-8000-9b7b-ca7f4fe9f9dc"/><h2 id="2ab568fa-e39f-8012-b7b0-dbc109f46a5b" class="">5. Привязка к нашим задачам (кейс)</h2><p id="2ab568fa-e39f-80c9-9f7b-dfa6c53764c3" class="">Чтобы не было абстрактно, вот как это стыкуется с предыдущими модулями:</p><ul id="2ab568fa-e39f-80ba-9af7-debc3b235c81" class="bulleted-list"><li style="list-style-type:disc"><strong>М4 (классификатор тикетов)</strong>:<ul id="2ab568fa-e39f-8034-89f7-ebeab164baef" class="bulleted-list"><li style="list-style-type:circle">обычно небольшая модель (BERT/DistilBERT) → fp16 хватает.</li></ul><ul id="2ab568fa-e39f-8043-8fe8-c198c265ead1" class="bulleted-list"><li style="list-style-type:circle">но если захочешь использовать <strong>большую</strong> модель для классификации (типа LLM с головой), то:<ul id="2ab568fa-e39f-8014-9194-e8093a1f36c3" class="bulleted-list"><li style="list-style-type:square">для инференса можно использовать 8-bit/4-bit,</li></ul><ul id="2ab568fa-e39f-80e3-be34-d202470ea243" class="bulleted-list"><li style="list-style-type:square">особенно если это онлайн-сервис.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-8022-9d97-d51aae9e9530" class="bulleted-list"><li style="list-style-type:disc"><strong>М5 (суммаризация диалогов)</strong>:<ul id="2ab568fa-e39f-8067-8c06-d48fe5c95d4e" class="bulleted-list"><li style="list-style-type:circle">там логично использовать T5/BART/LLM,</li></ul><ul id="2ab568fa-e39f-808c-93f9-d818284c040c" class="bulleted-list"><li style="list-style-type:circle">если модель большая:<ul id="2ab568fa-e39f-8058-9de2-cf1bbd10a20e" class="bulleted-list"><li style="list-style-type:square">device_map=&quot;auto&quot; + offload,</li></ul><ul id="2ab568fa-e39f-801f-8a86-c9a2fa4f9dc2" class="bulleted-list"><li style="list-style-type:square">8-bit, если хочешь суммаризировать длинные диалоги.</li></ul></li></ul></li></ul><ul id="2ab568fa-e39f-8031-8d27-dbc580364fb3" class="bulleted-list"><li style="list-style-type:disc"><strong>М6 (саппорт-бот)</strong>:<ul id="2ab568fa-e39f-80b5-9f86-ef5a4644b513" class="bulleted-list"><li style="list-style-type:circle">каузальная LLM, возможно приличного размера,</li></ul><ul id="2ab568fa-e39f-8065-bfde-caeefa97f82c" class="bulleted-list"><li style="list-style-type:circle">для чат-бота в проде:<ul id="2ab568fa-e39f-80dc-a643-d002a126ed6a" class="bulleted-list"><li style="list-style-type:square">8-bit/4-bit + device_map очень часто must-have,</li></ul><ul id="2ab568fa-e39f-8048-88ac-ef48c0b701f4" class="bulleted-list"><li style="list-style-type:square">иначе ответ будет либо слишком дорогим, либо невозможным.</li></ul></li></ul></li></ul><hr id="2ab568fa-e39f-80ff-8ae0-c926591fe166"/><h2 id="2ab568fa-e39f-80ce-84f4-f8f3e83de7d7" class="">6. Домашка к уроку 7.3</h2><ol type="1" id="2ab568fa-e39f-8051-9f8a-dd1dd22398e8" class="numbered-list" start="1"><li>Выбери <strong>одну</strong> каузальную модель (для бота) или seq2seq (для суммаризации) из предыдущих модулей<p id="2ab568fa-e39f-800d-a025-caabc1744c94" class="">— можно взять что-то готовое из Hugging Face Hub, не обязательно свою дообученную.</p></li></ol><ol type="1" id="2ab568fa-e39f-8084-a3f2-e7835c901cd7" class="numbered-list" start="2"><li>Проделай три сценария загрузки (настолько, насколько позволяет железо):<ul id="2ab568fa-e39f-8065-8402-c07acbf5aa20" class="bulleted-list"><li style="list-style-type:disc"><strong>Базовый</strong>:<ul id="2ab568fa-e39f-8091-8cd7-e3c595ea74a0" class="bulleted-list"><li style="list-style-type:circle">без <code>device_map</code>, без квантования,</li></ul><ul id="2ab568fa-e39f-8016-aff9-f4a732fb7c52" class="bulleted-list"><li style="list-style-type:circle">просто <code>.to(&quot;cuda&quot;)</code> или на CPU, если не влезает.</li></ul></li></ul><ul id="2ab568fa-e39f-8008-9a03-d1a45f134d3b" class="bulleted-list"><li style="list-style-type:disc"><strong>С device_map=&quot;auto&quot;</strong>:<ul id="2ab568fa-e39f-803f-ae2d-d6f5f730399d" class="bulleted-list"><li style="list-style-type:circle">с <code>torch_dtype=&quot;auto&quot;</code>,</li></ul><ul id="2ab568fa-e39f-80a0-a939-e90859b5f45c" class="bulleted-list"><li style="list-style-type:circle">опционально с <code>offload_folder</code>.</li></ul></li></ul><ul id="2ab568fa-e39f-80a9-8874-df00be27a54e" class="bulleted-list"><li style="list-style-type:disc"><strong>С квантованием</strong>:<ul id="2ab568fa-e39f-8042-8339-dac3199b535a" class="bulleted-list"><li style="list-style-type:circle">либо <code>load_in_8bit=True</code>,</li></ul><ul id="2ab568fa-e39f-80e9-b760-ece09404ba53" class="bulleted-list"><li style="list-style-type:circle">либо <code>load_in_4bit=True</code> (если сильно не лезет).</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80f9-8fe5-ce1044b61258" class="numbered-list" start="3"><li>Для каждого сценария:<ul id="2ab568fa-e39f-80ba-a356-ff39a8787a27" class="bulleted-list"><li style="list-style-type:disc">посмотри VRAM в <code>nvidia-smi</code> до/после загрузки,</li></ul><ul id="2ab568fa-e39f-8015-8eec-d5d714b32052" class="bulleted-list"><li style="list-style-type:disc">прогоняй 3–5 запросов (диалогов/текстов),</li></ul><ul id="2ab568fa-e39f-80de-9fdd-cc0c1912ce85" class="bulleted-list"><li style="list-style-type:disc">опиши:<ul id="2ab568fa-e39f-8066-be66-c3d0d3ade400" class="bulleted-list"><li style="list-style-type:circle">как меняется время ответа,</li></ul><ul id="2ab568fa-e39f-8031-8ce3-c108fa8bda11" class="bulleted-list"><li style="list-style-type:circle">заметны ли на глаз деградации по качеству.</li></ul></li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8018-ad0c-e4b936a21438" class="numbered-list" start="4"><li>Напиши себе мини-вывод:<ul id="2ab568fa-e39f-802d-be38-caaf058a4d3b" class="bulleted-list"><li style="list-style-type:disc">какой режим ты считаешь <strong>оптимальным</strong> для:<ul id="2ab568fa-e39f-80f9-84e0-cb055d85d147" class="bulleted-list"><li style="list-style-type:circle">локального эксперимента,</li></ul><ul id="2ab568fa-e39f-80dc-9995-e36613688d3a" class="bulleted-list"><li style="list-style-type:circle">“боевого” инференса (когда важно, чтобы вообще жило),</li></ul></li></ul><ul id="2ab568fa-e39f-808f-aef1-d23040275780" class="bulleted-list"><li style="list-style-type:disc">при каких ресурсах ты бы вообще не пытался запускать эту модель 😄</li></ul></li></ol><hr id="2ab568fa-e39f-8096-850e-cd4dcf07b043"/><p id="2ab568fa-e39f-807c-b9ed-dfb765de0448" class="">Если хочешь, дальше можно перейти к следующему логичному шагу:</p><p id="2ab568fa-e39f-80ee-af4d-e62d20ba2a3d" class=""><strong>модуль про PEFT/LoRA и QLoRA</strong> — как дообучать такие квантованные модели, а не только гонять их в инференсе.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

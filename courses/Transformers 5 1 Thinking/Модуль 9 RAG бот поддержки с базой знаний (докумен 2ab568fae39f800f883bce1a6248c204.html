@@ -1,0 +1,1136 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Модуль 9. RAG: бот поддержки с базой знаний (документы, FAQ, статьи)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2ab568fa-e39f-800f-883b-ce1a6248c204" class="page sans"><header><h1 class="page-title">Модуль 9. RAG: бот поддержки с базой знаний (документы, FAQ, статьи)</h1><p class="page-description"></p></header><div class="page-body"><p id="2ab568fa-e39f-8086-bfcf-fa4f6fbc46fa" class="">Окей, теперь апгрейдим нашего ботика до <strong>бота с мозгом</strong> 🧠</p><p id="2ab568fa-e39f-80fe-b6a3-c36891a18440" class="">До модуля 8 у нас была такая картина:</p><ul id="2ab568fa-e39f-8092-bd53-fef257ada350" class="bulleted-list"><li style="list-style-type:disc">М2–4 — умеем классически fine-tюнить классификатор тикетов.</li></ul><ul id="2ab568fa-e39f-803f-975d-ee455fcfddb7" class="bulleted-list"><li style="list-style-type:disc">М5 — умеем обучать seq2seq-суммаризатор диалогов.</li></ul><ul id="2ab568fa-e39f-80dc-830b-eeb3950fab41" class="bulleted-list"><li style="list-style-type:disc">М6 — умеем делать чат-бота на Causal LM.</li></ul><ul id="2ab568fa-e39f-80c4-b5f3-d63244fd89d1" class="bulleted-list"><li style="list-style-type:disc">М7 — умеем это всё ускорять и оптимизировать.</li></ul><ul id="2ab568fa-e39f-8065-a8cf-f523b2401cb6" class="bulleted-list"><li style="list-style-type:disc">М8 — умеем дёшево дообучать большие модели с LoRA.</li></ul><p id="2ab568fa-e39f-80e1-9d9f-f55f1269ffcc" class=""><strong>Логичный следующий шаг:</strong></p><p id="2ab568fa-e39f-8057-a91d-cb413cc00b3a" class="">Научить бота <strong>опираться на базу знаний</strong>, а не “придумывать ответы из головы”.</p><p id="2ab568fa-e39f-806e-ae54-e0cc809cb903" class="">То есть сделать <strong>RAG</strong>: Retrieval-Augmented Generation.</p><hr id="2ab568fa-e39f-8053-91ce-f0838d2817b0"/><p id="2ab568fa-e39f-8093-a9cc-d174b89271f5" class=""><strong>Глобальный кейс:</strong></p><blockquote id="2ab568fa-e39f-80b8-b372-e78c58c19522" class="">У нас есть:<ul id="2ab568fa-e39f-80f2-a2c4-c048c62c0bc2" class="bulleted-list"><li style="list-style-type:disc">база статей/FAQ/документации продукта (Markdown, HTML, PDF, просто тексты),</li></ul><ul id="2ab568fa-e39f-8022-a2f7-cdcaed9ad96d" class="bulleted-list"><li style="list-style-type:disc">тикеты и диалоги с пользователем.</li></ul><p id="2ab568fa-e39f-8070-a6d7-cb33316d5890" class="">Мы хотим ассистента, который:</p><ul id="2ab568fa-e39f-800a-9b7d-d10c645cc5da" class="bulleted-list"><li style="list-style-type:disc">читает запрос/диалог,</li></ul><ul id="2ab568fa-e39f-80b1-b6d8-f8b40919a068" class="bulleted-list"><li style="list-style-type:disc">ищет релевантные куски в базе знаний,<p id="2ab568fa-e39f-80cf-ad69-e0965152bdff" class="">- подставляет их в промпт,</p></li></ul><ul id="2ab568fa-e39f-80f6-a72a-f8ca7ca575e5" class="bulleted-list"><li style="list-style-type:disc">генерирует ответ, <strong>опираясь на реальные документы</strong>.</li></ul></blockquote><p id="2ab568fa-e39f-80a5-a582-ebeb2a32783c" class="">Модуль будет на 4 урока:</p><ol type="1" id="2ab568fa-e39f-80c4-9056-ef3174c8b9b0" class="numbered-list" start="1"><li>9.1 — Эмбеддинги и векторный поиск: как представлять документы и запросы.<figure id="2ab568fa-e39f-80ac-817e-c7a801e5dcb8" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%209%20RAG%20%D0%B1%D0%BE%D1%82%20%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B8%20%D1%81%20%D0%B1%D0%B0%D0%B7%D0%BE%D0%B9%20%D0%B7%D0%BD%D0%B0%D0%BD%D0%B8%D0%B9%20(%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD/9%201%20%D0%97%D0%B0%D1%87%D0%B5%D0%BC%20%D0%BD%D0%B0%D0%BC%20%D1%8D%D0%BC%D0%B1%D0%B5%D0%B4%D0%B4%D0%B8%D0%BD%D0%B3%D0%B8%20%D0%B8%20%D0%B2%D0%B5%D0%BA%D1%82%D0%BE%D1%80%D0%BD%D1%8B%D0%B9%20%D0%BF%D0%BE%D0%B8%D1%81%D0%BA%202ab568fae39f80ac817ec7a801e5dcb8.html">9.1. Зачем нам эмбеддинги и векторный поиск</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-8014-9b94-d11a413985e9" class="numbered-list" start="2"><li>9.2 — Индексация базы знаний и поиск (FAISS / простая in-memory реализация).<figure id="2ab568fa-e39f-80f2-b283-dc14f3ae58ae" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%209%20RAG%20%D0%B1%D0%BE%D1%82%20%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B8%20%D1%81%20%D0%B1%D0%B0%D0%B7%D0%BE%D0%B9%20%D0%B7%D0%BD%D0%B0%D0%BD%D0%B8%D0%B9%20(%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD/9%202%20%D0%97%D0%B0%D1%87%D0%B5%D0%BC%20%D0%BD%D1%83%D0%B6%D0%BD%D1%8B%20%D1%87%D0%B0%D0%BD%D0%BA%D0%B8%20%D0%B8%20%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%202ab568fae39f80f2b283dc14f3ae58ae.html">9.2. Зачем нужны чанки и индекс</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-806e-b3e1-dc73d6d35f93" class="numbered-list" start="3"><li>9.3 — RAG-пайплайн: retrieve → prompt → generate + базовая оценка качества.<figure id="2ab568fa-e39f-8008-a17c-d4770a56af49" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%209%20RAG%20%D0%B1%D0%BE%D1%82%20%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B8%20%D1%81%20%D0%B1%D0%B0%D0%B7%D0%BE%D0%B9%20%D0%B7%D0%BD%D0%B0%D0%BD%D0%B8%D0%B9%20(%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD/9%203%202ab568fae39f8008a17cd4770a56af49.html">9.3</a></figure></li></ol><ol type="1" id="2ab568fa-e39f-80df-aeb1-e84994edcaaf" class="numbered-list" start="4"><li>9.4 — Мини-проект: “Support RAG Assistant” из наших модулей 4–8 + база знаний.</li></ol><figure id="2ab568fa-e39f-806b-8753-ceec28df1101" class="link-to-page"><a href="%D0%9C%D0%BE%D0%B4%D1%83%D0%BB%D1%8C%209%20RAG%20%D0%B1%D0%BE%D1%82%20%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B8%20%D1%81%20%D0%B1%D0%B0%D0%B7%D0%BE%D0%B9%20%D0%B7%D0%BD%D0%B0%D0%BD%D0%B8%D0%B9%20(%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD/9%204%202ab568fae39f806b8753ceec28df1101.html">9.4</a></figure><hr id="2ab568fa-e39f-8099-b5d3-da37f3b31eed"/><h2 id="2ab568fa-e39f-80b3-9817-c909ff97d7db" class="">Урок 9.1. Эмбеддинги и векторный поиск</h2><p id="2ab568fa-e39f-8051-854e-db6c517c8322" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-8099-ba5c-f4a0b718a397" class="">Объяснить:</p><ul id="2ab568fa-e39f-8009-b10d-d2aea7733573" class="bulleted-list"><li style="list-style-type:disc">что такое эмбеддинги текста,</li></ul><ul id="2ab568fa-e39f-806b-88d0-c9391c92b5bc" class="bulleted-list"><li style="list-style-type:disc">как получить их из моделей transformers,</li></ul><ul id="2ab568fa-e39f-80f5-abd9-cb76b2ce3a84" class="bulleted-list"><li style="list-style-type:disc">как мерить похожесть (cosine / dot),</li></ul><ul id="2ab568fa-e39f-8099-9f43-e46f8d1f9f44" class="bulleted-list"><li style="list-style-type:disc">как использовать это для поиска по базе.</li></ul><h3 id="2ab568fa-e39f-8011-ace5-c2738041169a" class="">9.1.1. Интуиция</h3><p id="2ab568fa-e39f-806a-8a4e-f49f79b3bdf8" class="">Очень коротко:</p><ul id="2ab568fa-e39f-8042-87ce-e648d613632a" class="bulleted-list"><li style="list-style-type:disc">Текст → модель → вектор в ℝ^d (например, размер 384/768/1024).</li></ul><ul id="2ab568fa-e39f-8005-ae30-cdc66d6c5a91" class="bulleted-list"><li style="list-style-type:disc">Похожие тексты → похожие вектора → маленький угол между ними.</li></ul><ul id="2ab568fa-e39f-80b6-9438-d960b2e0b86d" class="bulleted-list"><li style="list-style-type:disc">Поиск: “найди документы с максимальной косинусной близостью к запросу”.</li></ul><h3 id="2ab568fa-e39f-80ab-be17-f937d3cc68a3" class="">9.1.2. Какие модели использовать</h3><p id="2ab568fa-e39f-80bd-9fa8-ff42780e8197" class="">2 основные опции:</p><ol type="1" id="2ab568fa-e39f-806f-a17d-e46b7e0e0d9a" class="numbered-list" start="1"><li><strong>Специализированные sentence-эмбеддинги</strong> (рекомендуется):<ul id="2ab568fa-e39f-808d-b35d-fd8f064ae5b7" class="bulleted-list"><li style="list-style-type:disc">семейство <code>sentence-transformers</code> (например, <code>all-MiniLM-L6-v2</code>, <code>multi-qa-mpnet-base-dot-v1</code>, русские варианты).</li></ul><ul id="2ab568fa-e39f-8086-8825-e7d9d31bd49e" class="bulleted-list"><li style="list-style-type:disc">Работают хорошо “из коробки”.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-804d-9cf8-cbe1c393b4e9" class="numbered-list" start="2"><li><strong>Сырые трансформеры</strong> (<code>AutoModel</code> + pooling):<ul id="2ab568fa-e39f-802c-81a1-e59cf3a11bbc" class="bulleted-list"><li style="list-style-type:disc">можно взять любой BERT/DistilBERT/RoBERTa,</li></ul><ul id="2ab568fa-e39f-801b-9af2-f82c4752e746" class="bulleted-list"><li style="list-style-type:disc">сами делаем pooling <code>[CLS]</code> или mean pooling.</li></ul></li></ol><p id="2ab568fa-e39f-80e3-adb3-f9295706979f" class="">В курсе можно показать оба, но опорный — первый.</p><h3 id="2ab568fa-e39f-8054-a03b-db708ad398f7" class="">9.1.3. Эмбеддинги через sentence-transformers</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-808d-8e46-f39a017da3f3" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sentence_transformers import SentenceTransformer
+import numpy as np
+
+model_name = &quot;sentence-transformers/all-MiniLM-L6-v2&quot;
+embed_model = SentenceTransformer(model_name)
+
+texts = [
+    &quot;The app crashes when I open the gallery.&quot;,
+    &quot;Application error when viewing photos.&quot;,
+    &quot;How to change my subscription plan?&quot;,
+]
+
+embeddings = embed_model.encode(texts, normalize_embeddings=True)
+print(embeddings.shape)  # (3, d)
+</code></pre><p id="2ab568fa-e39f-8087-a1ec-e53af7cb52b0" class=""><strong>normalize_embeddings=True</strong> → длина вектора ≈1, cosine ~ dot.</p><p id="2ab568fa-e39f-80b4-841b-ec4d00ca112b" class="">Считаем косинусную близость:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809e-b384-cfe41c671015" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from numpy.linalg import norm
+
+def cosine_sim(a, b):
+    return float(np.dot(a, b) / (norm(a) * norm(b)))
+
+print(&quot;Sim(0,1):&quot;, cosine_sim(embeddings[0], embeddings[1]))
+print(&quot;Sim(0,2):&quot;, cosine_sim(embeddings[0], embeddings[2]))
+</code></pre><p id="2ab568fa-e39f-800b-afbc-ddcabdeee5c6" class="">Ожидаем, что (0,1) &gt;&gt; (0,2).</p><h3 id="2ab568fa-e39f-8074-b1e1-e46bc93e74a5" class="">9.1.4. Эмбеддинги через AutoModel (ручной вариант)</h3><p id="2ab568fa-e39f-80c3-bd61-d1df14b12f46" class="">Показываем, как то же самое сделать чисто на transformers:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-800c-9429-ca4aee619c60" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import AutoTokenizer, AutoModel
+
+model_id = &quot;sentence-transformers/all-MiniLM-L6-v2&quot;  # он же доступен как обычный трансформер
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+base_model = AutoModel.from_pretrained(model_id)
+
+def encode_texts(texts):
+    enc = tokenizer(
+        texts,
+        padding=True,
+        truncation=True,
+        return_tensors=&quot;pt&quot;,
+    )
+    with torch.no_grad():
+        outputs = base_model(**enc)
+    # outputs.last_hidden_state: [batch, seq_len, hidden_size]
+    token_embeddings = outputs.last_hidden_state
+    attention_mask = enc[&quot;attention_mask&quot;]
+    # mean pooling
+    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+    sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, dim=1)
+    sum_mask = torch.clamp(input_mask_expanded.sum(dim=1), min=1e-9)
+    embeddings = sum_embeddings / sum_mask
+    return embeddings
+
+emb = encode_texts(texts)
+print(emb.shape)  # [3, hidden_size]
+</code></pre><p id="2ab568fa-e39f-804c-abe9-ee413ce06c63" class="">Можно дальше нормализовать:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-809f-9d6f-ed08945527ef" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">emb = torch.nn.functional.normalize(emb, p=2, dim=1)
+</code></pre><h3 id="2ab568fa-e39f-8017-9281-cee2e1830c09" class="">9.1.5. Домашка 9.1</h3><ol type="1" id="2ab568fa-e39f-809a-b66c-dceede8b53b2" class="numbered-list" start="1"><li>Выбрать модель-эмбеддер (<code>sentence-transformers</code> или руками через <code>AutoModel</code>).</li></ol><ol type="1" id="2ab568fa-e39f-8055-a425-e501f31c0b41" class="numbered-list" start="2"><li>Составить небольшой набор фраз (~10–20):<ul id="2ab568fa-e39f-80a9-8255-f81dfdc924ab" class="bulleted-list"><li style="list-style-type:disc">про баги,</li></ul><ul id="2ab568fa-e39f-8079-b444-f9405e4fc07f" class="bulleted-list"><li style="list-style-type:disc">про биллинг,</li></ul><ul id="2ab568fa-e39f-8006-88b2-d2766ea5c698" class="bulleted-list"><li style="list-style-type:disc">про фичи,</li></ul><ul id="2ab568fa-e39f-80bc-b555-c734b2353254" class="bulleted-list"><li style="list-style-type:disc">вообще другие.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8063-bd82-f796bce50619" class="numbered-list" start="3"><li>Посчитать матрицу косинусных похожестей (например, между 3–4 запросами и всеми остальными).</li></ol><ol type="1" id="2ab568fa-e39f-80a0-a73e-e9489099956d" class="numbered-list" start="4"><li>По ощущениям проверить: действительно ли похожие тексты имеют высокую близость.</li></ol><hr id="2ab568fa-e39f-8078-ae8f-d14111a7b232"/><h2 id="2ab568fa-e39f-8094-ba4e-fcbd743c18d3" class="">Урок 9.2. Индексация базы знаний и поиск по ней</h2><p id="2ab568fa-e39f-8092-925d-ff9a377027a1" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-804d-87fc-d8e9f72d8b4d" class="">Научить строить <strong>простой векторный индекс</strong>:</p><ul id="2ab568fa-e39f-8041-9121-eeebc3fc3b0f" class="bulleted-list"><li style="list-style-type:disc">разбить документы на куски (chunks),</li></ul><ul id="2ab568fa-e39f-8064-bc3c-cbebab8584e9" class="bulleted-list"><li style="list-style-type:disc">посчитать эмбеддинги,</li></ul><ul id="2ab568fa-e39f-8094-a109-c6bbb62e77d1" class="bulleted-list"><li style="list-style-type:disc">построить индекс (in-memory / FAISS),</li></ul><ul id="2ab568fa-e39f-80e0-88f2-cdf6ba4a5ede" class="bulleted-list"><li style="list-style-type:disc">выполнять top-k поиск.</li></ul><h3 id="2ab568fa-e39f-8033-9879-df4a095ad510" class="">9.2.1. Кейс</h3><blockquote id="2ab568fa-e39f-805f-8f1d-cdb9886e6915" class="">Есть папка kb/:<ul id="2ab568fa-e39f-8004-9bbb-c42164e3f264" class="bulleted-list"><li style="list-style-type:disc"><code>getting_started.md</code>,</li></ul><ul id="2ab568fa-e39f-80b2-99ef-eb2d8ccc0708" class="bulleted-list"><li style="list-style-type:disc"><code>billing.md</code>,</li></ul><ul id="2ab568fa-e39f-80b7-a9fb-cf3f851e8bcd" class="bulleted-list"><li style="list-style-type:disc"><code>faq_login.md</code>,</li></ul><ul id="2ab568fa-e39f-80a9-ac7b-d17a182f38d8" class="bulleted-list"><li style="list-style-type:disc"><code>troubleshooting_gallery.md</code>,<p id="2ab568fa-e39f-80c3-b32f-fece85c4dfa6" class="">и т.д.</p></li></ul><p id="2ab568fa-e39f-80ad-b8ba-dfff9df249c2" class="">Мы хотим отвечать на вопросы, находя релевантные <strong>параграфы</strong>, а не целые файлы.</p></blockquote><h3 id="2ab568fa-e39f-8011-b7d0-c5af3a06da93" class="">9.2.2. Чанкинг документов</h3><p id="2ab568fa-e39f-806e-9355-e9d43936e510" class="">Пример: читаем Markdown и режем по абзацам.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80a6-b616-df489d72a5c2" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import os
+
+def load_kb_documents(kb_dir=&quot;kb&quot;):
+    docs = []
+    for fname in os.listdir(kb_dir):
+        if not fname.endswith(&quot;.md&quot;):
+            continue
+        path = os.path.join(kb_dir, fname)
+        with open(path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+            text = f.read()
+        docs.append({&quot;id&quot;: fname, &quot;text&quot;: text})
+    return docs
+
+docs = load_kb_documents()
+print(len(docs), docs[0][&quot;id&quot;])
+</code></pre><p id="2ab568fa-e39f-808b-9014-d2ff8ae63733" class="">Режем по абзацам:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8072-81e3-ede0f43952af" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def split_into_chunks(doc, max_chars=500):
+    # очень простой вариант: режем по &#x27;\n\n&#x27;
+    paragraphs = [p.strip() for p in doc[&quot;text&quot;].split(&quot;\n\n&quot;) if p.strip()]
+    chunks = []
+    for i, p in enumerate(paragraphs):
+        if len(p) &lt;= max_chars:
+            chunks.append({
+                &quot;doc_id&quot;: doc[&quot;id&quot;],
+                &quot;chunk_id&quot;: i,
+                &quot;text&quot;: p,
+            })
+        else:
+            # можно еще разбить длинный параграф на куски по символам
+            for j in range(0, len(p), max_chars):
+                chunks.append({
+                    &quot;doc_id&quot;: doc[&quot;id&quot;],
+                    &quot;chunk_id&quot;: f&quot;{i}_{j}&quot;,
+                    &quot;text&quot;: p[j:j+max_chars],
+                })
+    return chunks
+
+all_chunks = []
+for doc in docs:
+    all_chunks.extend(split_into_chunks(doc))
+
+print(&quot;Total chunks:&quot;, len(all_chunks))
+print(all_chunks[0])
+</code></pre><h3 id="2ab568fa-e39f-8017-a76a-c47ae424176b" class="">9.2.3. Эмбеддинги для всех чанков</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8062-a30a-e3ccb14d65a4" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">from sentence_transformers import SentenceTransformer
+import numpy as np
+from tqdm.auto import tqdm
+
+embed_model = SentenceTransformer(&quot;sentence-transformers/all-MiniLM-L6-v2&quot;)
+
+texts = [c[&quot;text&quot;] for c in all_chunks]
+embeddings = []
+
+batch_size = 64
+for i in tqdm(range(0, len(texts), batch_size)):
+    batch_texts = texts[i:i+batch_size]
+    batch_emb = embed_model.encode(batch_texts, normalize_embeddings=True)
+    embeddings.append(batch_emb)
+
+embeddings = np.vstack(embeddings)
+print(embeddings.shape)  # (num_chunks, dim)
+</code></pre><p id="2ab568fa-e39f-802e-ab05-e69c80ac82bd" class="">Сохраняем это в простую структуру:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ba-b6aa-cefc6b254285" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">kb_index = {
+    &quot;chunks&quot;: all_chunks,
+    &quot;embeddings&quot;: embeddings,
+}
+</code></pre><h3 id="2ab568fa-e39f-8055-acc6-ddb192b49a82" class="">9.2.4. Поиск top-k (plain numpy)</h3><p id="2ab568fa-e39f-803a-8ca3-c303d446fc53" class="">Функция поиска по косинусу:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-804b-a2bd-f5608fe23491" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def search_kb(query, kb_index, top_k=5):
+    q_emb = embed_model.encode([query], normalize_embeddings=True)[0]  # (d,)
+    kb_emb = kb_index[&quot;embeddings&quot;]  # (N, d)
+
+    scores = np.dot(kb_emb, q_emb)  # при нормированных векторах это cosine
+    top_idx = np.argsort(scores)[::-1][:top_k]
+
+    results = []
+    for idx in top_idx:
+        chunk = kb_index[&quot;chunks&quot;][idx]
+        score = scores[idx]
+        results.append({
+            &quot;score&quot;: float(score),
+            &quot;doc_id&quot;: chunk[&quot;doc_id&quot;],
+            &quot;chunk_id&quot;: chunk[&quot;chunk_id&quot;],
+            &quot;text&quot;: chunk[&quot;text&quot;],
+        })
+    return results
+
+query = &quot;The app crashes when I open the gallery&quot;
+res = search_kb(query, kb_index, top_k=3)
+for r in res:
+    print(f&quot;[{r[&#x27;score&#x27;]:.3f}] {r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]}\n{r[&#x27;text&#x27;]}\n---&quot;)
+</code></pre><h3 id="2ab568fa-e39f-80e4-84e6-ded952c24fb2" class="">9.2.5. FAISS (по желанию)</h3><p id="2ab568fa-e39f-8006-9600-d5c57091450a" class="">Если данных много, можно показать FAISS:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-807e-b6a1-e878dd645cb6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import faiss
+
+dim = embeddings.shape[1]
+index = faiss.IndexFlatIP(dim)  # inner product (при normalized ~ cosine)
+index.add(embeddings.astype(&quot;float32&quot;))
+
+def search_kb_faiss(query, kb_index, index, top_k=5):
+    q_emb = embed_model.encode([query], normalize_embeddings=True).astype(&quot;float32&quot;)
+    scores, idxs = index.search(q_emb, top_k)  # scores.shape = (1, top_k)
+    idxs = idxs[0]
+    scores = scores[0]
+
+    results = []
+    for score, idx in zip(scores, idxs):
+        chunk = kb_index[&quot;chunks&quot;][idx]
+        results.append({
+            &quot;score&quot;: float(score),
+            &quot;doc_id&quot;: chunk[&quot;doc_id&quot;],
+            &quot;chunk_id&quot;: chunk[&quot;chunk_id&quot;],
+            &quot;text&quot;: chunk[&quot;text&quot;],
+        })
+    return results
+</code></pre><p id="2ab568fa-e39f-80f1-9592-e1d2fabe6d76" class="">Можно оставить FAISS как “опция для продакшена”, но показать идею.</p><h3 id="2ab568fa-e39f-80bb-a800-cfc1ee05e622" class="">9.2.6. Домашка 9.2</h3><ol type="1" id="2ab568fa-e39f-8027-929a-f93786fe61ad" class="numbered-list" start="1"><li>Собрать свою мини-базу знаний (минимум 5–10 <code>.md</code> файлов).</li></ol><ol type="1" id="2ab568fa-e39f-80cf-9cd7-e7f892e95306" class="numbered-list" start="2"><li>Написать:<ul id="2ab568fa-e39f-804a-b1aa-de9294499033" class="bulleted-list"><li style="list-style-type:disc">функцию загрузки документов,</li></ul><ul id="2ab568fa-e39f-8063-bf94-dee6c964a290" class="bulleted-list"><li style="list-style-type:disc">чанкинг,</li></ul><ul id="2ab568fa-e39f-801d-9623-f9176b6eb4c6" class="bulleted-list"><li style="list-style-type:disc">построение эмбеддингов,</li></ul><ul id="2ab568fa-e39f-80df-80bc-f2fdeb3e5594" class="bulleted-list"><li style="list-style-type:disc">функцию поиска <code>search_kb</code>.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8065-9a52-cbae68899ce1" class="numbered-list" start="3"><li>Проверить:<ul id="2ab568fa-e39f-8049-b16e-d39a87cd5fe2" class="bulleted-list"><li style="list-style-type:disc">по нескольким запросам — находит ли оно реально релевантные куски,</li></ul><ul id="2ab568fa-e39f-80a5-bf03-f686bd6e3a3f" class="bulleted-list"><li style="list-style-type:disc">не “плавают” ли результаты от маленьких переформулировок запроса.</li></ul></li></ol><hr id="2ab568fa-e39f-80f4-b0e1-ff168b6f2792"/><h2 id="2ab568fa-e39f-80b5-a76c-d872fd512185" class="">Урок 9.3. RAG-пайплайн: retrieve → prompt → generate</h2><p id="2ab568fa-e39f-8090-bbd2-e37dc2ce4dd4" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80cd-a5e5-da93c0460a86" class="">Собрать <strong>полный цикл RAG</strong>:</p><ol type="1" id="2ab568fa-e39f-808a-a13a-fc7f28a585a2" class="numbered-list" start="1"><li>Берём вопрос / диалог пользователя.</li></ol><ol type="1" id="2ab568fa-e39f-8049-8239-c9d7a989fe10" class="numbered-list" start="2"><li>Превращаем в запрос для поиска.</li></ol><ol type="1" id="2ab568fa-e39f-8037-b024-cf7f6f7c9ced" class="numbered-list" start="3"><li>Находим top-k чанков базы знаний.</li></ol><ol type="1" id="2ab568fa-e39f-804a-9289-e20951f1c4e6" class="numbered-list" start="4"><li>Строим промпт вида “Контекст из базы + вопрос”.</li></ol><ol type="1" id="2ab568fa-e39f-80f5-be19-f9aa2cc0b6ef" class="numbered-list" start="5"><li>Кормим его в Causal LM / Seq2Seq и генерируем ответ.</li></ol><ol type="1" id="2ab568fa-e39f-8065-90dd-e5f6a26edcdd" class="numbered-list" start="6"><li>Добавляем базовую оценку (например, проверка “ответился ли бот про что-то из контекста”).</li></ol><h3 id="2ab568fa-e39f-8031-ab50-f78d58ff9423" class="">9.3.1. Кейс</h3><blockquote id="2ab568fa-e39f-8060-93fe-c7f97b0379d3" class="">Пользователь пишет:<p id="2ab568fa-e39f-8045-bf22-e1ecdbbcdbe5" class="">“После обновления приложение вылетает при загрузке фото. Что делать?”</p></blockquote><p id="2ab568fa-e39f-8025-bfe1-d76eb986d508" class="">Пайплайн:</p><ul id="2ab568fa-e39f-8097-9c78-eba4e9028414" class="bulleted-list"><li style="list-style-type:disc">из тикета/диалога строим search-query (можно прямо весь текст),</li></ul><ul id="2ab568fa-e39f-80e8-894e-ff3664d24a6e" class="bulleted-list"><li style="list-style-type:disc">ищем в KB инструкции по “вылетам при загрузке фото”,</li></ul><ul id="2ab568fa-e39f-80bf-9ac9-cd7864b22e0a" class="bulleted-list"><li style="list-style-type:disc">скармливаем модели:<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8042-981b-df07628eced4" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">System: You are a support assistant. Answer based only on the context.
+
+Context:
+&lt;chunk 1&gt;
+---
+&lt;chunk 2&gt;
+---
+&lt;chunk 3&gt;
+
+Question: После обновления приложение вылетает при загрузке фото. Что делать?
+Answer:
+</code></pre></li></ul><h3 id="2ab568fa-e39f-80fd-acb0-e6f7b5d57ffd" class="">9.3.2. Функция retrieve_context</h3><p id="2ab568fa-e39f-8007-8162-fceacddc5aa1" class="">Используем <code>search_kb</code> из 9.2:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80b9-88d5-eedf1cbe540b" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_context_for_query(query, kb_index, top_k=3):
+    results = search_kb(query, kb_index, top_k=top_k)
+    blocks = []
+    for r in results:
+        header = f&quot;[{r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]} | score={r[&#x27;score&#x27;]:.3f}]&quot;
+        blocks.append(header + &quot;\n&quot; + r[&quot;text&quot;])
+    context = &quot;\n\n---\n\n&quot;.join(blocks)
+    return context, results
+</code></pre><h3 id="2ab568fa-e39f-8045-ae3e-c347bfe8108f" class="">9.3.3. Построение промпта для модели</h3><p id="2ab568fa-e39f-8093-9fe9-d7d41c7a4b13" class="">Для Causal LM:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-8059-80f2-d659fa8eef32" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def build_rag_prompt(question, context):
+    prompt = (
+        &quot;System: You are a helpful support assistant. &quot;
+        &quot;Use only the information from the context to answer. &quot;
+        &quot;If the answer is not in the context, say you don&#x27;t know.\n\n&quot;
+        f&quot;Context:\n{context}\n\n&quot;
+        f&quot;Question: {question}\n&quot;
+        &quot;Answer:&quot;
+    )
+    return prompt
+</code></pre><h3 id="2ab568fa-e39f-80d0-819f-ef45210d2447" class="">9.3.4. Генерация ответа</h3><p id="2ab568fa-e39f-80d5-be8f-c20185d2fd67" class="">Предположим, у нас есть Causal LM + tokenizer (<code>bot_model</code>, <code>bot_tokenizer</code>) из прошлых модулей.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80c3-a2a8-fe774d4854e6" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+
+def answer_with_rag(question, kb_index, embed_model, bot_model, bot_tokenizer, top_k=3):
+    context, retrieved = build_context_for_query(question, kb_index, top_k=top_k)
+    prompt = build_rag_prompt(question, context)
+
+    inputs = bot_tokenizer(
+        prompt,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=1024,
+    ).to(bot_model.device)
+
+    with torch.no_grad():
+        out_ids = bot_model.generate(
+            **inputs,
+            max_new_tokens=128,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+        )
+
+    full_text = bot_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+    # Обрезаем всё до &quot;Answer:&quot; если нужно
+    if &quot;Answer:&quot; in full_text:
+        answer = full_text.split(&quot;Answer:&quot;)[-1].strip()
+    else:
+        answer = full_text.strip()
+
+    return {
+        &quot;answer&quot;: answer,
+        &quot;context&quot;: context,
+        &quot;retrieved&quot;: retrieved,
+        &quot;prompt&quot;: prompt,
+    }
+</code></pre><h3 id="2ab568fa-e39f-8012-9c18-c07072e99d51" class="">9.3.5. Базовая проверка “ответ по теме”</h3><p id="2ab568fa-e39f-807b-b3f6-e6992a2e0791" class="">На простом уровне:</p><ul id="2ab568fa-e39f-80b8-a5e2-fffe5c464170" class="bulleted-list"><li style="list-style-type:disc">можно просто логировать:<ul id="2ab568fa-e39f-80dd-9949-f0e951c35e97" class="bulleted-list"><li style="list-style-type:circle">топ-чанки,</li></ul><ul id="2ab568fa-e39f-8064-ba4b-d09b185f311a" class="bulleted-list"><li style="list-style-type:circle">ответ,</li></ul><ul id="2ab568fa-e39f-803a-9e54-d6d2d9106cbb" class="bulleted-list"><li style="list-style-type:circle">смотреть на глаз.</li></ul></li></ul><ul id="2ab568fa-e39f-80a6-8bd9-e900d79a0d58" class="bulleted-list"><li style="list-style-type:disc">можно считать <strong>оверлап</strong> по ключевым словам:<ul id="2ab568fa-e39f-8014-8af0-f38f99b5fead" class="bulleted-list"><li style="list-style-type:circle">взять tf-idf/ключевые слова из ответа,</li></ul><ul id="2ab568fa-e39f-807a-8866-dffcc21a8052" class="bulleted-list"><li style="list-style-type:circle">проверить, есть ли они в контексте.</li></ul></li></ul><p id="2ab568fa-e39f-80ef-9386-e03a1565990a" class="">Простейший чек: “подозрительный” ответ, если модель написала <strong>что-то явно не из контекста</strong>:</p><ul id="2ab568fa-e39f-808e-9b32-e1592c5243b2" class="bulleted-list"><li style="list-style-type:disc">В рамках курса можно сделать очень простой хак —<p id="2ab568fa-e39f-80fb-bc95-f57432e9a9ad" class="">например, запрещать слова/фразы, которых явно нет в контексте (но это скорее для демонстрации).</p></li></ul><h3 id="2ab568fa-e39f-8014-ad7f-c6502f1032cb" class="">9.3.6. Домашка 9.3</h3><ol type="1" id="2ab568fa-e39f-80ac-95d1-e04b4a0c00a4" class="numbered-list" start="1"><li>Реализовать <code>answer_with_rag</code> для своего бота:<ul id="2ab568fa-e39f-8017-8cf5-cfd6e5a49c8c" class="bulleted-list"><li style="list-style-type:disc">использовать свой kb_index,</li></ul><ul id="2ab568fa-e39f-8049-85e0-ca64352c3c2c" class="bulleted-list"><li style="list-style-type:disc">свой embed_model,</li></ul><ul id="2ab568fa-e39f-8099-bb7f-da92f8bdfbaa" class="bulleted-list"><li style="list-style-type:disc">свою генеративную модель.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-80e0-a851-da148d1c7a47" class="numbered-list" start="2"><li>Протестировать на 10+ вопросах:<ul id="2ab568fa-e39f-806e-84e0-e8d9e2bba17d" class="bulleted-list"><li style="list-style-type:disc">где есть ответ в базе,</li></ul><ul id="2ab568fa-e39f-80a4-816a-e61d1ccbabdd" class="bulleted-list"><li style="list-style-type:disc">где <strong>нет</strong> ответа (проверить, что модель НЕ выдумывает, а пишет “я не знаю”, если промпт нормально сформулирован).</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-805c-bdff-e3d7f8a8f154" class="numbered-list" start="3"><li>Выделить 3 примера:<ul id="2ab568fa-e39f-806f-8a3c-d15efc713e8a" class="bulleted-list"><li style="list-style-type:disc">суперудачный ответ,</li></ul><ul id="2ab568fa-e39f-8009-ac55-c9162b282e55" class="bulleted-list"><li style="list-style-type:disc">ответ “так себе, но что-то есть”,</li></ul><ul id="2ab568fa-e39f-8049-85b0-e0dbe6f327f6" class="bulleted-list"><li style="list-style-type:disc">откровенная галлюцинация,<p id="2ab568fa-e39f-804f-a416-e4b31ac92854" class="">и подумать, как можно улучшить (порог по похожести, другой контекст, изменение промпта).</p></li></ul></li></ol><hr id="2ab568fa-e39f-808c-a092-ecfe1153d6dc"/><h2 id="2ab568fa-e39f-80a6-94db-ea36455f481a" class="">Урок 9.4. Мини-проект: Support RAG Assistant (full-stack на уровне ML)</h2><p id="2ab568fa-e39f-80f9-b6b1-cdf24ccf6fb0" class=""><strong>Цель:</strong></p><p id="2ab568fa-e39f-80c3-b77c-fe00e1df96a3" class="">Собрать <strong>боевого ассистента поддержки</strong> на базе всего курса:</p><ul id="2ab568fa-e39f-8063-95b9-e16d623393d7" class="bulleted-list"><li style="list-style-type:disc">классификатор тикета (М4) — чтобы понимать тип (bug / feature / billing),</li></ul><ul id="2ab568fa-e39f-8025-8d87-d14d8dc8d58c" class="bulleted-list"><li style="list-style-type:disc">суммаризатор диалога (М5) — чтобы сжать историю,</li></ul><ul id="2ab568fa-e39f-80af-8df0-e0cdb7c6720f" class="bulleted-list"><li style="list-style-type:disc">саппорт-бот (М6+М8) — дообученный в стиле компании,</li></ul><ul id="2ab568fa-e39f-80bf-9472-f6c8e5560442" class="bulleted-list"><li style="list-style-type:disc">RAG (М9) — подключён к базе знаний.</li></ul><h3 id="2ab568fa-e39f-808e-9c26-fe73fa6f8514" class="">9.4.1. Сценарий</h3><p id="2ab568fa-e39f-8062-b82c-c766cf12c0f5" class="">Приходит <strong>новый тикет/диалог</strong>:</p><ol type="1" id="2ab568fa-e39f-802f-b34c-c574cf0db3e2" class="numbered-list" start="1"><li>Классифицируем тикет по классам (bug/feature/billing/other).</li></ol><ol type="1" id="2ab568fa-e39f-80d2-8490-cf992d7e27fe" class="numbered-list" start="2"><li>Суммируем текущий диалог (или весь текст тикета) до короткого summary.</li></ol><ol type="1" id="2ab568fa-e39f-800e-85d8-c08a16dbb001" class="numbered-list" start="3"><li>По summary и/или исходному тикету делаем запрос к базе знаний → top-k контекста.</li></ol><ol type="1" id="2ab568fa-e39f-8043-8afb-dac1f181f7de" class="numbered-list" start="4"><li>На основе:<ul id="2ab568fa-e39f-80f3-ba61-dac63eaf3a04" class="bulleted-list"><li style="list-style-type:disc">summary,</li></ul><ul id="2ab568fa-e39f-80c1-a6b3-ee22086648d0" class="bulleted-list"><li style="list-style-type:disc">контекста из KB,</li></ul><ul id="2ab568fa-e39f-8017-b63f-f827e33c1023" class="bulleted-list"><li style="list-style-type:disc">класса тикета (можно использовать как подсказку),<p id="2ab568fa-e39f-80b9-bc12-ec171afc1a2d" class="">наш RAG-бот генерирует черновик ответа.</p></li></ul></li></ol><h3 id="2ab568fa-e39f-80e3-a8fb-c94d19e00042" class="">9.4.2. Каркас <code>rag_support_assistant.py</code></h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80ac-807a-cce4650530a0" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import torch
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
+    AutoModelForCausalLM,
+)
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
+# 1. Классификатор тикетов
+CLS_MODEL_DIR = &quot;models/tickets_classifier_final&quot;
+cls_tokenizer = AutoTokenizer.from_pretrained(CLS_MODEL_DIR)
+cls_model = AutoModelForSequenceClassification.from_pretrained(
+    CLS_MODEL_DIR,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+
+# 2. Суммаризатор диалогов
+SUMM_MODEL_DIR = &quot;models/dialog_summarizer_lora&quot;  # LoRA-версия из М8
+summ_tokenizer = AutoTokenizer.from_pretrained(SUMM_MODEL_DIR)
+summ_base_model = AutoModelForSeq2SeqLM.from_pretrained(
+    &quot;facebook/bart-large-cnn&quot;,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+).to(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+from peft import PeftModel
+summ_model = PeftModel.from_pretrained(summ_base_model, SUMM_MODEL_DIR)
+summ_model.eval()
+
+# 3. RAG-бот (Causal LM + LoRA)
+BOT_BASE = &quot;gpt2&quot;
+BOT_ADAPTER_DIR = &quot;models/support_gpt2_lora_adapter&quot;
+bot_tokenizer = AutoTokenizer.from_pretrained(BOT_BASE)
+if bot_tokenizer.pad_token is None:
+    bot_tokenizer.pad_token = bot_tokenizer.eos_token
+
+bot_base = AutoModelForCausalLM.from_pretrained(
+    BOT_BASE,
+    torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+    device_map=&quot;auto&quot;,
+)
+bot_model = PeftModel.from_pretrained(bot_base, BOT_ADAPTER_DIR)
+bot_model.eval()
+
+# 4. Эмбеддинги и KB-индекс
+embed_model = SentenceTransformer(&quot;sentence-transformers/all-MiniLM-L6-v2&quot;)
+
+kb_index = {
+    &quot;chunks&quot;: ...,      # подставь структуру из урока 9.2
+    &quot;embeddings&quot;: ...,  # numpy array
+}
+</code></pre><p id="2ab568fa-e39f-8075-b360-de5d0d884ee4" class="">Функции:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-80e4-8f33-c77079991687" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">def classify_ticket(text: str):
+    enc = cls_tokenizer(
+        text,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=256,
+    ).to(cls_model.device)
+
+    with torch.no_grad():
+        outputs = cls_model(**enc)
+    logits = outputs.logits
+    probs = torch.softmax(logits, dim=-1)[0]
+    pred_id = torch.argmax(probs).item()
+    id2label = cls_model.config.id2label
+
+    return {
+        &quot;label&quot;: id2label[pred_id],
+        &quot;confidence&quot;: float(probs[pred_id]),
+    }
+
+
+def summarize_dialog(dialog: str, max_new_tokens: int = 64) -&gt; str:
+    device = next(summ_model.parameters()).device
+    inputs = summ_tokenizer(
+        dialog,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=512,
+    ).to(device)
+
+    with torch.no_grad():
+        out_ids = summ_model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+        )
+
+    return summ_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+
+
+def search_kb(query, kb_index, top_k=5):
+    q_emb = embed_model.encode([query], normalize_embeddings=True)[0]
+    kb_emb = kb_index[&quot;embeddings&quot;]
+    scores = np.dot(kb_emb, q_emb)
+    top_idx = np.argsort(scores)[::-1][:top_k]
+    results = []
+    for idx in top_idx:
+        chunk = kb_index[&quot;chunks&quot;][idx]
+        score = scores[idx]
+        results.append({
+            &quot;score&quot;: float(score),
+            &quot;doc_id&quot;: chunk[&quot;doc_id&quot;],
+            &quot;chunk_id&quot;: chunk[&quot;chunk_id&quot;],
+            &quot;text&quot;: chunk[&quot;text&quot;],
+        })
+    return results
+
+
+def build_context(question, ticket_class, summary, kb_index, top_k=3):
+    # Можно комбинировать summary + класс
+    search_query = f&quot;[{ticket_class}] {summary if summary else question}&quot;
+    results = search_kb(search_query, kb_index, top_k=top_k)
+
+    blocks = []
+    for r in results:
+        header = f&quot;[{r[&#x27;doc_id&#x27;]}#{r[&#x27;chunk_id&#x27;]} | score={r[&#x27;score&#x27;]:.3f}]&quot;
+        blocks.append(header + &quot;\n&quot; + r[&quot;text&quot;])
+    context = &quot;\n\n---\n\n&quot;.join(blocks)
+    return context, results
+
+
+def build_rag_prompt(question, ticket_class, summary, context):
+    prompt = (
+        &quot;System: You are a support assistant for a mobile app. &quot;
+        &quot;Use only the information from the context and be concise.\n\n&quot;
+        f&quot;Ticket class: {ticket_class}\n&quot;
+        f&quot;Summary: {summary}\n\n&quot;
+        f&quot;Context:\n{context}\n\n&quot;
+        f&quot;User question: {question}\n&quot;
+        &quot;Support answer:&quot;
+    )
+    return prompt
+
+
+def generate_reply(prompt: str) -&gt; str:
+    inputs = bot_tokenizer(
+        prompt,
+        return_tensors=&quot;pt&quot;,
+        truncation=True,
+        max_length=1024,
+    ).to(bot_model.device)
+
+    with torch.no_grad():
+        out_ids = bot_model.generate(
+            **inputs,
+            max_new_tokens=128,
+            do_sample=True,
+            top_p=0.9,
+            temperature=0.7,
+            repetition_penalty=1.1,
+        )
+
+    full_text = bot_tokenizer.decode(out_ids[0], skip_special_tokens=True)
+    if &quot;Support answer:&quot; in full_text:
+        reply = full_text.split(&quot;Support answer:&quot;)[-1].strip()
+    else:
+        reply = full_text.strip()
+    return reply
+
+
+def handle_ticket(dialog_text: str):
+    # 1. Класс тикета
+    cls = classify_ticket(dialog_text)
+
+    # 2. Summary
+    summary = summarize_dialog(dialog_text)
+
+    # 3. Context из KB
+    context, retrieved = build_context(
+        question=dialog_text,
+        ticket_class=cls[&quot;label&quot;],
+        summary=summary,
+        kb_index=kb_index,
+        top_k=3,
+    )
+
+    # 4. Промпт и ответ
+    prompt = build_rag_prompt(
+        question=dialog_text,
+        ticket_class=cls[&quot;label&quot;],
+        summary=summary,
+        context=context,
+    )
+    reply = generate_reply(prompt)
+
+    return {
+        &quot;class&quot;: cls,
+        &quot;summary&quot;: summary,
+        &quot;context&quot;: context,
+        &quot;retrieved&quot;: retrieved,
+        &quot;reply&quot;: reply,
+        &quot;prompt&quot;: prompt,
+    }
+</code></pre><p id="2ab568fa-e39f-8077-a217-dc377ae9101f" class=""><code>main</code>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2ab568fa-e39f-806f-802a-e11504ee13ee" class="code code-wrap"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">if __name__ == &quot;__main__&quot;:
+    dialog = &quot;&quot;&quot;
+User: После последнего обновления приложение вылетает, когда я пытаюсь загрузить фото.
+Support: Скажите, пожалуйста, модель устройства и версию ОС?
+User: iPhone 13, iOS 17.1, версия приложения 5.2.1.
+&quot;&quot;&quot;
+
+    result = handle_ticket(dialog)
+    print(&quot;CLASS:&quot;, result[&quot;class&quot;])
+    print(&quot;\nSUMMARY:\n&quot;, result[&quot;summary&quot;])
+    print(&quot;\nCONTEXT:\n&quot;, result[&quot;context&quot;])
+    print(&quot;\nREPLY:\n&quot;, result[&quot;reply&quot;])
+</code></pre><h3 id="2ab568fa-e39f-805b-9e22-c9282de1b0f2" class="">9.4.3. Домашка 9.4 (итоговая по RAG)</h3><ol type="1" id="2ab568fa-e39f-80ac-98ed-ee170650ea24" class="numbered-list" start="1"><li>Собрать (минимальный) end-to-end:<ul id="2ab568fa-e39f-801a-b7a5-da1e916ed196" class="bulleted-list"><li style="list-style-type:disc">KB-инструкция,</li></ul><ul id="2ab568fa-e39f-80a2-bd95-f8de41b67d36" class="bulleted-list"><li style="list-style-type:disc">эмбеддер,</li></ul><ul id="2ab568fa-e39f-80d3-bd9c-df749ecd39c5" class="bulleted-list"><li style="list-style-type:disc">RAG-ответчик.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-802f-8858-edb2d37ffcb3" class="numbered-list" start="2"><li>Прогнать как минимум 10 реальных сценариев:<ul id="2ab568fa-e39f-8038-801c-e0a5e398505b" class="bulleted-list"><li style="list-style-type:disc">баги, биллинг, фичи, “левых” вопросов без ответа в KB.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8063-9e69-c7ca549dde9b" class="numbered-list" start="3"><li>Оценить:<ul id="2ab568fa-e39f-8038-a1e1-e6da2cf27145" class="bulleted-list"><li style="list-style-type:disc">в скольких случаях RAG помог ответить лучше, чем просто LM без контекста,</li></ul><ul id="2ab568fa-e39f-807f-ba9b-f3170e1cfc69" class="bulleted-list"><li style="list-style-type:disc">в скольких случаях модель всё равно галлюцинирует / игнорирует KB.</li></ul></li></ol><ol type="1" id="2ab568fa-e39f-8068-93af-e9a0be393f89" class="numbered-list" start="4"><li>Написать идеи по улучшению:<ul id="2ab568fa-e39f-806f-826b-fa6f7bee52d7" class="bulleted-list"><li style="list-style-type:disc">порог по похожести (не добавлять в контекст мусор),</li></ul><ul id="2ab568fa-e39f-804e-b6fb-d815bf82daf1" class="bulleted-list"><li style="list-style-type:disc">увеличивать/уменьшать <code>top_k</code>,</li></ul><ul id="2ab568fa-e39f-8069-a5c6-d43c958e0335" class="bulleted-list"><li style="list-style-type:disc">менять формулировку System-промпта.</li></ul></li></ol><hr id="2ab568fa-e39f-802f-99be-c46742e3c5e7"/><h2 id="2ab568fa-e39f-80f5-8592-e94086066477" class="">Что умеет ученик после модуля 9</h2><p id="2ab568fa-e39f-808d-8b08-c4635c3b585e" class="">К этому моменту человек:</p><ul id="2ab568fa-e39f-8004-a6d9-c6488699382e" class="bulleted-list"><li style="list-style-type:disc">понимает, что такое эмбеддинги текста и векторный поиск;</li></ul><ul id="2ab568fa-e39f-80c4-9663-f8ff691af051" class="bulleted-list"><li style="list-style-type:disc">умеет:<ul id="2ab568fa-e39f-8085-883f-d2ea235db5a1" class="bulleted-list"><li style="list-style-type:circle">строить эмбеддинги документов и запросов,</li></ul><ul id="2ab568fa-e39f-8063-bed7-d62a66583046" class="bulleted-list"><li style="list-style-type:circle">разбивать документы на чанки,</li></ul><ul id="2ab568fa-e39f-8052-91d8-e0d539e275b0" class="bulleted-list"><li style="list-style-type:circle">делать top-k поиск по базе знаний (numpy / FAISS);</li></ul></li></ul><ul id="2ab568fa-e39f-8045-8a99-d2af6b1cd1a9" class="bulleted-list"><li style="list-style-type:disc">умеет оборачивать всё в RAG-пайплайн:<ul id="2ab568fa-e39f-8022-8a8c-f18c0eca9557" class="bulleted-list"><li style="list-style-type:circle">retrieve → prompt → generate;</li></ul></li></ul><ul id="2ab568fa-e39f-80af-acd2-db97af2e5ac5" class="bulleted-list"><li style="list-style-type:disc">собрал <strong>реалистичного ассистента поддержки с базой знаний</strong>, который:<ul id="2ab568fa-e39f-809c-9f0a-ddbcf956c874" class="bulleted-list"><li style="list-style-type:circle">классифицирует тикет,</li></ul><ul id="2ab568fa-e39f-80bb-82bc-cdbb5ef67126" class="bulleted-list"><li style="list-style-type:circle">суммирует диалог,</li></ul><ul id="2ab568fa-e39f-8048-bc3d-d06629361441" class="bulleted-list"><li style="list-style-type:circle">ищет релевантные куски в KB,</li></ul><ul id="2ab568fa-e39f-80bb-b37a-e0e637190553" class="bulleted-list"><li style="list-style-type:circle">генерирует ответ из контекста.</li></ul></li></ul><p id="2ab568fa-e39f-80f6-8a84-cf4c19dc51fd" class="">Дальше ты уже можешь:</p><ul id="2ab568fa-e39f-8007-8cde-f2852597e2d8" class="bulleted-list"><li style="list-style-type:disc">либо углубляться в прод (FastAPI, Docker, мониторинг, A/B-тесты),</li></ul><ul id="2ab568fa-e39f-808a-b011-c504cf8fe242" class="bulleted-list"><li style="list-style-type:disc">либо делать отдельный блок по <strong>оценке LLM-систем</strong> (eval, метрики, human feedback, safety).</li></ul><p id="2ab568fa-e39f-8012-a1cb-fdf1b4eebb45" class="">Если хочешь, могу потом:</p><ul id="2ab568fa-e39f-8066-80bd-f62236c4ef34" class="bulleted-list"><li style="list-style-type:disc">собрать <strong>короткий syllabus по всем модулям 0–9</strong> для лендинга / презентации курса,</li></ul><ul id="2ab568fa-e39f-8065-9129-d4ab1ff73f04" class="bulleted-list"><li style="list-style-type:disc">или помочь придумать “домашку-капстоун” на весь курс целиком.</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

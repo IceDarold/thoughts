@@ -1,0 +1,715 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>М14. Гиперпараметры и дизайн эксперимента (Optuna/ASHA)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2a8568fa-e39f-80cd-a815-f74212ff9541" class="page sans"><header><h1 class="page-title">М14. Гиперпараметры и дизайн эксперимента (Optuna/ASHA)</h1><p class="page-description"></p></header><div class="page-body"><p id="2a8568fa-e39f-8093-ab30-dff973b0bcfd" class="">ниже — подробный Модуль 14. Фокус: <strong>тюнинг гиперпараметров под жёсткий бюджет</strong> — Optuna/Hyperband/ASHA, устойчивые цели (OOF), дизайн поиска, “не переобучаться на CV/LB”, и когда тюнинг лучше заменить на фичи/ансамбль. Всё под 5-часовой формат.</p><h2 id="2a8568fa-e39f-806c-a602-e870dd5c8d6f" class="">1) Цели модуля</h2><ul id="2a8568fa-e39f-80d9-b1ff-c16cbdcd1025" class="bulleted-list"><li style="list-style-type:disc">Проектировать <strong>пространства поиска</strong> для LGBM/XGB/CatBoost/линеек/ранкеров и выбирать адекватные <strong>цели оптимизации</strong> (OOF-метрики, robust-агрегации).</li></ul><ul id="2a8568fa-e39f-8023-84c8-e749ecb25345" class="bulleted-list"><li style="list-style-type:disc">Настраивать <strong>многоуровневый тюнинг</strong>: быстрый грубый поиск → локальная шлифовка → проверка переносимости (alt-split).</li></ul><ul id="2a8568fa-e39f-800a-adee-ec5f81b83e38" class="bulleted-list"><li style="list-style-type:disc">Применять <strong>многофидельные прунинги</strong> (Successive Halving/ASHA) и <strong>early stopping</strong> корректно.</li></ul><ul id="2a8568fa-e39f-8028-979c-f5c0f3e82cfa" class="bulleted-list"><li style="list-style-type:disc">Избегать <strong>переобучения на CV</strong> и “подгонки под публичный LB”; уметь читать <strong>важности гиперпараметров</strong> и кривые обучения.</li></ul><ul id="2a8568fa-e39f-80cf-8366-d05386f41d5d" class="bulleted-list"><li style="list-style-type:disc">Организовать репо тюнинга: <strong>study-архив</strong>, отчёты, воспроизводимость, “panic-пресеты”.</li></ul><p id="2a8568fa-e39f-8087-a8e2-fe09eef4c643" class=""><strong>Выход:</strong> <code>tuning/</code> с <code>optuna_runner.py</code>, пресетами пространств (<code>spaces/*.yaml</code>), прунерами, репортами (<code>study_report.md</code>), чек-листами.</p><hr id="2a8568fa-e39f-80ec-99b6-c6170ba270f4"/><h2 id="2a8568fa-e39f-80f7-a708-d48e2daf1d85" class="">2) Формат и тайминг</h2><ul id="2a8568fa-e39f-8009-b7b8-daf47cfd8c24" class="bulleted-list"><li style="list-style-type:disc">2 занятия × 2 часа (теория + лайв-код).</li></ul><ul id="2a8568fa-e39f-80f6-a49a-f317d18012ab" class="bulleted-list"><li style="list-style-type:disc">Самостоятельный <strong>мини-спринт 3–4 часа</strong> (тюнинг под свою задачу).</li></ul><ul id="2a8568fa-e39f-80d2-b9cf-f1172725d218" class="bulleted-list"><li style="list-style-type:disc">Короткая защита: «паспорт тюнинга» (1 стр): цель, пространство, бюджет, переносимость.</li></ul><hr id="2a8568fa-e39f-80fd-bc07-f0ce5a929dd7"/><h2 id="2a8568fa-e39f-8047-a3dc-fe2217c42d0d" class="">3) Карта решений за ≤10 минут (делать тюнинг или нет?)</h2><ol type="1" id="2a8568fa-e39f-80b3-9a48-f3fbdd988ae4" class="numbered-list" start="1"><li><strong>CV↔LB корреляция ≥ 0.6</strong> и базовая модель не на пределе → тюнинг даст шанс.</li></ol><ol type="1" id="2a8568fa-e39f-802c-97e3-dacfe9e2bf29" class="numbered-list" start="2"><li>Если <strong>фичсет сырой</strong> или CV сомнителен — сначала <strong>фичи/валид</strong>, не тюнинг.</li></ol><ol type="1" id="2a8568fa-e39f-807e-a1e7-f3677700f48a" class="numbered-list" start="3"><li>Бюджет времени: если &lt;90 мин — <strong>seed-bagging + лёгкий бленд</strong> часто выгоднее глубокого HPO.</li></ol><hr id="2a8568fa-e39f-80db-85b5-d45fea8eca96"/><h2 id="2a8568fa-e39f-8014-8006-f8050b9a0db1" class="">4) Цели оптимизации (robust)</h2><ul id="2a8568fa-e39f-805d-9cc5-fe7b996c581c" class="bulleted-list"><li style="list-style-type:disc"><strong>Классификация</strong>: OOF AUC/PR-AUC / F1@порог (порог подбирается на OOF внутри трейла), усреднение по фолдам <strong>медианой</strong> или <strong>trimmed mean</strong>.</li></ul><ul id="2a8568fa-e39f-80d6-ad3b-e757457502e8" class="bulleted-list"><li style="list-style-type:disc"><strong>Регрессия</strong>: OOF RMSE/RMSLE/MAE; при heavy-tail — <strong>Huber/Quantile</strong> валидация.</li></ul><ul id="2a8568fa-e39f-8036-84ae-dcd827daab6e" class="bulleted-list"><li style="list-style-type:disc"><strong>Ранжирование</strong>: OOF NDCG@K/MAP@K (group-aware); для @K — <strong>ранг-усреднение</strong> по фолдам.</li></ul><ul id="2a8568fa-e39f-8094-85d0-d55c12209712" class="bulleted-list"><li style="list-style-type:disc"><strong>Финансы</strong>: OOF IC/IR с embargo; штраф за turnover.</li></ul><ul id="2a8568fa-e39f-801f-b5de-ec6ab1c0147f" class="bulleted-list"><li style="list-style-type:disc"><strong>TS/спрос</strong>: OOF RMSPE/WRMSSE на rolling-окнах; <strong>gap ≥ max_lag</strong>.</li></ul><ul id="2a8568fa-e39f-8039-b89f-e861ff48345f" class="bulleted-list"><li style="list-style-type:disc"><strong>Анти-шум</strong>: повтор трейла 2–3 сидов <em>малой глубины</em> и <strong>агрегация медианой</strong>.</li></ul><hr id="2a8568fa-e39f-8080-b5d2-d4a35482002b"/><h2 id="2a8568fa-e39f-80af-9b71-cb70aeb6c0ef" class="">5) Пространства поиска (ядро под табличные)</h2><h3 id="2a8568fa-e39f-80e7-9aa8-e7b4b5c259d2" class="">LightGBM (class/reg/rank)</h3><ul id="2a8568fa-e39f-8049-ae08-dc82f970f4c2" class="bulleted-list"><li style="list-style-type:disc"><code>num_leaves ∈ [31, 255]</code> (лог-шкала), <code>max_depth ∈ [4, 12]</code> (вкл. -1),</li></ul><ul id="2a8568fa-e39f-80f1-89e1-c8b414b86e26" class="bulleted-list"><li style="list-style-type:disc"><code>min_data_in_leaf ∈ [32, 512]</code> (лог), <code>lambda_l1/l2 ∈ [0, 20]</code>,</li></ul><ul id="2a8568fa-e39f-8067-95d7-cb86c0c80bd1" class="bulleted-list"><li style="list-style-type:disc"><code>feature_fraction ∈ [0.5, 0.95]</code>, <code>bagging_fraction ∈ [0.5, 0.95]</code>, <code>bagging_freq ∈ [0, 7]</code>,</li></ul><ul id="2a8568fa-e39f-8002-aec4-f7aaea2b2ccd" class="bulleted-list"><li style="list-style-type:disc"><code>learning_rate</code> фиксируем <strong>выше</strong> на первой стадии (0.05–0.1), ниже на шлифовке (0.01–0.05),</li></ul><ul id="2a8568fa-e39f-8030-910b-f9f3d22fd3e0" class="bulleted-list"><li style="list-style-type:disc">дисбаланс: <code>scale_pos_weight</code> или <code>class_weight</code> — <strong>вне HPO</strong> (фиксируем от данных).</li></ul><h3 id="2a8568fa-e39f-808a-965b-d771dc8e3eac" class="">XGBoost</h3><ul id="2a8568fa-e39f-8059-9329-fc98b28befe4" class="bulleted-list"><li style="list-style-type:disc"><code>max_depth ∈ [4, 12]</code>, <code>min_child_weight ∈ [1, 20]</code>, <code>gamma ∈ [0, 10]</code>,</li></ul><ul id="2a8568fa-e39f-8041-b107-d3f7b989bf9d" class="bulleted-list"><li style="list-style-type:disc"><code>subsample/colsample_bytree ∈ [0.5, 0.95]</code>, <code>eta</code> по стадиям как у LGBM,</li></ul><ul id="2a8568fa-e39f-80e9-a162-e7bef91426a2" class="bulleted-list"><li style="list-style-type:disc"><code>grow_policy = depthwise|lossguide</code> (категорично), для больших данных — <code>hist</code>.</li></ul><h3 id="2a8568fa-e39f-8075-8622-c2a262a01a5a" class="">CatBoost</h3><ul id="2a8568fa-e39f-8088-943d-e0943473e1f9" class="bulleted-list"><li style="list-style-type:disc"><code>depth ∈ [6, 10]</code>, <code>l2_leaf_reg ∈ [1, 15]</code>, <code>rsm ∈ [0.5, 0.95]</code>,</li></ul><ul id="2a8568fa-e39f-8035-b8b1-eea0cdb03b2a" class="bulleted-list"><li style="list-style-type:disc"><code>border_count ∈ [64, 254]</code> (если числовых много), <code>learning_rate</code> по стадиям,</li></ul><ul id="2a8568fa-e39f-80f3-a5eb-ceb2a8a141db" class="bulleted-list"><li style="list-style-type:disc"><code>scale_pos_weight</code>/<code>class_weights</code> — фиксируем; включаем <code>auto_class_weights=None|Balanced</code> как <strong>гипотезу</strong>.</li></ul><h3 id="2a8568fa-e39f-80cd-8698-fd35b35be452" class="">Линейки / GLM</h3><ul id="2a8568fa-e39f-8095-86f2-e02c4724f343" class="bulleted-list"><li style="list-style-type:disc">Ridge/Elastic: <code>alpha ∈ [1e-4, 1e2]</code> (лог), <code>l1_ratio ∈ [0, 1]</code> (для Elastic).</li></ul><ul id="2a8568fa-e39f-8011-b541-d3ee2c0957f4" class="bulleted-list"><li style="list-style-type:disc">Tweedie GLM/GBDT: <code>power p ∈ [1.1, 1.9]</code>, <code>link=log</code>.</li></ul><blockquote id="2a8568fa-e39f-800c-90a9-ec7ad2270bec" class="">Правило: не засовывать в HPO параметры, которые зависят от фичсета/валидации (например, scale_pos_weight, монотонности) — вычисляем их анализом.</blockquote><hr id="2a8568fa-e39f-80d7-8151-f25d721b3415"/><h2 id="2a8568fa-e39f-8057-89d2-d771dae55514" class="">6) Многофидельные прунинги и бюджет</h2><ul id="2a8568fa-e39f-805e-99c8-ce4dfb51b312" class="bulleted-list"><li style="list-style-type:disc"><strong>ASHA / Successive Halving</strong>:<ul id="2a8568fa-e39f-8093-a804-e6f5349792c5" class="bulleted-list"><li style="list-style-type:circle">ресурс = <code>n_estimators</code> / <code>iterations</code> / <code>epochs</code> или объём данных (subsample).</li></ul><ul id="2a8568fa-e39f-80f0-8e3b-f31b65606c84" class="bulleted-list"><li style="list-style-type:circle">ранний стоп по OOF-метрике внутри фолда; ступени <strong>1/3/9</strong> от целевого ресурса.</li></ul></li></ul><ul id="2a8568fa-e39f-803d-8048-d43b6e9e7d35" class="bulleted-list"><li style="list-style-type:disc"><strong>Median/Percentile pruner</strong>: режем трейлы хуже медианы на ранних ступенях.</li></ul><ul id="2a8568fa-e39f-80ed-9640-e7b1001d1275" class="bulleted-list"><li style="list-style-type:disc"><strong>Бюджет по времени</strong>: фиксируем <code>time_budget_min</code>; при достижении — best-so-far + быстрая шлифовка вокруг.</li></ul><hr id="2a8568fa-e39f-801d-adb1-d159ba03d431"/><h2 id="2a8568fa-e39f-805d-b167-f57fb3b9d583" class="">7) Двухступенчатый HPO (pattern)</h2><ol type="1" id="2a8568fa-e39f-80ae-a401-f4a0aa0b2cc9" class="numbered-list" start="1"><li><strong>Грубый поиск (30–60 мин)</strong>: широкие границы, ASHA, <code>learning_rate</code> повыше, 3 фолда.</li></ol><ol type="1" id="2a8568fa-e39f-80f0-8c38-da722879852a" class="numbered-list" start="2"><li><strong>Локальная шлифовка (30–60 мин)</strong>: сужаем вокруг топ-квантиля (top-10–20%), снижаем <code>learning_rate</code>, увеличиваем <code>n_estimators</code>, замораживаем «устойчивые» параметры.</li></ol><ol type="1" id="2a8568fa-e39f-80bd-9217-e3aee16ba57d" class="numbered-list" start="3"><li><strong>Проверка переносимости</strong>: альтернативный сплит (seed/Group/Time) + короткая донастройка <strong>без выхода за локальные границы</strong>.</li></ol><hr id="2a8568fa-e39f-8001-8df9-c306f4697589"/><h2 id="2a8568fa-e39f-8031-ae3d-c583a4bdf84c" class="">8) Как не переобучиться на CV/LB</h2><ul id="2a8568fa-e39f-8041-8e43-de39326ee706" class="bulleted-list"><li style="list-style-type:disc"><strong>Freeze CV</strong>: один <code>fold_map.parquet</code> для всей серии трейлов.</li></ul><ul id="2a8568fa-e39f-8026-992d-f35b8d804b26" class="bulleted-list"><li style="list-style-type:disc"><strong>Alt-split</strong>: финальный кандидат проверяется на другом сплите (или на другом времени).</li></ul><ul id="2a8568fa-e39f-8075-9a3e-f85314e0e9ed" class="bulleted-list"><li style="list-style-type:disc"><strong>OOF-шум</strong>: повторяем лучший set на 3–5 сидов — берём <strong>медиану метрики</strong>.</li></ul><ul id="2a8568fa-e39f-807e-9d60-d3300a146400" class="bulleted-list"><li style="list-style-type:disc"><strong>LB-контроль</strong>: 1–2 сабмита для проверки тренда, но <strong>веса/решения</strong> — по OOF и alt-split, не по публичному.</li></ul><hr id="2a8568fa-e39f-8018-810f-f5db0146df07"/><h2 id="2a8568fa-e39f-804a-a889-feec5bc6f57f" class="">9) Пакеты отчётности</h2><ul id="2a8568fa-e39f-80e3-8778-c8099f130795" class="bulleted-list"><li style="list-style-type:disc"><strong>Importance</strong> гиперпараметров (Optuna): fANOVA/param importance, <strong>parallel coordinates</strong>, <strong>contour</strong> — фиксируем устойчивые зоны.</li></ul><ul id="2a8568fa-e39f-80d0-997b-f9cb75222b67" class="bulleted-list"><li style="list-style-type:disc"><strong>Learning curves</strong>: метрика vs ресурс (итерации) → выбираем “насыщение”.</li></ul><ul id="2a8568fa-e39f-8046-9d64-f15f05f0f930" class="bulleted-list"><li style="list-style-type:disc"><strong>Trade-off</strong>: таблица «метрика/время/стабильность» по топ-кандидатам.</li></ul><hr id="2a8568fa-e39f-8033-a928-f4f1b82090f7"/><h2 id="2a8568fa-e39f-80a3-99d2-f4563988b74b" class="">10) Типовые рецепты под задачи</h2><ul id="2a8568fa-e39f-80d1-a061-ee7de91a8bd7" class="bulleted-list"><li style="list-style-type:disc"><strong>Дисбаланс (скоринг/фрод)</strong>: фиксируем веса классов, HPO крутит <code>num_leaves|depth|min_data|l2|fractions</code>; целевая — <strong>PR-AUC</strong> или <strong>AMEX-стайл</strong>.</li></ul><ul id="2a8568fa-e39f-806e-83bc-fa3d5b0954f5" class="bulleted-list"><li style="list-style-type:disc"><strong>TS/спрос</strong>: фиксируем lag-ядро и <code>gap</code>; HPO крутит регуляризации и сэмплинг (<code>subsample/feature_fraction</code>); целевая — <strong>RMSPE/WRMSSE</strong>.</li></ul><ul id="2a8568fa-e39f-8078-be97-fb8beb54bf8f" class="bulleted-list"><li style="list-style-type:disc"><strong>Ранжирование</strong>: HPO по листвайс-параметрам, проверка @K; важно нормировать тарги/фичи внутри группы.</li></ul><ul id="2a8568fa-e39f-800a-ac84-c6b9d681a5e4" class="bulleted-list"><li style="list-style-type:disc"><strong>Гео-регрессия</strong>: HPO в лог-пространстве таргета, тест монотонностей как <strong>внешний шаг</strong>, не в HPO.</li></ul><hr id="2a8568fa-e39f-8019-abfc-c55068791bdc"/><h2 id="2a8568fa-e39f-8091-b8f0-de3fe9a7aee2" class="">11) Интеграция с пайплайном (репо)</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2a8568fa-e39f-80f3-a6b8-fc71636fb704" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">tuning/
+  ├── spaces/
+  │   ├── lgbm_classic.yaml
+  │   ├── xgb_rank.yaml
+  │   └── catboost_imbalance.yaml
+  ├── optuna_runner.py        # CLI: --space --budget --cv --pruner --seed
+  ├── pruners.py              # ASHA/Median configs
+  ├── report.py               # HTML/MD отчёты (plots + таблицы)
+  └── studies/                # sqlite/db + artifacts (прикладной архив)
+</code></pre><ul id="2a8568fa-e39f-8085-ad78-f8ae16701c49" class="bulleted-list"><li style="list-style-type:disc">Все ранки/OOF — в общих форматах (<code>oof/*.parquet</code>), повторное обучение лучшего сетапа — <code>models/train.py --params best.json</code>.</li></ul><hr id="2a8568fa-e39f-80b1-866e-e6eecc05a614"/><h2 id="2a8568fa-e39f-8016-8633-f18d51099092" class="">12) Мини-практикумы</h2><h3 id="2a8568fa-e39f-8052-bbf3-f8fdaabb03ff" class="">A) ASHA-грубый поиск (60–90 мин)</h3><ol type="1" id="2a8568fa-e39f-80e3-ac84-fa8ab9d7bacf" class="numbered-list" start="1"><li>LGBM классификация (или регрессия) с 3 фолдами.</li></ol><ol type="1" id="2a8568fa-e39f-8082-87f4-cd60b723c247" class="numbered-list" start="2"><li>Пространство из §5, <code>n_trials ≈ 80–120</code>, ресурс = <code>n_estimators ∈ [300, 3000]</code>, ASHA.</li></ol><ol type="1" id="2a8568fa-e39f-8081-ae3e-d54d3fcd2031" class="numbered-list" start="3"><li>Отчёт: top-10, param importance, кривые обучения.</li></ol><h3 id="2a8568fa-e39f-80d4-b176-e6ed196d461f" class="">B) Локальная шлифовка (45–60 мин)</h3><ol type="1" id="2a8568fa-e39f-80d0-9532-f91bd118bfb5" class="numbered-list" start="1"><li>Сузить границы вокруг top-квантиля.</li></ol><ol type="1" id="2a8568fa-e39f-80cb-9948-df4a406dd6c1" class="numbered-list" start="2"><li>Понизить <code>lr</code>, поднять <code>n_estimators</code>, «заморозить» min_data/num_leaves в небольших окнах.</li></ol><ol type="1" id="2a8568fa-e39f-802c-b353-ec731c86cb25" class="numbered-list" start="3"><li>Проверка на alt-split, сравнение стабильности.</li></ol><h3 id="2a8568fa-e39f-80da-b797-d82226e572fa" class="">C) Шум/сид-стабилити (45–60 мин)</h3><ol type="1" id="2a8568fa-e39f-80d8-8c7c-f3bd53be9c0c" class="numbered-list" start="1"><li>Лучшие 2–3 сетапа × 5 сидов → распределения метрик.</li></ol><ol type="1" id="2a8568fa-e39f-80f8-88a3-c804af1b66fc" class="numbered-list" start="2"><li>Выбор по <strong>медиане</strong> и разбросу; bstrap p-value разницы.</li></ol><hr id="2a8568fa-e39f-80a8-862d-cf824f14dfae"/><h2 id="2a8568fa-e39f-80b1-9fcf-e9981dbad7b5" class="">13) Самостоятельный мини-спринт (3–4 часа)</h2><p id="2a8568fa-e39f-80c1-93cd-c8e1d7afdb18" class=""><strong>Задание:</strong> провести двухступенчатый HPO для своей задачи (из модулей М2–М12).</p><p id="2a8568fa-e39f-809f-9f4e-d4def4bfc14f" class=""><strong>Требования:</strong></p><ul id="2a8568fa-e39f-8040-9168-e0bef6475fb0" class="bulleted-list"><li style="list-style-type:disc">Зафиксированный <code>fold_map</code>, цель-метрика, pruner.</li></ul><ul id="2a8568fa-e39f-80df-a185-d853c2c33ac9" class="bulleted-list"><li style="list-style-type:disc">≥80 трейлов грубого поиска + локальная шлифовка (или эквивалент по времени).</li></ul><ul id="2a8568fa-e39f-8098-942b-d8579ff3612f" class="bulleted-list"><li style="list-style-type:disc">Проверка на alt-split; отчёт с важностями/кривыми/таблицей «метрика/время/стабильность».</li></ul><ul id="2a8568fa-e39f-802c-ae75-fa10767d1274" class="bulleted-list"><li style="list-style-type:disc">2 сабмита: до HPO и после.</li></ul><hr id="2a8568fa-e39f-8053-8bc7-e01b82ab9bf2"/><h2 id="2a8568fa-e39f-80be-bd05-ccf7338c69ab" class="">14) Чек-лист устойчивого тюнинга</h2><ul id="2a8568fa-e39f-8078-9e74-f2940a8b45f0" class="bulleted-list"><li style="list-style-type:disc">Фикс CV/seed, <strong>никаких</strong> изменений сплита по ходу search.</li></ul><ul id="2a8568fa-e39f-808b-97df-cc18df09742b" class="bulleted-list"><li style="list-style-type:disc">Признаки/препроцесс — <strong>заморожены</strong> на время HPO.</li></ul><ul id="2a8568fa-e39f-80ac-99e7-ce0baef2cd47" class="bulleted-list"><li style="list-style-type:disc">Early-stopping включён, метрика та же, что в цели.</li></ul><ul id="2a8568fa-e39f-80fc-aa0a-e36e67897cc4" class="bulleted-list"><li style="list-style-type:disc">Alt-split-валидация лучшего сетапа.</li></ul><ul id="2a8568fa-e39f-808d-a6a9-d2e2169ac0c4" class="bulleted-list"><li style="list-style-type:disc">Никаких подборов «под публичный» без подтверждения OOF/alt-split.</li></ul><ul id="2a8568fa-e39f-80e9-a7e2-fc994af1fadb" class="bulleted-list"><li style="list-style-type:disc">Логи времени/памяти → не выходим за бюджет.</li></ul><hr id="2a8568fa-e39f-80dc-a009-c95d245fe479"/><h2 id="2a8568fa-e39f-80cf-814c-f96a955cf796" class="">15) Оценивание</h2><ul id="2a8568fa-e39f-809d-a503-e7c306995968" class="bulleted-list"><li style="list-style-type:disc"><strong>Корректность (35%)</strong>: честная цель, фиксированный CV, alt-split, отсутствие “public-tuning”.</li></ul><ul id="2a8568fa-e39f-8012-9792-d4b121512b97" class="bulleted-list"><li style="list-style-type:disc"><strong>Результат (30%)</strong>: прирост OOF (и/или LB-тренд) и снижение дисперсии (сид-стабильность).</li></ul><ul id="2a8568fa-e39f-80f4-a176-ee21c779ad0f" class="bulleted-list"><li style="list-style-type:disc"><strong>Инженерия (20%)</strong>: аккуратные studies, отчёты/плоты, воспроизводимость.</li></ul><ul id="2a8568fa-e39f-80ea-a0c7-c1fa3bafaf34" class="bulleted-list"><li style="list-style-type:disc"><strong>Отчёт (15%)</strong>: ясные выводы по важностям и выбранной зоне гиперпараметров.</li></ul><hr id="2a8568fa-e39f-806b-8454-d0aac143a181"/><h2 id="2a8568fa-e39f-808c-af0d-ece79e237396" class="">16) Что уходит «в рюкзак»</h2><ul id="2a8568fa-e39f-8065-967b-d15407112e54" class="bulleted-list"><li style="list-style-type:disc"><code>optuna_runner.py</code> (ASHA/Median, time-budget, resume-study), <code>spaces/*.yaml</code> (LGBM/XGB/Cat/Ridge/Rank).</li></ul><ul id="2a8568fa-e39f-80b1-bbea-c724a27b0bff" class="bulleted-list"><li style="list-style-type:disc"><code>report.py</code> (importance/parallel coords/contour, learning curves).</li></ul><ul id="2a8568fa-e39f-80ef-95b7-ded69d7edb47" class="bulleted-list"><li style="list-style-type:disc">Лучшие <code>params_best.json</code> для типовых задач (классификация/регрессия/TS/ранжирование).</li></ul><ul id="2a8568fa-e39f-80e3-8ad1-e2299500a55c" class="bulleted-list"><li style="list-style-type:disc">Шаблон <code>study_report.md</code> и чек-лист «устойчивый тюнинг».</li></ul><hr id="2a8568fa-e39f-8029-9fef-d15120aeddca"/><h2 id="2a8568fa-e39f-8069-ac33-f45029e29a54" class="">17) Встроено в 5-часовой формат (ритм)</h2><ul id="2a8568fa-e39f-8005-82e9-d96e3564e6ba" class="bulleted-list"><li style="list-style-type:disc"><strong>0–20 мин:</strong> freeze CV/фичсет, задать цель и пространство, запустить ASHA (грубый поиск).</li></ul><ul id="2a8568fa-e39f-8054-a212-d059d2035a5e" class="bulleted-list"><li style="list-style-type:disc"><strong>20–90 мин:</strong> идёт поиск; параллельно — sanity-чек фич/валидации; собрать промежуточный best → сабмит_1.</li></ul><ul id="2a8568fa-e39f-8085-b71c-ec01d3a3dadd" class="bulleted-list"><li style="list-style-type:disc"><strong>90–150 мин:</strong> локальная шлифовка вокруг топ-квантиля; alt-split-чек.</li></ul><ul id="2a8568fa-e39f-8008-a94c-f37c375aa8d4" class="bulleted-list"><li style="list-style-type:disc"><strong>150–210 мин:</strong> сид-стабильность лучшего (3–5 сидов), финальный выбор.</li></ul><ul id="2a8568fa-e39f-80c3-adff-e7df9fa868be" class="bulleted-list"><li style="list-style-type:disc"><strong>210–240 мин:</strong> сабмит_2, отчёт (важности, кривые, таблица «метрика/время/стабильность»).</li></ul><p id="2a8568fa-e39f-8058-8859-eaa8be59ed22" class="">Если хочешь — накину готовые <code>spaces/*.yaml</code> под твои любимые пресеты (скоринг/TS/ранж) и каркас <code>optuna_runner.py</code> с ASHA и time-budget, чтобы ребята могли сразу гонять устойчивый тюнинг без плясок.</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
